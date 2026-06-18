@@ -1,0 +1,1460 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rubrics Digitale Geletterdheid – OVSG</title>
+<style>
+:root {
+  --blue-dark: #1a3a5c;
+  --blue-mid: #2e6da4;
+  --blue-light: #d6e8f5;
+  --accent: #e67e22;
+  --bg: #f4f7fa;
+  --card: #ffffff;
+  --border: #d0dbe8;
+  --text: #1e2d3d;
+  --muted: #6b7f93;
+  /* Excel exact colors */
+  --col-starter: #F96F6F;
+  --col-junior: #F5C6AC;
+  --col-gevorderd: #B8DBAB;
+  --col-expert: #94DCF8;
+  --col-starter-dark: #c0392b;
+  --col-junior-dark: #E87331;
+  --col-gevorderd-dark: #4EA72E;
+  --col-expert-dark: #0F9ED5;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+/* HEADER */
+.app-header{background:linear-gradient(135deg,var(--blue-dark) 0%,var(--blue-mid) 100%);color:white;padding:16px 28px;display:flex;align-items:center;gap:14px;box-shadow:0 2px 12px rgba(0,0,0,0.18);}
+.app-header .logo{font-size:22px;font-weight:800;letter-spacing:.5px;}
+.app-header .subtitle{font-size:12px;opacity:.8;margin-top:2px;}
+.header-right{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;}
+.btn{padding:8px 16px;border-radius:8px;border:none;cursor:pointer;font-size:13px;font-weight:600;transition:all .18s;display:inline-flex;align-items:center;gap:6px;}
+.btn-primary{background:var(--accent);color:white;}
+.btn-primary:hover{background:#cf6d17;transform:translateY(-1px);}
+.btn-secondary{background:rgba(255,255,255,.18);color:white;border:1px solid rgba(255,255,255,.35);}
+.btn-secondary:hover{background:rgba(255,255,255,.28);}
+.btn-outline{background:white;color:var(--blue-mid);border:1.5px solid var(--blue-mid);}
+.btn-outline:hover{background:var(--blue-light);}
+.btn-green{background:#27ae60;color:white;}
+.btn-green:hover{background:#1e8449;}
+.btn-purple{background:#8e44ad;color:white;}
+.btn-purple:hover{background:#6c3483;}
+.btn-sm{padding:6px 12px;font-size:12px;}
+.btn-icon{padding:7px;border-radius:7px;}
+
+/* LAYOUT */
+.app-body{display:flex;min-height:calc(100vh - 60px);}
+
+/* SIDEBAR */
+.sidebar{width:300px;min-width:240px;background:var(--card);border-right:1px solid var(--border);padding:16px 14px;overflow-y:auto;flex-shrink:0;transition:width .2s ease, min-width .2s ease, padding .2s ease;}
+.sidebar.collapsed{width:0;min-width:0;padding:0;border-right:none;overflow:hidden;}
+.sidebar h3{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:8px;padding-left:4px;}
+.leerlijn-group{margin-bottom:14px;}
+.leerlijn-header{display:flex;align-items:center;gap:7px;padding:7px 9px;border-radius:7px;cursor:pointer;font-weight:700;font-size:12.5px;transition:background .15s;user-select:none;}
+.leerlijn-header:hover{background:var(--blue-light);}
+.leerlijn-header .chevron{margin-left:auto;font-size:10px;transition:transform .2s;}
+.leerlijn-header.open .chevron{transform:rotate(90deg);}
+.leerlijn-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.dot-ict{background:#2980b9;} .dot-comp{background:#27ae60;} .dot-media{background:#8e44ad;}
+.goal-list{padding-left:6px;}
+.goal-item{padding:5px 9px;border-radius:5px;cursor:pointer;font-size:12px;color:var(--text);transition:background .12s;line-height:1.4;border-left:3px solid transparent;margin-bottom:1px;}
+.goal-item:hover{background:var(--blue-light);border-left-color:var(--blue-mid);}
+.goal-item.active{background:var(--blue-light);border-left-color:var(--blue-mid);font-weight:600;color:var(--blue-dark);}
+.fase-badge{display:inline-block;font-size:10px;background:var(--border);color:var(--muted);border-radius:3px;padding:1px 4px;margin-right:3px;}
+.search-box{margin-bottom:12px;}
+.search-box input{width:100%;padding:7px 11px;border:1.5px solid var(--border);border-radius:7px;font-size:12.5px;font-family:inherit;outline:none;}
+.search-box input:focus{border-color:var(--blue-mid);}
+
+/* MAIN */
+.main-content{flex:1;padding:24px 28px;overflow-y:auto;}
+.welcome{text-align:center;padding:60px 20px;}
+.welcome h2{font-size:22px;color:var(--blue-dark);margin-bottom:10px;}
+.welcome p{color:var(--muted);font-size:14px;line-height:1.6;}
+
+/* RUBRIC */
+.rubric-header{background:linear-gradient(135deg,var(--blue-dark),var(--blue-mid));color:white;border-radius:12px 12px 0 0;padding:18px 22px;display:flex;align-items:flex-start;gap:12px;}
+.rubric-header .icon{font-size:26px;flex-shrink:0;}
+.rubric-header h2{font-size:15px;font-weight:700;line-height:1.4;}
+.tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:20px;background:rgba(255,255,255,.2);margin-right:5px;margin-bottom:5px;}
+.rubric-header-actions{margin-left:auto;display:flex;gap:6px;flex-shrink:0;}
+
+.rubric-table-wrap{background:white;border-radius:0 0 12px 12px;border:1px solid var(--border);border-top:none;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.07);}
+
+/* TABLE */
+table.rt{width:100%;border-collapse:collapse;table-layout:fixed;}
+table.rt col.c-crit{width:178px;}
+table.rt col.c-level{width:calc((100% - 178px)/4);}
+table.rt thead tr{background:var(--bg);}
+table.rt th{padding:11px 14px;font-size:12.5px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;border-bottom:2px solid var(--border);text-align:center;}
+table.rt th.th-crit{text-align:left;}
+table.rt th.th-niv{text-align:left;color:var(--blue-dark);border-bottom-color:var(--blue-mid)!important;}
+.th-s{color:var(--col-starter-dark);border-bottom-color:var(--col-starter)!important;}
+.th-j{color:var(--col-junior-dark);border-bottom-color:var(--col-junior)!important;}
+.th-g{color:var(--col-gevorderd-dark);border-bottom-color:var(--col-gevorderd)!important;}
+.th-e{color:var(--col-expert-dark);border-bottom-color:var(--col-expert)!important;}
+.stars{font-size:13px;display:block;margin-bottom:2px;}
+
+table.rt td{vertical-align:top;border-bottom:1px solid var(--border);}
+table.rt tr:last-child td{border-bottom:none;}
+
+.td-crit{padding:13px 14px;}
+.crit-name{font-weight:700;font-size:13.5px;color:var(--blue-dark);line-height:1.35;}
+.meta{font-size:10.5px;color:var(--muted);margin-top:3px;}
+.meta span{background:var(--blue-light);color:var(--blue-mid);border-radius:3px;padding:1px 5px;font-weight:600;}
+
+/* CRITERION COLUMN EXTRAS */
+.crit-streef{margin-top:8px;font-size:11.5px;color:var(--muted);display:flex;align-items:center;gap:5px;flex-wrap:wrap;}
+.crit-streef b{color:var(--blue-dark);}
+.gew-select{font-family:inherit;font-size:11.5px;padding:3px 5px;border:1.5px solid var(--border);border-radius:5px;color:var(--text);background:white;cursor:pointer;outline:none;}
+.gew-select:focus{border-color:var(--blue-mid);}
+.crit-score{margin-top:8px;font-size:11.5px;color:var(--muted);}
+.crit-score b{color:var(--blue-dark);font-size:14px;}
+.streef-status{margin-top:4px;font-size:11px;font-weight:700;}
+.streef-status.ok{color:var(--col-gevorderd-dark);}
+.streef-status.above{color:var(--col-expert-dark);}
+.streef-status.below{color:var(--col-junior-dark);}
+
+/* SCORE BAND */
+.score-band{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 18px;font-size:14px;font-weight:600;color:#10212f;border-bottom:1px solid var(--border);}
+.score-band b{font-weight:800;}
+.score-band .band-score{font-size:16px;font-weight:800;background:rgba(255,255,255,.65);border-radius:8px;padding:3px 12px;white-space:nowrap;}
+.band-empty{background:var(--bg);color:var(--muted);font-style:italic;font-weight:500;justify-content:center;}
+.band-starter{background:var(--col-starter);}
+.band-junior{background:var(--col-junior);}
+.band-gevorderd{background:var(--col-gevorderd);}
+.band-expert{background:var(--col-expert);}
+
+/* LEGEND */
+.legend{display:flex;flex-wrap:wrap;gap:7px 10px;align-items:center;padding:9px 16px;background:var(--bg);border-bottom:1px solid var(--border);font-size:11.5px;}
+.legend .lg{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:14px;font-weight:600;color:#10212f;}
+.lg-s{background:var(--col-starter);} .lg-j{background:var(--col-junior);} .lg-g{background:var(--col-gevorderd);} .lg-e{background:var(--col-expert);}
+.legend .lg-note{color:var(--muted);font-weight:500;margin-left:auto;}
+
+/* MEETMOMENT + TOOLBAR */
+.moment-toggle{display:inline-flex;border:1.5px solid var(--border);border-radius:8px;overflow:hidden;}
+.moment-toggle button{border:none;background:white;padding:6px 14px;font-size:12.5px;font-weight:600;cursor:pointer;color:var(--muted);font-family:inherit;}
+.moment-toggle button.active{background:var(--blue-mid);color:white;}
+.rubric-toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px;}
+.save-hint{font-size:11.5px;color:var(--col-gevorderd-dark);margin-left:auto;display:inline-flex;align-items:center;gap:5px;}
+
+/* NOG NIET AAN BOD */
+.nvt-btn{border:1.5px solid var(--border);background:white;border-radius:6px;padding:3px 8px;font-size:11px;cursor:pointer;color:var(--muted);font-family:inherit;margin-top:8px;}
+.nvt-btn.on{background:#eceff3;border-color:var(--muted);color:var(--text);font-weight:600;}
+tr.is-nvt .lc{opacity:.38;}
+.nvt-badge{display:inline-block;font-size:10px;background:#eceff3;color:var(--muted);border-radius:4px;padding:1px 6px;margin-top:6px;font-weight:600;}
+
+/* OPMERKINGEN */
+.opm-tr td{padding:0 14px 11px 14px;background:#fafcfe;border-bottom:1px solid var(--border);}
+.opm-field{width:100%;border:1.5px solid var(--border);border-radius:7px;padding:7px 10px;font-family:inherit;font-size:12.5px;resize:vertical;min-height:32px;background:white;color:var(--text);outline:none;line-height:1.45;}
+.opm-field:focus{border-color:var(--blue-mid);}
+.opm-label{font-size:11px;color:var(--muted);font-weight:600;margin:2px 0 4px;}
+.opm-static{font-size:12.5px;color:var(--text);background:white;border-left:3px solid var(--blue-mid);padding:6px 10px;border-radius:0 6px 6px 0;}
+.overall-comment{margin:14px 0 4px;}
+.overall-comment label{display:block;font-size:12.5px;font-weight:700;color:var(--blue-dark);margin-bottom:6px;}
+
+/* GROEIVERGELIJKING */
+.cmp-wrap{background:white;border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.cmp-table{width:100%;border-collapse:collapse;}
+.cmp-table th,.cmp-table td{padding:10px 12px;border-bottom:1px solid var(--border);font-size:13px;text-align:left;}
+.cmp-table tr:last-child td{border-bottom:none;}
+.cmp-table th{background:var(--bg);font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);}
+.cmp-lvl{display:inline-block;padding:3px 11px;border-radius:14px;font-weight:600;font-size:12px;color:#10212f;}
+.cmp-lvl.l-starter{background:var(--col-starter);} .cmp-lvl.l-junior{background:var(--col-junior);} .cmp-lvl.l-gevorderd{background:var(--col-gevorderd);} .cmp-lvl.l-expert{background:var(--col-expert);}
+.cmp-lvl.l-none{background:#eceff3;color:var(--muted);}
+.cmp-arrow{font-size:17px;font-weight:800;text-align:center;}
+.cmp-up{color:var(--col-gevorderd-dark);} .cmp-down{color:var(--col-starter-dark);} .cmp-same{color:var(--muted);}
+
+/* KLASOVERZICHT (HEATMAP) */
+.heat-wrap{background:white;border:1px solid var(--border);border-radius:12px;overflow:auto;}
+.heat-table{border-collapse:collapse;width:100%;font-size:12px;}
+.heat-table th,.heat-table td{border:1px solid var(--border);padding:7px 9px;text-align:center;}
+.heat-table thead th{background:var(--bg);font-weight:700;font-size:11px;line-height:1.3;vertical-align:bottom;}
+.heat-table th.h-name,.heat-table td.h-name{text-align:left;position:sticky;left:0;background:white;z-index:1;font-weight:600;}
+.heat-table td.h-name{cursor:pointer;}
+.heat-table td.h-name:hover{color:var(--blue-mid);text-decoration:underline;}
+.heat-cell{font-weight:700;color:#10212f;}
+.heat-cell.h-starter{background:var(--col-starter);} .heat-cell.h-junior{background:var(--col-junior);} .heat-cell.h-gevorderd{background:var(--col-gevorderd);} .heat-cell.h-expert{background:var(--col-expert);}
+.heat-cell.h-none{background:white;color:var(--muted);} .heat-cell.h-nvt{background:repeating-linear-gradient(45deg,#f0f2f5,#f0f2f5 4px,#e3e7ec 4px,#e3e7ec 8px);color:var(--muted);}
+.heat-table td.h-avg{font-weight:800;}
+
+/* LEVEL CELL - clickable */
+.lc{
+  padding:13px 15px;cursor:pointer;transition:background .15s, outline .1s;
+  font-size:13.5px;line-height:1.6;position:relative;user-select:none;
+  text-align:left;color:var(--text);
+}
+.lc:hover{filter:brightness(0.95);}
+.lc.selected{font-weight:700;color:#10212f;}
+
+/* Behaald niveau = volle kleur (klik) · Streefnorm = gekleurde rand */
+.lc-s{background:white;}
+.lc-s.niveau-gewenst-starter{outline:2.5px dashed var(--col-starter-dark);outline-offset:-3px;}
+.lc-s.selected{background:var(--col-starter)!important;outline:3px solid var(--col-starter-dark)!important;outline-offset:-3px;}
+
+.lc-j{background:white;}
+.lc-j.niveau-gewenst-junior{outline:2.5px dashed var(--col-junior-dark);outline-offset:-3px;}
+.lc-j.selected{background:var(--col-junior)!important;outline:3px solid var(--col-junior-dark)!important;outline-offset:-3px;}
+
+.lc-g{background:white;}
+.lc-g.niveau-gewenst-gevorderd{outline:2.5px dashed var(--col-gevorderd-dark);outline-offset:-3px;}
+.lc-g.selected{background:var(--col-gevorderd)!important;outline:3px solid var(--col-gevorderd-dark)!important;outline-offset:-3px;}
+
+.lc-e{background:white;}
+.lc-e.niveau-gewenst-expert{outline:2.5px dashed var(--col-expert-dark);outline-offset:-3px;}
+.lc-e.selected{background:var(--col-expert)!important;outline:3px solid var(--col-expert-dark)!important;outline-offset:-3px;}
+
+.selected-checkmark{position:absolute;top:5px;right:7px;font-size:14px;}
+.empty-c{color:var(--muted);font-style:italic;font-size:12px;}
+
+/* STUDENT INFO BAR */
+.student-bar{background:var(--blue-light);border-radius:9px;padding:11px 16px;margin-bottom:18px;display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;}
+.sf{display:flex;flex-direction:column;gap:3px;flex:1;min-width:130px;}
+.sf label{font-size:11px;font-weight:600;color:var(--muted);}
+.sf input{padding:6px 10px;border:1.5px solid var(--border);border-radius:6px;font-size:13px;font-family:inherit;outline:none;background:white;}
+.sf input:focus{border-color:var(--blue-mid);}
+.reset-btn{background:none;border:1.5px solid var(--border);border-radius:6px;padding:6px 10px;font-size:12px;cursor:pointer;color:var(--muted);}
+.reset-btn:hover{color:var(--col-starter-dark);border-color:var(--col-starter-dark);}
+
+/* MODAL */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;justify-content:center;align-items:flex-start;padding:30px 16px;overflow-y:auto;}
+.overlay.open{display:flex;}
+.modal{background:white;border-radius:13px;width:100%;max-width:780px;box-shadow:0 20px 60px rgba(0,0,0,.25);overflow:hidden;}
+.modal-hd{background:linear-gradient(135deg,var(--blue-dark),var(--blue-mid));color:white;padding:18px 24px;display:flex;align-items:center;justify-content:space-between;}
+.modal-hd h2{font-size:16px;}
+.modal-x{background:none;border:none;color:white;font-size:22px;cursor:pointer;opacity:.8;line-height:1;}
+.modal-x:hover{opacity:1;}
+.modal-bd{padding:24px;}
+.modal-ft{padding:14px 24px;background:var(--bg);border-top:1px solid var(--border);display:flex;gap:8px;justify-content:space-between;align-items:center;}
+
+/* STEPPER */
+.stepper{display:flex;margin-bottom:24px;}
+.step{flex:1;display:flex;flex-direction:column;align-items:center;position:relative;}
+.step:not(:last-child)::after{content:'';position:absolute;top:15px;left:50%;width:100%;height:2px;background:var(--border);z-index:0;}
+.step-c{width:30px;height:30px;border-radius:50%;border:2px solid var(--border);background:white;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--muted);z-index:1;transition:all .2s;}
+.step.active .step-c{border-color:var(--blue-mid);background:var(--blue-mid);color:white;}
+.step.done .step-c{border-color:#27ae60;background:#27ae60;color:white;}
+.step-lbl{font-size:10.5px;color:var(--muted);margin-top:4px;text-align:center;}
+.step.active .step-lbl{color:var(--blue-mid);font-weight:600;}
+
+/* FORM */
+.fg{margin-bottom:18px;}
+.fg label{display:block;font-size:12.5px;font-weight:600;margin-bottom:6px;color:var(--blue-dark);}
+select,input[type=text],textarea,.paste-area{width:100%;padding:9px 13px;border:1.5px solid var(--border);border-radius:7px;font-size:13.5px;font-family:inherit;color:var(--text);background:white;transition:border-color .15s;outline:none;}
+select:focus,input:focus,textarea:focus,.paste-area:focus{border-color:var(--blue-mid);box-shadow:0 0 0 3px rgba(46,109,164,.12);}
+textarea,.paste-area{resize:vertical;min-height:70px;line-height:1.5;}
+.paste-area{min-height:110px;}
+
+/* CRITERIA BUILDER */
+.cb{border:1.5px solid var(--border);border-radius:9px;overflow:hidden;}
+.cr{display:grid;grid-template-columns:150px 1fr 1fr 1fr 1fr;}
+.cr:not(:last-child){border-bottom:1px solid var(--border);}
+.cc{padding:9px 11px;border-right:1px solid var(--border);}
+.cc:last-child{border-right:none;}
+.cc.hdr{background:var(--bg);font-size:10.5px;font-weight:700;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:4px;}
+.cc.hdr.hs{color:var(--col-starter-dark);} .cc.hdr.hj{color:var(--col-junior-dark);} .cc.hdr.hg{color:var(--col-gevorderd-dark);} .cc.hdr.he{color:var(--col-expert-dark);}
+.cc textarea{border:none;padding:3px 5px;font-size:12px;min-height:55px;resize:none;width:100%;}
+.cc textarea:focus{border:1.5px solid var(--blue-mid);border-radius:4px;outline:none;}
+.add-cr{width:100%;padding:9px;background:none;border:none;color:var(--blue-mid);font-weight:600;cursor:pointer;font-size:12.5px;border-top:1px dashed var(--border);}
+.add-cr:hover{background:var(--blue-light);}
+.cn-input{width:100%;border:none;font-weight:700;font-size:12px;padding:3px 5px;outline:none;}
+.cn-input:focus{outline:1.5px solid var(--blue-mid);border-radius:3px;}
+.rm-cr{background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;display:block;margin:4px auto 0;}
+.rm-cr:hover{color:var(--col-starter-dark);}
+
+/* KLAS VIEW */
+.klas-header{background:linear-gradient(135deg,#2c3e50,#34495e);color:white;border-radius:12px 12px 0 0;padding:16px 22px;display:flex;align-items:center;gap:12px;}
+.klas-nav{display:flex;align-items:center;gap:10px;background:white;border:1px solid var(--border);border-radius:8px;padding:8px 16px;margin-bottom:18px;flex-wrap:wrap;}
+.klas-nav .kn-label{font-weight:700;font-size:13px;color:var(--blue-dark);}
+.klas-nav .kn-count{font-size:12px;color:var(--muted);}
+.leerling-btn{padding:5px 11px;border-radius:20px;border:1.5px solid var(--border);background:white;font-size:12px;cursor:pointer;transition:all .15s;color:var(--text);}
+.leerling-btn:hover{border-color:var(--blue-mid);color:var(--blue-mid);}
+.leerling-btn.active{background:var(--blue-mid);border-color:var(--blue-mid);color:white;font-weight:600;}
+.leerling-btn.scored{border-color:var(--col-gevorderd-dark);}
+
+/* PRINT */
+@media print{
+  .sidebar,.app-header,.rubric-header-actions,.student-bar,.klas-nav,.overlay,
+  .rubric-toolbar,.nvt-btn,.opm-label,
+  .lc .selected-checkmark{display:none!important;}
+  .app-body{display:block;}
+  .main-content{padding:0;}
+  .rubric-header,.klas-header{border-radius:0;print-color-adjust:exact;-webkit-print-color-adjust:exact;}
+  .rubric-table-wrap{box-shadow:none;overflow:visible;}
+  body{background:white;}
+  .lc{cursor:default;}
+  .lc.selected,.score-band,.legend,.legend .lg,
+  .cmp-lvl,.heat-cell,.heat-table{print-color-adjust:exact;-webkit-print-color-adjust:exact;}
+  .lc[class*="niveau-gewenst-"]{print-color-adjust:exact;-webkit-print-color-adjust:exact;}
+  .gew-select{border:none;background:none;-webkit-appearance:none;appearance:none;padding:0;font-weight:700;color:var(--blue-dark);}
+  .opm-field{border:none;padding:0;resize:none;}
+  .page-break{page-break-before:always;}
+}
+
+/* RESPONSIEF / TABLET */
+@media (max-width:900px){
+  .app-header{flex-wrap:wrap;gap:10px;}
+  .header-right{margin-left:0;}
+  .main-content{padding:16px 14px;}
+  .rubric-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  table.rt{min-width:680px;}
+  .student-bar .sf{min-width:110px;}
+  /* zijbalk wordt een overlay i.p.v. de inhoud te verdringen */
+  .app-body{position:relative;}
+  .sidebar{position:absolute;top:0;left:0;height:100%;z-index:60;box-shadow:2px 0 14px rgba(0,0,0,.22);}
+  .sidebar.collapsed{box-shadow:none;}
+}
+@media (max-width:640px){
+  .app-header .subtitle{display:none;}
+  .rubric-toolbar{gap:6px;}
+  .legend .lg-note{margin-left:0;flex-basis:100%;}
+  /* GESTAPELDE WEERGAVE: elk criterium wordt een kaart met de 4 niveaus onder elkaar */
+  .rubric-table-wrap{overflow-x:visible;}
+  table.rt{min-width:0;}
+  table.rt, table.rt tbody, table.rt tr, table.rt td{display:block;width:auto;}
+  table.rt thead, table.rt colgroup{display:none;}
+  table.rt tr{border:1px solid var(--border);border-radius:10px;margin:10px;overflow:hidden;}
+  table.rt tr.opm-tr{border:none;margin:-4px 10px 12px;}
+  .td-crit{background:var(--bg);border-bottom:1px solid var(--border);}
+  .lc{border-bottom:1px solid var(--border);}
+  .lc:last-child{border-bottom:none;}
+  .lc::before{display:block;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px;color:var(--muted);}
+  .lc-s::before{content:"⭐ Starter";} .lc-j::before{content:"⭐⭐ Junior";}
+  .lc-g::before{content:"⭐⭐⭐ Gevorderd";} .lc-e::before{content:"⭐⭐⭐⭐ Expert";}
+  .lc.selected::before{color:#10212f;}
+}
+
+/* TOAST */
+.toast{position:fixed;bottom:26px;right:26px;background:var(--blue-dark);color:white;padding:11px 18px;border-radius:9px;font-size:13px;z-index:200;box-shadow:0 4px 20px rgba(0,0,0,.2);transform:translateY(70px);opacity:0;transition:all .3s;}
+.toast.show{transform:translateY(0);opacity:1;}
+
+.hidden{display:none!important;}
+::-webkit-scrollbar{width:6px;} ::-webkit-scrollbar-track{background:transparent;} ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <div>
+    <div class="logo">🎓 Rubrics DG</div>
+    <div class="subtitle">Digitale Geletterdheid – OVSG</div>
+  </div>
+  <button class="btn btn-secondary btn-sm" id="sidebarToggle" onclick="toggleSidebar()" title="Doelenlijst verbergen">◀ Doelen</button>
+  <div class="header-right">
+    <button class="btn btn-secondary" onclick="openMakeModal()">✏️ Maken</button>
+    <button class="btn btn-purple" onclick="openKlasModal()">👥 Aanmaken voor klas</button>
+    <button class="btn btn-primary" onclick="doPrint()">🖨️ Afdrukken / PDF</button>
+  </div>
+</div>
+
+<div class="app-body">
+  <div class="sidebar" id="sidebar">
+    <h3>Zoek doel</h3>
+    <div class="search-box"><input type="text" id="searchInput" placeholder="Zoeken..." oninput="filterGoals()"></div>
+    <div id="goalTree"></div>
+  </div>
+  <div class="main-content" id="mainContent">
+    <div class="welcome" id="welcomeScreen">
+      <div style="font-size:60px;margin-bottom:14px;">📋</div>
+      <h2>Welkom bij de Rubrics-tool</h2>
+      <p>Selecteer een leerplandoel in de zijbalk om de rubric te bekijken.<br>Klik op een cel om het behaalde niveau aan te duiden.<br><br>
+      <strong>✏️ Maken</strong> — eigen rubric aanmaken<br>
+      <strong>👥 Aanmaken voor klas</strong> — rubric voor alle leerlingen tegelijk</p>
+    </div>
+    <div id="rubricView" class="hidden"></div>
+    <div id="klasView" class="hidden"></div>
+  </div>
+</div>
+
+<!-- MAKE MODAL -->
+<div class="overlay" id="makeOverlay">
+  <div class="modal">
+    <div class="modal-hd"><h2>✏️ Nieuwe Rubric Aanmaken</h2><button class="modal-x" onclick="closeMakeModal()">×</button></div>
+    <div class="modal-bd">
+      <div class="stepper" id="makeStepper">
+        <div class="step active" id="mStep1"><div class="step-c">1</div><div class="step-lbl">Leerlijn</div></div>
+        <div class="step" id="mStep2"><div class="step-c">2</div><div class="step-lbl">Doel</div></div>
+        <div class="step" id="mStep3"><div class="step-c">3</div><div class="step-lbl">Criteria</div></div>
+        <div class="step" id="mStep4"><div class="step-c">4</div><div class="step-lbl">Overzicht</div></div>
+      </div>
+      <div id="mS1">
+        <div class="fg"><label>Kies de leerlijn</label>
+          <select id="newLL" onchange="onLLChange()">
+            <option value="">— Selecteer leerlijn —</option>
+            <option>ICT-basisvaardigheden</option>
+            <option>Computationeel denken</option>
+            <option>Mediawijsheid</option>
+          </select>
+        </div>
+      </div>
+      <div id="mS2" class="hidden">
+        <div class="fg"><label>Selecteer bestaand leerplandoel</label>
+          <select id="newGoalSel"><option value="">— Selecteer doel —</option></select>
+        </div>
+        <div class="fg"><label>Of voer een nieuw doel in</label>
+          <input type="text" id="newGoalCustom" placeholder="B.XX - Omschrijving van het doel...">
+        </div>
+        <div class="fg"><label>Fase (optioneel)</label>
+          <select id="newFase">
+            <option value="">— Selecteer fase —</option>
+            <option>FASE 1</option><option>FASE 2</option><option>FASE 3</option><option>FASE 4</option>
+          </select>
+        </div>
+      </div>
+      <div id="mS3" class="hidden">
+        <p style="font-size:12.5px;color:var(--muted);margin-bottom:12px;">Voeg evaluatiecriteria toe en vul de beschrijvingen per niveau in.</p>
+        <div class="cb">
+          <div class="cr">
+            <div class="cc hdr">Criterium</div>
+            <div class="cc hdr hs">⭐ Starter</div>
+            <div class="cc hdr hj">⭐⭐ Junior</div>
+            <div class="cc hdr hg">⭐⭐⭐ Gevorderd</div>
+            <div class="cc hdr he">⭐⭐⭐⭐ Expert</div>
+          </div>
+          <div id="cbRows"></div>
+        </div>
+        <button class="add-cr" onclick="addCRow()">+ Criterium toevoegen</button>
+      </div>
+      <div id="mS4" class="hidden">
+        <p style="font-size:12.5px;color:var(--muted);margin-bottom:12px;">Overzicht van je rubric. Je kunt nog wijzigen via "Vorige".</p>
+        <div id="mS4Preview"></div>
+      </div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-outline btn-sm" id="makePrevBtn" style="visibility:hidden" onclick="makePrev()">← Vorige</button>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-outline btn-sm" onclick="closeMakeModal()">Annuleren</button>
+        <button class="btn btn-primary btn-sm" id="makeNextBtn" onclick="makeNext()">Volgende →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- KLAS MODAL -->
+<div class="overlay" id="klasOverlay">
+  <div class="modal" style="max-width:600px;">
+    <div class="modal-hd"><h2>👥 Rubric voor klas aanmaken</h2><button class="modal-x" onclick="closeKlasModal()">×</button></div>
+    <div class="modal-bd">
+      <div class="fg"><label>Klas</label>
+        <input type="text" id="klasNaam" placeholder="bv. 4B, Graad 3, Klas Appel...">
+      </div>
+      <div class="fg">
+        <label>Namen van de leerlingen</label>
+        <p style="font-size:11.5px;color:var(--muted);margin-bottom:7px;">Plak de namen vanuit een document of Excel (één naam per lijn, of kommagescheiden).</p>
+        <textarea class="paste-area" id="klasLeerlingen" placeholder="Jan Janssen&#10;Marie Pieters&#10;Ahmed El Fassi&#10;..."></textarea>
+      </div>
+      <div id="klasLeerlingPreview" style="font-size:12px;color:var(--muted);min-height:20px;"></div>
+    </div>
+    <div class="modal-ft">
+      <span style="font-size:12px;color:var(--muted)" id="klasCount"></span>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-outline btn-sm" onclick="closeKlasModal()">Annuleren</button>
+        <button class="btn btn-purple btn-sm" onclick="generateKlas()">👥 Genereer klasrubric</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const RD = {"COMP - B1":{"sheet":"COMP - B1","leerlijn":"Computationeel denken","goal":"DIG 2 B.1 (vervallen) – Herkennen van computers.","fase":"FASE 1","criteria":[{"niveau_leerling":"Junior","gewenst_niveau":"Gevorderd","naam":"Benoemen","expert":null,"gevorderd":"Ik benoem de meeste toestellen correct als computer.","junior":"Ik benoem enkele toestellen nog niet als computer.","starter":"Ik herken heel wat digitale toestellen "},{"niveau_leerling":"Junior","gewenst_niveau":"Gevorderd","naam":"Mogelijkheden","expert":null,"gevorderd":"Ik som een aantal verschillen op tussen soorten computers (laptop, tablet, GSM...).","junior":"Ik verwoord een beperkt aantal mogelijkheden van een bepaald type computer (laptop, tablet, GSM...).","starter":"Ik verwoord een beperkt aantal mogelijkheden van computers (laptop, tablet, GSM...)."}]},"COMP - B2":{"sheet":"COMP - B2","leerlijn":"Computationeel denken","goal":"DIG 2.1 – Onder begeleiding verwoorden waar computers in hun leefwereld te zien zijn en hoe ze het leven leuker of eenvoudiger kunnen maken.","fase":"FASE 1","criteria":[{"niveau_leerling":"Junior","gewenst_niveau":"Junior","naam":"Reflectie","expert":"Ik kan samen met klasgenoten in gesprek gaan over hoe computers het leven leuker of eenvoudiger maken. ","gevorderd":"Ik kan heel wat manieren opsommen waarop computers het leven leuker of eenvoudiger maken. ","junior":"Ik kan enkele manieren opsommen waarop computers het leven leuker of eenvoudiger maken. ","starter":"Ik denk minimaal  na over hoe computers mijn leven leuker of eenvoudiger maken."},{"niveau_leerling":"Gevorderd","gewenst_niveau":"Gevorderd","naam":"Plaats","expert":"Ik som vlot heel wat plaatsen op waar computers worden gebruikt.","gevorderd":"Ik som met wat aarzeling heel wat plaatsen op waar computers worden gebruikt.","junior":"Ik som enkele plaatsen op waar computers worden gebruikt.","starter":"Ik som met hulp enkele plaatsen op waar computers worden gebruikt."},{"niveau_leerling":"Expert","gewenst_niveau":"Gevorderd","naam":"Gebruik","expert":"Ik leg vlot uit waarom mensen op een bepaalde plaats een computer nodig hebben.","gevorderd":"Ik leg van  heel wat plaatsen uit waarom mensen er een computer gebruiken.","junior":"Van sommige plaatsen leg ik uit waarom mensen er een computer nodig hebben.","starter":"Ik leg met hulp uit  van sommige plaatsen waarom mensen er een computer gebruiken."},{"niveau_leerling":"Junior","gewenst_niveau":"Gevorderd","naam":"Invloed","expert":"Ik beschrijf vlot de invloed van computers op de plaats en de mensen die ze gebruiken.","gevorderd":"Bij heel wat situaties leg ik uit welke invloed computers hebben op de plaats en mensen die ze gebruiken.","junior":"BIj sommige situaties leg ik uit welke invloed computers hebben op de plaats en mensen die ze gebruiken.","starter":"Met hulp leg ik in enkele situaties uit welke invloed computers hebben op de plaats en mensen die ze gebruiken."}]},"COMP - B3":{"sheet":"COMP - B3","leerlijn":"Computationeel denken","goal":"DIG 2.2 – Begrijpen dat een computer een opdracht eindeloos kan herhalen (patroonherkenning).","fase":"FASE 1","criteria":[{"niveau_leerling":"Junior","gewenst_niveau":"Gevorderd","naam":"Herhaling herkennen","expert":"Ik herken altijd wanneer een computer dingen herhaalt.","gevorderd":"Ik herken meestal wanneer een computer dingen herhaalt.","junior":"Ik herken soms wanneer een computer iets herhaalt.","starter":"Ik weet niet wanneer een computer dingen herhaalt. "},{"niveau_leerling":"Starter","gewenst_niveau":"Gevorderd","naam":"Soorten taken","expert":"Ik som vlot heel wat taken op die een computer steeds opnieuw kan doen en leg uit waarom dat nuttig is.","gevorderd":"Ik som verschillende taken op die een computer steeds opnieuw kan doen en leg meestal uit waarom dat nuttig is.","junior":"Ik som na een demonstratie enkele taken op die een computer steeds opnieuw kan doen en begrijp soms waarom dat nuttig is.","starter":"Ik som met hulp enkele taken op die een computer steeds opnieuw kan doen maar begrijp niet helemaal waarom dat nuttig is."}]},"COMP - B4":{"sheet":"COMP - B4","leerlijn":"Computationeel denken","goal":"DIG 2.3 – In een logische volgorde plaatsen van prenten, foto’s, deelopdrachten (patroonherkenning).","fase":"FASE 1","criteria":[{"niveau_leerling":"Junior","gewenst_niveau":"Gevorderd","naam":"Logische volgorde","expert":"Ik plaats prenten, foto's of deelopdrachten altijd vlot in een logische volgorde.","gevorderd":"Ik plaats prenten, foto's of deelopdrachten meestal in een logische volgorde.","junior":"Ik plaats met een beetje hulp prenten, foto's of deelopdrachten in een logische volgorde.","starter":"Ik heb het meestal moeilijk om prenten, foto's of deelopdrachten in een logische volgorde te plaatsen."}]},"COMP - B5":{"sheet":"COMP - B5","leerlijn":"Computationeel denken","goal":"DIG 2.4 – Onderdelen van een voorwerp als delen van een groter geheel benoemen (abstractie).","fase":"FASE 1","criteria":[{"niveau_leerling":"Junior","gewenst_niveau":"Gevorderd","naam":"Identificatie van onderdelen","expert":"Ik benoem vlot alle onderdelen van een voorwerp en leg uit hoe ze bij het grotere geheel horen","gevorderd":"\tIk benoem zelfstandig de meeste onderdelen van een voorwerp en leg  uit hoe ze bij het grotere geheel horen.","junior":"\tIk benoem na een demonstratie enkele onderdelen van een voorwerp en leg soms uit hoe ze bij het grotere geheel horen.","starter":"Ik benoem onder begeleiding een paar onderdelen van een voorwerp en begrijp onvoldoende hoe ze bij het grotere geheel horen."},{"niveau_leerling":"Gevorderd","gewenst_niveau":"Gevorderd","naam":"Verbanden leggen en functionele beschrijving","expert":"Ik kan duidelijk uitleggen hoe alle onderdelen werken en bij het grotere geheel passen.","gevorderd":"Ik leg uit hoe de meeste onderdelen werken en passen, maar mis enkele details.","junior":"Ik leg uit hoe sommige onderdelen werken en passen, maar mis belangrijke relaties","starter":"Ik heb moeite met het uitleggen hoe de onderdelen werken en bij het geheel passen."}]},"COMP - B6":{"sheet":"COMP - B6","leerlijn":"Computationeel denken","goal":"DIG 2.5 – Vanuit een patroon een rij of een reeks verder zetten (patroonherkenning).","fase":"FASE 2","criteria":[{"niveau_leerling":"Junior","gewenst_niveau":"Gevorderd","naam":"Identificatie en analyse","expert":"Ik ontdek zelf eenvoudige en complexe patronen.","gevorderd":"Ik herken complexe patronen.","junior":"Ik herken verschillende soorten en eenvoudige patronen (getallen, letters,  vormen, kleuren ...).","starter":"Ik herken een eenvoudig patroon."},{"niveau_leerling":"Gevorderd","gewenst_niveau":"Gevorderd","naam":"Voortzetten van patronen","expert":"Ik zet complexe patronen verder met grote nauwkeurigheid en creativiteit.","gevorderd":"Ik zet meestal zonder hulp een (complex) patroon nauwkeurig verder.","junior":"Ik zet met een beetje begeleiding een patroon nauwkeurig verder.","starter":"Ik zet met een beetje hulp een eenvoudig patroon verder."},{"niveau_leerling":"Expert","gewenst_niveau":"Gevorderd","naam":"creativiteit","expert":"Ik ga creatief aan de slag met patronen.","gevorderd":"Ik maak een eigen variatie op een patroon door er nieuwe elementen aan toe te voegen.","junior":"Ik verzin zelf een eenvoudig patroon.","starter":"Ik verzin met een beetje hulp een eenvoudig patroon."}]},"COMP - B7":{"sheet":"COMP - B7","leerlijn":"Computationeel denken","goal":"DIG 2.6 – Een eenvoudige opdracht in deelopdrachten opdelen (decompositie).","fase":"FASE 2","criteria":[{"niveau_leerling":"Junior","gewenst_niveau":"Gevorderd","naam":"Opdrachten opdelen","expert":"Ik deel eenvoudige opdrachten spontaan op in logische deelopdrachten.","gevorderd":"Meestal deel ik een eenvoudige opdracht op in deelopdrachten.","junior":"Ik slaag er met een beetje hulp in om een eenvoudige opdracht op te delen in deelopdrachten.","starter":"Ik heb het nog moeilijk om een eenvoudige opdracht op te delen in deelopdrachten."}]},"COMP - B8":{"sheet":"COMP - B8","leerlijn":"Computationeel denken","goal":"DIG 2.7 – De herhaling van opdrachten in verschillende situaties herkennen (patroonherkenning).","fase":"FASE 2","criteria":[{"niveau_leerling":"Junior","gewenst_niveau":"Gevorderd","naam":"Herhaling herkennen","expert":"Ik herken vlot de herhaling van opdrachten in verschillende situaties.","gevorderd":"Ik herken de herhaling van opdrachten in de meeste situaties.","junior":"Ik herken  na een demonstratie de herhaling van opdrachten in een beperkt aantal situaties.","starter":"Ik herken onder begeleiding herhaling van opdrachten."}]},"COMP - B9":{"sheet":"COMP - B9","leerlijn":"Computationeel denken","goal":"DIG 2 B.9 (vervallen) – Verwoorden waar, wanneer en hoe ze een probleem hebben opgelost met een computer.","fase":"FASE 2","criteria":[{"niveau_leerling":"Junior","gewenst_niveau":"Gevorderd","naam":"Situatie omschrijven","expert":"Ik beschrijf gedetailleerd een situatie waarin ik een probleem oploste met een computer.","gevorderd":"Ik beschrijf duidelijk en zelfstandig een situatie waarin ik een probleem oploste met een computer.","junior":"Ik benoem na een demonstratie een situatie waarin ik een probleem oploste met een computer.","starter":"Ik verwoord met hulp hoe ik een probleem oploste met behulp van een computer."},{"niveau_leerling":"Gevorderd","gewenst_niveau":"Gevorderd","naam":"Probleem omschrijven","expert":"Ik leg helder en volledig uit wat het probleem was en beschrijf alle stappen die zijn genomen om het op te lossen.","gevorderd":"Ik leg gedetailleerd uit wat het probleem was en beschrijf de specifieke stappen die zijn genomen om het op te lossen.","junior":"Ik leg na een demonstratie uit wat het probleem was en beschrijf de basisstappen die zijn genomen om het op te lossen.","starter":"Ik leg in eenvoudige termen uit wat het probleem was, maar ik heb moeite met het beschrijven van de stappen die zijn genomen om het op te lossen."},{"niveau_leerling":"Expert","gewenst_niveau":"Gevorderd","naam":"Hoe","expert":"Ik verwoord zelfstandig en duidelijk hoe ik een computer gebruikte om een probleem op te lossen, inclusief eventuele uitdagingen en hoe deze zijn overwonnen.","gevorderd":"Zonder of met heel weinig begeleiding verwoord ik goed hoe ik een computer gebruikte om een probleem op te lossen.","junior":"Ik verduidelijk met enige begeleiding hoe ik de computer gebruikte om een probleem op te lossen.","starter":"Ik verwoord onder begeleiding wanneer en hoe ik een probleem oploste met de computer."}]},"COMP - B10":{"sheet":"COMP - B10","leerlijn":"Computationeel denken","goal":"DIG 2 B.10 (vervallen) – Verwoorden dat bepaalde reeksen een logische ordening kennen.","fase":"FASE 2","criteria":[{"niveau_leerling":"Junior","gewenst_niveau":"Gevorderd","naam":"Ordening herkennen","expert":"Ik herken en benoem vlot de juiste volgorde van verschillende reeksen en kan uitleggen waarom die volgorde belangrijk is.","gevorderd":"\tIk herken en benoem zelfstandig de juiste volgorde van verschillende reeksen en kan meestal uitleggen waarom die volgorde belangrijk is.","junior":"Ik herken en benoem na een demonstratie de juiste volgorde van verschillende reeksen en kan soms uitleggen waarom die volgorde belangrijk is.\n","starter":"Ik herken en benoem onder begeleiding de juiste volgorde van verschillende reeksen en begrijp een beetje waarom die volgorde belangrijk is."},{"niveau_leerling":"Gevorderd","gewenst_niveau":"Gevorderd","naam":"Zelfstandigheid en uitvoering","expert":"Ik voer/plaats zelfstandig verschillende reeksen in een logische volgorde zonder hulp (uit).","gevorderd":"\tIk voer/plaats meestal zonder hulp verschillende reeksen in een logische volgorde (uit).","junior":"Ik voer/plaats met een beetje begeleiding verschillende reeksen in een logische volgorde (uit).","starter":"\tIk voer/plaats onder begeleiding verschillende reeksen in een logische volgorde (uit)."}]},"COMP - B11":{"sheet":"COMP - B11","leerlijn":"Computationeel denken","goal":"DIG 2.9 – Eenvoudige reeksen van instructies aan een ander geven (mondeling of via symbolen) die leiden tot een bepaald doel (algoritme).","fase":"FASE 2","criteria":[{"niveau_leerling":"Junior","gewenst_niveau":"Gevorderd","naam":"Mondelinge instructies geven","expert":"Ik geef duidelijke, gedetailleerde en goed georganiseerde mondelinge instructies.","gevorderd":"Ik geef duidelijke mondelinge instructies, maar ik mis enkele details.","junior":"Ik geef mondelinge instructies die begrijpbaar zijn, maar missen structuur en details.","starter":"Ik geef onvolledige of onduidelijke mondelinge instructies."},{"niveau_leerling":"Gevorderd","gewenst_niveau":"Gevorderd","naam":"instructies geven via symbolen.","expert":"Ik gebruik duidelijke en gedetailleerde symbolen die logisch en gemakkelijk te volgen zijn.","gevorderd":" Ik gebruik duidelijke symbolen, maar mis enkele details.","junior":"Ik gebruik na een demonstratie symbolen die begrijpbaar zijn, maar de symbolen missen structuur en details.\n\n","starter":"Ik heb het moeilijk om een klasgenootje via symbolen duidelijke opdrachten te geven."}]},"COMP - B12":{"sheet":"COMP - B12","leerlijn":"Computationeel denken","goal":"DIG 2.8 – Een opdracht uitvoeren door stap voor stap een reeks handelingen uit te voeren (algoritme).","fase":"FASE ","criteria":[{"niveau_leerling":"Gevorderd","gewenst_niveau":"Gevorderd","naam":"Stappen uitvoeren","expert":"Ik voer vlot alle stappen in logische en correcte volgorde uit","gevorderd":"Ik voer zelfstandig de meeste stappen in correcte volgorde uit, met enkele fouten","junior":"Ik voer de stappen na een demonstratie in de correcte volgorde uit.","starter":"Ik voer de stappen onder begeleiding in de juiste volgorde uit."},{"niveau_leerling":"Gevorderd","gewenst_niveau":"Gevorderd","naam":"Symbolen gebruiken","expert":"Ik voer vlot en zelfstandig een opdracht correct uit aan de hand van een reeks symbolen.","gevorderd":"Ik voer zelfstandig een opdracht correct uit aan de hand van een reeks symbolen.","junior":"Ik voer na een demonstratie een opdracht correct uit aan de hand van een reeks symbolen.","starter":" Ik voer onder begeleiding een opdracht uit door een reeks stappen te volgen."}]},"COMP - B13":{"sheet":"COMP - B13","leerlijn":"Computationeel denken","goal":"DIG 2.10 – Voorbeelden van geautomatiseerde systemen in het dagelijkse leven verwoorden.","fase":"FASE ","criteria":[{"niveau_leerling":"Junior","gewenst_niveau":"Gevorderd","naam":"Opsommen","expert":"Ik som zonder hulp complexe geautomatiseerde systemen op.","gevorderd":"Ik slaag met hulp erin om eenvoudige maar ook complexere geautomatiseerde systemen op te sommen.","junior":"Ik geef enkele eenvoudige voorbeelden van geautomatiseerde systemen.","starter":"Ik kan onder begeleiding  voorbeelden geven van geautomatiseerde systemen."},{"niveau_leerling":"Gevorderd","gewenst_niveau":"Gevorderd","naam":"Herkennen","expert":"Ik kan zonder hulp complexe geautomatiseerde systemen herkennen.","gevorderd":"Ik slaag met hulp ik erin om eenvoudige maar ook complexere geautomatiseerde systemen te herkennen.","junior":"Ik herken enkele eenvoudige geautomatiseerde systemen.","starter":"Ik kan onder begeleiding geautomatiseerde systemen herkennen."},{"niveau_leerling":"Expert","gewenst_niveau":"Gevorderd","naam":"Benoemen\n","expert":"Ik kan zonder hulp complexe geautomatiseerde systemen benoemen.","gevorderd":"Met wat hulp slaag ik erin om eenvoudige maar ook complexere geautomatiseerde systemen te benoemen.","junior":"Ik benoem enkele eenvoudige geautomatiseerde systemen.","starter":"Ik kan onder begeleiding geautomatiseerde systemen benoemen."}]},"COMP - B14":{"sheet":"COMP - B14","leerlijn":"Computationeel denken","goal":"DIG 2.11 – Een proces in verschillende stappen opdelen en waar mogelijk elke stap weer in deelstappen (decompositie).","fase":"FASE 3","criteria":[{"niveau_leerling":"Junior","gewenst_niveau":"Gevorderd","naam":"herkennen van hoofdstappen","expert":"Ik herken vlot alle hoofdstappen in het proces","gevorderd":"Ik herken de meeste hoofdstappen in het proces, met enkele fouten","junior":"Ik herken enkele hoofdstappen in het proces, maar mis meerdere belangrijke stappen","starter":"Ik herken nauwelijks de hoofdstappen in het proces"},{"niveau_leerling":"Gevorderd","gewenst_niveau":"Gevorderd","naam":"Opdeling in deelstappen","expert":"Ik verdeel een opdracht vlot in verschillende logische deelstappen.","gevorderd":"Ik verdeel een opdracht in verschillende deelstappen.","junior":"Met enige hulp deel ik een opdracht op in verschillende deelstappen.","starter":"Ik slaag er niet in om een opdracht op te delen in deelstappen."},{"niveau_leerling":"Expert","gewenst_niveau":"Gevorderd","naam":"Duidelijkheid van deelstappen","expert":"Mijn deelstappen zijn duidelijk en nauwkeurig beschreven. Ze zijn overzichtelijk en gemakkelijk te volgen.","gevorderd":"Mijn deelstappen zijn duidelijk, en overzichtelijk. ","junior":"Mijn deelstappen zijn  onnauwkeurig en soms moeilijk te volgen.","starter":"Mijn deelstappen zijn onduidelijk en moeilijk te volgen."},{"niveau_leerling":"Junior","gewenst_niveau":"Gevorderd","naam":"Logische volgorde van stappen","expert":"Ik rangschik alle stappen en deelstappen vlot in een logische en correcte volgorde","gevorderd":"Ik rangschik de stappen in een logische volgorde zonder fouten","junior":"Ik rangschik stappen en deelstappen met nog enkele fouten in de volgorde","starter":"Mijn volgorde van stappen en deelstappen is vaak onlogisch en meerderefouten"}]},"COMP - B15":{"sheet":"COMP - B15","leerlijn":"Computationeel denken","goal":"DIG 2.14 – Het begrip algoritme kennen als een stappenplan of instructie om een specifiek probleem in een vaste volgorde op te lossen.","fase":"FASE 3","criteria":[{"niveau_leerling":"Junior","gewenst_niveau":"Gevorderd","naam":"Werking programma uitleggen\n","expert":"Ik leg uitgebreid en gedetailleerd uit waarom computers precieze en ondubbelzinnige instructies nodig hebben om correct te functioneren.","gevorderd":"Ik leg duidelijk uit dat een computer alleen werkt volgens exacte en ondubbelzinnige instructies.","junior":"Ik leg uit dat een computer programma’s uitvoert door het volgen van duidelijke en specifieke instructies.","starter":"Ik leg uit dat een computer alleen doet wat je hem precies vertelt."},{"niveau_leerling":"Gevorderd","gewenst_niveau":"Gevorderd","naam":"Algoritme en debugging in een programma","expert":null,"gevorderd":"Ik leg gedetailleerd uit wat een programma precies doet en waar het zal fout lopen.","junior":"Ik leg uit wat een programma precies doet.","starter":"Met wat hulp leg ik uit wat een programma precies zal doen."},{"niveau_leerling":"Expert","gewenst_niveau":"Gevorderd","naam":"de-bugging","expert":"Ik vind vlot alle fouten  in een computerprogramma.","gevorderd":"Ik vind de fout(en) in een computerprogramma.","junior":"Met enige hulp achterhaal ik waar een computerprogramma een fout bevat.","starter":"Ik vind niet waar een computerprogramma een fout bevat."}]},"COMP - B16":{"sheet":"COMP - B16","leerlijn":"Computationeel denken","goal":"DIG 2.15 – Voor- en nadelen van het geautomatiseerd uitvoeren van opdrachten verwoorden.","fase":"FASE 3","criteria":[{"niveau_leerling":"Junior","gewenst_niveau":"Gevorderd","naam":"Verwoorden voor- en nadelen","expert":"Ik verwoord uitgebreid en goed onderbouwd voor -en of nadelen van geautomatiseerde taken.","gevorderd":"Ik leg de voor -en of nadelen van geautomatiseerde taken gedetailleerd uit.","junior":"Ik som meerdere voor -en of nadelen op van geautomatiseerde taken.","starter":"Ik verwoord één of twee eenvoudige voor -en of nadelen van geautomatiseerde taken."},{"niveau_leerling":"Junior","gewenst_niveau":"Junior","naam":"Verschil computer en mens","expert":"Ik maak een gedetailleerd en goed onderbouwd onderscheid tussen werk van een computer en een mens.","gevorderd":"Ik maak een gedetailleerd onderscheid tussen werk van een computer en een mens.","junior":"Ik onderscheid enkele verschillen tussen werk gedaan door een computer en een mens.","starter":"Ik maak geen onderscheid tussen werk verricht door computers of mensen."},{"niveau_leerling":"Junior","gewenst_niveau":"Gevorderd","naam":"Inschatten mens/computer","expert":"IIk schat goed in wanneer een taak beter en efficiënter door een mens of een computer gebeurt en leg precies uit waarom.","gevorderd":"Ik schat goed in wanneer een taak beter en efficiënter door een mens of een computer gebeurt.","junior":"Ik schat meestal goed in wanneer een taak beter door een mens of een computer gebeurt.","starter":"Ik heb het moeilijk om in te schatten wanneer iets beter of sneller door een computer wordt gedaan dan door een mens."}]},"COMP - B17":{"sheet":"COMP - B17","leerlijn":"Computationeel denken","goal":"DIG 2.31 – Een concreet probleem in een passende visuele weergave zoals een stappenplan omzetten (abstractie).","fase":"FASE 3","criteria":[{"niveau_leerling":"Junior","gewenst_niveau":"Gevorderd","naam":"maken","expert":"Ik maak vlot een uitgebreide en overzichtelijke visuele weergave, zoals een stappenplan, om een probleem op te lossen.","gevorderd":"Ik maak met beperkte begeleiding een gedetailleerde visuele weergave, zoals een stappenplan, om een probleem op te lossen.","junior":"Ik maak met beperkte begeleiding een eenvoudige visuele weergave, zoals een stappenplan, om een probleem op te lossen.","starter":"Ik heb moeite om een probleem om te zetten in een visuele weergave, zelfs met begeleiding."},{"niveau_leerling":"Gevorderd","gewenst_niveau":"Gevorderd","naam":"duidelijke inhoud","expert":"De visuele weergave die ik maakte van een concreet probleem is helder, bevat alle benodigde stappen en details, en is gemakkelijk te volgen voor anderen.","gevorderd":"De visuele weergave die ik maakte van een concreet probleem is logisch, bevat alle belangrijke stappen en is over het algemeen goed te volgen.","junior":"De visuele weergave die ik maakte van een concreet probleem bevat de belangrijkste stappen, maar sommige details zijn onduidelijk of ontbreken.","starter":"De visuele weergave die ik maakte van een concreet probleem bevat onduidelijke of ontbrekende stappen en is moeilijk te volgen."}]},"COMP - B18":{"sheet":"COMP - B18","leerlijn":"Computationeel denken","goal":"DIG 2.32 – Patronen in abstracte situaties herkennen en beschrijven (patroonherkenning).","fase":"FASE 3","criteria":[{"niveau_leerling":"Junior","gewenst_niveau":"Gevorderd","naam":"Herkenning","expert":"Ik herken zelfstandig complexe patronen in abstracte situaties.","gevorderd":"Ik herken zelfstandig patronen in abstracte situaties.","junior":"Ik herken zelfstandig eenvoudige patronen in abstracte situaties.","starter":"Met hulp herken ik eenvoudige patronen in abstracte situaties."},{"niveau_leerling":"Gevorderd","gewenst_niveau":"Gevorderd","naam":"Beschrijven van patronen","expert":"Ik beschrijf moeilijke patronen op een duidelijke en nauwkeurige manier. ","gevorderd":"Ik beschrijf nauwkeurig en zelfstandig eenvoudige patronen.","junior":"Ik beschrijf na een demonstratie  eenvoudige patronen zonder veel details.","starter":"Ik beschrijf met begeleiding patronen met weinig details."}]},"COMP - B19":{"sheet":"COMP - B19","leerlijn":"Computationeel denken","goal":"DIG 2 B.19 (vervallen) – Gebruik maken van een ‘als-dan’-constructie bij het beschrijven van stappen in een proces.","fase":"FASE 3","criteria":[{"niveau_leerling":"Junior","gewenst_niveau":"Gevorderd","naam":"Begrip","expert":"Ik begrijp complexe 'als-dan'-constructies en pas ze zelfstandig toe.","gevorderd":"Ik begrijp 'als-dan'-constructies en pas ze toe met wat hulp.","junior":"Ik herken en begrijp zelfstandig een eenvoudige ‘als-dan’-constructie.","starter":"Ik herken en begrijp onder begeleding  een eenvoudige ‘als-dan’-constructie."},{"niveau_leerling":"Gevorderd","gewenst_niveau":"Gevorderd","naam":"Trigger/gebeurtenis","expert":"Ik kan zelf triggers/gebeurtenissen verwoorden in moeilijkere situaties.","gevorderd":"Ik kan zelf triggers/gebeurtenissen omschrijven in eenvoudige situatie.","junior":"Ik herken een trigger/gebeurtenis.","starter":"Ik herken onder begeleiding triggers/gebeurtenissen."}]},"COMP - B20":{"sheet":"COMP - B20","leerlijn":"Computationeel denken","goal":"DIG 2 B.20 (vervallen) – Reflecteren op de meerwaarde van het gebruik van digitale toepassingen.","fase":"FASE 4","criteria":[{"niveau_leerling":"Junior","gewenst_niveau":"Gevorderd","naam":"Blokprogrammeertaal\n","expert":"Ik programmeer zelfstandig een moeilijkere code.","gevorderd":"Ik heb de basisfuncties van een programmeertaal snel onder de knie en ga er zelfstandig mee aan de slag.","junior":"Na een demonstratie van de juf/meester verken ik de basisfuncties van een programmeertaal en ga er dan zelfstandig mee aan de slag.","starter":"Ik verken onder begeleiding van de juf/meester de basismogelijkheden van een programmeertaal."},{"niveau_leerling":"Gevorderd","gewenst_niveau":"Gevorderd","naam":"Werking van de code","expert":"Ik leg vlot uit hoe mijn eigen computercode werkt zonder die op te delen.","gevorderd":"Ik leg uit hoe verschillende delen van mijn computercode werken.","junior":"Met enige hulp leg ik uit hoe verschillende delen van mijn computercode werken.","starter":"Ik leg onder begeleiding van de leerkracht mijn computercode uit."},{"niveau_leerling":"Expert","gewenst_niveau":"Gevorderd","naam":"Herhalingen en voorwaarden","expert":"Ik combineer herhalingen en voorwaarden tot een gestructureerde code.","gevorderd":"Ik gebruik herhalingen en voorwaarden om mijn programma korter en efficiënter te maken.","junior":"Ik schrijf en begrijp eenvoudige programma's.","starter":"Ik volg eenvoudige instructies om een eenvoudig programma te maken."},{"niveau_leerling":"Junior","gewenst_niveau":"Gevorderd","naam":"Debugging","expert":"Ik kan zelfstandig en systematisch fouten in mijn code vinden en oplossen. Ik gebruik debugging tools efficiënt en leer van de gemaakte fouten om mijn code te verbeteren.","gevorderd":"Ik kan de meeste fouten in mijn code zelf vinden en oplossen. Ik begrijp hoe ik debugging tools moet gebruiken om problemen op te sporen.","junior":"Ik kan enkele fouten in mijn code vinden en oplossen, maar ik heb soms nog wat hulp nodig om complexere problemen op te lossen.","starter":"Ik heb moeite met het vinden en oplossen van fouten in mijn code. Ik heb hulp nodig om te begrijpen wat er mis gaat."}]},"MEDIA - B1":{"sheet":"MEDIA - B1","leerlijn":"Mediawijsheid","goal":"DIG 3.1 – Kennismaken met verschillende vormen van mediaboodschappen.","fase":"FASE 2","criteria":[{"niveau_leerling":"Expert","gewenst_niveau":"Junior","naam":"Mediaboodschappen herkennen","expert":"Ik herken vlot (bijna) alle vormen van mediaboodschappen.","gevorderd":"Ik herken de meeste vormen van mediaboodschappen.","junior":"Ik herken verschillende vormen van mediaboodschappen.","starter":"Ik herken onder begeleiding verschillende vormen van mediaboodschap."},{"niveau_leerling":"Gevorderd","gewenst_niveau":"Gevorderd","naam":"Digitale media benoemen","expert":"Ik benoem uitgebreid en met de juiste terminologie digitale media die ik in mijn dagelijks leven gebruik.","gevorderd":"Ik benoem digitale media die ik in mijn dagelijks leven gebruik.","junior":"Ik benoem grotendeels zelfstandig digitale media die ik in mijn dagelijks leven gebruik.","starter":"Ik kan onder begeleiding digitale media die ik in mijn dagelijks leven gebruik benoemen."},{"niveau_leerling":"Starter","gewenst_niveau":"Gevorderd","naam":"Mediaboodschappen benoemen","expert":"Ik benoem een grote diversiteit aan mediaboodschappen.","gevorderd":"Ik benoem de meeste vormen van mediaboodschappen.","junior":"Ik benoem verschillende vormen van mediabooschappen.","starter":"Ik benoem onder begeleiding verschillende vormen van mediaboodschappen."}]},"MEDIA - B2":{"sheet":"MEDIA - B2","leerlijn":"Mediawijsheid","goal":"DIG 3.2 – Reflecteren over hoe zij digitale media gebruiken in hun dagelijks leven.","fase":"FASE 2","criteria":[{"niveau_leerling":"Expert","gewenst_niveau":"Junior","naam":"Digitaal mediagebruik beschrijven","expert":"Ik beschrijf mijn digitaal mediagebruik uitgebreid.","gevorderd":"Ik beschrijf vlot mijn digitaal mediagebruik.","junior":"Ik geef zelfstandig een beknopte beschrijving van mijn digitaal mediagebruik.","starter":"Ik beschrijf onder begeleiding mijn digitaal mediagebruik."},{"niveau_leerling":"Gevorderd","gewenst_niveau":"Gevorderd","naam":"Digitale media benoemen","expert":"Ik benoem uitgebreid en met de juiste terminologie digitale media die ik in mijn dagelijks leven gebruik.","gevorderd":"Ik benoem digitale media die ik in mijn dagelijks leven gebruik.","junior":"Ik benoem grotendeels zelfstandig digitale media die ik in mijn dagelijks leven gebruik.","starter":"Ik benoem onder begeleiding digitale media die ik in mijn dagelijks leven gebruik."},{"niveau_leerling":"Starter","gewenst_niveau":"Gevorderd","naam":"Schermtijd/ afspraken thuis","expert":"Ik som de afspraken thuis rond sociale media op en leg ze uit.","gevorderd":"Ik som de afspraken die thuis gelden rond sociale media op.","junior":"Ik som enkele afspraken thuis rond sociale media op.","starter":"Ik som onder begeleiding de afspraken thuis rond sociale media op."},{"niveau_leerling":"Nog niet aan bod gekomen","gewenst_niveau":"Gevorderd","naam":"Reflecteren","expert":"Ik reflecteer zelfstandig op hoe ik digitale media gebruik in mijn dagelijks leven en stel ook kritische vragen aan medeleerlingen.","gevorderd":"Ik reflecteer kritisch op hoe ik digitale media gebruik in mijn dagelijks leven.","junior":"Ik reflecteer op hoe ik digitale media gebruik in mijn dagelijks leven aan de hand van  hulpvragen.","starter":"Onder begeleiding reflecteer ik op hoe ik digitale media gebruik in mijn dagelijks leven."}]},"MEDIA - B3":{"sheet":"MEDIA - B3","leerlijn":"Mediawijsheid","goal":"DIG 3.3 – Voor hen gekende login en wachtwoord gebruiken en hier veilig mee werken.","fase":"FASE 2 ","criteria":[{"niveau_leerling":"Gevorderd","gewenst_niveau":"Gevorderd","naam":"Opstellen","expert":"Ik stel een veilig wachtwoord in en kan hierrond tips geven.","gevorderd":"Ik stel zelfstandig een veilig wachtwoord op.","junior":"Ik bedenk samen met de leerkracht een wachtwoord.","starter":"Ik gebruik een wachtwoord dat de leerkracht me aanreikt."},{"niveau_leerling":null,"gewenst_niveau":"Gevorderd","naam":"Veilig gebruik","expert":"Ik scherm mijn wachtwoord goed af en wijs anderen erop dat een wachtwoord iets persoonlijk is.","gevorderd":"Ik gebruik mijn gebruikersnaam en wachtwoord veilig en deel het niet met anderen","junior":"Ik weet dat een wachtwoord persoonlijk is maar scherm het niet genoeg af.","starter":"Ik verwoord onder begeleiding waarom een wachtwoord persoonlijk is."},{"niveau_leerling":null,"gewenst_niveau":"Gevorderd","naam":"Een veilig wachtwoord","expert":"Ik evalueer kritisch of mijn wachtwoorden voldoende veilig zijn en pas ze aan indien nodig.","gevorderd":"Ik denk na over de veiligheid van een wachtwoord en kan dit meestal zelf versterken.","junior":"Ik herken de kenmerken van een veilig wachtwoord en pas ze toe met hulp. ","starter":"Ik weet wat een wachtwoord is, maar weet niet hoe ik het veiliger kan maken."}]},"MEDIA - B4":{"sheet":"MEDIA - B4","leerlijn":"Mediawijsheid","goal":"DIG 3.4 – Weten dat veel informatie digitaal beschikbaar is en dat de wereld doordrongen is van audiovisuele boodschappen, maar dat wat online staat niet noodzakelijk waar is.","fase":"FASE 3","criteria":[{"niveau_leerling":"Starter","gewenst_niveau":"Gevorderd","naam":"Kenmerken","expert":"Ik herken ook bij moeilijkere voorbeelden waarom een audiovisuele boodschap niet waar is. ","gevorderd":"Ik herken bij een groot aantal audiovisuele boodschappen waarom ze niet waar zijn.","junior":"Ik herken bij sommige audiovisuele boodschappen waarom ze niet waar zijn.","starter":"Ik herken onder begeleiding  waarom een bepaalde audiovisuele boodschap niet waar is."},{"niveau_leerling":"Gevorderd","gewenst_niveau":"Gevorderd","naam":"Misleidende informatie","expert":"Ik weet dat bepaalde online informatie niet waar is en verwoord waarom.","gevorderd":"Ik weet dat online niet alles waar is en ga er bewust mee om.","junior":"Ik weet dat online niet alles waar is.","starter":"Ik weet niet dat niet alles waar is online waar."},{"niveau_leerling":null,"gewenst_niveau":"Gevorderd","naam":"Clickbait","expert":"Ik weet wat  clickbait is en leg uit hoe je het herkent.","gevorderd":"Ik herken een groot aantal online boodschappen als clickbait.","junior":"Ik herken sommige online boodschappen als clickbait.","starter":"Ik herken onder begeleiding clickbait."},{"niveau_leerling":null,"gewenst_niveau":"Gevorderd","naam":"Fake news","expert":"Ik herken fake news en vertel waaraan dat te herkennen is.","gevorderd":"Ik herken een groot aantal berichten als fake news.","junior":"Ik herken sommige berichten als fake news.","starter":"Onder begeleiding herken ik fake news."}]},"MEDIA - B5":{"sheet":"MEDIA - B5","leerlijn":"Mediawijsheid","goal":"DIG 3.5 – Weten dat personen zich via digitale media anders kunnen voordoen dan in werkelijkheid en hier alert en gepast op reageren (veiligheidsaspecten).","fase":"FASE 3 ","criteria":[{"niveau_leerling":"Gevorderd","gewenst_niveau":"Gevorderd","naam":"Online identiteit van anderen","expert":"Ik herken een vals profiel en vertel uitgebreid waaraan ik dat zie.","gevorderd":"Ik herken een vals profiel en geef minstens één reden waaraan ik het herken.","junior":"Met enige hulp herken ik een vals profiel.","starter":"Onder begeleiding herken ik een vals profiel."},{"niveau_leerling":null,"gewenst_niveau":"Gevorderd","naam":"Online interactie","expert":"Ik reageer gepast bij online communicatie met mensen die ik niet persoonlijk kent. ","gevorderd":"Ik ben me er van bewust dat sommige mensen zich anders kunnen voordoen en ken de gevaren.","junior":"Ik ben me er van bewust dat sommige mensen zich anders kunnen voordoen via digitale media, maar zie er geen kwaad in.","starter":"Ik ben me er niet van bewust dat mensen zich anders kunnen voordoen via digitale media."},{"niveau_leerling":null,"gewenst_niveau":"Gevorderd","naam":"Sociale vergelijking / selectieve weergave","expert":"Ik weet dat mensen online een ander beeld kunnen weergeven van de realiteit en sta hier kritisch tegenover.","gevorderd":"Ik weet dat mensen online een ander beeld kunnen geven van de realiteit.","junior":"Ik weet dat er verschil zit tussen de realiteit en wat mensen online posten.","starter":"Ik zie geen verschil tussen de realiteit en wat mensen online posten."}]},"MEDIA - B6":{"sheet":"MEDIA - B6","leerlijn":"Mediawijsheid","goal":"DIG 3.6 – Waakzaam zijn bij het doorgeven van persoonlijke gegevens.","fase":"FASE 3 ","criteria":[{"niveau_leerling":"Gevorderd","gewenst_niveau":"Gevorderd","naam":"Persoonlijke gegevens herkennen","expert":"Ik herken alle soorten persoonlijke gegevens en weet precies welke ik niet moet delen en kan klasgenoten hierin tips geven.","gevorderd":"Ik herken persoonlijke gegevens en weet meestal welke ik niet moet delen.","junior":"Ik herken enkele persoonlijke gegevens en weet soms welke ik niet moet delen.","starter":"Ik herken weinig persoonlijke gegevens en heb ondersteuning nodig om te weten welke ik niet moet delen. "},{"niveau_leerling":null,"gewenst_niveau":"Gevorderd","naam":"Gevaar inschatten","expert":"Ik begrijp volledig de gevaren van het doorgeven van persoonlijke gegevens en kan anderen hierover informeren.","gevorderd":"Ik begrijp de meeste gevaren van het doorgeven van persoonlijke gegevens en kan deze goed inschatten.","junior":"Ik begrijp enkele gevaren van het doorgeven van persoonlijke gegevens en kan deze soms inschatten.","starter":"Ik begrijp de gevaren van het doorgeven van persoonlijke gegevens nog niet zelfstandig en heb ondersteuning nodig bij het inschatten hiervan."},{"niveau_leerling":null,"gewenst_niveau":"Gevorderd","naam":"Veilig surfen","expert":"Ik surf spontaan in incognitomodus of privénavigatie.","gevorderd":"Ik weiger uit mezelf niet-essentiële cookies op een website.","junior":"Na een herinnering weiger ik niet-essentiële cookies.","starter":"Onder begeleiding weiger ik niet-essentiële cookies van websites."}]},"MEDIA - B7":{"sheet":"MEDIA - B7","leerlijn":"Mediawijsheid","goal":"DIG 3.7 – Elementaire regels en omgangsvormen bij digitale communicatie respecteren (ethische aspecten).","fase":"FASE 3 ","criteria":[{"niveau_leerling":"Gevorderd","gewenst_niveau":"Gevorderd","naam":"E-mail - aanspreking","expert":"Ik gebruik een passende aanspreking in een e-mail volgens de schoolafspraken.","gevorderd":"Ik pas de aanspreking van een e-mail aan, maar vergeet hierbij soms de gemaakte schoolafspraken.","junior":"Ik gebruik geen passende aanspreking in e-mails.","starter":"Ik gebruik nog geen aanspreking in e-mails."},{"niveau_leerling":null,"gewenst_niveau":"Gevorderd","naam":"E-mail - vorm en inhoud","expert":"Ik stem vorm en inhoud van mijn e-mail af op de ontvanger, volgens de schoolafspraken.","gevorderd":"Ik pas de vorm en inhoud van een e-mail aan, maar vergeet hierbij soms de gemaakte schoolafspraken.","junior":"Mijn e-mails bevatten inhoud, maar die past nog niet goed bij het onderwerp of de ontvanger.","starter":"Ik heb begeleiding nodig om mijn e-mails inhoud en vorm te geven."},{"niveau_leerling":null,"gewenst_niveau":"Junior","naam":"E-mail - afsluiting","expert":"Ik pas de afsluiting van een e-mail aan op de ontvanger, volgens de schoolafspraken.","gevorderd":"Ik pas de afsluiting van een e-mail aan, maar vergeet hierbij soms de gemaakte schoolafspraken.","junior":"Ik gebruik nog geen gepaste afsluiting in e-mails.","starter":"Ik gebruik nog geen afsluiting in e-mails."},{"niveau_leerling":null,"gewenst_niveau":"Junior","naam":"GEVORDERD \nE-mail - gebruik van (blinde) kopie","expert":"Ik gebruik (blinde) kopie correct, beredeneerd en ook als het niet gevraagd is.","gevorderd":"Ik gebruik (blinde) kopie correct.","junior":"Ik gebruik (blinde) kopie af en toe.","starter":"Ik gebruik (blinde) kopie niet."},{"niveau_leerling":null,"gewenst_niveau":"Expert","naam":"Chatten - aanspreking","expert":"Ik pas de aanspreking in de chat aan op de ontvanger volgens de schoolafspraken.","gevorderd":"Ik pas de aanspreking het chatten aan, maar vergeet hierbij soms de gemaakte schoolafspraken.","junior":"Ik gebruik een aanspreking tijdens het chatten, maar deze is nog niet aangepast aan de ontvanger.","starter":"Ik gebruik nog geen passende aanspreking tijdens het chatten."},{"niveau_leerling":null,"gewenst_niveau":null,"naam":"Chatten - vorm en inhoud","expert":"Ik pas de vorm en inhoud in de chat aan op de ontvanger en doe dit volgens de gemaakte schoolafspraken.","gevorderd":"Ik pas de vorm en inhoud tijdens het chatten aan, maar vergeet hierbij soms de gemaakte schoolafspraken.","junior":"Ik gebruik de chatfunctie, maar wat ik schrijf past nog niet goed bij het onderwerp of de persoon.","starter":"Ik chat onder begeleiding en krijg ondersteuning voor de inhoud en vorm tijdens het chatten."},{"niveau_leerling":null,"gewenst_niveau":null,"naam":"Chatten - afsluiting","expert":"Ik pas de afsluiting in de chat aan op de ontvanger, volgens de schoolafspraken.","gevorderd":"Ik pas de afsluiting van een chatbericht aan, maar vergeet hierbij soms de gemaakte schoolafspraken.","junior":"Ik gebruik een afsluiting in een chatbericht, maar deze is nog niet aangepast aan de ontvanger.","starter":"Ik gebruik nog geen afsluiting tijdens het chatten."},{"niveau_leerling":null,"gewenst_niveau":null,"naam":"Sociale media en fora - vorm en inhoud","expert":"Ik pas vorm en inhoud op sociale media en fora aan op de ontvanger en doe dit volgens de gemaakte schoolafspraken.","gevorderd":"Ik pas de vorm en inhoud op sociale media en fora aan, maar vergeet hierbij soms de gemaakte schoolafspraken.","junior":"Ik gebruik sociale media en fora, maar de inhoud is nog niet afgestemd op het onderwerp/de vraag en/of de ontvanger.","starter":"Ik gebruik sociale media en fora onder begeleiding."},{"niveau_leerling":null,"gewenst_niveau":null,"naam":"GEVORDERD\nKeuze communicatiekanaal","expert":"Ik kies zelfstandig een geschikt communicatiekanaal en help anderen bij de keuze voor een geschikt communicatiekanaal.","gevorderd":"Ik kies zelfstandig een geschikt communicatiekanaal.","junior":"Ik ga in gesprek met anderen over het kiezen van een geschikt communicatiekanaal.","starter":"Ik kies onder begeleiding voor een geschikt communicatiekanaal."},{"niveau_leerling":null,"gewenst_niveau":null,"naam":"Nettiquette","expert":"Ik begrijp het begrip nettiquette,pas het toe en kan hierbij ook voorbeelden geven.","gevorderd":"Ik begrijp het begrip nettiquette en pas het toe. ","junior":"Ik leg het begrip netiquette uit. ","starter":"Ik begrijp het begrip nettiquette nog niet."}]},"MEDIA - B8":{"sheet":"MEDIA - B8","leerlijn":"Mediawijsheid","goal":"DIG 3.8 – Bij ongewenste boodschappen of schokkende informatie een bekende volwassene verwittigen.","fase":"FASE 3 ","criteria":[{"niveau_leerling":"Gevorderd","gewenst_niveau":"Gevorderd","naam":"Ongewenste boodschappen of schokkende informatie herkennen","expert":"Ik herken zelfstandig ongewenste boodschappen of schokkende informatie en kan uitleggen waarom de boodschap of informatie ongewenst of schokkend is.","gevorderd":"Ik herken zelfstandig ongewenste boodschappen of schokkende informatie.","junior":"Ik herken ongewenste boodschappen of schokkende informatie wanneer ernaar gevraagd wordt.","starter":"Ik herken nog geen ongewenste boodschappen of schokkende informatie ."},{"niveau_leerling":null,"gewenst_niveau":"Gevorderd","naam":"Ongewenste informatie of schokkende boodschappen melden","expert":"Ik meld ongewenste boodschappen of schokkende informatie wanneer het impact heeft op mezelf en anderen en zet anderen ertoe aan om dat ook te doen.","gevorderd":"Ik meld ongewenste boodschappen of schokkende informatie wanneer het impact heeft op mezelf en anderen.","junior":"Ik meld ongewenste boodschappen of schokkende informatie wanneer het impact heeft op mezelf.","starter":"Ik meld ongewenste boodschappen of schokkende informatie nog niet."},{"niveau_leerling":null,"gewenst_niveau":null,"naam":"Hulp inroepen","expert":"Ik weet wanneer ik hulp moet inroepen bij ongewenste boodschappen of schokkende informatie die impact heeft op mezelf of anderen, en help anderen om dat ook te doen.","gevorderd":"Ik weet wanneer ik hulp moet inroepen bij ongewenste boodschappen of schokkende informatie wanneer het impact heeft op mezelf en anderen.","junior":"Ik weet wanneer ik hulp moet inroepen bij ongewenste boodschappen of schokkende informatie wanneer het impact heeft op mezelf.","starter":"Ik weet nog niet wanneer ik hulp moet inroepen bij ongewenste boodschappen of schokkende informatie."}]},"MEDIA - B9":{"sheet":"MEDIA - B9","leerlijn":"Mediawijsheid","goal":"DIG 3.9 – Inzien dat digitale media niet mogen gebruikt worden om anderen lastig te vallen of te pesten en dit toepassen (ethische aspecten).\n\n","fase":"FASE 3","criteria":[{"niveau_leerling":null,"gewenst_niveau":"Gevorderd","naam":"Herkennen van cyberpesten en ongepast gedrag online","expert":"Ik herken vlot vormen van cyberpesten en ongepast gedrag online en kan anderen hierbij helpen.","gevorderd":"Ik herken cyberpesten en ongepast gedrag online meestal.","junior":"Ik herken na een demonstratie cyberpesten en ongepast gedrag online, maar niet altijd.","starter":"Ik herken met begeleiding cyberpesten en ongepast gedrag online."},{"niveau_leerling":null,"gewenst_niveau":"Gevorderd","naam":"Gepast reageren op ongepast gedrag online","expert":"Ik reageer altijd gepast wanneer ik getuige ben van ongepast gedrag online. Ik kan zelfstandig handelen en help anderen om ook gepast te reageren.","gevorderd":"Ik reageer gepast wanneer ik getuige ben van ongepast gedrag online.","junior":"Na een demonstratie reageer ik gepast wanneer ik getuige ben van ongepast gedrag online.","starter":"Ik reageer niet gepast wanneer ik getuige ben van ongepast gedrag online. Ik heb begeleiding nodig om te begrijpen hoe ik correct moet reageren."},{"niveau_leerling":null,"gewenst_niveau":"Gevorderd","naam":"Effecten benoemen","expert":"Ik benoem de gevolgen van cyberpesten perfect en geef ze door aan anderen.","gevorderd":"Ik schat de gevolgen van cyberpesten goed in.","junior":"Ik schat na een demonstratie de gevolgen van cyberpesten goed in.","starter":"Ik herken en benoem onder begeleiding de gevolgen van cyberpesten."}]},"MEDIA - B10":{"sheet":"MEDIA - B10","leerlijn":"Mediawijsheid","goal":"DIG 3.11 – De invloed van digitale media herkennen op je eigen mening en de mening van anderen (sociale aspecten).","fase":"FASE 3","criteria":[{"niveau_leerling":"Nog niet aan bod gekomen","gewenst_niveau":"Gevorderd","naam":"Invloed op zelfbeeld","expert":"Ik begrijp dat digitale media mijn zelfbeeld kunnen beïnvloeden en kan dat ook aan anderen uitleggen.","gevorderd":"Ik begrijp dat digitale media mijn zelfbeeld kunnen beïnvloeden.","junior":"Ik begrijp meestal hoe digitale media mijn zelfbeeld kunnen beïnvloeden.","starter":"Ik kan onder begeleiding inschatten hoe digitale media mijn zelfbeeld kunnen beïnvloeden."},{"niveau_leerling":"Nog niet aan bod gekomen","gewenst_niveau":"Gevorderd","naam":"Invloed op eigen mening","expert":"Ik begrijp dat digitale media mijn eigen mening kunnen beïnvloeden en kan ook anderen dit uitleggen.","gevorderd":"Ik begrijp dat digitale media mijn eigen mening  kunnen beïnvloeden.","junior":"Ik begrijp meestal hoe digitale media mijn eigen mening kunnen beïnvloeden.","starter":"Ik kan onder begeleiding inschatten hoe digitale media mijn eigen mening kunnen beïnvloeden."},{"niveau_leerling":"Nog niet aan bod gekomen","gewenst_niveau":"Gevorderd","naam":"Invloed op mening van anderen","expert":"Ik begrijp dat digitale media de mening van anderen kunnen beïnvloeden en kan ook anderen dit uitleggen.","gevorderd":"Ik begrijp dat digitale media de mening van anderen  kunnen beïnvloeden.","junior":"Ik begrijp meestal hoe digitale media de mening van anderen kunnen beïnvloeden.","starter":"Ik kan onder begeleiding inschatten hoe digitale media de mening van anderen kunnen beïnvloeden."}]},"MEDIA - B11":{"sheet":"MEDIA - B11","leerlijn":"Mediawijsheid","goal":"DIG 3 B.11 (vervallen) – Het belang inzien van persoonlijke mediavaardigheid.","fase":"FASE 4","criteria":[{"niveau_leerling":"Nog niet aan bod gekomen","gewenst_niveau":"Gevorderd","naam":"Begrijpen en toepassen van mediavaardigheden","expert":"Ik begrijp volledig wat mediavaardigheden zijn en waarom ze belangrijk zijn. Ik kan zelfstandig digitale apparaten en software gebruiken en anderen helpen dit ook te doen.","gevorderd":"Ik begrijp meestal wat mediavaardigheden zijn en waarom ze belangrijk zijn. Ik kan de meeste digitale apparaten en software gebruiken met weinig begeleiding.","junior":"Ik begrijp soms wat mediavaardigheden zijn en waarom ze belangrijk zijn. Ik kan basisvaardigheden zoals het gebruik van een zoekmachine toepassen, maar heb begeleiding nodig.","starter":"Ik begrijp niet goed wat mediavaardigheden zijn en waarom ze belangrijk zijn. Ik heb moeite met het gebruiken van digitale apparaten en software."},{"niveau_leerling":"Nog niet aan bod gekomen","gewenst_niveau":"Gevorderd","naam":"Reflecteren op eigen mediagebruik en herkennen van online gevaren","expert":"Ik reflecteer zelfstandig op mijn eigen mediagebruik en begrijp de impact ervan. Ik herken altijd online gevaren zoals phishing en cyberpesten en kan anderen helpen om dit ook te doen.","gevorderd":"Ik reflecteer meestal op mijn eigen mediagebruik en begrijp de impact ervan. Ik herken meestal online gevaren zoals phishing en cyberpesten, met weinig begeleiding.","junior":"Ik reflecteer na een demonstratie op mijn eigen mediagebruik, maar heb begeleiding nodig. Ik herken soms online gevaren zoals phishing en cyberpesten, maar niet altijd.","starter":"Ik reflecteer  met begeleiding  op mijn eigen mediagebruik. Ik heb moeite om online gevaren zoals phishing en cyberpesten te herkennen."},{"niveau_leerling":"Nog niet aan bod gekomen","gewenst_niveau":"Gevorderd","naam":"De belangen van persoonlijke mediavaardigheid herkennen","expert":"Ik herken de belangen van persoonlijke mediavaardigheid en kan deze uitleggen aan anderen.","gevorderd":"Ik herken de belangen van persoonlijke mediavaardigheid.","junior":"Ik herken de belangen van persoonlijke mediavaardigheid, maar niet altijd.","starter":"Ik herken de belangen van persoonlijke mediavaardigheid onder begeleiding."}]},"MEDIA - B12":{"sheet":"MEDIA - B12","leerlijn":"Mediawijsheid","goal":"DIG 3 B.12 (vervallen) – De kansen, maar ook risico’s van het gebruik van digitale media kennen en zich ertegen kunnen beschermen.","fase":"FASE 4","criteria":[{"niveau_leerling":"Nog niet aan bod gekomen","gewenst_niveau":"Gevorderd","naam":"Inzicht in kansen en risico's","expert":"Ik verwoord duidelijk en gedetailleerd de kansen en risico's van het gebruik van digitale media en geef concrete voorbeelden.","gevorderd":"Ik verwoord de meeste kansen en risico's van het gebruik van digitale media, met enkele concrete voorbeelden.","junior":"Ik verwoord enkele kansen en risico's van het gebruik van digitale media, maar heb moeite met concrete voorbeelden.","starter":"Ik verwoord nauwelijks de kansen en risico's van het gebruik van digitale media en geef geen concrete voorbeelden."},{"niveau_leerling":"Nog niet aan bod gekomen","gewenst_niveau":"Gevorderd","naam":"Risico's begrijpen","expert":"Ik begrijp volledig hoe ik mezelf kan beschermen tegen de risico's van digitale media.","gevorderd":"Ik begrijp hoe ik mezelf kan beschermen tegen de meeste risico's van digitale media.","junior":"Ik begrijp gedeeltelijk hoe ik mezelf kan beschermen tegen de risico's van digitale media.","starter":"Ik begrijp niet goed hoe ik mezelf kan beschermen tegen de risico's van digitale media."},{"niveau_leerling":"Nog niet aan bod gekomen","gewenst_niveau":"Gevorderd","naam":"Maatregelen toepassen ter bescherming.","expert":"Ik neem maatregelen om me te beschermen tegen risico's en toon ook aan anderen hoe ze dit kunnen toepassen.","gevorderd":"Ik neem maatregelen om me te beschermen tegen risico's.","junior":"Ik neem soms maatregelen om me te beschermen tegen risico's, maar niet altijd.","starter":"Ik neem maatregelen om me te beschermen tegen risico's, enkel onder begeleiding."}]},"MEDIA - B13":{"sheet":"MEDIA - B13","leerlijn":"Mediawijsheid","goal":"DIG 3.16 – De voor- en nadelen verwoorden van het participeren aan een sociale digitale samenleving (sociale aspecten).","fase":"FASE 4","criteria":[{"niveau_leerling":"Nog niet aan bod gekomen","gewenst_niveau":"Gevorderd","naam":"Inzicht in de voor-en nadelen","expert":"Ik verwoord duidelijk en gedetailleerd de voor- en nadelen van participatie aan sociale netwerken, community's, sociale media en chats, en geef concrete voorbeelden.","gevorderd":"Ik verwoord de meeste voor- en nadelen van participatie aan sociale netwerken, community's, sociale media en chats, met enkele concrete voorbeelden.","junior":"Ik verwoord enkele voor- en nadelen van participatie aan sociale netwerken, community's, sociale media en chats, maar heb moeite met concrete voorbeelden.","starter":"Ik verwoord nauwelijks de voor- en nadelen van participatie aan sociale netwerken, community's, sociale media en chats, en geef geen concrete voorbeelden."}]},"MEDIA - B14":{"sheet":"MEDIA - B14","leerlijn":"Mediawijsheid","goal":"DIG 3.17 – Niet of gepast reageren op dubieuze berichten of verzoeken met een onduidelijke herkomst (veiligheidsaspecten).","fase":"FASE 4","criteria":[{"niveau_leerling":"Nog niet aan bod gekomen","gewenst_niveau":"Gevorderd","naam":"Phishing","expert":"Ik herken altijd phishing-berichten en weet precies hoe ik gepast moet reageren. Ik kan anderen helpen dit ook te doen.","gevorderd":"Ik herken de meeste phishing- en kettingberichten en reageer gepast.","junior":"Ik herken onder begeleiding phishing- en kettingberichten. Ik reageer gepast met hulp van concrete voorbeelden.","starter":"Ik herken phishing onder begeleiding. Als ik een verdacht bericht ontvang, weet ik niet wat ik moet doen."},{"niveau_leerling":"Nog niet aan bod gekomen","gewenst_niveau":"Gevorderd","naam":"Hacking begrijpen","expert":"Ik begrijp volledig wat hacking is en hoe ik mezelf ertegen kan beschermen. Ik help anderen dit ook te doen.","gevorderd":"Ik begrijp meestal wat hacking is en hoe ik mezelf ertegen kan beschermen, met weinig begeleiding.","junior":"Ik begrijp soms wat hacking is en hoe ik mezelf ertegen kan beschermen, maar heb begeleiding nodig. ","starter":"Ik ken hacking niet. Ik weet niet hoe ik mezelf kan beschermen tegen hackers."},{"niveau_leerling":"Nog niet aan bod gekomen","gewenst_niveau":"Gevorderd","naam":"Hacking tegengaan","expert":" Ik gebruik sterke wachtwoorden, update mijn software regelmatig en deel geen persoonlijke informatie en ik help anderen hiermee.","gevorderd":" Ik gebruik sterke wachtwoorden, update mijn software regelmatig en deel geen persoonlijke informatie.","junior":"Ik vraag een volwassene om hulp bij het beveiligen van mijn apparaten en deel geen persoonlijke informatie.","starter":"Ik neem geen maatregelen om hacking tegen te gaan."},{"niveau_leerling":"Nog niet aan bod gekomen","gewenst_niveau":"Gevorderd","naam":"Cookies & toestemming","expert":"Ik begrijp wat cookies zijn en stel mijn cookievoorkeuren in. Ik help anderen dit ook te doen. \n","gevorderd":"Ik begrijp wat cookies zijn en  stel mijn cookievoorkeuren in.","junior":"Ik begrijp wat cookies zijn, maar heb begeleiding nodig bij het gepast reageren.","starter":"Ik ken het begrip \"cookies\" niet. Ik klik steeds op \"alle cookies aanvaarden\"."},{"niveau_leerling":"Nog niet aan bod gekomen","gewenst_niveau":"Gevorderd","naam":"Berichten met een onduidelijke herkomst herkennen.","expert":"Ik herken berichten met een onduidelijke herkomst en reageer gepast. Ik help anderen bij het herkennen en reageren op berichten met een onduidelijke herkomst.","gevorderd":"Ik herken berichten met een onduidelijke herkomst en reageer gepast.","junior":"Ik herken meestal berichten met een onduidelijke herkomst en reageer soms gepast.","starter":"Ik herken enkel onder begeleiding berichten met een onduidelijke herkomst."}]},"MEDIA - B15":{"sheet":"MEDIA - B15","leerlijn":"Mediawijsheid","goal":"DIG 3.18 – Online vriendelijk en respectvol omgaan met anderen en hun privacy (ethische aspecten).","fase":"FASE 4","criteria":[{"niveau_leerling":"Nog niet aan bod gekomen","gewenst_niveau":"Gevorderd","naam":"Vriendelijkheid en respect","expert":"Ik behandel anderen altijd vriendelijk en respectvol online en moedig anderen aan om hetzelfde te doen.","gevorderd":"Ik behandel anderen meestal vriendelijk en respectvol online.","junior":"Ik behandel anderen soms vriendelijk en respectvol online.","starter":"Ik behandel anderen zelden vriendelijk en respectvol online."},{"niveau_leerling":"Nog niet aan bod gekomen","gewenst_niveau":"Gevorderd","naam":"Privacybewustzijn","expert":"Ik bescherm altijd de privacy van anderen online en leg het belang hiervan uit aan anderen.","gevorderd":"Ik bescherm meestal de privacy van anderen online.","junior":"Ik bescherm soms de privacy van anderen online.","starter":"Ik bescherm zelden de privacy van anderen online."}]},"MEDIA - B16":{"sheet":"MEDIA - B16","leerlijn":"Mediawijsheid","goal":"DIG 3.19 – Begrijpen dat alles wat je online deelt, online blijft staan en de gevolgen hiervan inschatten (veiligheidsaspecten).","fase":"FASE 4","criteria":[{"niveau_leerling":"Nog niet aan bod gekomen","gewenst_niveau":"Gevorderd","naam":"Digitale voetafdruk","expert":"Ik weet dat gebruikers een spoor van data achterlaten bij het gebruiken van internet en kan mijn eigen data beschermen.","gevorderd":"Ik weet dat gebruikers een spoor van data achterlaten bij het gebruiken van internet.","junior":"Ik heb ooit al eens gehoord van het begrip \"digitale voetafdruk\"","starter":"Ik ken het begrip \"digitale voetafdruk\" niet."},{"niveau_leerling":"Nog niet aan bod gekomen","gewenst_niveau":"Gevorderd","naam":"Begrip van online permanentie","expert":"Ik begrijp volledig dat alles wat ik online deel, permanent blijft staan en kan dit uitleggen aan anderen.","gevorderd":"Ik begrijp dat alles wat ik online deel, permanent blijft staan, maar heb soms moeite om dit uit te leggen.","junior":"Ik begrijp gedeeltelijk dat alles wat ik online deel, permanent blijft staan, maar heb vaak hulp nodig om dit te begrijpen.","starter":"Ik begrijp niet goed dat alles wat ik online deel, permanent blijft staan en heb veel begeleiding nodig."},{"niveau_leerling":"Nog niet aan bod gekomen","gewenst_niveau":"Gevorderd","naam":"Inschatting van gevolgen","expert":"Ik schat de gevolgen van het online delen van informatie volledig in en handel verantwoord.","gevorderd":"Ik schat de meeste gevolgen van het online delen van informatie in en handel meestal verantwoord.","junior":"Ik schat enkele gevolgen van het online delen van informatie in, maar heb vaak hulp nodig om verantwoord te handelen.","starter":"Ik schat de gevolgen van het online delen van informatie niet goed in en heb veel begeleiding nodig om verantwoord te handelen."}]},"MEDIA - B17":{"sheet":"MEDIA - B17","leerlijn":"Mediawijsheid","goal":"DIG 3.20 – Begrijpen dat er regels bestaan over het plaatsen en delen van media en deze regels toepassen (regelgevende aspecten).","fase":"FASE 4","criteria":[{"niveau_leerling":"Nog niet aan bod gekomen","gewenst_niveau":"Gevorderd","naam":"Begrip:","expert":"Ik begrijp  de regels over het plaatsen en delen van media en kan ze uitleggen aan anderen.","gevorderd":"Ik begrijp de meeste regels over het plaatsen en delen van media. Ik kan ze meestal correct toepassen, met af en toe een foutje.","junior":"Ik begrijp enkele regels over het plaatsen en delen van media, maar heb soms hulp nodig om ze toe te passen en maak regelmatig fouten.","starter":"Ik begrijp de regels over het plaatsen en delen van media niet goed en heb veel begeleiding nodig om ze toe te passen"},{"niveau_leerling":"Nog niet aan bod gekomen","gewenst_niveau":"Gevorderd","naam":"Bewustzijn en verantwoordelijk gedrag","expert":"Ik ben me volledig bewust van de gevolgen van het niet naleven van de regels, kan deze uitleggen aan anderen en gedraag me altijd verantwoordelijk bij het plaatsen en delen van media.","gevorderd":"Ik ben me bewust van de meeste gevolgen van het niet naleven van de regels, kan deze meestal correct uitleggen en gedraag me meestal verantwoordelijk, met af en toe een foutje.","junior":"Ik ben me bewust van enkele gevolgen van het niet naleven van de regels, maar heb soms hulp nodig om ze te begrijpen en gedraag me soms verantwoordelijk, maar maak regelmatig fouten.","starter":"Ik ben me niet goed bewust van de gevolgen van het niet naleven van de regels, heb veel begeleiding nodig en gedraag me zelden verantwoordelijk bij het plaatsen en delen van media."}]},"BAS - B1":{"sheet":"BAS - B1","leerlijn":"ICT-basisvaardigheden","goal":"DIG 1.1 – Spelenderwijs leren omgaan met digitale infrastructuur.","fase":"FASE 1","criteria":[{"niveau_leerling":"Nog niet aan bod gekomen","gewenst_niveau":"Gevorderd","naam":"Digitale infrastructuur herkennen","expert":"Ik herken digitale infrastructuur en help anderen bij het herkennen.","gevorderd":"Ik herken complexere digitale infrastructuur en  onderscheid deze van elkaar.","junior":"Ik herken eenvoudige digitale infrastructuur en onderscheid deze van elkaar.","starter":"Ik herken met hulp enkele digitale toestellen."},{"niveau_leerling":"Nog niet aan bod gekomen","gewenst_niveau":"Gevorderd","naam":"Digitale infrastructuur benoemen","expert":"Ik benoem alle digitale infrastructuur en help anderen bij het benoemen.","gevorderd":"Ik benoem eenvoudige en complexere digitale infrastructuur.","junior":"Ik benoem eenvoudige digitale infrastructuur.","starter":"Ik benoem met hulp sommige digitale infrastructuur,"},{"niveau_leerling":"Nog niet aan bod gekomen","gewenst_niveau":"Gevorderd","naam":"Omgaan met digitale middelen","expert":"Ik speel veilig met digitale toestellen, gebruik deze op een correcte manier en neem initiatief om hiermee te spelen.","gevorderd":"Ik speel zelfstandig met digitale infrastructuur en gebruik het op een correcte manier.","junior":"Ik speel zelfstandig met digitale infrastructuur.","starter":"Ik speel met digitale toestellen, maar nog niet op de correcte manier."},{"niveau_leerling":"Nog niet aan bod gekomen","gewenst_niveau":"Gevorderd","naam":"In een rollenspel","expert":"Ik neem initiatief  in een rollenspel (of tijdens het spelen met anderen)  om digitale infrastructuur te gebruiken en  doe dit  op een veilige en doordachte manier.","gevorderd":"Ik gebruik in een rollenspel (of tijdens het spelen met anderen)  digitale infrastructuur en gebruik deze op een correcte manier.","junior":"Ik gebruik in een rollenspel (of tijdens het spelen met anderen)  digitale infrastructuur, maar doe dit niet altijd op de manier waarvoor het bedoeld is.","starter":"Ik gebruik in een rollenspel (of tijdens het spelen met anderen) nog geen digitale infrastructuur."}]},"BAS - B2":{"sheet":"BAS - B2","leerlijn":"ICT-basisvaardigheden","goal":"DIG 1.2 – Vlot bewegen op een digitaal scherm.","fase":"FASE 1","criteria":[{"niveau_leerling":"Nog niet aan bod gekomen","gewenst_niveau":"Gevorderd","naam":"Touchscreen - hanteren","expert":null,"gevorderd":"Ik beweeg de cursor precies en gericht over het touchscreen zonder onbedoelde aanrakingen.","junior":"Ik beweeg de cursor over een korte afstand over het touchscreen en vermijd onbedoelde aanrakingen.","starter":"Ik beweeg onder begeleiding de cursor over het touchscreen."},{"niveau_leerling":"Nog niet aan bod gekomen","gewenst_niveau":"Gevorderd","naam":"Touchscreen - gericht aanklikken","expert":null,"gevorderd":"Ik klik zelfstandig aan op het touchscreen wat ik nodig heb.","junior":"Ik klik na een demonstratie aan op het touchscreen wat ik nodig heb.","starter":"Ik klik onder begeleiding aan op het touchscreen wat ik nodig heb."},{"niveau_leerling":"Nog niet aan bod gekomen","gewenst_niveau":"Gevorderd","naam":"Touchscreen - verslepen","expert":null,"gevorderd":"Ik versleep zelfstandig elementen op het touchscreen.","junior":"Ik versleep na een demonstratie elementen op het touchscreen.","starter":"Ik versleep onder begeleiding elementen op het touchscreen."},{"niveau_leerling":"Nog niet aan bod gekomen","gewenst_niveau":"Gevorderd","naam":"Muis - hanteren","expert":"Ik beweeg de cursor vlot over het scherm naar de juiste plaats.","gevorderd":"Ik beweeg de muis (bijna) onmiddellijk in de juiste richting.","junior":"Ik beweeg de muis om de cursor naar een bepaalde plaats op het scherm te krijgen.","starter":"Ik begrijp dat de muis beweging op het scherm veroorzaakt."},{"niveau_leerling":"Nog niet aan bod gekomen","gewenst_niveau":"Gevorderd","naam":"Muis - klikken","expert":null,"gevorderd":"Ik voer nauwkeurig klikoefeningen uit en kan dubbelklikken.","junior":"Ik voer eenvoudige klikoefeningen uit.","starter":"Ik druk onder begeleiding de linker muisknop in."},{"niveau_leerling":"Nog niet aan bod gekomen","gewenst_niveau":"Gevorderd","naam":"Muis - slepen","expert":null,"gevorderd":"Ik versleep zelfstandig elementen met de muis.","junior":"Ik versleep na een demonstratie elementen met de muis.","starter":"Ik versleep onder begeleiding elementen met de muis."}]},"BAS - B3":{"sheet":"BAS - B3","leerlijn":"ICT-basisvaardigheden","goal":"DIG 1.3 – Met aangereikte en vertrouwde digitale tools oefenen.","fase":"FASE 1","criteria":[{"niveau_leerling":"Nog niet aan bod gekomen","gewenst_niveau":"Gevorderd","naam":"Voorleesverhaal","expert":"Ik start, pauzeer en stop zelfstandig een digitaal voorleesverhaal , ik pas het geluidsvolume aan en navigeer tussen verschillende verhalen.","gevorderd":"Ik start, pauzeer en stop zelfstandig een digitaal voorleesverhaal en ik pas het geluidsvolume aan.","junior":"Ik start, pauzeer en stop na een demonstratie een digitaal voorleesverhaal.","starter":"Ik start en beluister onder begeleiding een digitaal voorleesverhaal."},{"niveau_leerling":"Nog niet aan bod gekomen","gewenst_niveau":"Gevorderd","naam":"Digitale prent","expert":"Ik navigeer zelfstandig op een digitale prent en kan anderen helpen.","gevorderd":"Ik navigeer zelfstandig op een digitale prent.","junior":"Ik navigeer na een demonstratie, op een digitale prent.","starter":"Ik navigeer onder begeleiding op een digitale prent."},{"niveau_leerling":"Nog niet aan bod gekomen","gewenst_niveau":"Gevorderd","naam":"Eenvoudige spelletjes","expert":"Ik oefen zelfstandig een digitaal spel en help andereren hier ook mee.","gevorderd":"Ik begrijp de basisregels van een digitaal spel en voer zelfstandig eenvoudige taken uit.","junior":"Ik start na een demonstratie digitale spelletjes en volg eenvoudige aanwijzingen in het spel.","starter":"Ik start onder begeleiding een digitale spelletjes. "},{"niveau_leerling":"Nog niet aan bod gekomen","gewenst_niveau":"Gevorderd","naam":"Spelplezier","expert":"Ik neem  doordachte beslissingen tijdens het spelen van digitale spelletjes.","gevorderd":"Ik pas feedback uit het spel toe en laat dit mijn spelplezier niet verpesten.","junior":"Ik geniet en beleef plezier in het spelen van digitale spelletjes.","starter":"Ik toon interessein het spelen van digitale spelletjes."}]},"BAS - B4":{"sheet":"BAS - B4","leerlijn":"ICT-basisvaardigheden","goal":"DIG 1 B.4 (vervallen) – Spelenderwijs leren dat wiskundige symbolen en cijfers op digitale tools een betekenis hebben.","fase":"FASE 1","criteria":[{"niveau_leerling":"Nog niet aan bod gekomen","gewenst_niveau":"Gevorderd","naam":"digitale rekenmachine","expert":"Ik herken en druk vlot verschillende cijfers  in op een digitale rekenmachine.","gevorderd":"Ik herken en druk verschillende cijfers in op een digitale rekenmachine en weet dat de symbolen + (plus), - (min) en = (is gelijk aan) betekenen.","junior":"Ik vind en druk de knoppen op een rekenmachine in. Ik herken al enkele cijfers , maar nog niet de symbolen +,- en =.","starter":"Ik gebruik de knoppen op een rekenmachine willekeurig, maar weet nog niet wat de symbolen en cijfers betekenen. "},{"niveau_leerling":"Nog niet aan bod gekomen","gewenst_niveau":"Gevorderd","naam":"Wiskundige initiatie in apps","expert":"Ik gebruik vlot de cijfers en weet wat de wiskundige symbolen betekenen in verschillende apps  en ken hun betekenis. Ik los  wiskundige problemen op met behulp van deze symbolen en begeleid anderen in hun leerproces.","gevorderd":"Ik begrijp de wiskundige symbolen en gebruik ze  in verschillende apps. Ik los zelfstandig wiskundige basisproblemen op en pas mijn kennis toe in verschillende contexten m.b.v. de wiskundige symbolen.","junior":"Ik herken de wiskundige symbolen en cijfers in een app, maar ik koppel de symbolen nog niet altijd aan de juiste betekenis. Ik heb ondersteuning nodig bij het oplossen van wiskundige problemen en het toepassen van deze symbolen.","starter":"Ik herken de wiskundige symbolen en cijfers nog niet in een app. Ik heb meer oefening nodig om de symbolen te herkennen en te gebruiken in wiskundige problemen."}]},"BAS - B5":{"sheet":"BAS - B5","leerlijn":"ICT-basisvaardigheden","goal":"DIG 1 B.5 (vervallen) – Linken leggen tussen een rekenhandeling en een digitale tool.","fase":"FASE 1","criteria":[{"niveau_leerling":"Junior","gewenst_niveau":"Gevorderd","naam":"Winkelhoek","expert":"Ik kan zelfstandig ‘producten’ optellen met de speelgoedkassa. Ik begrijp dat de + toets helpt om te zien hoeveel alles samen kost, en ik leg dit uit aan mijn vriendjes.","gevorderd":"Ik weet dat ik aan het optellen ben, wanneer ik op de + toets druk. Ik vertel wat het totaal is door naar het getal op de kassa te kijken.","junior":"Ik gebruik de + toets om producten op te tellen. Ik begrijp dat als ik meer ‘producten’ toevoeg, het getal op de kassa groter wordt.","starter":"Ik druk op de + toets van de speelgoedkassa wanneer ik iets koop. Ik weet niet wat de + toets betekent."},{"niveau_leerling":"Gevorderd","gewenst_niveau":"Gevorderd","naam":"Digitale rekenmachine","expert":"Ik gebruik de +/-/= toets op een rekenmachine om getallen samen te tellen of af te trekken. Ik leg dit ook aan andere kinderen uit.","gevorderd":"Ik gebruik de +/-/= toets bij een optelling of aftrekking op een rekenmachine.","junior":"Ik gebruik na een demonstratie de +/-/= toets bij een optelling of aftrekking op een rekenmachine. ","starter":"Ik gebruik onder begeleiding de +/-toets bij een optelling of aftrekking op een rekenmachine"},{"niveau_leerling":"Expert","gewenst_niveau":"Gevorderd","naam":"Educatieve Apps","expert":"Ik gebruik de +/-/= toets in een app om getallen samen te tellen of af te trekken. Ik leg dit ook aan anderen uit.","gevorderd":"Ik gebruik de +/-/= toets bij een optelling of aftrekking in een app.","junior":"Ik gebruik na een demonstratie de +/-/= toets bij een optelling of aftrekking in een app.","starter":"Ik gebruik onder begeleiding de +/-/= toets bij een optelling of aftrekking in een app."}]},"BAS - B6":{"sheet":"BAS - B6","leerlijn":"ICT-basisvaardigheden","goal":"DIG 1.4 – Toetsen op een toetsenbord gericht aantikken.","fase":"FASE 2","criteria":[{"niveau_leerling":"Junior","gewenst_niveau":"Gevorderd","naam":"speciale toetsen","expert":"Ik gebruik vlot de spatiebalk, enter-toets en cijfertoetsen.","gevorderd":"Ik gebruik zelfstandig de spatiebalk, enter-toets en cijfertoets.","junior":"Ik gebruik na een demonstratie de spatiebalk, enter-toets en cijfertoets.","starter":"Ik gebruik onder begeleiding de spatiebalk, enter-toets en cijfertoets."},{"niveau_leerling":"Gevorderd","gewenst_niveau":"Gevorderd","naam":"Cijfers","expert":"Ik gebruik vlot cijfers op het toetsenbord.","gevorderd":"Ik vind zelfstandig de meeste cijfers op het toetsenbord.","junior":"Ik vind na een demonstratie enkele cijfers op het toetsenbord.","starter":"Ik vind onder begeleiding de cijfers die ik nodig heb op het toetsenbord."}]},"BAS - B7":{"sheet":"BAS - B7","leerlijn":"ICT-basisvaardigheden","goal":"DIG 1.5 – Foto’s en video’s maken met een digitaal apparaat.","fase":"FASE 2","criteria":[{"niveau_leerling":"Junior","gewenst_niveau":"Gevorderd","naam":"Compositie","expert":"Ik maak vlot gebruik van de mogelijkheden van compositie.","gevorderd":"Ik begrijp en heb aandacht voor basiscompositie.","junior":"Ik richt zelfstandigd mijn digitaal apparaat op een specifiek onderwerp.","starter":"Ik richt onder begeleiding mijn digitaal apparaat op een onderwerp om een foto te maken."},{"niveau_leerling":"Gevorderd","gewenst_niveau":"Gevorderd","naam":"Knoppen hanteren","expert":"Ik hanteer vlot de basisknoppen van meerdere digitale apparaten.","gevorderd":"Ik hanteer zelfstandig de basisknoppen van een digitaal apparaat.","junior":"Ik hanteer na een demonstratie de basisknoppen van een digitaal apparaat.","starter":"Ik vind onder begeleiding de basisknoppen (aan/uit, inzoomen, ontspanner) van een digitaal apparaat."},{"niveau_leerling":"Expert","gewenst_niveau":"Gevorderd","naam":"Toestel hanteren","expert":"Ik hanteer zelfstandig een digitaal apparaat met zorg en help anderen hierbij.","gevorderd":"Ik hanteer zelfstandig een digitaal apparaat met zorg.","junior":"Ik hanteer een digitaal apparaat onder begeleiding met zorg.","starter":"Ik hanteer een digitaal apparaat niet met zorg."},{"niveau_leerling":"Junior","gewenst_niveau":"Gevorderd","naam":"Eindresultaat","expert":"Ik benoem en bespreek alle elementen met betrekking tot scherpte, tegenlicht en donkere delen.","gevorderd":"Ik benoem  enkele gedetailleerde elementen met betrekking tot scherpte, tegenlicht en donkere delen op de foto .","junior":"Ik benoem enkele eenvoudige elementen met betrekking tot scherpte, tegenlicht en donkere delen op de foto.","starter":"Ik benoem onder begeleiding een gemaakte foto of video (op scherpte, tegenlicht, donkere delen)."},{"niveau_leerling":"Expert","gewenst_niveau":"Gevorderd","naam":"Het digitale apparaat gebruiken bij het nemen van de foto’s.","expert":"Ik hanteer vlot een digitaal apparaat met een goede opname als resultaat.","gevorderd":"Ik gebruik na een demonstratie een digitaal apparaat correct en heb geen hulp nodig om tot een goede opname te komen.","junior":"Ik gebruik onder begeleiding een digitaal apparaat correct om tot een goede weergave van de opname te komen.","starter":"Ik gebruik het digitaal apparaat niet correct. De opname is niet geslaagd."},{"niveau_leerling":"Starter","gewenst_niveau":"Gevorderd","naam":"Perspectief","expert":"Ik maak vlot gebruik van de mogelijkheden van perspectied.","gevorderd":"Ik begrijp en heb aandacht voor perspectief.","junior":"Ik richt  mijn digitaal apparaat zodat ik een bepaald perspectief in beeld kan brengen.","starter":"Ik richt  onder begeleiding mijn digitaal apparaat zodat ik een bepaald perspectief in beeld kan brengen."}]},"BAS - B8":{"sheet":"BAS - B8","leerlijn":"ICT-basisvaardigheden","goal":"DIG 1.6 – Eenvoudige, functionele handelingen in een gekende tool begrijpen en correct uitvoeren.","fase":"FASE 2","criteria":[{"niveau_leerling":"Junior","gewenst_niveau":"Gevorderd","naam":"Starten","expert":null,"gevorderd":"Ik start zelfstandig een applicatie op.","junior":"Ik start na een demonstratie of met behulp van een stappenplan een applicatie op ","starter":"Ik start onder begeleiding een applicatie op."},{"niveau_leerling":"Gevorderd","gewenst_niveau":"Gevorderd","naam":"Inloggen","expert":"Ik log vlot in bij verschillende applicaties met verschillende inloggegevens.","gevorderd":"Ik log zelfstandig in met mijn eigen inloggegevens.","junior":"Ik log na een demonstratie in bij een applicatie.","starter":"Ik kan nog niet zelfstandig inloggen bij een applicatie met mijn inloggegevens."},{"niveau_leerling":"Expert","gewenst_niveau":"Gevorderd","naam":"Tabbladen","expert":"Ik navigeer vlot tussen tabbladen met behulp van sneltoetsen.","gevorderd":"Ik navigeer zelfstandig tussen tabbladen door te klikken.","junior":"Ik navigeer na een demonstratie tussen tabbladen binnen een browser.","starter":"Ik navigeer onder begeleiding tussen tabbladen binnen een browser."},{"niveau_leerling":"Junior","gewenst_niveau":"Gevorderd","naam":"Herkennen en gebruiken van basisfuncties","expert":null,"gevorderd":"Ik gebruik zelfstandig basisfuncties zoals verwijderen, opslaan, ongedaan maken, sluiten...","junior":"Na een demonstratie gebruik ik basisfuncties zoals verwijderen, opslaan, ongedaan maken, sluiten...","starter":"Ik gebruik onder begeleiding basisfuncties zoals verwijderen, opslaan, ongedaan maken, sluiten..."},{"niveau_leerling":"Expert","gewenst_niveau":"Gevorderd","naam":"Geluidsinstellingen aanpassen","expert":null,"gevorderd":"Op het gepaste moment zet ik zelfstandig de microfoon en/of camera van het gebruikte toestel aan.","junior":"Na een demonstratie zet ik de microfoon en/of camera van het gebruikte toestel aan.","starter":"Onder begeleiding zet ik de microfoon en/of camera van het gebruikte toestel aan."}]},"BAS - B9":{"sheet":"BAS - B9","leerlijn":"ICT-basisvaardigheden","goal":"DIG 1.8 – Cijfers, letters en symbolen gericht aantikken op een toetsenbord.","fase":"FASE 3","criteria":[{"niveau_leerling":"Junior","gewenst_niveau":"Gevorderd","naam":"Letters","expert":"Ik gebruik vlot de meeste letters op het toetsenbord.","gevorderd":"Ik kan de meeste letters terugvinden op het toetsenbord.","junior":"Ik kan enkele letters terugvinden op het toetsenbord.","starter":"Ik begin net met het leren terugvinden van de letters op het toetsenbord."},{"niveau_leerling":"Gevorderd","gewenst_niveau":"Gevorderd","naam":"Hoofdletters","expert":"Ik typ vlot hoofdletters met de shift-toets.","gevorderd":"Ik typ soms hoofdletters met de shift-toets.","junior":"Ik heb moeite met het gebruik van de shift-toets.","starter":"Ik heb nog niet geleerd hoe de shift-toets te gebruiken."},{"niveau_leerling":"Expert","gewenst_niveau":"Gevorderd","naam":"Beide handen gebruiken","expert":"Ik gebruik vlot en consequent beide handen om letters te typen.","gevorderd":"Ik gebruik beide handen om letters te typen.","junior":"Ik gebruik meestal één hand om letters te typen, maar probeer ook mijn andere hand te gebruiken.","starter":"Ik gebruik één hand/vinger om letters te typen."},{"niveau_leerling":"Junior","gewenst_niveau":"Gevorderd","naam":"Symbolen","expert":"Ik gebruik vlot symbolen op het toetsenbord.","gevorderd":"Ik gebruik zelfstandig symbolen op het toetsenbord.","junior":"Ik gebruik na een demonstratie symbolen op het toetsenbord.","starter":"Ik gebruik onder begeleiding symbolen op het toetsenbord."},{"niveau_leerling":"Expert","gewenst_niveau":"Gevorderd","naam":"Gebruik van speciale toetsen","expert":"Ik gebruik vlot de spatiebalk, enter-toets en Num Lock-toets.","gevorderd":"Ik gebruik zelfstandig de spatiebalk, enter-toets en Num Lock-toets.","junior":"Ik gebruik na een demonstratie de spatiebalk, enter-toets en Num Lock-toets.","starter":"Ik gebruik onder begeleiding de spatiebalk, enter-toets en Num Lock-toets."}]},"BAS - B10":{"sheet":"BAS - B10","leerlijn":"ICT-basisvaardigheden","goal":"DIG 1.9 – Een aangereikte digitale tool gebruiken om eigen ideeën creatief vorm te geven.","fase":"FASE 3","criteria":[{"niveau_leerling":"Junior","gewenst_niveau":"Gevorderd","naam":"Tekeningen","expert":"Ik maak vlot een digitale tekening, passend bij de opdracht.","gevorderd":"Ik maak zelfstandig een digitale tekening.","junior":"Ik maak na een demonstratie een (eenvoudige) digitale tekening.","starter":"Ik maak onder begeleiding een eenvoudige digitale tekening."},{"niveau_leerling":"Gevorderd","gewenst_niveau":"Gevorderd","naam":"Bewegende beelden","expert":"Ik maak vlot een digitaal bewegend beeld, passend bij de opdracht","gevorderd":"Ik maak zelfstandig een digitaal bewegend beeld.","junior":"Ik maak na een demonstratie een (eenvoudig) digitaal bewegend beeld.","starter":"Ik maak onder begeleiding een eenvoudig digitaal bewegend beeld."},{"niveau_leerling":"Expert","gewenst_niveau":"Gevorderd","naam":"Geluiden","expert":"Ik maak vlot een digitaal geluid, passend bij de opdracht.","gevorderd":"Ik maak zelfstandig een digitaal geluid,","junior":"Ik maak na een demonstratie een digitaal geluid.","starter":"Ik maak onder begeleiding een eenvoudige digitaal geluid."},{"niveau_leerling":"Junior","gewenst_niveau":"Gevorderd","naam":"Geluiden - software","expert":"Ik zet vlot verschillende geluiden samen, bewerk deze met aangereikte software/programma's en gebruik hierbij ook geavanceerde functies.","gevorderd":"Ik zet zelfstandig verschillende geluiden samen en bewerk deze met aangereikte software/programma's.","junior":"Ik maak na een demonstratie digitale geluiden met aangereikte software/programma's.","starter":"Ik gebruik onder begeleiding software/programma's om digitale geluiden te maken."},{"niveau_leerling":"Expert","gewenst_niveau":"Gevorderd","naam":"Orginaliteit en expressie","expert":"Ik bedenk heel originele en creatieve ideeën die mijn werk extra bijzonder maken en anderen verrassen of inspireren.","gevorderd":"Ik bedenk originele ideeën die goed passen bij de opdracht en laat mijn eigen stijl zien.","junior":"Ik bedenk zelf ideeën, maar ze lijken vaak op voorbeelden of zijn nog niet zo origineel.","starter":"Ik bedenk mijn ideeën vooral met hulp van anderen en vind het nog moeilijk om zelf iets origineels te maken."}]},"BAS - B11":{"sheet":"BAS - B11","leerlijn":"ICT-basisvaardigheden","goal":"DIG 1.10 – Op internet digitale informatie opzoeken in een beveiligde omgeving.","fase":"FASE 3","criteria":[{"niveau_leerling":"Nog niet aan bod gekomen","gewenst_niveau":"Gevorderd","naam":"Op een specifieke website","expert":"Ik navigeer vlot op een website en vind de informatie die ik nodig heb.","gevorderd":"Ik navigeer zelfstandig op een website en zoek naar de informatie die ik nodig heb.","junior":"Ik zoek onder begeleiding een website op en beweeg me vlot door de structuur (van de website).","starter":"Ik weet wat een website is en typ het adres in de zoekbalk."},{"niveau_leerling":"Nog niet aan bod gekomen","gewenst_niveau":"Gevorderd","naam":"Op verschillende websites","expert":" Ik zoek op verschillende websites vlot informatie op.","gevorderd":"Ik zoek op verschillende websites zelfstandig informatie op.","junior":"Ik zoek na een demonstratie op verschillende websites informatie op.","starter":"Ik zoek onder begeleiding op verschillende websites informatie op."},{"niveau_leerling":"Nog niet aan bod gekomen","gewenst_niveau":"Gevorderd","naam":"Bladwijzers en favorieten","expert":"Ik gebruik bladwijzers en favorietenmappen om websites logisch te ordenen en snel terug te vinden. Ik help ook anderen hiermee.","gevorderd":"Ik sla zelfstandig websites op als bladwijzer of favoriet zodat ik ze later makkelijk terugvind.","junior":"Ik gebruik bladwijzers of favorieten zelfstandig met behulp van een stappenplan of na een demonstratie.","starter":"Ik gebruik bladwijzers of favorieten onder begeleiding om een website op te slaan."}]},"BAS - B12":{"sheet":"BAS - B12","leerlijn":"ICT-basisvaardigheden","goal":"DIG 1.11 – Een aangereikt digitaal apparaat gebruiken om geluid op te nemen.","fase":"FASE 3","criteria":[{"niveau_leerling":"Junior","gewenst_niveau":"Gevorderd","naam":"Kennis van het apparaat","expert":"Ik heb een uitstekende kennis van de werking van het digitale apparaat.","gevorderd":"Ik heb een goede kennis van de werking van het digitale apparaat.","junior":"Ik heb basiskennis van de werking van het digitale apparaat","starter":"Ik heb een beperkte kennis van de werking van het digitale apparaat."},{"niveau_leerling":"Gevorderd","gewenst_niveau":"Gevorderd","naam":"Geluidskwaliteit/ spreken richting microfoon","expert":"Ik neem geluid op met minimale ruis en maximale helderheid.","gevorderd":"Ik neem geluid op met beperkte ruis.","junior":"Ik neem geluid op, maar er kan wat ruis zijn.","starter":"Ik neem geluid op, maar er is nog veel ruis te horen."},{"niveau_leerling":"Expert","gewenst_niveau":"Gevorderd","naam":"Akoestiek","expert":"Ik begrijp perfect welke omgeving de akoestiek van mijn opname positief beïnvloedt en kan dit ook uitleggen aan anderen.","gevorderd":"Ik begrijp dat een drukke plaats zoals een refter zorgt voor een minder goede akoestiek dan een rustig klaslokaal.","junior":"Ik begrijp nog niet helemaal dat een drukke plaats zoals een refter zorgt voor een minder goede akoestiek dan een rustig klaslokaal.","starter":"Ik weet nog niet welke ruimte ik moet kiezen voor een goede akoestiek."},{"niveau_leerling":"Junior","gewenst_niveau":"Gevorderd","naam":"Kennis van de software","expert":"Ik gebruik de meest passende en de geavanceerde functies van de opnamesoftware.","gevorderd":"Ik gebruik de basisfuncties van de opnamesoftware functioneel.","junior":"Ik gebruik enkele functies van de opnamesoftware.","starter":"Ik herken enkele functies van de opnamesoftware."}]},"BAS - B13":{"sheet":"BAS - B13","leerlijn":"ICT-basisvaardigheden","goal":"DIG 1.16 – Met een aangereikte tool afbeeldingen of foto’s bewerken om eigen ideeën creatief vorm te geven.","fase":"FASE 3","criteria":[{"niveau_leerling":"Junior","gewenst_niveau":"Gevorderd","naam":"Bijsnijden","expert":"Ik snijd vlot een afbeelding bij en denk daar vooraf goed over na.","gevorderd":"Ik snijd zelfstandig een afbeelding bij.","junior":"Ik snijd na een demonstratie een afbeelding bij.","starter":"Ik snijd onder begeleiding een afbeelding bij."},{"niveau_leerling":"Gevorderd","gewenst_niveau":"Gevorderd","naam":"Effecten toepassen","expert":"Ik pas meerdere effecten toe op de afbeelding, passend bij de opdracht.","gevorderd":"Ik pas eenvoudige effecten toe op een afbeelding , passend bij de opdracht.","junior":"Ik pas eenvoudige effecten toe op een afbeelding.","starter":"Ik pas nog geen effecten toe op een afbeelding."},{"niveau_leerling":"Expert","gewenst_niveau":"Gevorderd","naam":"Achtergrond verwijderen","expert":"Ik verwijder vlot de achtergrond van een afbeelding en pas dit op zinvolle wijze toe.","gevorderd":"Ik verwijder zelfstandig de achtergrond van een afbeelding.","junior":"Ik verwijder na een demonstratie de achtergrond van een afbeelding.","starter":"Ik verwijder onder begeleiding de achtergrond van een afbeelding."},{"niveau_leerling":"Junior","gewenst_niveau":"Gevorderd","naam":"Opslaan","expert":"Ik sla vlot afbeeldingen op met een gepaste naam en in een gepaste bestandenstructuur.","gevorderd":"Ik sla afbeeldingen op en geef ze een gepaste naam.","junior":"Ik sla afbeeldingen op, maar kan ze nog geen naam geven.","starter":"Ik sla onder begeleiding afbeeldingen op."},{"niveau_leerling":"Expert","gewenst_niveau":"Gevorderd","naam":"Formaat wijzigen","expert":"Ik wijzig vlot het formaat van een afbeelding en combineer dit met het bijsnijden van de afbeelding.","gevorderd":"Ik wijzig zelfstandig het formaat van een afbeelding en kies voor logische afmetingen.","junior":"Ik wijzig na een demonstratie het formaat van de afbeelding.","starter":"Ik wijzig onder begeleiding het formaat van een afbeelding,"},{"niveau_leerling":"Starter","gewenst_niveau":"Gevorderd","naam":"Iets aanduiden op een afbeelding","expert":"Ik duid vlot iets aan op een afbeelding door gepaste objecten in te voegen.","gevorderd":"Ik duid zelfstandig iets aan op een afbeelding door eenvoudige objecten in te voegen.","junior":"Ik duid na een demonstratie iets aan op een afbeelding met beulp van eenvoudige objecten (pijl, kader, cirkel).","starter":"Ik duid onder begeleiding iets aan op een afbeelding."}]},"BAS - B14":{"sheet":"BAS - B14","leerlijn":"ICT-basisvaardigheden","goal":"DIG 1.17 – Van een aangereikte tool basisfuncties gebruiken voor het schrijven en creatief opmaken van een tekst.","fase":"FASE 3","criteria":[{"niveau_leerling":"Junior","gewenst_niveau":"Gevorderd","naam":"basis - lettertypes","expert":"Ik selecteer vlot en creatief lettertypen en -groottes om de boodschap te versterken en heb hierbij aandacht voor het doel en de doelgroep.","gevorderd":"Ik selecteer zelfstandig geschikte lettertypen en -groottes.","junior":"Ik selecteer na een demonstratie geschikte lettertypen en -groottes  voor verschillende doeleinden.","starter":"Ik selecteer onder begeleiding een geschikt lettertype en -grootte in functie van het doel van mijn tekst."},{"niveau_leerling":"Gevorderd","gewenst_niveau":"Gevorderd","naam":"basis - kleur en stijl","expert":"Ik verrijk mijn tekst door vlot en creatief gebruik te maken van vet, cursief, onderlijnd en kleur.","gevorderd":"Ik maak mijn tekst doelgericht en logisch door vet, cursief, onderlijnd of gekleurd te gebruiken.","junior":"Ik maak mijn tekst doelgericht vet, cursief, onderlijnd of gekleurd, maar doe dit nog niet op een logische manier.","starter":"Ik zet mijn tekst vet, cursief, onderlijnd of in kleur, maar doe dit willekeurig."},{"niveau_leerling":"Expert","gewenst_niveau":"Gevorderd","naam":"gevorderd - opsommingstekens","expert":"Ik gebruik vlot opsommingstekens in verschillende niveaus. Dit is een meermaarde voor de tekst.","gevorderd":"Ik gebruik zelfstandig opsommingstekens.","junior":"Ik gebruik na een demonstratie opsommingstekens, maar heb nog moeite om dit correct te doen.","starter":"Ik gebruik onder begeleiding opsommingstekens."},{"niveau_leerling":"Junior","gewenst_niveau":"Gevorderd","naam":"gevorderd - stijlen","expert":"Ik gebruik vlot stijlen die een meerwaarde hebben voor de structuur van mijn tekst.","gevorderd":"Ik maak zelfstandig en op een logische manier gebruik van stijlen om mijn tekst te structureren. ","junior":"Ik pas na een demonstratie stijlen toe in een document.","starter":"Ik gebruik onder begeleiding stijlen."},{"niveau_leerling":"Expert","gewenst_niveau":"Gevorderd","naam":"gevorderd - uitlijnen","expert":"Ik  gebruik vlot verschillende soorten uitlijning om de opmaak van mijn tekst te verbeteren.","gevorderd":"Ik pas zelfstandig uitlijning toe om mijn tekst vorm te geven.","junior":"Ik gebruik na een demonstratie uitlijning voor de opmaak van mijn tekst.","starter":"Ik breng nog geen uitlijning aan om mijn tekst op te maken."},{"niveau_leerling":"Starter","gewenst_niveau":"Gevorderd","naam":"gevorderd  - paginanummers","expert":"Ik voeg vlot paginanummers in en kies hierbij voor de meest gepaste optie.","gevorderd":"Ik voeg zelfstandig paginanummers in en weet wat de opties zijn.","junior":"Ik voeg na een demonstratie paginanummers in.","starter":"Ik voeg onder begeleiding paginanummers in."},{"niveau_leerling":"Starter","gewenst_niveau":"Gevorderd","naam":"gevorderd - kop- en voettekst","expert":"Ik voeg vlot kop- en voettekst in en kies hierbij voor de meest gepaste vorm.","gevorderd":"Ik voeg zelfstandig kop- en voettekst in en weet wat de opties zijn.","junior":"Ik voeg na een demonstratie kop- en voettekst in.","starter":"Ik voeg onder begeleiding kop- en voettekst in."}]},"BAS - B15":{"sheet":"BAS - B15","leerlijn":"ICT-basisvaardigheden","goal":"DIG 1 B.15 (vervallen) – Basisfuncties van een rekenmachine of andere digitale tool doelmatig gebruiken om hoofdbewerkingen uit te voeren.","fase":"FASE 3","criteria":[]},"BAS - B16":{"sheet":"BAS - B16","leerlijn":"ICT-basisvaardigheden","goal":"DIG 1 B.16 (vervallen) – In functionele contexten een rekenmachine of andere digitale tool vlot en doelmatig gebruiken om (zelf) uitgevoerde bewerkingen te controleren.","fase":"FASE 3","criteria":[{"niveau_leerling":"Junior","gewenst_niveau":"Gevorderd","naam":"Controleren","expert":"Ik gebruik steeds een rekenmachine of een andere tool om mijn bewerkingen te controleren.","gevorderd":"Ik gebruik regelmatig een rekenmachine of andere tool om bewerkingen te controleren.","junior":"Ik controleer soms mijn bewerkingen met bijv. rekenmachine.","starter":"Ik controleer niet spontaan de uitgevoerde bewerkingen met bijv. een rekenmachine."},{"niveau_leerling":"Gevorderd","gewenst_niveau":"Gevorderd","naam":"Doelmatig gebruiken","expert":"Ik grijp enkel naar een (digitale) rekenmachine als ik daardoor sneller een berekening kan maken.","gevorderd":"Ik gebruik een rekenmachine enkel wanneer dat efficiënter is.","junior":"Ik weet nog niet goed wanneer een rekenmachine nuttig is.","starter":"Ik gebruik nooit of te vaak een rekenmachine."}]},"BAS - B17":{"sheet":"BAS - B17","leerlijn":"ICT-basisvaardigheden","goal":"DIG 1.18 – Een aangereikte tool gebruiken om op een veilige, verantwoorde en doelmatige manier te communiceren.","fase":"FASE 3","criteria":[{"niveau_leerling":"Junior","gewenst_niveau":"Gevorderd","naam":"e-mail","expert":"Ik stel zelfstandig een overzichtelijke e-mail op met correcte aanspreking, midden en einde en stem dit af op de ontvanger. Ik ontwikkel mijn eigen conversatiestijl.","gevorderd":"Ik stel zelfstandig een e-mail op met correcte aanspreking, midden en einde en een passende onderwerpregel.","junior":"Ik stel met ondersteuning een e-mail op met correcte aanspreking, midden en einde en een passende onderwerpregel.","starter":"Ik weet wat een e-mail is en waarvoor dit gebruikt wordt."},{"niveau_leerling":"Gevorderd","gewenst_niveau":"Gevorderd","naam":"chat","expert":"Ik kies gericht een applicatie om te chatten, afhankelijk van het doel.","gevorderd":"Ik weet hoe ik kan chatten in meerdere applicaties.","junior":"Ik weet hoe ik kan chatten in een applicatie die ik ken.","starter":"Ik weet wat chatten betekent."}]},"BAS - B18":{"sheet":"BAS - B18","leerlijn":"ICT-basisvaardigheden","goal":"DIG 1.19 – Een aangereikte tool gebruiken om informatie aan anderen voor te stellen.","fase":"FASE 3","criteria":[{"niveau_leerling":"Junior","gewenst_niveau":"Gevorderd","naam":"Tekst in een presentatie","expert":"Mijn tekst voldoet aan de 1-6-6 regel*, er is nergens overbodige tekst.","gevorderd":"De tekst van mijn presentatie is beknopt en kernachtig. Soms kan de tekst nog beknopter.","junior":"Ik gebruik nog teveel tekst in mijn dia's.","starter":"Ik gebruik hoofdzakelijk gekopieerde en geplakte tekst in mijn document."},{"niveau_leerling":"Gevorderd","gewenst_niveau":"Gevorderd","naam":"Tekst in een affiche / wenskaart / ...","expert":"De tekst op mijn affiche is beknopt en volledig en bevat geen overbodige zaken.","gevorderd":"Ik gebruikte nauwelijks overbodige woorden op mijn affiche.","junior":"Ik geef alle nodige informatie, maar het mag nog beknopter zijn.","starter":"Ik geef nog veel overbodige tekst in mijn affiche."},{"niveau_leerling":"Expert","gewenst_niveau":"Gevorderd","naam":"Lay-out","expert":"Ik paste de lay-out van de presentatie / affiche / wenskaart / ... aan het onderwerp aan en het contrast tussen de kleuren is goed en de lettertypes zijn duidelijk.","gevorderd":"Ik had aandacht voor voldoende contrast tussen de kleuren, goed leesbare lettertypes en er is samenhang in de lay-out.","junior":"Ik paste de kleuren en lettertypes van mijn presentatie / affiche / wenskaart / ... aan.","starter":"Ik gebruikte voor mijn presentatie / affiche / wenskaart / ... enkel de standaard lay-out van het programma."},{"niveau_leerling":"Junior","gewenst_niveau":"Gevorderd","naam":"Media","expert":"Ik heb verschillende types van media correct ingevoegd en ze zijn een meerwaarde.","gevorderd":"Ik voegde minstens twee verschillende types media in (video's, afbeeldingen, animaties en/of geluid). ","junior":"Ik voegde zelf media toe aan de presentatie / affiche / wenskaart / ....","starter":"Ik gebruikte media die reeds in de presentatie / affiche / wenskaart / ... aanewezig waren."},{"niveau_leerling":"Expert","gewenst_niveau":"Gevorderd","naam":"Overgangen en animaties in een presentatie","expert":"Ik maakte doordacht gebruik van verschillende overgangen en/of animaties om de presentatie naar een hoger niveau te tillen.","gevorderd":"Ik gebruikte overgangen en animaties die een meerwaarde betekenen voor de presentatie.","junior":"Ik gebruikte enkele overgangen en/of animaties in mijn presentatie.","starter":"Ik gebruikte geen overgangen en animaties in mijn presentatie."},{"niveau_leerling":"Starter","gewenst_niveau":"Gevorderd","naam":"Presentatie","expert":"Ik maak een complexe presentatie en gebruik die om informatie voor te stellen.","gevorderd":"Ik maak een presentatie die voldoet aan de gemaakte afspraken om informatie voor te stellen.","junior":"Ik maak een eenvoudige presentatie en gebruik die om informatie voor te stellen.","starter":"Ik gebruik geen presentatie bij het voorstellen van informatie aan anderen."},{"niveau_leerling":"Starter","gewenst_niveau":"Gevorderd","naam":"Infographic","expert":"Ik maak een complexe infographic en gebruik die om informatie voor te stellen.","gevorderd":"Ik maak en gebruik een infographic om informatie voor te stellen die voldoet aan de afspraken.","junior":"Ik maak en gebruik een eenvoudige infographic om informatie voor te stellen.","starter":"Ik gebruik geen infographic bij het voorstellen van informatie aan anderen."},{"niveau_leerling":null,"gewenst_niveau":"Gevorderd","naam":"Filmpje","expert":"Ik maak en gebruik een complex filmpje om informatie voor te stellen.","gevorderd":"Ik maak een filmpje om informatie voor te stellen dat voldoet aan de gemaakte afspraken.","junior":"Ik maak een eenvoudige filmpje en gebruik het om informatie voor te stellen.","starter":"Ik gebruik een filmpje bij het voorstellen van informatie aan anderen, maar maak het nog niet zelf."},{"niveau_leerling":null,"gewenst_niveau":"Gevorderd","naam":"Stopmotion video","expert":"Ik maak een complex en creatief filmpje om een verhaal vorm te geven.","gevorderd":"Ik maak een filmpje  dat voldoet aan de gemaakte afspraken om een verhaal vorm te geven.","junior":"Ik maak een eenvoudig filmpje om een verhaal te vertellen.","starter":"Ik maak een filmpje om een verhaal te vertellen, maar heb hierbij nog hulp nodig."},{"niveau_leerling":null,"gewenst_niveau":"Gevorderd","naam":"Voorstellingsmethode kiezen","expert":"Ik kies de meest geschikte presentatievorm voor een opdracht en/of kies voor niet voor de hand liggende vormen.","gevorderd":"Ik kies uit de geleerde tools de meest geschikte presentatievorm voor een opdracht.","junior":"Ik kies een presentatievorm die voldoet voor mijn opdracht.","starter":"Ik koos niet voor een geschikte presentatievorm voor de opdracht."},{"niveau_leerling":null,"gewenst_niveau":"Gevorderd","naam":"Feedback toepassen","expert":"Ik pas feedback voor opdrachten waarbij ik  ICT inzet om informatie voor te stellen aan anderen volledig toe, ook in toekomstige opdrachten.","gevorderd":"Ik pas feedback voor opdrachten waarbij ik  ICT inzet om informatie voor te stellen aan anderen volledig toe.","junior":"Ik pas feedback voor opdrachten waarbij ik  ICT inzet om informatie voor te stellen aan anderen gedeeltelijk toe.","starter":"Ik pas feedback toe voor opdrachten waarbij ik  ICT inzet om informatie voor te stellen aan anderen onder begeleiding."},{"niveau_leerling":null,"gewenst_niveau":"Gevorderd","naam":"Keuze","expert":"Ik kies een geschikte app om informatie voor te stellen in functie van het doel en het publiek waar ik informatie aan moet voorstellen.","gevorderd":"Ik kies een geschikte app in functie van de opdracht om informatie voor te stellen.","junior":"Ik kies zelf de app waarin ik informatie voorstel maar maak niet de beste keuze volgens het onderwerp.","starter":"Ik kies onder begeleiding een passende app om informatie voor te stellen aan anderen."},{"niveau_leerling":null,"gewenst_niveau":"Gevorderd","naam":"Structuur","expert":"Ik gebruik een hele duidelijke en overzichtelijke structuur in de informatie die ik voorstel.","gevorderd":"Ik gebruik een overzichtelijke structuur in de informatie die ik voorstel.","junior":"Ik gebruik een overzichtelijke structuur aangebracht in de informatie die ik voorstel.","starter":"Ik heb begeleiding nodig om een overzichtelijke structuur aan te brengen in de informatie die ik voorstel."},{"niveau_leerling":null,"gewenst_niveau":"Gevorderd","naam":"Sjaboon","expert":"Ik kies zelfstandig een passend sjabloon en pas het aan zodat het goed bij mijn onderwerp past.","gevorderd":"Ik kies zelfstandig een passend sjabloon en pas het aan zodat het goed bij mijn onderwerp past.","junior":"Ik gebruik een sjabloon zelfstandig met na een demonstratie.","starter":"Ik gebruik een sjabloon onder begeleiding om mijn informatie voor te stellen."}]},"BAS - B19":{"sheet":"BAS - B19","leerlijn":"ICT-basisvaardigheden","goal":"DIG 1.20 – Met een aangereikte tool eenvoudige teksten digitaal schrijven.","fase":"FASE 3","criteria":[{"niveau_leerling":"Junior","gewenst_niveau":"Gevorderd","naam":"Spelling en grammatica","expert":null,"gevorderd":"Ik verbeter zelfstandig de fouten die de spellingscorrector aangeeft,","junior":"Ik verbeter soms woorden die de spellingscorrector aangeeft.","starter":"Ik gebruik de spellingscorrector nog niet."},{"niveau_leerling":"Gevorderd","gewenst_niveau":"Gevorderd","naam":"Structuur en indeling","expert":"Mijn tekst is goed gestructureerd met gebruik van titels, ondertitels, koppen en stijlen.","gevorderd":"Ik structureer mijn tekst door gebruik te maken van titels, ondertitels, koppen en andere stijlen.","junior":"Ik gebruik soms titels, ondertitels, koppen en stijlen.","starter":"Ik maak nog weinig tot geen gebruik  van titels, ondertitels, koppen en andere  stijlen."},{"niveau_leerling":"Expert","gewenst_niveau":"Gevorderd","naam":"Opmaak","expert":"Mijn opmaak is functioneel en maakt optimaal gebruik van de tools.","gevorderd":"Mijn opmaak is verzorgd, maar ik maakt niet altijd volledig gebruik van de beschikbare tools.","junior":"Ik gebruik nog onvoldoende tools voor de opmaak van mijn tekst.","starter":"Ik schenk geen aandacht aan de opmaak van mijn tekst en maak geen gebruik van de tools."},{"niveau_leerling":"Junior","gewenst_niveau":"Gevorderd","naam":"Creativiteit en inhoud","expert":"Ik breng mijn boodschap aantrekkelijk, duidelijk en inhoudelijk sterk over.","gevorderd":"Ik breng mijn boodschap aantrekkelijk en duidelijk over.","junior":"Ik breng mijn boodschap aantrekkelijk of duidelijk over.","starter":"Ik breng mijn boodschap onaantrekkelijk en onduidelijk over."},{"niveau_leerling":"Expert","gewenst_niveau":"Gevorderd","naam":"Efficiëntie en snelheid","expert":"Ik typ mijn tekst snel en zonder problemen uit.","gevorderd":"Ik typ mijn tekst gemakkelijk neer uit.","junior":"Ik schrijf mijn tekst met enige moeite uit.","starter":"Ik schrijf mijn tekst met veel moeite uit."}]},"BAS - B20":{"sheet":"BAS - B20","leerlijn":"ICT-basisvaardigheden","goal":"DIG 1.21 – Met aangereikte digitale tools zelfstandig oefenen en leren.","fase":"FASE ","criteria":[{"niveau_leerling":"Junior","gewenst_niveau":"Gevorderd","naam":"zelfstandigheid","expert":"Ik werk zelfstandig en zoek actief naar oplossingen bij problemen. ","gevorderd":"Ik oefen meestal zelfstandig en zoek soms naar oplossingen bij problemen. ","junior":"Na een demonstratie oefen ik zelfstandig, maar ik heb regelmatig hulp nodig bij problemen. ","starter":"Ik oefen onder begeleiding in een leeromgeving ."},{"niveau_leerling":"Gevorderd","gewenst_niveau":"Gevorderd","naam":"Gebruik ICT-middelen","expert":"Ik maak optimaal gebruik van beschikbare ICT-middelen zonder hulp nodig te hebben.","gevorderd":"Ik maak goed gebruik van beschikbare ICT-middelen, met minimale hulp.","junior":"Ik maak gebruik van ICT-middelen, maar niet altijd optimaal.","starter":"Ik maak weinig gebruik van ICT-middelen."},{"niveau_leerling":"Expert","gewenst_niveau":"Gevorderd","naam":"Correct gebruik","expert":"Ik werk rustig en zelfstandig, maak oefeningen opnieuw als dat nodig is en leer uit mijn fouten.","gevorderd":"Ik werk meestal zelfstandig en maak oefeningen opnieuw als ik fouten heb gemaakt.","junior":"Ik probeer rustig te werken, maar heb nog hulp nodig om te weten wanneer ik een oefening beter opnieuw maak.","starter":"Ik maak oefeningen via het leerplatform, maar klik vaak snel door zonder goed na te denken."}]},"BAS - B21":{"sheet":"BAS - B21","leerlijn":"ICT-basisvaardigheden","goal":"DIG 1.25 – Zoekresultaten uit digitale bronnen verwerken en bewaren.","fase":"FASE 4","criteria":[{"niveau_leerling":"Junior","gewenst_niveau":"Gevorderd","naam":"Opzoeken","expert":"Ik voer geavanceerde digitale zoekopdrachten uit en optimaliseer mijn zoekopdracht.","gevorderd":"Ik voer zelfstandig zoekopdrachten uit en pas filters toe indien mogelijk.","junior":"Ik voer  na een demonstratie zoekopdrachten uit. ","starter":"Ik voer onder begeleiding eenvoudige zoekopdrachten uit."},{"niveau_leerling":"Gevorderd","gewenst_niveau":"Gevorderd","naam":"Opzoeken (afbeeldingen)","expert":"Ik beheers geavanceerde zoektechnieken en gebruik filters om rekening te houden met copyright.","gevorderd":"Ik voer zelfstandig digitale zoekopdrachten uit en houd meestal rekening met copyright.","junior":"Ik voer doelgericht zoekopdrachten uit en pas filters toe indien nodig.","starter":"Ik voer onder begeleiding eenvoudige zoekopdrachten uit."},{"niveau_leerling":"Expert","gewenst_niveau":"Gevorderd","naam":"Verwerken","expert":"Ik integreer en verwerk digitale informatie van verschillende bronnen op een gevorderd niveau.","gevorderd":"Ik combineer de belangrijkste informatie uit verschillende bronnen.","junior":"Ik haal na een demonstratie de belangrijkste informatie uit digitale bronnen.","starter":"Ik heb nog hulp nodig bij het vinden van de belangrijke informatie in digitale bronnen."},{"niveau_leerling":"Junior","gewenst_niveau":"Gevorderd","naam":"Bewaren","expert":null,"gevorderd":"Ik organiseer mijn digitale informatie duidelijk en nauwgezet.","junior":"Ik organiseer digitale bestanden in basisstructuren met mappen en labels, maar ben nog niet altijd even nauwgezet.","starter":"Ik heb nog begeleiding nodig bij het structureren en opslaan van digitale bestanden."}]},"BAS - B22":{"sheet":"BAS - B22","leerlijn":"ICT-basisvaardigheden","goal":"DIG 1 B.22 (vervallen) – Complexere functies van een rekenmachine of andere digitale tool doelmatig gebruiken om complexere rekenproblemen te berekenen.","fase":"FASE 4","criteria":[{"niveau_leerling":"Junior","gewenst_niveau":"Gevorderd","naam":"winst, verlies, korting","expert":null,"gevorderd":"Ik gebruik een digitale rekenmachine of andere digitale tool doelmatig om winst, verlies, korting te berekenen.","junior":"Ik slaag er meestal zelfstandig in om een digitale rekenmachine of andere digitale tool doelmatig te gebruiken om winst, verlies, korting te berekenen.","starter":"Onder begeleiding gebruik ik een digitale rekenmachine of andere digitale tool doelmatig  om winst, verlies, korting te berekenen."},{"niveau_leerling":"Gevorderd","gewenst_niveau":"Gevorderd","naam":"percentages","expert":null,"gevorderd":"Ik gebruik een digitale rekenmachine of andere digitale tool doelmatig om percentages in te tikken en te berekenen.","junior":"Ik slaag er meestal zelfstandig in om een digitale rekenmachine of andere digitale tool doelmatig te gebruiken om percentages in te tikken en te berekenen.","starter":"Onder begeleiding gebruik ik een digitale rekenmachine of andere digitale tool doelmatig om percentages in te tikken en te berekenen."},{"niveau_leerling":"Expert","gewenst_niveau":"Gevorderd","naam":"kommagetallen","expert":null,"gevorderd":"Ik gebruik een digitale rekenmachine of andere digitale tool doelmatig om bewerkingen met kommagetallen uit te voeren.","junior":"Ik slaag er meestal zelfstandig in om een digitale rekenmachine of andere digitale tool doelmatig te gebruiken om bewerkingen met kommagetallen uit te voeren.","starter":"Ik gebruik onder begeleiding een digitale rekenmachine of andere digitale tool doelmatig om bewerkingen met kommagetallen uit te voeren."},{"niveau_leerling":"Junior","gewenst_niveau":"Gevorderd","naam":"opeenvolgende bewerkingen","expert":null,"gevorderd":"Ik gebruik een digitale rekenmachine of andere digitale tool doelmatig om een reeks opeenvolgende bewerkingen (met haakjes) te berekenen.","junior":"Ik slaag er meestal zelfstandig in om een digitale rekenmachine of andere digitale tool doelmatig te gebruiken om een reeks opeenvolgende bewerkingen (met haakjes) te berekenen.","starter":"Ik gebruik onder begeleiding een digitale rekenmachine of andere digitale tool doelmatig om een reeks opeenvolgende bewerkingen (met haakjes) te berekenen."}]},"BAS - B23":{"sheet":"BAS - B23","leerlijn":"ICT-basisvaardigheden","goal":"DIG 1.27 – Bestanden downloaden en opslaan op verschillende door hen gekende opslagmedia.","fase":"FASE 4","criteria":[{"niveau_leerling":"Junior","gewenst_niveau":"Gevorderd","naam":"Aanmaken","expert":"Ik geef bestanden en mappen een naam volgens de gemaakte afspraken en ik kies zelf voor een passende en doordachte naam als er geen afspraak is.","gevorderd":"Ik maak zelfstandig bestanden en mappen aan en geef deze een passende naam en opslagplek.","junior":"Ik maak na een demonstratie bestanden en mappen aan en geef deze een correcte naam.","starter":"Ik maak onder begeleiding bestanden en mappen aan en geef deze een correcte naam."},{"niveau_leerling":"Gevorderd","gewenst_niveau":"Gevorderd","naam":"Ordenen","expert":"Ik  help ook anderen bij het ordenen van bestanden en mappen en help een duidelijke structuur scheppen.","gevorderd":"Ik orden bestanden en mappen zelfstandig en schep daarbij een duidelijke structuur.","junior":"Ik orden bestanden en mappen zelfstandig.","starter":"Ik orden onder begeleiding bestanden en mappen."},{"niveau_leerling":"Gevorderd","gewenst_niveau":"Gevorderd","naam":"Verwijderen","expert":"Ik verwijder zelfstandig bestanden en mappen en ondersteun anderen hierin.","gevorderd":"Ik verwijder zelfstandig bestanden en mappen.","junior":"Na een demonstratie verwijder ik bestanden en mappen.","starter":"Ik verwijder onder begeleiding bestanden en mappen verwijderen."}]},"BAS - B24":{"sheet":"BAS - B24","leerlijn":"ICT-basisvaardigheden","goal":"DIG 1.28 – Bestanden uploaden, terugvinden en delen met een klasgenoot in een door hen gekende digitale omgeving.","fase":"FASE 4","criteria":[{"niveau_leerling":"Junior","gewenst_niveau":"Gevorderd","naam":"Uploaden","expert":"Ik laad een digitaal bestand op naar een passende submap en help anderen hiermee.","gevorderd":"Ik laad een digitaal bestand op naar een passende submap.","junior":"Ik laad een tekst, foto of ander digitaal bestand zelfstandig op naar mijn eigen map.","starter":"Ik laad een tekst, foto of ander digitaal bestand onder begeleiding op naar een eigen map."},{"niveau_leerling":"Gevorderd","gewenst_niveau":"Gevorderd","naam":"Terugvinden","expert":"Ik gebruik geavanceerde zoek- en filtertechnieken om snel specifieke bestanden te lokaliseren.","gevorderd":"Ik vind zelfstandig eerder geüploade bestanden terug door gebruik te maken van zoekfuncties en/of navigatiemenu's.","junior":"Ik vind zelfstandig eerder geüploade bestanden terug door gebruik te maken van de structuur van de digitale omgeving.","starter":"Ik vind met enige begeleiding een eerder geüpload bestand terug."},{"niveau_leerling":"Expert","gewenst_niveau":"Gevorderd","naam":"Rechten","expert":"Ik deel een bestand met meerdere personen met aandacht voor het toekennen van de juiste rechten.","gevorderd":"Ik stel specifieke rechten en toegangsbeperkingen in voor een gedeeld bestand.","junior":"Ik deel zelfstandig een bestand met een klasgenoot door middel van deelopties binnen het platform.","starter":"Ik deel met enige hulp een bestand met een klasgenoot."},{"niveau_leerling":"Junior","gewenst_niveau":"Gevorderd","naam":"Delen met een klasgenoot","expert":"Ik gebruik de meest efficiënte manier om content te delen met klasgenoten.","gevorderd":"Ik gebruik een efficiënte manier om content te delen met klasgenoten.","junior":"Ik deel content met klasgenoten maar kies niet altijd voor een efficiënte manier.","starter":"Ik deel onder begeleiding content met klasgenoten."}]},"BAS - B25":{"sheet":"BAS - B25","leerlijn":"ICT-basisvaardigheden","goal":"DIG 1.34 – Reflecteren op de meerwaarde van het gebruik van digitale toepassingen.","fase":"FASE 4","criteria":[{"niveau_leerling":"Starter","gewenst_niveau":"Gevorderd","naam":"Voorbeelden van digitale toepassingen in ons dagelijks leven","expert":"Ik noem 5 of meer digitale toepassingen op en beschrijf duidelijk hoe ik ze in mijn dagelijkse leven gebruik.","gevorderd":"Ik noem 3 à 4 digitale toepassingen op en geef een beschrijving van hoe ik ze gebruik in mijn dagelijks leven.","junior":"Ik noem 1 à 2 digitale toepassingen op, maar geef beperkte beschrijvingen van hoe ik ze gebruik.","starter":"Ik noem geen of slechts één digitale toepassing en geef geen beschrijving van hoe ik deze gebruik."},{"niveau_leerling":"Gevorderd","gewenst_niveau":"Gevorderd","naam":"Vergelijking met vroeger","expert":"Ik vergelijk gedetailleerd  voorwerpen en systemen van vroeger en nu, en reflecteer op de meerwaarde van digitale toepassingen.","gevorderd":"Ik vergelijk duidelijk meerdere voorwerpen en systemen van  vroeger en nu, en reflecteer op de meerwaarde van digitale toepassingen.","junior":"Ik vergelijk enkele voorwerpen en vroeger en nu, met beperkte reflectie op de meerwaarde van digitale toepassingen","starter":"Ik vergelijk een enkel voorwerp en systeem van vroeger en nu, en toon geen reflectie op de meerwaarde van digitale toepassingen."},{"niveau_leerling":"Expert","gewenst_niveau":"Gevorderd","naam":"Voordelen en nadelen digitale toepassingen","expert":"Ik noem meerdere voordelen en nadelen van digitale toepassingen en maak gedetailleerde en nauwkeurige vergelijkingen van hun impact op mijn dagelijks leven.","gevorderd":"Ik noem enkele voordelen en nadelen van digitale toepassingen en maak duidelijke vergelijkingen van hun impact op mijn dagelijks leven.","junior":"Ik noem enkele voordelen en nadelen van digitale toepassingen en maak basisvergelijkingen van hun impact op mijn dagelijks leven.","starter":"Ik noem weinig tot geen voordelen en nadelen van digitale toepassingen en maak weinig tot geen vergelijkingen van hun impact op mijn dagelijks leven."},{"niveau_leerling":"Starter","gewenst_niveau":"Gevorderd","naam":"Invloed artificiële intelligentie","expert":"Ik benoem meerdere gevaren en toepassingen van AI en maak duidelijke vergelijkingen.","gevorderd":"Ik benoem enkele gevaren en toepassingen van AI en maak basisvergelijkingen.","junior":"Ik benoem enkele gevaren en toepassingen van AI.","starter":"Ik benoem weinig tot geen gevaren en toepassingen van AI."}]}};
+
+let currentSheet = null;
+let currentMoment = 'begin';   // 'begin' | 'eind'
+let scores = {};               // verwijst naar DB.single[sheet][moment].scores
+let makeStep = 1;
+let cRows = [{naam:'',starter:'',junior:'',gevorderd:'',expert:''}];
+
+// klas state
+let klasLeerlingen = [];
+let klasCurrentIdx = 0;
+let klasMoment = 'begin';
+let klasScores = {};           // verwijst naar huidige klas+moment: {leerlingIdx -> scoresObj}
+let currentKlasId = null;
+
+// ─── PERSISTENTIE (localStorage) ───
+const STORE_KEY = 'rubricsDG_v1';
+let DB = { custom:{}, single:{}, klas:{}, lastKlas:null };
+
+function saveDB() {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(DB)); flashSaved(); }
+  catch(e){ console.warn('Opslaan mislukt', e); }
+}
+function loadDB() {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if (raw) DB = Object.assign({custom:{},single:{},klas:{},lastKlas:null}, JSON.parse(raw));
+  } catch(e){}
+  DB.custom = DB.custom||{}; DB.single = DB.single||{}; DB.klas = DB.klas||{};
+  // herstel zelfgemaakte rubrics
+  Object.keys(DB.custom).forEach(k => { RD[k] = DB.custom[k]; });
+}
+
+let _saveTimer = null;
+function flashSaved() {
+  const el = document.getElementById('saveHint');
+  if (!el) return;
+  el.textContent = '✓ Opgeslagen';
+  el.style.opacity = '1';
+  clearTimeout(_saveTimer);
+  _saveTimer = setTimeout(()=>{ el.style.opacity = '.55'; el.textContent = '✓ Automatisch opgeslagen'; }, 1200);
+}
+
+function emptyEval(){ return {datum:'', scores:{}}; }
+function ensureSingle(sheet){
+  if(!DB.single[sheet]) DB.single[sheet] = { naam:'', klas:'', begin:emptyEval(), eind:emptyEval() };
+  const rec = DB.single[sheet];
+  if(!rec.begin) rec.begin = emptyEval();
+  if(!rec.eind) rec.eind = emptyEval();
+  return rec;
+}
+
+function init() {
+  loadDB();
+  buildSidebar();
+  document.getElementById('klasLeerlingen').addEventListener('input', previewLeerlingen);
+  if (window.innerWidth <= 900) collapseSidebar(true);
+  window.addEventListener('resize', () => { if (window.innerWidth > 900) collapseSidebar(false); });
+  // Deep-link: open vanuit LeerLokaal via hash #sheet=BAS-B1
+  const hash = window.location.hash;
+  if (hash.startsWith('#sheet=')) {
+    const sheetKey = decodeURIComponent(hash.slice(7));
+    if (RD[sheetKey]) setTimeout(() => selectGoal(sheetKey), 50);
+  }
+}
+
+function isNarrow() { return window.innerWidth <= 900; }
+function collapseSidebar(state) {
+  const sb = document.getElementById('sidebar');
+  const btn = document.getElementById('sidebarToggle');
+  sb.classList.toggle('collapsed', state);
+  if (btn) btn.textContent = state ? '☰ Doelen' : '◀ Doelen';
+}
+
+// ─── SIDEBAR ───
+function buildSidebar() {
+  const tree = document.getElementById('goalTree');
+  const lls = ['ICT-basisvaardigheden','Computationeel denken','Mediawijsheid'];
+  const icons = {'ICT-basisvaardigheden':'💻','Computationeel denken':'🔢','Mediawijsheid':'📱'};
+  const dots = {'ICT-basisvaardigheden':'dot-ict','Computationeel denken':'dot-comp','Mediawijsheid':'dot-media'};
+  tree.innerHTML = '';
+  lls.forEach(ll => {
+    const items = Object.values(RD).filter(r => r.leerlijn === ll);
+    items.sort((a,b) => {
+      const an = parseInt((a.sheet.match(/\d+/) || [0])[0]);
+      const bn = parseInt((b.sheet.match(/\d+/) || [0])[0]);
+      return an - bn;
+    });
+    const g = document.createElement('div');
+    g.className = 'leerlijn-group';
+    const listId = 'list_'+ll.replace(/\s/g,'_');
+    g.innerHTML = `<div class="leerlijn-header open" onclick="toggleGrp(this,'${listId}')">
+      <span class="leerlijn-dot ${dots[ll]}"></span><span>${icons[ll]} ${ll}</span>
+      <span class="chevron">▶</span></div>
+      <div class="goal-list" id="${listId}">
+        ${items.map(r=>`<div class="goal-item" id="gi_${r.sheet}" onclick="selectGoal('${r.sheet}')"
+          ><span class="fase-badge">${r.fase||''}</span>${esc(r.goal||r.sheet)}</div>`).join('')}
+      </div>`;
+    tree.appendChild(g);
+  });
+}
+
+function toggleGrp(el, listId) {
+  el.classList.toggle('open');
+  const l = document.getElementById(listId);
+  if (l) l.style.display = el.classList.contains('open') ? '' : 'none';
+}
+
+function filterGoals() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  document.querySelectorAll('.goal-item').forEach(el => {
+    el.style.display = el.textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+}
+
+// ─── RUBRIC RENDERING ───
+function selectGoal(sheet) {
+  currentSheet = sheet;
+  const rec = ensureSingle(sheet);
+  scores = rec[currentMoment].scores;
+  document.querySelectorAll('.goal-item').forEach(e => e.classList.remove('active'));
+  const gi = document.getElementById('gi_'+sheet);
+  if (gi) gi.classList.add('active');
+  showRubricView(RD[sheet], 'rubricView');
+  document.getElementById('welcomeScreen').classList.add('hidden');
+  document.getElementById('rubricView').classList.remove('hidden');
+  document.getElementById('klasView').classList.add('hidden');
+  if (isNarrow()) collapseSidebar(true);
+}
+
+function lvClass(lv) {
+  return {starter:'lc-s',junior:'lc-j',gevorderd:'lc-g',expert:'lc-e'}[lv]||'';
+}
+
+// ─── GEDEELDE RUBRIC-OPBOUW (scores + kleurcodes zoals in de Excel) ───
+const LEVELS = ['starter','junior','gevorderd','expert'];
+const LEVEL_SCORE = {starter:10, junior:35, gevorderd:65, expert:90};
+const LEVEL_LABEL = {starter:'Starter', junior:'Junior', gevorderd:'Gevorderd', expert:'Expert'};
+const LEVEL_STARS = {starter:'⭐', junior:'⭐⭐', gevorderd:'⭐⭐⭐', expert:'⭐⭐⭐⭐'};
+
+function critKey(c, i) { return i+'_'+(c.naam||''); }
+
+// Gewenst niveau (streefnorm): override van leraar, anders de waarde uit de Excel
+function gewFor(c, key, scoresObj) {
+  const o = scoresObj['__gew__'+key];
+  return (o !== undefined ? o : (c.gewenst_niveau||'')).toLowerCase();
+}
+
+// Gemiddelde score, enkel over beoordeelde criteria (zoals AVERAGEIF "<>0" in de Excel)
+function computeAverage(r, scoresObj) {
+  let sum=0, n=0;
+  (r.criteria||[]).forEach((c,i) => {
+    const lv = scoresObj[critKey(c,i)];
+    if (lv && LEVEL_SCORE[lv]!=null) { sum += LEVEL_SCORE[lv]; n++; }
+  });
+  return n ? {avg:sum/n, n} : null;
+}
+
+// Kleurbalk-drempels exact zoals de Excel: >=65 blauw, >=50 groen, >=35 oranje, >0 rood
+function bandFor(avg) {
+  if (avg>=65) return {label:'Expert', col:'expert'};
+  if (avg>=50) return {label:'Gevorderd', col:'gevorderd'};
+  if (avg>=35) return {label:'Junior', col:'junior'};
+  if (avg>0)   return {label:'Starter', col:'starter'};
+  return null;
+}
+
+function bandHTML(r, scoresObj) {
+  const res = computeAverage(r, scoresObj);
+  if (!res) return `<div class="score-band band-empty">Nog geen niveau geregistreerd — klik op een vak om het behaalde niveau aan te duiden.</div>`;
+  const b = bandFor(res.avg);
+  return `<div class="score-band band-${b.col}">
+    <span>Gemiddeld behaald niveau: <b>${b.label}</b> <span style="font-weight:500;opacity:.8">(${res.n} ${res.n===1?'criterium':'criteria'} beoordeeld)</span></span>
+    <span class="band-score">${Math.round(res.avg)} / 100</span>
+  </div>`;
+}
+
+function legendHTML() {
+  return `<div class="legend">
+    <span class="lg lg-s">⭐ Starter</span>
+    <span class="lg lg-j">⭐⭐ Junior</span>
+    <span class="lg lg-g">⭐⭐⭐ Gevorderd</span>
+    <span class="lg lg-e">⭐⭐⭐⭐ Expert</span>
+    <span class="lg-note">Gekleurd vak = behaald niveau · gekleurde rand = streefnorm</span>
+  </div>`;
+}
+
+function levelCellsHTML(c, key, scoresObj, h) {
+  const sel = scoresObj[key]||null;
+  const gew = gewFor(c, key, scoresObj);
+  return LEVELS.map(lv => {
+    const text = c[lv]||'';
+    const isSel = sel===lv, isGew = gew===lv;
+    let cls = `lc ${lvClass(lv)}`;
+    if (isSel) cls += ' selected';
+    if (isGew) cls += ` niveau-gewenst-${lv}`;
+    const check = isSel ? '<span class="selected-checkmark">✓</span>' : '';
+    const onclk = h.interactive ? `onclick="${h.toggle}('${key}','${lv}')"` : '';
+    return `<td class="${cls}" ${onclk}>${check}${text ? esc(text) : '<span class="empty-c">—</span>'}</td>`;
+  }).join('');
+}
+
+function streefnormStatus(sel, gew) {
+  if (!sel || !gew) return '';
+  const o = {starter:1, junior:2, gevorderd:3, expert:4};
+  if (o[sel] === o[gew]) return `<div class="streef-status ok">✓ Streefnorm behaald</div>`;
+  if (o[sel] > o[gew]) return `<div class="streef-status above">▲ Boven streefnorm</div>`;
+  const diff = o[gew] - o[sel];
+  return `<div class="streef-status below">▼ ${diff} niveau${diff>1?'s':''} onder streefnorm</div>`;
+}
+
+function critCellHTML(c, key, scoresObj, h) {
+  const sel = scoresObj[key]||null;
+  const gew = gewFor(c, key, scoresObj);
+  const nvt = !!scoresObj['__nvt__'+key];
+  const scoreLine = nvt
+    ? `<div class="nvt-badge">🚫 Nog niet aan bod gekomen</div>`
+    : (sel
+      ? `<div class="crit-score">Score: <b>${LEVEL_SCORE[sel]}</b> <span style="opacity:.7">(${LEVEL_LABEL[sel]})</span></div>${streefnormStatus(sel, gew)}`
+      : `<div class="crit-score">Nog niet beoordeeld</div>`);
+  let streef, nvtBtn = '';
+  if (h.interactive) {
+    streef = `<div class="crit-streef">🎯 Streefnorm:
+      <select class="gew-select" onclick="event.stopPropagation()" onchange="${h.gew}('${key}',this.value)">
+        <option value=""${!gew?' selected':''}>—</option>
+        ${LEVELS.map(lv => `<option value="${lv}"${gew===lv?' selected':''}>${LEVEL_STARS[lv]} ${LEVEL_LABEL[lv]}</option>`).join('')}
+      </select></div>`;
+    nvtBtn = `<button class="nvt-btn${nvt?' on':''}" onclick="${h.nvt}('${key}')" title="Markeer dat dit criterium nog niet aan bod kwam">🚫 Nog niet aan bod</button>`;
+  } else {
+    streef = gew ? `<div class="crit-streef">🎯 Streefnorm: <b>${LEVEL_LABEL[gew]}</b></div>` : '';
+  }
+  return `<td class="td-crit"><div class="crit-name">${esc(c.naam||'')}</div>${streef}${scoreLine}${nvtBtn}</td>`;
+}
+
+function opmRowHTML(c, key, scoresObj, h) {
+  const val = scoresObj['__opm__'+key]||'';
+  if (h.interactive) {
+    return `<tr class="opm-tr"><td colspan="5">
+      <div class="opm-label">💬 Opmerking bij “${esc(c.naam||'')}”</div>
+      <textarea class="opm-field" placeholder="Optionele opmerking / feedback…" oninput="${h.opm}('${key}',this.value)">${esc(val)}</textarea>
+    </td></tr>`;
+  }
+  return val ? `<tr class="opm-tr"><td colspan="5"><div class="opm-static">💬 ${esc(val)}</div></td></tr>` : '';
+}
+
+function rubricTableHTML(r, scoresObj, h) {
+  if (!(r.criteria && r.criteria.length))
+    return '<div style="padding:32px;text-align:center;color:var(--muted)">Geen criteria voor dit doel.</div>';
+  let rows = '';
+  r.criteria.forEach((c,i) => {
+    const key = critKey(c,i);
+    const nvt = !!scoresObj['__nvt__'+key];
+    rows += `<tr class="${nvt?'is-nvt':''}">${critCellHTML(c,key,scoresObj,h)}${levelCellsHTML(c,key,scoresObj,h)}</tr>`;
+    rows += opmRowHTML(c,key,scoresObj,h);
+  });
+  return `${bandHTML(r,scoresObj)}${legendHTML()}
+    <table class="rt">
+      <colgroup><col class="c-crit">${LEVELS.map(()=>'<col class="c-level">').join('')}</colgroup>
+      <thead><tr>
+        <th class="th-crit">Evaluatie</th>
+        <th class="th-s"><span class="stars">⭐</span>Starter</th>
+        <th class="th-j"><span class="stars">⭐⭐</span>Junior</th>
+        <th class="th-g"><span class="stars">⭐⭐⭐</span>Gevorderd</th>
+        <th class="th-e"><span class="stars">⭐⭐⭐⭐</span>Expert</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+function overallCommentHTML(scoresObj, h, naam) {
+  const val = scoresObj['__opm_alg__']||'';
+  if (h.interactive) {
+    return `<div class="overall-comment no-print"><label>📝 Algemene feedback${naam?' voor '+esc(naam):''}</label>
+      <textarea class="opm-field" style="min-height:60px" placeholder="Algemene feedback voor de leerling / het rapport…" oninput="${h.opmAlg}(this.value)">${esc(val)}</textarea></div>`;
+  }
+  return val ? `<div class="overall-comment"><label>📝 Algemene feedback</label><div class="opm-static">${esc(val)}</div></div>` : '';
+}
+
+function renderRubricHTML(r, scoresObj, studentName, studentKlas, studentDate, isKlas) {
+  if (!r) return '';
+  const ll = r.leerlijn||'';
+  const icon = ll.includes('Computationeel')?'🔢':ll.includes('Media')?'📱':'💻';
+  const interactive = !isKlas;
+  const h = interactive
+    ? {interactive:true, toggle:'toggleScore', gew:'setGewenst', nvt:'setNvt', opm:'setOpm', opmAlg:'setOpmAlg'}
+    : {interactive:false};
+
+  return `
+    <div class="rubric-header">
+      <div class="icon">${icon}</div>
+      <div>
+        <div><span class="tag">${esc(ll)}</span>${r.fase?`<span class="tag">${esc(r.fase)}</span>`:''}</div>
+        <h2>${esc(r.goal||r.sheet)}</h2>
+        ${studentName ? `<div style="font-size:12px;opacity:.85;margin-top:5px;">👤 ${esc(studentName)}${studentKlas?' · '+esc(studentKlas):''}${studentDate?' · '+esc(studentDate):''}</div>` : ''}
+      </div>
+      ${interactive ? `<div class="rubric-header-actions">
+        <button class="btn btn-secondary btn-sm btn-icon" onclick="doPrint()" title="Afdrukken">🖨️</button>
+        <button class="btn btn-secondary btn-sm btn-icon" onclick="resetScores()" title="Wissen">🗑️</button>
+      </div>` : ''}
+    </div>
+    <div class="rubric-table-wrap">
+      ${rubricTableHTML(r, scoresObj, h)}
+    </div>
+    ${overallCommentHTML(scoresObj, h, studentName)}`;
+}
+
+function showRubricView(r, containerId) {
+  const container = document.getElementById(containerId);
+  const rec = ensureSingle(currentSheet);
+  const dateVal = rec[currentMoment].datum || '';
+  compareMode = false;
+
+  container.innerHTML = `
+    <div class="rubric-toolbar no-print">
+      <div class="moment-toggle">
+        <button class="${currentMoment==='begin'?'active':''}" onclick="setMoment('begin')">① Beginmeting</button>
+        <button class="${currentMoment==='eind'?'active':''}" onclick="setMoment('eind')">② Eindmeting</button>
+      </div>
+      <button class="btn btn-outline btn-sm" onclick="toggleCompare()">📈 Vergelijk begin/eind</button>
+      <button class="btn btn-outline btn-sm" onclick="exportData()" title="Alles opslaan als bestand">⬇️ Back-up</button>
+      <button class="btn btn-outline btn-sm" onclick="document.getElementById('importFile').click()" title="Back-up laden">⬆️ Importeren</button>
+      <input type="file" id="importFile" accept="application/json,.json" style="display:none" onchange="importData(this)">
+      ${DB.klas[currentSheet] ? `<button class="btn btn-purple btn-sm" onclick="openKlas('${currentSheet}')" title="Open de klasrubric voor dit doel">👥 Open klasrubric (${(DB.klas[currentSheet].leerlingen||[]).length})</button>` : ''}
+      <button class="btn btn-outline btn-sm" onclick="printSelfEval()" title="Printbare lege rubric voor leerling-zelfbeoordeling">📄 Leerling-zelfbeoordeling</button>
+      <span class="save-hint" id="saveHint" style="opacity:.55">✓ Automatisch opgeslagen</span>
+    </div>
+    <div class="student-bar no-print">
+      <div class="sf"><label>Naam leerling</label><input type="text" id="sNaam" value="${esc(rec.naam)}" placeholder="Naam leerling" onchange="updateStudentInfo()"></div>
+      <div class="sf"><label>Klas</label><input type="text" id="sKlas" value="${esc(rec.klas)}" placeholder="Klas" onchange="updateStudentInfo()"></div>
+      <div class="sf"><label>Datum ${currentMoment==='begin'?'beginmeting':'eindmeting'}</label><input type="text" id="sDatum" value="${esc(dateVal||today())}" placeholder="Datum" onchange="updateStudentInfo()"></div>
+      <button class="reset-btn" onclick="resetScores()" title="Scores van dit meetmoment wissen">🗑 Wissen</button>
+    </div>
+    <div id="innerRubric">${renderRubricHTML(r, scores, rec.naam, rec.klas, dateVal||today(), false)}</div>
+    <div id="compareView" class="hidden"></div>`;
+}
+
+function updateStudentInfo() {
+  if (!currentSheet) return;
+  const rec = ensureSingle(currentSheet);
+  rec.naam = document.getElementById('sNaam')?.value||'';
+  rec.klas = document.getElementById('sKlas')?.value||'';
+  rec[currentMoment].datum = document.getElementById('sDatum')?.value||'';
+  saveDB();
+  rerenderRubric();
+}
+
+function rerenderRubric() {
+  if (!currentSheet) return;
+  const rec = ensureSingle(currentSheet);
+  document.getElementById('innerRubric').innerHTML =
+    renderRubricHTML(RD[currentSheet], scores, rec.naam, rec.klas, rec[currentMoment].datum||today(), false);
+}
+
+function toggleScore(key, lv) {
+  // Klik op een vak = behaald niveau. Opnieuw klikken op hetzelfde vak wist het.
+  scores[key] = scores[key] === lv ? null : lv;
+  if (scores[key]) scores['__nvt__'+key] = false;
+  saveDB();
+  rerenderRubric();
+}
+
+function setGewenst(key, val) { scores['__gew__'+key] = val; saveDB(); rerenderRubric(); }
+
+function setNvt(key) {
+  const on = !scores['__nvt__'+key];
+  scores['__nvt__'+key] = on;
+  if (on) scores[key] = null;   // niveau wissen wanneer "nog niet aan bod"
+  saveDB();
+  rerenderRubric();
+}
+
+// Opmerkingen wijzigen niet de kleuren/layout → geen volledige rerender (focus behouden)
+function setOpm(key, val) { scores['__opm__'+key] = val; saveDB(); }
+function setOpmAlg(val) { scores['__opm_alg__'] = val; saveDB(); }
+
+function resetScores() {
+  if (!currentSheet) return;
+  const rec = ensureSingle(currentSheet);
+  rec[currentMoment].scores = {};
+  scores = rec[currentMoment].scores;
+  saveDB();
+  rerenderRubric();
+}
+
+function setMoment(m) {
+  if (!currentSheet) return;
+  currentMoment = m;
+  const rec = ensureSingle(currentSheet);
+  scores = rec[currentMoment].scores;
+  showRubricView(RD[currentSheet], 'rubricView');
+}
+
+// ─── GROEIVERGELIJKING (begin vs eind) ───
+let compareMode = false;
+function toggleCompare() {
+  compareMode = !compareMode;
+  const cv = document.getElementById('compareView');
+  const ir = document.getElementById('innerRubric');
+  if (compareMode) { cv.innerHTML = renderCompare(RD[currentSheet]); cv.classList.remove('hidden'); ir.classList.add('hidden'); }
+  else { cv.classList.add('hidden'); ir.classList.remove('hidden'); }
+}
+function lvlChip(lv) { return lv ? `<span class="cmp-lvl l-${lv}">${LEVEL_STARS[lv]} ${LEVEL_LABEL[lv]}</span>` : `<span class="cmp-lvl l-none">— niet beoordeeld</span>`; }
+function cmpArrow(b, e) {
+  const o = {starter:1, junior:2, gevorderd:3, expert:4};
+  if (!b || !e) return {sym:'', cls:'cmp-same'};
+  if (o[e] > o[b]) return {sym:'▲', cls:'cmp-up'};
+  if (o[e] < o[b]) return {sym:'▼', cls:'cmp-down'};
+  return {sym:'=', cls:'cmp-same'};
+}
+function renderCompare(r) {
+  const rec = ensureSingle(currentSheet);
+  const b = rec.begin.scores, e = rec.eind.scores;
+  let rows = '';
+  (r.criteria||[]).forEach((c,i) => {
+    const key = critKey(c,i);
+    const ar = cmpArrow(b[key], e[key]);
+    rows += `<tr><td><b>${esc(c.naam||'')}</b></td><td>${lvlChip(b[key])}</td><td class="cmp-arrow ${ar.cls}">${ar.sym}</td><td>${lvlChip(e[key])}</td></tr>`;
+  });
+  const ba = computeAverage(r, b), ea = computeAverage(r, e);
+  return `<div class="cmp-wrap"><table class="cmp-table">
+    <thead><tr><th>Criterium</th><th>① Beginmeting</th><th>Evolutie</th><th>② Eindmeting</th></tr></thead>
+    <tbody>${rows||'<tr><td colspan="4" style="color:var(--muted)">Nog geen criteria.</td></tr>'}</tbody>
+    <tfoot><tr><th>Gemiddelde</th><th>${ba?Math.round(ba.avg)+' / 100':'—'}</th><th></th><th>${ea?Math.round(ea.avg)+' / 100':'—'}</th></tr></tfoot>
+  </table></div>`;
+}
+
+// ─── EXPORT / IMPORT (volledige back-up) ───
+function exportData() {
+  const blob = new Blob([JSON.stringify(DB, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'rubrics-backup-'+new Date().toISOString().slice(0,10)+'.json';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 1000);
+  showToast('💾 Back-up gedownload');
+}
+function importData(input) {
+  const f = input.files && input.files[0];
+  if (!f) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const d = JSON.parse(reader.result);
+      if (!d || typeof d !== 'object') throw 0;
+      DB = Object.assign({custom:{},single:{},klas:{},lastKlas:null}, d);
+      DB.custom = DB.custom||{}; DB.single = DB.single||{}; DB.klas = DB.klas||{};
+      Object.keys(DB.custom).forEach(k => { RD[k] = DB.custom[k]; });
+      saveDB(); buildSidebar();
+      if (currentSheet) { const rec = ensureSingle(currentSheet); scores = rec[currentMoment].scores; selectGoal(currentSheet); }
+      showToast('✅ Back-up geïmporteerd');
+    } catch(e) { showToast('⚠️ Ongeldig back-upbestand'); }
+    input.value = '';
+  };
+  reader.readAsText(f);
+}
+
+// ─── KLAS ───
+function openKlasModal() {
+  if (!currentSheet && Object.keys(RD).length) {
+    showToast('Selecteer eerst een leerplandoel in de zijbalk');
+    return;
+  }
+  // Bestaat er al een klasrubric voor dit doel? → meteen openen, niet overschrijven.
+  if (currentSheet && DB.klas[currentSheet]) { openKlas(currentSheet); return; }
+  // Anders: voorinvullen met de laatst gebruikte klas (namen hergebruiken).
+  const pre = DB.lastKlas;
+  document.getElementById('klasNaam').value = pre ? (pre.naam||'') : '';
+  document.getElementById('klasLeerlingen').value = pre ? (pre.leerlingen||[]).join('\n') : '';
+  previewLeerlingen();
+  document.getElementById('klasOverlay').classList.add('open');
+}
+function closeKlasModal() { document.getElementById('klasOverlay').classList.remove('open'); }
+
+function previewLeerlingen() {
+  const names = parseLeerlingen();
+  document.getElementById('klasCount').textContent = names.length ? `${names.length} leerling${names.length>1?'en':''}` : '';
+  document.getElementById('klasLeerlingPreview').innerHTML = names.length 
+    ? names.slice(0,5).map(n=>`<span style="display:inline-block;margin:2px 4px;padding:2px 7px;background:var(--blue-light);border-radius:4px;font-size:11.5px;">${esc(n)}</span>`).join('')+(names.length>5?`<span style="font-size:11px;color:var(--muted)"> +${names.length-5} meer</span>`:'')
+    : '';
+}
+
+function parseLeerlingen() {
+  const raw = document.getElementById('klasLeerlingen').value.trim();
+  if (!raw) return [];
+  // Try newline split first, then comma, then semicolon
+  let names;
+  if (raw.includes('\n')) names = raw.split('\n');
+  else if (raw.includes(';')) names = raw.split(';');
+  else if (raw.includes(',')) names = raw.split(',');
+  else names = [raw];
+  return names.map(n => n.trim()).filter(n => n.length > 0);
+}
+
+function ensureKlas(sheet) {
+  const k = DB.klas[sheet];
+  if (!k) return null;
+  if (!k.begin) k.begin = {datum:'', perLeerling:{}};
+  if (!k.eind) k.eind = {datum:'', perLeerling:{}};
+  k.begin.perLeerling = k.begin.perLeerling||{};
+  k.eind.perLeerling = k.eind.perLeerling||{};
+  (k.leerlingen||[]).forEach((_,i) => {
+    if (!k.begin.perLeerling[i]) k.begin.perLeerling[i] = {};
+    if (!k.eind.perLeerling[i]) k.eind.perLeerling[i] = {};
+  });
+  return k;
+}
+
+function generateKlas() {
+  const names = parseLeerlingen();
+  const klas = document.getElementById('klasNaam').value.trim();
+  if (!names.length) { showToast('Voer minstens één naam in'); return; }
+  if (!currentSheet) { showToast('Selecteer eerst een doel in de zijbalk'); return; }
+  if (DB.klas[currentSheet] && !confirm('Er bestaat al een klasrubric voor dit doel. Overschrijven? Ingevulde scores gaan dan verloren.')) return;
+  const k = { naam:klas, leerlingen:names, begin:{datum:'',perLeerling:{}}, eind:{datum:'',perLeerling:{}} };
+  names.forEach((_,i)=>{ k.begin.perLeerling[i]={}; k.eind.perLeerling[i]={}; });
+  DB.klas[currentSheet] = k;
+  DB.lastKlas = { naam:klas, leerlingen:names };
+  saveDB();
+  closeKlasModal();
+  klasMoment = 'begin'; klasCurrentIdx = 0;
+  openKlas(currentSheet);
+}
+
+function openKlas(sheet) {
+  currentSheet = sheet;
+  const k = ensureKlas(sheet);
+  if (!k) { showToast('Geen klasrubric voor dit doel'); return; }
+  currentKlasId = sheet;
+  klasLeerlingen = k.leerlingen;
+  if (klasCurrentIdx >= klasLeerlingen.length) klasCurrentIdx = 0;
+  klasScores = k[klasMoment].perLeerling;
+  renderKlasView();
+}
+
+function renderKlasView() {
+  const r = RD[currentSheet];
+  const k = ensureKlas(currentSheet);
+  if (!r || !k) return;
+  document.getElementById('welcomeScreen').classList.add('hidden');
+  document.getElementById('rubricView').classList.add('hidden');
+  const kv = document.getElementById('klasView');
+  kv.classList.remove('hidden');
+  klasScores = k[klasMoment].perLeerling;
+
+  const cur = klasLeerlingen[klasCurrentIdx];
+  const curScores = klasScores[klasCurrentIdx]||{};
+  const dateVal = k[klasMoment].datum||'';
+
+  kv.innerHTML = `
+    <div class="klas-header">
+      <div style="font-size:22px">👥</div>
+      <div>
+        <div style="font-size:11px;opacity:.7;margin-bottom:3px;">Klasrubric${k.naam?' – '+esc(k.naam):''}</div>
+        <div style="font-weight:700;font-size:15px;">${esc(r.goal||r.sheet)}</div>
+      </div>
+      <div style="margin-left:auto;display:flex;gap:7px;flex-wrap:wrap;">
+        <button class="btn btn-secondary btn-sm" onclick="showKlasHeatmap()" title="Overzicht van de hele klas">📊 Klasoverzicht</button>
+        <button class="btn btn-secondary btn-sm" onclick="printAllKlas()" title="Alle leerlingen afdrukken">🖨️ Alle afdrukken</button>
+        <button class="btn btn-secondary btn-sm" onclick="doPrint()">🖨️ Deze afdrukken</button>
+      </div>
+    </div>
+    <div class="rubric-toolbar no-print">
+      <div class="moment-toggle">
+        <button class="${klasMoment==='begin'?'active':''}" onclick="setKlasMoment('begin')">① Beginmeting</button>
+        <button class="${klasMoment==='eind'?'active':''}" onclick="setKlasMoment('eind')">② Eindmeting</button>
+      </div>
+      <span class="save-hint" id="saveHint" style="opacity:.55">✓ Automatisch opgeslagen</span>
+    </div>
+    <div class="klas-nav no-print">
+      <span class="kn-label">Leerling:</span>
+      <span id="klasNavBtns"></span>
+      <span class="kn-count" id="klasNavCount"></span>
+    </div>
+    <div class="student-bar no-print">
+      <div class="sf"><label>Naam</label><input type="text" value="${esc(cur)}" readonly style="background:#f0f4f8;"></div>
+      <div class="sf"><label>Klas</label><input type="text" id="ksKlas" value="${esc(k.naam)}" placeholder="Klas" onchange="updateKlasInfo()"></div>
+      <div class="sf"><label>Datum ${klasMoment==='begin'?'beginmeting':'eindmeting'}</label><input type="text" id="ksDatum" value="${esc(dateVal||today())}" placeholder="Datum" onchange="updateKlasInfo()"></div>
+      <button class="reset-btn" onclick="resetKlasScores()">🗑 Wissen</button>
+    </div>
+    <div id="klasInner">${renderRubricForKlas(r, curScores, cur, k.naam, true)}</div>`;
+  updateKlasNav();
+}
+
+function renderRubricForKlas(r, scoresObj, name, klas, interactive) {
+  const ll = r.leerlijn||'';
+  const icon = ll.includes('Computationeel')?'🔢':ll.includes('Media')?'📱':'💻';
+  const k = ensureKlas(currentSheet);
+  const d = (k ? k[klasMoment].datum : '') || today();
+  const h = interactive
+    ? {interactive:true, toggle:'toggleKlasScore', gew:'setKlasGewenst', nvt:'setKlasNvt', opm:'setKlasOpm', opmAlg:'setKlasOpmAlg'}
+    : {interactive:false};
+  return `<div class="rubric-header" style="border-radius:0">
+      <div class="icon">${icon}</div>
+      <div>
+        <div><span class="tag">${esc(ll)}</span>${r.fase?`<span class="tag">${esc(r.fase)}</span>`:''}${k?`<span class="tag">${klasMoment==='begin'?'Beginmeting':'Eindmeting'}</span>`:''}</div>
+        <h2>${esc(r.goal||r.sheet)}</h2>
+        ${name?`<div style="font-size:12px;opacity:.85;margin-top:4px;">👤 ${esc(name)}${klas?' · '+esc(klas):''}${d?' · '+esc(d):''}</div>`:''}
+      </div>
+    </div>
+    <div class="rubric-table-wrap" style="border-radius:0 0 12px 12px">
+      ${rubricTableHTML(r, scoresObj, h)}
+    </div>
+    ${overallCommentHTML(scoresObj, h, name)}`;
+}
+
+function klasRerender() {
+  const r = RD[currentSheet];
+  const k = ensureKlas(currentSheet);
+  const name = klasLeerlingen[klasCurrentIdx];
+  document.getElementById('klasInner').innerHTML = renderRubricForKlas(r, klasScores[klasCurrentIdx]||{}, name, k.naam, true);
+  updateKlasNav();
+}
+
+function toggleKlasScore(key, lv) {
+  const sc = klasScores[klasCurrentIdx];
+  sc[key] = sc[key] === lv ? null : lv;
+  if (sc[key]) sc['__nvt__'+key] = false;
+  saveDB();
+  klasRerender();
+}
+function setKlasGewenst(key, val) { klasScores[klasCurrentIdx]['__gew__'+key] = val; saveDB(); klasRerender(); }
+function setKlasNvt(key) {
+  const sc = klasScores[klasCurrentIdx];
+  const on = !sc['__nvt__'+key];
+  sc['__nvt__'+key] = on;
+  if (on) sc[key] = null;
+  saveDB();
+  klasRerender();
+}
+function setKlasOpm(key, val) { klasScores[klasCurrentIdx]['__opm__'+key] = val; saveDB(); }
+function setKlasOpmAlg(val) { klasScores[klasCurrentIdx]['__opm_alg__'] = val; saveDB(); }
+
+function resetKlasScores() {
+  klasScores[klasCurrentIdx] = {};
+  const k = ensureKlas(currentSheet);
+  k[klasMoment].perLeerling[klasCurrentIdx] = klasScores[klasCurrentIdx];
+  saveDB();
+  klasRerender();
+}
+
+function updateKlasInfo() {
+  const k = ensureKlas(currentSheet);
+  if (!k) return;
+  k.naam = document.getElementById('ksKlas')?.value||'';
+  k[klasMoment].datum = document.getElementById('ksDatum')?.value||'';
+  DB.lastKlas = { naam:k.naam, leerlingen:k.leerlingen };
+  saveDB();
+}
+
+function setKlasMoment(m) {
+  klasMoment = m;
+  const k = ensureKlas(currentSheet);
+  klasScores = k[klasMoment].perLeerling;
+  renderKlasView();
+}
+
+function switchLeerling(idx) {
+  klasCurrentIdx = idx;
+  renderKlasView();
+}
+
+function hasScore(idx) {
+  const sc = klasScores[idx]||{};
+  return Object.keys(sc).some(k => !k.startsWith('__') && sc[k]);
+}
+
+function updateKlasNav() {
+  const btns = klasLeerlingen.map((n,i) =>
+    `<button class="leerling-btn${i===klasCurrentIdx?' active':''}${hasScore(i)?' scored':''}" onclick="switchLeerling(${i})">${esc(n)}</button>`
+  ).join('');
+  const e = document.getElementById('klasNavBtns'); if (e) e.innerHTML = btns;
+  const c = document.getElementById('klasNavCount'); if (c) c.textContent = `(${klasCurrentIdx+1}/${klasLeerlingen.length})`;
+}
+
+// ─── KLASOVERZICHT (HEATMAP) ───
+function showKlasHeatmap() {
+  const r = RD[currentSheet];
+  const k = ensureKlas(currentSheet);
+  if (!r || !k) return;
+  const per = k[klasMoment].perLeerling;
+  const crits = r.criteria||[];
+  const initial = {starter:'S', junior:'J', gevorderd:'G', expert:'E'};
+  const head = `<th class="h-name">Leerling</th>` +
+    crits.map((c,i)=>`<th title="${esc(c.naam||'')}">${esc((c.naam||('C'+(i+1))).length>16?(c.naam.slice(0,15)+'…'):(c.naam||('C'+(i+1))))}</th>`).join('') +
+    `<th>Gem.</th>`;
+  const body = klasLeerlingen.map((name,idx) => {
+    const sc = per[idx]||{};
+    const cells = crits.map((c,i) => {
+      const key = critKey(c,i); const lv = sc[key]; const nvt = sc['__nvt__'+key];
+      if (nvt) return `<td class="heat-cell h-nvt" title="Nog niet aan bod">·</td>`;
+      if (!lv) return `<td class="heat-cell h-none" title="Niet beoordeeld">–</td>`;
+      return `<td class="heat-cell h-${lv}" title="${LEVEL_LABEL[lv]}">${initial[lv]}</td>`;
+    }).join('');
+    const avg = computeAverage(r, sc);
+    const b = avg ? bandFor(avg.avg) : null;
+    const avgCell = avg ? `<td class="h-avg heat-cell h-${b.col}">${Math.round(avg.avg)}</td>` : `<td class="h-avg heat-cell h-none">–</td>`;
+    return `<tr><td class="h-name" title="Open ${esc(name)}" onclick="switchLeerlingFromHeat(${idx})">${esc(name)}</td>${cells}${avgCell}</tr>`;
+  }).join('');
+  const kv = document.getElementById('klasView');
+  kv.innerHTML = `
+    <div class="klas-header">
+      <div style="font-size:22px">📊</div>
+      <div>
+        <div style="font-size:11px;opacity:.7;margin-bottom:3px;">Klasoverzicht${k.naam?' – '+esc(k.naam):''} · ${klasMoment==='begin'?'Beginmeting':'Eindmeting'}</div>
+        <div style="font-weight:700;font-size:15px;">${esc(r.goal||r.sheet)}</div>
+      </div>
+      <div style="margin-left:auto;display:flex;gap:7px;flex-wrap:wrap;">
+        <button class="btn btn-secondary btn-sm" onclick="renderKlasView()">← Terug naar leerling</button>
+        <button class="btn btn-secondary btn-sm" onclick="doPrint()">🖨️ Afdrukken</button>
+      </div>
+    </div>
+    <div class="rubric-toolbar no-print">
+      <div class="moment-toggle">
+        <button class="${klasMoment==='begin'?'active':''}" onclick="setKlasMoment('begin');showKlasHeatmap()">① Beginmeting</button>
+        <button class="${klasMoment==='eind'?'active':''}" onclick="setKlasMoment('eind');showKlasHeatmap()">② Eindmeting</button>
+      </div>
+    </div>
+    <div class="legend"><span class="lg lg-s">S Starter</span><span class="lg lg-j">J Junior</span><span class="lg lg-g">G Gevorderd</span><span class="lg lg-e">E Expert</span><span class="lg-note">– niet beoordeeld · · nog niet aan bod · klik op een naam om te scoren</span></div>
+    <div class="heat-wrap"><table class="heat-table"><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
+}
+function switchLeerlingFromHeat(idx) { klasCurrentIdx = idx; renderKlasView(); }
+
+function printAllKlas() {
+  const r = RD[currentSheet];
+  const k = ensureKlas(currentSheet);
+  if (!r || !k) return;
+  const per = k[klasMoment].perLeerling;
+  const printWin = window.open('', '_blank');
+  const css = document.querySelector('style').textContent;
+  const pages = klasLeerlingen.map((name, i) =>
+    `<div class="${i>0?'page-break':''}">${renderRubricForKlas(r, per[i]||{}, name, k.naam, false)}</div>`
+  ).join('');
+  printWin.document.write(`<!DOCTYPE html><html lang="nl"><head><meta charset="UTF-8"><style>${css} .klas-nav,.student-bar,.app-header,.rubric-toolbar{display:none!important;} body{background:white;} .lc{cursor:default;}</style></head><body>${pages}</body></html>`);
+  printWin.document.close();
+  printWin.focus();
+  setTimeout(() => { printWin.print(); }, 600);
+}
+
+// ─── MAKE RUBRIC MODAL ───
+function openMakeModal() {
+  makeStep = 1;
+  cRows = [{naam:'',starter:'',junior:'',gevorderd:'',expert:''}];
+  document.getElementById('newLL').value = '';
+  document.getElementById('newGoalSel').innerHTML = '<option value="">— Selecteer bestaand doel —</option>';
+  document.getElementById('newGoalCustom').value = '';
+  document.getElementById('newFase').value = '';
+  renderCRows();
+  updateMakeStep();
+  document.getElementById('makeOverlay').classList.add('open');
+}
+function closeMakeModal() { document.getElementById('makeOverlay').classList.remove('open'); }
+
+function updateMakeStep() {
+  for (let i=1;i<=4;i++) {
+    document.getElementById('mS'+i).classList.toggle('hidden', i!==makeStep);
+    const el = document.getElementById('mStep'+i);
+    el.className = 'step'+(i<makeStep?' done':i===makeStep?' active':'');
+    el.querySelector('.step-c').textContent = i<makeStep?'✓':i;
+  }
+  document.getElementById('makePrevBtn').style.visibility = makeStep>1?'visible':'hidden';
+  document.getElementById('makeNextBtn').textContent = makeStep===4?'✅ Genereer rubric':'Volgende →';
+}
+
+function makeNext() {
+  if (makeStep===1) {
+    if (!document.getElementById('newLL').value) { showToast('Kies eerst een leerlijn'); return; }
+    makeStep=2;
+  } else if (makeStep===2) {
+    const g = document.getElementById('newGoalSel').value || document.getElementById('newGoalCustom').value;
+    if (!g) { showToast('Kies of typ een leerplandoel'); return; }
+    makeStep=3;
+  } else if (makeStep===3) {
+    syncCRows();
+    let hasName = cRows.some(c=>c.naam.trim());
+    if (!hasName) { showToast('Voeg minstens één criterium toe met een naam'); return; }
+    renderMakePreview();
+    makeStep=4;
+  } else if (makeStep===4) {
+    doGenerateRubric(); return;
+  }
+  updateMakeStep();
+}
+
+function makePrev() {
+  if (makeStep>1) { makeStep--; updateMakeStep(); }
+}
+
+function onLLChange() {
+  const ll = document.getElementById('newLL').value;
+  const sel = document.getElementById('newGoalSel');
+  sel.innerHTML = '<option value="">— Selecteer bestaand doel —</option>';
+  if (!ll) return;
+  const items = Object.values(RD).filter(r=>r.leerlijn===ll);
+  items.sort((a,b)=>{
+    const an=parseInt((a.sheet.match(/\d+/)||[0])[0]);
+    const bn=parseInt((b.sheet.match(/\d+/)||[0])[0]);
+    return an-bn;
+  });
+  items.forEach(r=>{
+    const o = document.createElement('option');
+    o.value = r.sheet;
+    o.textContent = r.goal||r.sheet;
+    sel.appendChild(o);
+  });
+}
+
+function addCRow() {
+  syncCRows();
+  cRows.push({naam:'',starter:'',junior:'',gevorderd:'',expert:''});
+  renderCRows();
+}
+function removeCRow(idx) {
+  syncCRows();
+  cRows.splice(idx,1);
+  if (!cRows.length) cRows=[{naam:'',starter:'',junior:'',gevorderd:'',expert:''}];
+  renderCRows();
+}
+function syncCRows() {
+  document.querySelectorAll('.cr-row').forEach((row,i)=>{
+    if (!cRows[i]) cRows[i]={};
+    cRows[i].naam = row.querySelector('.cn-input')?.value||'';
+    cRows[i].starter = row.querySelector('.ta-s')?.value||'';
+    cRows[i].junior = row.querySelector('.ta-j')?.value||'';
+    cRows[i].gevorderd = row.querySelector('.ta-g')?.value||'';
+    cRows[i].expert = row.querySelector('.ta-e')?.value||'';
+  });
+}
+function renderCRows() {
+  document.getElementById('cbRows').innerHTML = cRows.map((c,i)=>`
+    <div class="cr cr-row">
+      <div class="cc" style="display:flex;flex-direction:column;gap:3px;">
+        <input class="cn-input" type="text" placeholder="Naam criterium" value="${esc(c.naam)}">
+        <button class="rm-cr" onclick="removeCRow(${i})">🗑</button>
+      </div>
+      <div class="cc"><textarea class="ta-s" placeholder="Starter...">${esc(c.starter)}</textarea></div>
+      <div class="cc"><textarea class="ta-j" placeholder="Junior...">${esc(c.junior)}</textarea></div>
+      <div class="cc"><textarea class="ta-g" placeholder="Gevorderd...">${esc(c.gevorderd)}</textarea></div>
+      <div class="cc"><textarea class="ta-e" placeholder="Expert...">${esc(c.expert)}</textarea></div>
+    </div>`).join('');
+}
+
+function renderMakePreview() {
+  const goal = getMakeGoal();
+  const prev = document.getElementById('mS4Preview');
+  let html = `<div style="font-weight:600;font-size:13px;margin-bottom:12px;padding:10px;background:var(--bg);border-radius:7px;">📋 ${esc(goal.goal)}</div>`;
+  cRows.filter(c=>c.naam).forEach(c=>{
+    html += `<div style="margin-bottom:12px;border:1px solid var(--border);border-radius:8px;overflow:hidden;">
+      <div style="background:var(--bg);padding:8px 12px;font-weight:700;font-size:12.5px;">${esc(c.naam)}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;">
+        <div style="padding:9px 11px;border-right:1px solid var(--border);border-top:3px solid var(--col-starter);font-size:12px;"><strong style="color:var(--col-starter-dark);font-size:10.5px;display:block;margin-bottom:4px;">⭐ STARTER</strong>${esc(c.starter)||'<em style="color:var(--muted)">—</em>'}</div>
+        <div style="padding:9px 11px;border-right:1px solid var(--border);border-top:3px solid var(--col-junior);font-size:12px;"><strong style="color:var(--col-junior-dark);font-size:10.5px;display:block;margin-bottom:4px;">⭐⭐ JUNIOR</strong>${esc(c.junior)||'<em style="color:var(--muted)">—</em>'}</div>
+        <div style="padding:9px 11px;border-right:1px solid var(--border);border-top:3px solid var(--col-gevorderd);font-size:12px;"><strong style="color:var(--col-gevorderd-dark);font-size:10.5px;display:block;margin-bottom:4px;">⭐⭐⭐ GEVORDERD</strong>${esc(c.gevorderd)||'<em style="color:var(--muted)">—</em>'}</div>
+        <div style="padding:9px 11px;border-top:3px solid var(--col-expert);font-size:12px;"><strong style="color:var(--col-expert-dark);font-size:10.5px;display:block;margin-bottom:4px;">⭐⭐⭐⭐ EXPERT</strong>${esc(c.expert)||'<em style="color:var(--muted)">—</em>'}</div>
+      </div></div>`;
+  });
+  prev.innerHTML = html;
+}
+
+function getMakeGoal() {
+  const ll = document.getElementById('newLL').value;
+  const sheetSel = document.getElementById('newGoalSel').value;
+  const custom = document.getElementById('newGoalCustom').value.trim();
+  const fase = document.getElementById('newFase').value;
+  if (sheetSel && RD[sheetSel]) return {...RD[sheetSel]};
+  return {goal: custom||'Nieuw doel', leerlijn: ll, fase, criteria:[]};
+}
+
+function doGenerateRubric() {
+  syncCRows();
+  const base = getMakeGoal();
+  const key = '__custom_'+Date.now();
+  RD[key] = {
+    sheet: key, leerlijn: base.leerlijn, goal: base.goal, fase: base.fase,
+    criteria: cRows.filter(c=>c.naam).map(c=>({
+      naam:c.naam, starter:c.starter, junior:c.junior, gevorderd:c.gevorderd, expert:c.expert,
+      niveau_leerling:null, gewenst_niveau:null
+    }))
+  };
+  DB.custom[key] = RD[key];   // bewaar zelfgemaakte rubric in de back-up
+  saveDB();
+  // Add to sidebar
+  const listId = 'list_'+base.leerlijn.replace(/\s/g,'_');
+  const listEl = document.getElementById(listId);
+  if (listEl) {
+    const item = document.createElement('div');
+    item.className = 'goal-item';
+    item.id = 'gi_'+key;
+    item.innerHTML = `<span class="fase-badge">${base.fase||'NIEUW'}</span>${esc(base.goal)}`;
+    item.onclick = () => selectGoal(key);
+    listEl.appendChild(item);
+  }
+  closeMakeModal();
+  selectGoal(key);
+  showToast('✅ Rubric aangemaakt!');
+}
+
+// ─── UTILS ───
+function toggleSidebar() {
+  const sb = document.getElementById('sidebar');
+  const btn = document.getElementById('sidebarToggle');
+  sb.classList.toggle('collapsed');
+  const hidden = sb.classList.contains('collapsed');
+  btn.textContent = hidden ? '☰ Doelen' : '◀ Doelen';
+  btn.title = hidden ? 'Doelenlijst tonen' : 'Doelenlijst verbergen';
+}
+
+function doPrint() { window.print(); }
+
+function printSelfEval() {
+  if (!currentSheet) return;
+  const r = RD[currentSheet];
+  if (!r) return;
+  const LEVELS_LABEL = {starter:'⭐ Starter', junior:'⭐⭐ Junior', gevorderd:'⭐⭐⭐ Gevorderd', expert:'⭐⭐⭐⭐ Expert'};
+  const LEVELS_COLOR = {starter:'#F96F6F', junior:'#F5C6AC', gevorderd:'#B8DBAB', expert:'#94DCF8'};
+  let rows = '';
+  r.criteria.forEach(c => {
+    rows += `<tr>
+      <td style="font-weight:700;font-size:13px;padding:10px 12px;border:1px solid #ccc;vertical-align:middle;background:#f8fafc">${esc(c.naam)}</td>`;
+    ['starter','junior','gevorderd','expert'].forEach(lv => {
+      const txt = c[lv] || '';
+      rows += `<td style="padding:10px 12px;border:1px solid #ccc;vertical-align:top;background:${LEVELS_COLOR[lv]}22;font-size:12px;line-height:1.55">${txt ? esc(txt) : '<span style="color:#ccc">—</span>'}</td>`;
+    });
+    rows += `<td style="padding:10px 12px;border:1px solid #ccc;text-align:center;vertical-align:middle;width:80px">
+      <div style="width:32px;height:32px;border:2px solid #888;border-radius:50%;margin:0 auto;"></div>
+    </td></tr>`;
+  });
+  const html = `<!DOCTYPE html><html lang="nl"><head><meta charset="UTF-8">
+  <title>Zelfbeoordeling – ${esc(r.goal||r.sheet)}</title>
+  <style>
+    body{font-family:Arial,sans-serif;padding:20px;color:#1e293b}
+    h2{font-size:16px;margin-bottom:4px}
+    .meta{font-size:12px;color:#64748b;margin-bottom:16px}
+    .lv-header{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+    table{width:100%;border-collapse:collapse;margin-top:8px;table-layout:fixed}
+    th{padding:8px 12px;border:1px solid #ccc;font-size:11px;text-transform:uppercase;letter-spacing:.05em;text-align:left}
+    .header-row{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;gap:20px}
+    .student-fields{display:flex;gap:20px;font-size:13px}
+    .field{display:flex;flex-direction:column;gap:3px}
+    .field label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b}
+    .field-line{border-bottom:1.5px solid #1e293b;width:160px;height:20px}
+    .instruction{background:#f0f9ff;border:1.5px solid #bae6fd;border-radius:6px;padding:8px 12px;font-size:12px;margin-bottom:14px;color:#0369a1}
+  </style>
+  </head><body>
+  <div class="header-row">
+    <div>
+      <h2>${esc(r.leerlijn||'')} — ${esc(r.goal||r.sheet)}</h2>
+      <div class="meta">${esc(r.fase||'')} · Zelfbeoordeling leerling</div>
+    </div>
+    <div class="student-fields">
+      <div class="field"><label>Naam</label><div class="field-line"></div></div>
+      <div class="field"><label>Klas</label><div class="field-line" style="width:80px"></div></div>
+      <div class="field"><label>Datum</label><div class="field-line" style="width:110px"></div></div>
+    </div>
+  </div>
+  <div class="instruction">📝 Lees elke rij. Omcirkel of kleur het niveau dat het beste bij jou past. Gebruik de lege cirkel rechts.</div>
+  <table>
+    <thead><tr>
+      <th style="width:130px">Criterium</th>
+      <th style="background:#F96F6F22">⭐ Starter</th>
+      <th style="background:#F5C6AC22">⭐⭐ Junior</th>
+      <th style="background:#B8DBAB22">⭐⭐⭐ Gevorderd</th>
+      <th style="background:#94DCF822">⭐⭐⭐⭐ Expert</th>
+      <th style="width:80px;text-align:center">Mijn niveau</th>
+    </tr></thead>
+    <tbody>${rows}</tbody>
+  </table>
+  </body></html>`;
+  const w = window.open('', '_blank');
+  w.document.write(html);
+  w.document.close();
+  w.focus();
+  setTimeout(() => w.print(), 500);
+}
+
+function today() {
+  return new Date().toLocaleDateString('nl-BE');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2800);
+}
+
+function esc(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function cap(s) { return s ? s.charAt(0).toUpperCase()+s.slice(1) : ''; }
+
+init();
+</script>
+</body>
+</html>

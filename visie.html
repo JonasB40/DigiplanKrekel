@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Visie – Digiplan GBS De Krekel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shared.css">
+  <style>
+    :root { --accent: #2563a8; --accent-light: #dbeafe; }
+
+    .moscow-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 14px;
+    }
+    @media(max-width:600px){ .moscow-grid{grid-template-columns:1fr;} }
+
+    .moscow-card {
+      border-radius: 12px;
+      padding: 16px 18px;
+      border-left: 5px solid var(--mc, #ccc);
+    }
+    .moscow-card h4 {
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--mc, #555);
+      margin-bottom: 6px;
+    }
+    .moscow-card p { font-size: 0.88rem; line-height: 1.6; color: #374151; }
+    .moscow-card ul { list-style: none; padding: 0; margin: 0; }
+    .moscow-card ul li {
+      font-size: 0.86rem; line-height: 1.45; color: #374151;
+      padding: 4px 0 4px 16px; position: relative;
+    }
+    .moscow-card ul li::before {
+      content: "›"; position: absolute; left: 0; top: 3px;
+      color: var(--mc, #555); font-weight: 700;
+    }
+    .mc-must   { --mc:#dc2626; background:#fff5f5; }
+    .mc-should { --mc:#d97706; background:#fffbeb; }
+    .mc-could  { --mc:#16a34a; background:#f0fdf4; }
+    .mc-wont   { --mc:#6b7280; background:#f9fafb; }
+
+    .visie-quote {
+      background: linear-gradient(135deg, #0f1f30, #1a4f7a);
+      color: white;
+      border-radius: 14px;
+      padding: 28px 28px;
+      margin: 16px 0;
+      position: relative;
+    }
+    .visie-quote::before {
+      content: '"';
+      font-family: 'Playfair Display', serif;
+      font-size: 5rem;
+      position: absolute;
+      top: 0; left: 18px;
+      opacity: 0.15;
+      line-height: 1;
+    }
+    .visie-quote p {
+      color: rgba(255,255,255,0.9);
+      font-size: 1.02rem;
+      line-height: 1.75;
+      position: relative;
+      z-index: 1;
+      margin-bottom: 8px;
+    }
+    .visie-quote p:last-child { margin-bottom: 0; }
+
+    .principle-list {
+      list-style: none; padding: 0; margin: 10px 0;
+    }
+    .principle-list li {
+      display: flex; gap: 12px; padding: 12px 14px;
+      background: #f8fafc; border-radius: 10px;
+      margin-bottom: 8px; border: 1px solid var(--border);
+    }
+    .principle-list li .num {
+      min-width: 26px; height: 26px;
+      background: var(--accent); color: white;
+      border-radius: 50%; font-size: 0.78rem; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: 1px;
+    }
+    .principle-list li .content { font-size: 0.9rem; line-height: 1.65; color: #374151; }
+    .principle-list li .content strong { display: block; margin-bottom: 2px; color: var(--dark); }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="Digiplan.html">← Terug naar Dashboard</a>
+  <span>GBS De Krekel · Digiplan 2025–2028</span>
+</div>
+
+<div class="page-header">
+  <div class="page-header-inner">
+    <div class="page-header-label">Fase 1 · Pictos</div>
+    <h1>Visie op ICT<br>en onderwijs</h1>
+    <p>Onze gedeelde overtuiging over de rol van digitalisering in ons onderwijs — als team uitgebouwd en verankerd in ons pedagogisch project.</p>
+  </div>
+</div>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-card">
+      <div class="sidebar-title">Secties</div>
+      <nav>
+        <a href="#waarom"><span class="nav-dot"></span> Waarom?</a>
+        <a href="#wat"><span class="nav-dot"></span> Wat?</a>
+        <a href="#hoe"><span class="nav-dot"></span> Hoe?</a>
+        <a href="#moscow"><span class="nav-dot"></span> MoSCoW-analyse</a>
+        <a href="#visietekst"><span class="nav-dot"></span> Visie</a>
+      </nav>
+      <div class="sidebar-back">
+        <a href="Digiplan.html">← Terug naar Dashboard</a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main>
+
+    <!-- WAAROM -->
+    <section class="section" id="waarom">
+      <div class="section-label">B1 · Visiecanvas</div>
+      <h2>Waarom? — Onze overtuiging</h2>
+      <p>Solide digitale competenties zijn van uitzonderlijk belang in het lager onderwijs. De samenleving digitaliseert razendsnel en steeds meer diensten verlopen online. Als warme, zorgzame buurtschool met een heel divers publiek willen we dat elk kind — ongeacht zijn achtergrond — toegang heeft tot de digitale wereld en de vaardigheden ontwikkelt om er kritisch, creatief en veilig mee om te gaan.</p>
+
+      <div class="card">
+        <strong>Onze kernovertuiging:</strong> We willen voorkomen dat onze leerlingen digitaal worden uitgesloten en kansen missen op de arbeidsmarkt door een gebrek aan toegang, vaardigheden, motivatie of ondersteuning.
+      </div>
+
+      <h3>Digitalisering versterkt onze kernwaarden</h3>
+      <ul>
+        <li><strong>Actief en procesgericht leren</strong> — digitale tools maken leren interactiever, uitdagender en laten kinderen al doende exploreren en experimenteren.</li>
+        <li><strong>Zelfstandigheid en zelfgestuurd leren</strong> — kinderen leren op hun eigen tempo met digitale ondersteuning en ontwikkelen 'leren leren'-vaardigheden.</li>
+        <li><strong>Differentiatie en zorg op maat</strong> — ICT maakt onderwijs op maat van elk kind mogelijk via ondersteunend materiaal en aangepaste leertrajecten.</li>
+        <li><strong>Samenwerking en participatie</strong> — digitale platforms stimuleren peertutoring, coöperatief leren en buddy-werking.</li>
+        <li><strong>Totale persoonlijkheidsontwikkeling</strong> — ICT ontwikkelt hoofd, hart én handen.</li>
+      </ul>
+
+      <h3>Onze ambitie over 3 jaar</h3>
+      <p>Onze leerlingen zijn digitaal geletterde 'leerders' die technologie doelgericht inzetten voor hun eigen ontwikkeling. Ze beschikken over essentiële digitale vaardigheden, kunnen kritisch omgaan met online informatie en bewegen veilig en respectvol in de digitale wereld. Onze leerkrachten gebruiken ICT vanzelfsprekend en pedagogisch verantwoord.</p>
+    </section>
+
+    <!-- WAT -->
+    <section class="section" id="wat">
+      <div class="section-label">B1 · Visiecanvas</div>
+      <h2>Wat? — Onze ambitie</h2>
+      <p>We ontwikkelen digitale competenties via een geïntegreerde aanpak met <strong>drie leerlijnen</strong>, gebaseerd op het leerplan LeerLokaal van OVSG:</p>
+
+      <div class="two-col" style="margin-top:16px;">
+        <div class="info-block">
+          <h4>🖥️ ICT-basisvaardigheden</h4>
+          <p>Leerlingen leren ICT-tools zelfstandig en doelgericht gebruiken: tekstverwerking, presentatiesoftware, beeldbewerkingstools, digitale communicatie, informatieonderzoek en bestandsbeheer.</p>
+        </div>
+        <div class="info-block">
+          <h4>🧠 Computationeel denken</h4>
+          <p>Via decompositie, abstractie, patroonherkenning en algoritmes leren kinderen analytisch denken. Van 'unplugged' in de kleuterklas tot Scratch in de hogere graden.</p>
+        </div>
+        <div class="info-block">
+          <h4>📱 Mediawijsheid</h4>
+          <p>Kritisch denken over digitale informatie, veilig en respectvol online communiceren, privacy en cyberveiligheid, nepnieuws herkennen en verantwoord deelnemen in sociale media.</p>
+        </div>
+        <div class="info-block">
+          <h4>👩‍🏫 Leerkrachten</h4>
+          <p>Leerkrachten zetten digitale tools pedagogisch verantwoord in, gebruiken ICT voor effectieve differentiatie en blijven hun digitale en didactische competenties professionaliseren.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- HOE -->
+    <section class="section" id="hoe">
+      <div class="section-label">B1 · Visiecanvas</div>
+      <h2>Hoe? — Onze principes</h2>
+      <p>Zeven leidende principes sturen al onze keuzes rond ICT:</p>
+
+      <ul class="principle-list">
+        <li>
+          <div class="num">1</div>
+          <div class="content">
+            <strong>Pedagogiek eerst, technologie volgt</strong>
+            De didactiek bepaalt de tool, niet omgekeerd. We werken doelgericht: eerst het leerdoel, dan de didactiek, en pas dan de tool. We kiezen alleen voor digitale tools die onze onderwijsdoelen ondersteunen — technologie is middel, geen doel — ten dienste van actief, procesgericht leren en de totale persoonlijkheidsontwikkeling.
+          </div>
+        </li>
+        <li>
+          <div class="num">2</div>
+          <div class="content">
+            <strong>Digitale inclusie</strong>
+            Gelijke kansen voor iedereen staat centraal. We voorkomen digitale uitsluiting door te zorgen voor toegang, vaardigheden, mediawijsheid en bescherming tegen digitale kwetsbaarheid.
+          </div>
+        </li>
+        <li>
+          <div class="num">3</div>
+          <div class="content">
+            <strong>Veilig en verantwoord digitaal handelen</strong>
+            Duidelijke ICT-afspraken, aandacht voor privacy en cyberveiligheid, respectvol online gedrag en heldere procedures bij problemen.
+          </div>
+        </li>
+        <li>
+          <div class="num">4</div>
+          <div class="content">
+            <strong>Ondersteuning en professionalisering</strong>
+            We investeren in de digitale competenties van ons team via gerichte vormingen, collegiale uitwisseling, tijd en ondersteuning.
+          </div>
+        </li>
+        <li>
+          <div class="num">5</div>
+          <div class="content">
+            <strong>Duurzame en doordachte keuzes</strong>
+            Kwalitatieve, betrouwbare software en hardware, open standaarden waar mogelijk, en aandacht voor ecologische duurzaamheid.
+          </div>
+        </li>
+        <li>
+          <div class="num">6</div>
+          <div class="content">
+            <strong>Ouders als partner</strong>
+            We informeren ouders transparant en betrekken hen bij de digitale ontwikkeling van hun kind. Via heldere communicatie, oudercoaching rond mediawijsheid en aandacht voor anderstalige gezinnen overbruggen we samen de digitale kloof tussen school en thuis.
+          </div>
+        </li>
+        <li>
+          <div class="num">7</div>
+          <div class="content">
+            <strong>Samenhang en geïntegreerd werken</strong>
+            In lijn met de centrale boodschap van OVSG Leer Lokaal zijn digitale competenties geen apart vak, maar verweven met alle leergebieden. We leggen bewust verbanden — de leerlijn ondersteunt dit via de samenhang met o.a. Nederlands, wiskunde en kunst &amp; cultuur — zodat kinderen kennis en vaardigheden in betekenisvolle, kennisrijke contexten verwerven.
+          </div>
+        </li>
+      </ul>
+
+      <div class="card" style="margin-top:18px;">
+        <strong>📚 Evidence-informed — wat het onderzoek ons leert</strong>
+        <p style="margin:6px 0 8px;">Onze visie en principes steunen mee op wetenschappelijk onderzoek over leren en technologie, in het bijzonder <em>Wijze Lessen — Digitale didactiek</em> (Buelens, Schroeven, Surma, Vanhoyweghen &amp; Kirschner, 2024). We werken <strong>doelgericht, niet toolgericht</strong>. Zes inzichten sturen onze keuzes:</p>
+        <ul>
+          <li><strong>De didactiek bepaalt de tool, niet omgekeerd</strong> — we kiezen op basis van onderzoek, niet van hypes.</li>
+          <li><strong>Digitaal vaardig ≠ leervaardig</strong> — 'digital natives' is een mythe; kennis, kritisch denken en informatiegeletterdheid blijven essentieel.</li>
+          <li><strong>Aandacht is kostbaar</strong> — afleiding en ongestructureerd schermgebruik schaden het leren, vooral bij kwetsbare leerlingen; bij de jongste kinderen houden we de schermtijd bewust beperkt.</li>
+          <li><strong>Activiteit is nog geen leren</strong> — we kiezen werkvormen die leerlingen écht doen nadenken (cognitief actief), niet enkel die voor animo zorgen.</li>
+          <li><strong>Bewuste mediakeuze</strong> — diepe, informatieve teksten worden beter begrepen op papier; we digitaliseren niet blind. Scherm en papier vullen elkaar aan.</li>
+          <li><strong>Handschrift blijft</strong> — in de basisschool leren kinderen met de hand schrijven; de schrijfbeweging versterkt het geheugen.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- MOSCOW -->
+    <section class="section" id="moscow">
+      <div class="section-label">B2 · Prioritering</div>
+      <h2>MoSCoW-analyse</h2>
+      <p>We ordenen onze ICT-ambities via de MoSCoW-methode: van niet-onderhandelbare kernprincipes tot zaken die we bewust uitstellen.</p>
+
+      <div class="moscow-grid">
+        <div class="moscow-card mc-must">
+          <h4>🔴 Must Have · niet-onderhandelbaar</h4>
+          <ul>
+            <li>Digitale inclusie voor alle leerlingen</li>
+            <li>Veilig ICT-gebruik</li>
+            <li>Afdoende infrastructuur (devices + wifi)</li>
+            <li>Verticale leerlijn digitale competenties</li>
+            <li>Privacy-beleid (GDPR)</li>
+            <li>Basisvorming voor alle leerkrachten</li>
+          </ul>
+        </div>
+        <div class="moscow-card mc-should">
+          <h4>🟡 Should Have · belangrijk maar flexibel</h4>
+          <ul>
+            <li>Geïntegreerde AI-tools voor differentiatie</li>
+            <li>Structureel gebruik van LVS (leerlingvolgsysteem)</li>
+            <li>Digitale communicatie met ouders via Gimme</li>
+            <li>SharePoint-intranet voor het team</li>
+            <li>Oudercoaching rond mediawijsheid</li>
+          </ul>
+        </div>
+        <div class="moscow-card mc-could">
+          <h4>🟢 Could Have · wenselijk</h4>
+          <ul>
+            <li>Schoolbrede projecten rond coding en Scratch</li>
+            <li>Stop-motionateliers</li>
+            <li>Samenwerking met bibliotheek Zelzate rond digitale basisvaardigheden voor ouders</li>
+            <li>Digitaal portfolio voor leerlingen</li>
+          </ul>
+        </div>
+        <div class="moscow-card mc-wont">
+          <h4>⚫ Won't Have (nu) · bewust uitgesteld</h4>
+          <ul>
+            <li>Bring-your-own-device voor leerlingen</li>
+            <li>Sociale media als lesinstrument</li>
+            <li>Volledige paperless schooladministratie</li>
+          </ul>
+          <p style="margin-top:8px;font-style:italic;">Te herbekijken bij de volgende evaluatie (2026–2027).</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- VISIETEKST -->
+    <section class="section" id="visietekst">
+      <div class="section-label">B3 · Visietekst</div>
+      <h2>Onze visie op ICT en onderwijs</h2>
+
+      <div class="visie-quote">
+        <p>Op GBS De Krekel geloven we dat digitalisering kansen biedt om elk kind te helpen groeien tot een gelukkige, zelfstandige en respectvolle burger in een steeds veranderende, mediarijke maatschappij. ICT en digitalisering zijn geen doel op zich, maar krachtige middelen om ons onderwijs te verrijken en onze kernwaarden te versterken.</p>
+        <p>Als warme, zorgzame buurtschool met een divers publiek streven we naar onderwijs op maat van elk kind. Digitale technologie helpt ons dit concreet waar te maken — via interactieve leeromgevingen, gedifferentieerde leertrajecten en digitale samenwerking.</p>
+      </div>
+
+      <h3>Drie leerlijnen als ruggengraat</h3>
+      <p>We willen leerlingen toerusten met de vaardigheden die ze nodig hebben in een digitale samenleving. Daarom werken we via een geïntegreerde aanpak met drie leerlijnen: <strong>ICT-basisvaardigheden</strong>, <strong>computationeel denken</strong> en <strong>mediawijsheid</strong>. Deze leerlijnen zijn geen losstaande vakken, maar worden geïntegreerd in alle leergebieden.</p>
+
+      <h3>Inclusief, veilig en duurzaam</h3>
+      <p>Digitale inclusie staat centraal in ons beleid. We willen een school zijn waar iedereen digitaal mee is en niemand wordt uitgesloten. Elk kind krijgt toegang tot kwalitatieve ICT-infrastructuur op school, ongeacht zijn thuissituatie.</p>
+
+      <div class="card">
+        <strong>De spirituele betekenis van 'krekel'</strong> is 'een nieuwe sprong vooruit'. Met deze ICT-visie willen we samen — leerlingen, leerkrachten, ouders en partners — die sprong maken. We omarmen zinvolle vernieuwingen die het onderwijs verbeteren, en blijven tegelijk trouw aan onze waarden van warmte, zorg en respect. Zo maken we — onderbouwd en doordacht — een <strong>duurzame digisprong vooruit</strong>.
+      </div>
+
+      <p style="font-size:0.8rem;color:var(--muted);margin-top:16px;">Deze visie steunt mee op: Buelens, W., Schroeven, M., Surma, T., Vanhoyweghen, K. &amp; Kirschner, P. A. (2024). <em>Wijze Lessen — Digitale didactiek.</em> Ten Brink Uitgevers · en het leerplan <em>Leer Lokaal</em> (OVSG).</p>
+    </section>
+
+  </main>
+</div>
+
+<footer>GBS De Krekel · Zelzate · ICT-beleidsplan 2025–2028 · <a href="Digiplan.html" style="color:inherit">← Dashboard</a></footer>
+
+<script>
+  // Highlight active sidebar link on scroll
+  const sections = document.querySelectorAll('section[id]');
+  const links = document.querySelectorAll('.sidebar nav a');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        links.forEach(l => l.classList.remove('active'));
+        const match = document.querySelector(`.sidebar nav a[href="#${e.target.id}"]`);
+        if (match) match.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-30% 0px -60% 0px' });
+  sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>

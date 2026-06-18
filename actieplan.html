@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Actieplan – Digiplan GBS De Krekel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shared.css">
+  <style>
+    :root { --accent: #d4820a; --accent-light: #fef3c7; }
+
+    /* ── FILTERS ── */
+    .filter-bar {
+      display: flex; flex-wrap: wrap; gap: 8px;
+      margin-bottom: 20px;
+    }
+    .filter-btn {
+      padding: 6px 16px;
+      border-radius: 999px;
+      border: 1.5px solid var(--border);
+      background: white;
+      font-size: 0.82rem;
+      font-family: inherit;
+      cursor: pointer;
+      font-weight: 500;
+      color: var(--muted);
+      transition: all 0.15s;
+    }
+    .filter-btn:hover, .filter-btn.active {
+      border-color: var(--accent);
+      background: var(--accent-light);
+      color: var(--accent);
+    }
+
+    /* ── ACTION CARD ── */
+    .action-card {
+      background: white;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 12px rgba(15,31,48,0.06);
+      margin-bottom: 14px;
+      overflow: hidden;
+      transition: box-shadow 0.2s;
+    }
+    .action-card:hover { box-shadow: 0 4px 20px rgba(15,31,48,0.1); }
+
+    .action-header {
+      display: flex; align-items: center; gap: 14px;
+      padding: 16px 18px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .action-prio {
+      min-width: 30px; height: 30px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.8rem; font-weight: 700; flex-shrink: 0;
+    }
+    .prio-1 { background:#fee2e2; color:#dc2626; }
+    .prio-2 { background:#fed7aa; color:#c2410c; }
+    .prio-3 { background:#fef9c3; color:#a16207; }
+    .prio-4 { background:#dcfce7; color:#16a34a; }
+
+    .action-title { font-weight: 600; font-size: 0.95rem; flex: 1; }
+
+    .action-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+    .action-tag {
+      font-size: 0.7rem; padding: 2px 8px;
+      border-radius: 999px;
+      font-weight: 600;
+    }
+    .tag-infra   { background:#dbeafe; color:#1e40af; }
+    .tag-team    { background:#ede9fe; color:#5b21b6; }
+    .tag-lln     { background:#dcfce7; color:#166534; }
+    .tag-beleid  { background:#fef3c7; color:#92400e; }
+    .tag-ouders  { background:#fce7f3; color:#9d174d; }
+
+    .action-status {
+      font-size: 0.75rem; padding: 3px 10px;
+      border-radius: 999px; font-weight: 600;
+      white-space: nowrap;
+    }
+    .status-gepland  { background:#f1f5f9; color:#475569; }
+    .status-actief   { background:#dbeafe; color:#1d4ed8; }
+    .status-klaar    { background:#dcfce7; color:#166534; }
+
+    .action-chevron {
+      font-size: 0.75rem; color: var(--muted);
+      transition: transform 0.25s;
+      flex-shrink: 0;
+    }
+    .action-card.open .action-chevron { transform: rotate(90deg); }
+
+    .action-body {
+      max-height: 0; overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+    .action-body-inner {
+      padding: 0 18px 20px;
+      border-top: 1px solid var(--border);
+    }
+
+    .action-meta {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 10px;
+      margin: 14px 0;
+    }
+    .meta-item { font-size: 0.84rem; }
+    .meta-item label {
+      display: block;
+      font-size: 0.7rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--muted); margin-bottom: 3px;
+    }
+    .meta-item span { color: var(--dark); }
+
+    .action-desc {
+      font-size: 0.88rem; line-height: 1.7;
+      color: #374151; margin-top: 6px;
+    }
+    .action-desc ul { list-style: disc; padding-left: 18px; margin-top: 6px; }
+    .action-desc ul li { font-size: 0.87rem; padding: 2px 0; }
+    .action-desc ul li::before { display: none; }
+
+    .progress-bar {
+      height: 6px; background: var(--border);
+      border-radius: 999px; margin-top: 14px; overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%; border-radius: 999px;
+      background: linear-gradient(90deg, var(--accent), #fbbf24);
+      width: var(--prog, 0%);
+      transition: width 0.4s;
+    }
+
+    /* ── SMART CARD ── */
+    .smart-card {
+      background: #f0f9ff;
+      border: 1px solid #bae6fd;
+      border-radius: 12px;
+      margin-bottom: 18px;
+      overflow: hidden;
+    }
+    .smart-header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 11px 16px; cursor: pointer; user-select: none;
+      font-size: 0.85rem; font-weight: 600; color: #0369a1;
+    }
+    .smart-header:hover { background: #e0f2fe; }
+    .smart-chevron { font-size: 0.75rem; transition: transform 0.25s; }
+    .smart-card.open .smart-chevron { transform: rotate(90deg); }
+    .smart-body { display: none; padding: 4px 16px 14px; }
+    .smart-card.open .smart-body { display: block; }
+    .smart-grid { display: flex; flex-direction: column; gap: 7px; }
+    .smart-item {
+      display: flex; align-items: flex-start; gap: 10px;
+      font-size: 0.84rem; color: #334155;
+    }
+    .smart-letter {
+      min-width: 24px; height: 24px; border-radius: 6px;
+      background: #0369a1; color: white;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.78rem; font-weight: 800; flex-shrink: 0;
+    }
+
+    /* ── RICH TEXT EDITOR ── */
+    .editor-toolbar {
+      display: flex; gap: 4px;
+      background: #f8fafc;
+      border: 1.5px solid var(--border);
+      border-bottom: none;
+      border-radius: 9px 9px 0 0;
+      padding: 6px 8px;
+    }
+    .editor-toolbar button {
+      background: white; border: 1px solid var(--border);
+      border-radius: 5px; padding: 3px 9px;
+      font-size: 0.82rem; cursor: pointer; font-family: inherit;
+      transition: all 0.12s; color: var(--dark);
+      line-height: 1.4;
+    }
+    .editor-toolbar button:hover {
+      background: var(--accent-light);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .editor-content {
+      width: 100%; min-height: 110px; max-height: 220px;
+      padding: 9px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 0 0 9px 9px;
+      font-family: inherit; font-size: 0.9rem;
+      line-height: 1.7; outline: none;
+      overflow-y: auto; cursor: text;
+    }
+    .editor-content:focus { border-color: var(--accent); }
+    .editor-content:empty::before {
+      content: attr(data-placeholder);
+      color: #9ca3af; pointer-events: none;
+    }
+    .editor-content ul, .editor-content ol { padding-left: 20px; margin: 4px 0; }
+    .editor-content li { margin: 2px 0; }
+
+    /* ── EDIT BUTTON ── */
+    .action-edit-btn {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      padding: 3px 10px;
+      font-size: 0.75rem;
+      font-family: inherit;
+      cursor: pointer;
+      color: var(--muted);
+      flex-shrink: 0;
+      transition: all 0.15s;
+    }
+    .action-edit-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    /* ── DELETE BUTTON ── */
+    .action-del-btn {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      padding: 3px 10px;
+      font-size: 0.75rem;
+      font-family: inherit;
+      cursor: pointer;
+      color: var(--muted);
+      flex-shrink: 0;
+      transition: all 0.15s;
+    }
+    .action-del-btn:hover {
+      border-color: #dc2626;
+      color: #dc2626;
+      background: #fff5f5;
+    }
+
+    /* ── PROGRESS SLIDER ── */
+    .prog-row { display: flex; align-items: center; gap: 10px; }
+    .prog-row input[type="range"] {
+      flex: 1; height: 6px; padding: 0;
+      accent-color: var(--accent); cursor: pointer;
+    }
+    .prog-value {
+      min-width: 38px; text-align: right;
+      font-size: 0.88rem; font-weight: 700;
+      color: var(--accent);
+    }
+
+    /* ── ADD BUTTON ── */
+    .add-btn {
+      display: flex; align-items: center; gap: 10px;
+      width: 100%; padding: 14px 18px;
+      background: white; border: 2px dashed var(--border);
+      border-radius: 14px; cursor: pointer;
+      font-family: inherit; font-size: 0.9rem;
+      color: var(--muted); transition: all 0.15s;
+      margin-top: 6px;
+    }
+    .add-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5);
+      display: none; align-items: center; justify-content: center;
+      z-index: 9999; padding: 20px;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: white; border-radius: 18px;
+      padding: 28px; width: 100%; max-width: 560px;
+      max-height: 90vh; overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    }
+    .modal h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem; margin-bottom: 20px; color: var(--dark);
+    }
+    .form-group { margin-bottom: 14px; }
+    .form-group label {
+      display: block; font-size: 0.78rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--muted); margin-bottom: 5px;
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%; padding: 9px 12px;
+      border: 1.5px solid var(--border); border-radius: 9px;
+      font-family: inherit; font-size: 0.9rem;
+      transition: border-color 0.15s; outline: none;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus { border-color: var(--accent); }
+    .form-group textarea { min-height: 80px; resize: vertical; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    @media(max-width:480px){ .form-row{grid-template-columns:1fr;} }
+
+    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+    .btn-primary {
+      padding: 9px 22px; border-radius: 9px;
+      background: var(--accent); color: white;
+      border: none; font-family: inherit; font-size: 0.9rem;
+      font-weight: 600; cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .btn-primary:hover { opacity: 0.88; }
+    .btn-cancel {
+      padding: 9px 22px; border-radius: 9px;
+      background: white; border: 1.5px solid var(--border);
+      font-family: inherit; font-size: 0.9rem; cursor: pointer;
+      color: var(--muted);
+    }
+
+    /* ── STATS ── */
+    .stats-row {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+      margin-bottom: 20px;
+    }
+    @media(max-width:580px){ .stats-row{grid-template-columns:1fr 1fr;} }
+    .stat-box {
+      background: white; border: 1px solid var(--border);
+      border-radius: 12px; padding: 14px 16px; text-align: center;
+    }
+    .stat-box .sb-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem; font-weight: 700; color: var(--accent);
+    }
+    .stat-box .sb-label { font-size: 0.76rem; color: var(--muted); }
+
+    /* ── ROLLEN & VERANTWOORDELIJKHEDEN ── */
+    .roles-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 14px;
+      margin-top: 16px;
+    }
+    .role-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+      border-top: 4px solid var(--rc, var(--accent));
+      box-shadow: 0 2px 12px rgba(15,31,48,0.06);
+    }
+    .role-card .role-head {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 2px;
+    }
+    .role-card .role-icon { font-size: 1.4rem; }
+    .role-card .role-name { font-weight: 700; font-size: 0.98rem; color: var(--dark); }
+    .role-card .role-who {
+      font-size: 0.72rem; color: var(--rc, var(--accent));
+      font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+      margin-bottom: 10px;
+    }
+    .role-card ul { list-style: none; padding: 0; margin: 0; }
+    .role-card ul li {
+      font-size: 0.85rem; line-height: 1.5; color: #374151;
+      padding: 4px 0 4px 18px; position: relative;
+    }
+    .role-card ul li::before {
+      content: "›"; position: absolute; left: 0; top: 2px;
+      color: var(--rc, var(--accent)); font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="Digiplan.html">← Terug naar Dashboard</a>
+  <span>GBS De Krekel · Digiplan 2025–2028</span>
+</div>
+
+<div class="page-header">
+  <div class="page-header-inner">
+    <div class="page-header-label">Fase 4 · Pictos</div>
+    <h1>Actieplan</h1>
+    <p>Concrete actiepunten, prioriteiten en deadlines — SMART geformuleerd en verdeeld over de vier bouwstenen van ons ICT-beleid, met een duidelijke afbakening van rollen en verantwoordelijkheden.</p>
+  </div>
+</div>
+
+<div class="layout">
+
+  <aside class="sidebar">
+    <div class="sidebar-card">
+      <div class="sidebar-title">Navigatie</div>
+      <nav>
+        <a href="#acties" class="active"><span class="nav-dot"></span> Actiepunten</a>
+        <a href="#rollen"><span class="nav-dot"></span> Rollen &amp; verantwoordelijkheden</a>
+      </nav>
+      <div style="margin-top:14px; padding-top:14px; border-top:1px solid var(--border);">
+        <div class="sidebar-title">Filter op thema</div>
+        <nav>
+          <a href="#" onclick="filterActions('alle');return false;"><span class="nav-dot"></span> Alle</a>
+          <a href="#" onclick="filterActions('infra');return false;"><span class="nav-dot"></span> Infrastructuur</a>
+          <a href="#" onclick="filterActions('team');return false;"><span class="nav-dot"></span> Team</a>
+          <a href="#" onclick="filterActions('lln');return false;"><span class="nav-dot"></span> Leerlingen</a>
+          <a href="#" onclick="filterActions('beleid');return false;"><span class="nav-dot"></span> Beleid</a>
+          <a href="#" onclick="filterActions('ouders');return false;"><span class="nav-dot"></span> Ouders</a>
+        </nav>
+      </div>
+      <div class="sidebar-back">
+        <a href="Digiplan.html">← Terug naar Dashboard</a>
+      </div>
+    </div>
+  </aside>
+
+  <main>
+    <section class="section" id="acties" style="padding-bottom:24px;">
+      <div class="section-label">B8 · Actieplan</div>
+      <h2>Onze actiepunten</h2>
+      <p style="margin-bottom:12px;">Klik op een actiepunt voor details. Voeg nieuwe acties toe via de knop onderaan.</p>
+
+      <div class="card" style="margin-bottom:14px;font-size:0.84rem;">
+        <strong>⚠️ Let op:</strong> wijzigingen worden opgeslagen in <em>deze browser op deze computer</em> — niet in OneDrive. Op een andere pc zie je de originele actiepunten.
+      </div>
+
+      <!-- SMART CARD -->
+      <div class="smart-card" id="smartCard">
+        <div class="smart-header" onclick="this.closest('.smart-card').classList.toggle('open')">
+          <span>💡 Hoe formuleer je een SMART-doel?</span>
+          <span class="smart-chevron">›</span>
+        </div>
+        <div class="smart-body">
+          <div class="smart-grid">
+            <div class="smart-item"><span class="smart-letter">S</span><span><strong>Specifiek</strong> — Wat wil je precies bereiken? Wie is erbij betrokken? Wat, waar, wanneer en waarom?</span></div>
+            <div class="smart-item"><span class="smart-letter">M</span><span><strong>Meetbaar</strong> — Hoe weet je wanneer het doel bereikt is? Welke criteria gebruik je om vooruitgang te meten?</span></div>
+            <div class="smart-item"><span class="smart-letter">A</span><span><strong>Acceptabel</strong> — Is het doel gedragen door het team? Is de aanpak en de verantwoordelijkheid duidelijk?</span></div>
+            <div class="smart-item"><span class="smart-letter">R</span><span><strong>Realistisch</strong> — Is het doel haalbaar met de beschikbare tijd, middelen en mensen?</span></div>
+            <div class="smart-item"><span class="smart-letter">T</span><span><strong>Tijdsgebonden</strong> — Tegen wanneer moet het doel bereikt zijn? Is er een duidelijke deadline?</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STATS -->
+      <div class="stats-row" id="statsRow">
+        <div class="stat-box"><div class="sb-num" id="statTotal">8</div><div class="sb-label">Totaal acties</div></div>
+        <div class="stat-box"><div class="sb-num" id="statActief">2</div><div class="sb-label">Actief</div></div>
+        <div class="stat-box"><div class="sb-num" id="statKlaar">1</div><div class="sb-label">Klaar</div></div>
+        <div class="stat-box"><div class="sb-num" id="statGepland">5</div><div class="sb-label">Gepland</div></div>
+      </div>
+
+      <!-- ACTION LIST -->
+      <div id="actionList">
+
+        <!-- ACTIE 1 -->
+        <div class="action-card" id="ac1" data-tags="beleid">
+          <div class="action-header" onclick="toggleCard(this.parentElement)">
+            <div class="action-prio prio-1">1</div>
+            <div class="action-title">AI-beleidsplan uitwerken voor leerkrachten</div>
+            <div class="action-tags">
+              <span class="action-tag tag-beleid">Beleid</span>
+              <span class="action-tag tag-team">Team</span>
+            </div>
+            <span class="action-status status-actief">Actief</span>
+            <button class="action-edit-btn" onclick="openEditModal('ac1');event.stopPropagation()">✏ Bewerken</button>
+            <button class="action-del-btn" onclick="deleteAction(this.closest('.action-card').id);event.stopPropagation()" title="Verwijderen">🗑 Verwijderen</button>
+            <span class="action-chevron">›</span>
+          </div>
+          <div class="action-body">
+            <div class="action-body-inner">
+              <div class="action-meta">
+                <div class="meta-item"><label>Trekker</label><span>ICT-coördinator + directie</span></div>
+                <div class="meta-item"><label>Deadline</label><span>December 2025</span></div>
+                <div class="meta-item"><label>Status</label><span>Actief</span></div>
+              </div>
+              <div class="action-desc">
+                Concrete AI-richtlijnen uitwerken voor leerkrachten van GBS De Krekel: verantwoord gebruik van Microsoft Copilot, privacyregels, anonimisering van leerlinggegevens en pedagogische toepassing.
+                <ul>
+                  <li>Richtlijnen bespreken op teamvergadering (okt. 2025)</li>
+                  <li>Definitieve versie goedkeuren in schoolraad (dec. 2025)</li>
+                  <li>Publiceren op intranet (SharePoint) en schoolwebsite</li>
+                </ul>
+              </div>
+              <div class="progress-bar"><div class="progress-fill" style="--prog:60%"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ACTIE 2 -->
+        <div class="action-card" id="ac2" data-tags="team">
+          <div class="action-header" onclick="toggleCard(this.parentElement)">
+            <div class="action-prio prio-1">1</div>
+            <div class="action-title">Nascholing AI in de klas — hele team</div>
+            <div class="action-tags">
+              <span class="action-tag tag-team">Team</span>
+            </div>
+            <span class="action-status status-gepland">Gepland</span>
+            <button class="action-edit-btn" onclick="openEditModal('ac2');event.stopPropagation()">✏ Bewerken</button>
+            <button class="action-del-btn" onclick="deleteAction(this.closest('.action-card').id);event.stopPropagation()" title="Verwijderen">🗑 Verwijderen</button>
+            <span class="action-chevron">›</span>
+          </div>
+          <div class="action-body">
+            <div class="action-body-inner">
+              <div class="action-meta">
+                <div class="meta-item"><label>Trekker</label><span>Directie</span></div>
+                <div class="meta-item"><label>Deadline</label><span>Januari 2026</span></div>
+                <div class="meta-item"><label>Status</label><span>Gepland</span></div>
+              </div>
+              <div class="action-desc">
+                Studiedag organiseren rond verantwoord gebruik van AI-tools door leerkrachten. Focus op praktische toepassingen: lesvoorbereiding, differentiatie en communicatie met ouders. Alle leerkrachten nemen deel.
+                <ul>
+                  <li>Externe spreker boeken (okt. 2025)</li>
+                  <li>Praktijkworkshops per graad voorzien</li>
+                  <li>Opvolging via collegiale klasbezoeken (feb.–mei 2026)</li>
+                </ul>
+              </div>
+              <div class="progress-bar"><div class="progress-fill" style="--prog:15%"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ACTIE 3 -->
+        <div class="action-card" id="ac3" data-tags="lln">
+          <div class="action-header" onclick="toggleCard(this.parentElement)">
+            <div class="action-prio prio-2">2</div>
+            <div class="action-title">Verticale leerlijn digitale competenties verder uitwerken</div>
+            <div class="action-tags">
+              <span class="action-tag tag-lln">Leerlingen</span>
+              <span class="action-tag tag-team">Team</span>
+            </div>
+            <span class="action-status status-actief">Actief</span>
+            <button class="action-edit-btn" onclick="openEditModal('ac3');event.stopPropagation()">✏ Bewerken</button>
+            <button class="action-del-btn" onclick="deleteAction(this.closest('.action-card').id);event.stopPropagation()" title="Verwijderen">🗑 Verwijderen</button>
+            <span class="action-chevron">›</span>
+          </div>
+          <div class="action-body">
+            <div class="action-body-inner">
+              <div class="action-meta">
+                <div class="meta-item"><label>Trekker</label><span>ICT-coördinator + graadteams</span></div>
+                <div class="meta-item"><label>Deadline</label><span>Februari 2026</span></div>
+                <div class="meta-item"><label>Status</label><span>Actief</span></div>
+              </div>
+              <div class="action-desc">
+                Per graad de LeerLokaal-doelen concretiseren in Scoodle. Zorgen dat elke leerkracht weet welke digitale vaardigheden in zijn/haar leerjaar aan bod komen en hoe die aansluiten op vorige en volgende leerjaren.
+                <ul>
+                  <li>Kleuteronderwijs: media verkennen en bespreken</li>
+                  <li>1e graad: basiscomputervaardigheden en typen</li>
+                  <li>2e graad: tekstverwerking, mediawijsheid</li>
+                  <li>3e graad: informatieverwerking, presenteren en programmeren (Scratch)</li>
+                </ul>
+              </div>
+              <div class="progress-bar"><div class="progress-fill" style="--prog:45%"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ACTIE 4 -->
+        <div class="action-card" id="ac4" data-tags="infra">
+          <div class="action-header" onclick="toggleCard(this.parentElement)">
+            <div class="action-prio prio-2">2</div>
+            <div class="action-title">Ontleensysteem toestellen uitwerken voor thuisgebruik</div>
+            <div class="action-tags">
+              <span class="action-tag tag-infra">Infrastructuur</span>
+              <span class="action-tag tag-lln">Leerlingen</span>
+            </div>
+            <span class="action-status status-gepland">Gepland</span>
+            <button class="action-edit-btn" onclick="openEditModal('ac4');event.stopPropagation()">✏ Bewerken</button>
+            <button class="action-del-btn" onclick="deleteAction(this.closest('.action-card').id);event.stopPropagation()" title="Verwijderen">🗑 Verwijderen</button>
+            <span class="action-chevron">›</span>
+          </div>
+          <div class="action-body">
+            <div class="action-body-inner">
+              <div class="action-meta">
+                <div class="meta-item"><label>Trekker</label><span>Directie + administratie</span></div>
+                <div class="meta-item"><label>Deadline</label><span>Maart 2026</span></div>
+                <div class="meta-item"><label>Status</label><span>Gepland</span></div>
+              </div>
+              <div class="action-desc">
+                Procedure uitwerken voor het tijdelijk uitlenen van tablets of laptops aan leerlingen uit kwetsbare gezinnen die thuis geen toegang hebben tot digitale apparaten. Koppeling met brugfiguur en CLB.
+                <ul>
+                  <li>Behoeftebevraging bij ouders (jan. 2026)</li>
+                  <li>Leenprotocol opstellen (voorwaarden, verantwoordelijkheid)</li>
+                  <li>Beschikbare toestellen catalogiseren</li>
+                </ul>
+              </div>
+              <div class="progress-bar"><div class="progress-fill" style="--prog:5%"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ACTIE 5 -->
+        <div class="action-card" id="ac5" data-tags="ouders">
+          <div class="action-header" onclick="toggleCard(this.parentElement)">
+            <div class="action-prio prio-2">2</div>
+            <div class="action-title">Ouderinformatiemoment: digitale veiligheid en mediawijsheid</div>
+            <div class="action-tags">
+              <span class="action-tag tag-ouders">Ouders</span>
+            </div>
+            <span class="action-status status-gepland">Gepland</span>
+            <button class="action-edit-btn" onclick="openEditModal('ac5');event.stopPropagation()">✏ Bewerken</button>
+            <button class="action-del-btn" onclick="deleteAction(this.closest('.action-card').id);event.stopPropagation()" title="Verwijderen">🗑 Verwijderen</button>
+            <span class="action-chevron">›</span>
+          </div>
+          <div class="action-body">
+            <div class="action-body-inner">
+              <div class="action-meta">
+                <div class="meta-item"><label>Trekker</label><span>ICT-coördinator + brugfiguur</span></div>
+                <div class="meta-item"><label>Deadline</label><span>Mei 2026</span></div>
+                <div class="meta-item"><label>Status</label><span>Gepland</span></div>
+              </div>
+              <div class="action-desc">
+                Informatieavond voor ouders over digitale veiligheid, cyberpesten, schermtijd en hoe ze hun kind thuis kunnen ondersteunen. In samenwerking met de bibliotheek van Zelzate. Vertaalfunctie via Gimme voor anderstalige ouders.
+                <ul>
+                  <li>Samenwerking bibliotheek Zelzate bevestigen</li>
+                  <li>Praktische tips voor ouders over toezicht en schermtijdlimieten</li>
+                  <li>Gimme-uitnodiging in meerdere talen versturen</li>
+                </ul>
+              </div>
+              <div class="progress-bar"><div class="progress-fill" style="--prog:0%"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ACTIE 6 -->
+        <div class="action-card" id="ac6" data-tags="lln">
+          <div class="action-header" onclick="toggleCard(this.parentElement)">
+            <div class="action-prio prio-3">3</div>
+            <div class="action-title">Mediawijsheidslessen structureel inplannen per graad</div>
+            <div class="action-tags">
+              <span class="action-tag tag-lln">Leerlingen</span>
+              <span class="action-tag tag-beleid">Beleid</span>
+            </div>
+            <span class="action-status status-gepland">Gepland</span>
+            <button class="action-edit-btn" onclick="openEditModal('ac6');event.stopPropagation()">✏ Bewerken</button>
+            <button class="action-del-btn" onclick="deleteAction(this.closest('.action-card').id);event.stopPropagation()" title="Verwijderen">🗑 Verwijderen</button>
+            <span class="action-chevron">›</span>
+          </div>
+          <div class="action-body">
+            <div class="action-body-inner">
+              <div class="action-meta">
+                <div class="meta-item"><label>Trekker</label><span>Graadcoördinatoren</span></div>
+                <div class="meta-item"><label>Deadline</label><span>September 2026</span></div>
+                <div class="meta-item"><label>Status</label><span>Gepland</span></div>
+              </div>
+              <div class="action-desc">
+                Per graad een minimum aantal mediawijsheidslessen vaststellen en inplannen in het jaarplan. Gebruik van 'De Superwereldmol' en andere gecertificeerde materialen. Thema's: nepnieuws, privacy, cyberpesten, filterbubbels.
+              </div>
+              <div class="progress-bar"><div class="progress-fill" style="--prog:0%"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ACTIE 7 -->
+        <div class="action-card" id="ac7" data-tags="infra">
+          <div class="action-header" onclick="toggleCard(this.parentElement)">
+            <div class="action-prio prio-3">3</div>
+            <div class="action-title">Vervangingsplan toestellen opstellen</div>
+            <div class="action-tags">
+              <span class="action-tag tag-infra">Infrastructuur</span>
+              <span class="action-tag tag-beleid">Beleid</span>
+            </div>
+            <span class="action-status status-gepland">Gepland</span>
+            <button class="action-edit-btn" onclick="openEditModal('ac7');event.stopPropagation()">✏ Bewerken</button>
+            <button class="action-del-btn" onclick="deleteAction(this.closest('.action-card').id);event.stopPropagation()" title="Verwijderen">🗑 Verwijderen</button>
+            <span class="action-chevron">›</span>
+          </div>
+          <div class="action-body">
+            <div class="action-body-inner">
+              <div class="action-meta">
+                <div class="meta-item"><label>Trekker</label><span>ICT-coördinator + directie</span></div>
+                <div class="meta-item"><label>Deadline</label><span>Juni 2026</span></div>
+                <div class="meta-item"><label>Status</label><span>Gepland</span></div>
+              </div>
+              <div class="action-desc">
+                Een meerjarenplan opstellen voor de vervanging van toestellen: levensduur per type toestel bepalen, budget inplannen en aankoopcriteria vastleggen (pedagogische meerwaarde, duurzaamheid, privacy).
+              </div>
+              <div class="progress-bar"><div class="progress-fill" style="--prog:0%"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ACTIE 8 -->
+        <div class="action-card" id="ac8" data-tags="beleid">
+          <div class="action-header" onclick="toggleCard(this.parentElement)">
+            <div class="action-prio prio-1">1</div>
+            <div class="action-title">GDPR-beleid en privacyafspraken actualiseren</div>
+            <div class="action-tags">
+              <span class="action-tag tag-beleid">Beleid</span>
+            </div>
+            <span class="action-status status-klaar">Klaar</span>
+            <button class="action-edit-btn" onclick="openEditModal('ac8');event.stopPropagation()">✏ Bewerken</button>
+            <button class="action-del-btn" onclick="deleteAction(this.closest('.action-card').id);event.stopPropagation()" title="Verwijderen">🗑 Verwijderen</button>
+            <span class="action-chevron">›</span>
+          </div>
+          <div class="action-body">
+            <div class="action-body-inner">
+              <div class="action-meta">
+                <div class="meta-item"><label>Trekker</label><span>Directie</span></div>
+                <div class="meta-item"><label>Deadline</label><span>September 2025</span></div>
+                <div class="meta-item"><label>Status</label><span>✅ Afgerond</span></div>
+              </div>
+              <div class="action-desc">
+                Privacyverklaring geactualiseerd en gepubliceerd. Verwerkingsregister bijgewerkt. ICT-afspraken voor leerlingen, leerkrachten en ouders geformaliseerd in schoolreglement.
+              </div>
+              <div class="progress-bar"><div class="progress-fill" style="--prog:100%"></div></div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /#actionList -->
+
+      <!-- ADD NEW ACTION -->
+      <button class="add-btn" onclick="openModal()">
+        + Nieuw actiepunt toevoegen
+      </button>
+
+    </section>
+
+    <!-- ROLLEN & VERANTWOORDELIJKHEDEN -->
+    <section class="section" id="rollen" style="padding-bottom:24px;">
+      <div class="section-label">Organisatie</div>
+      <h2>Rollen &amp; verantwoordelijkheden</h2>
+      <p>Een ICT-beleid werkt enkel als duidelijk is wie waarvoor verantwoordelijk is. Hieronder bakenen we de rollen af bij het uitvoeren en opvolgen van dit beleidsplan. Elk actiepunt hierboven krijgt een <strong>trekker</strong> uit een van deze rollen.</p>
+
+      <div class="roles-grid">
+
+        <div class="role-card" style="--rc:#1d4ed8;">
+          <div class="role-head">
+            <span class="role-icon">🧭</span>
+            <span class="role-name">Directie</span>
+          </div>
+          <div class="role-who">Eindverantwoordelijke</div>
+          <ul>
+            <li>Eindverantwoordelijke voor het ICT-beleid en de uitvoering ervan</li>
+            <li>Keurt budget en investeringen goed (zie meerjarenplanning)</li>
+            <li>Bewaakt de visie en verankert ICT in het schoolbeleid</li>
+            <li>Maakt tijd en ruimte vrij voor professionalisering</li>
+          </ul>
+        </div>
+
+        <div class="role-card" style="--rc:#7c3aed;">
+          <div class="role-head">
+            <span class="role-icon">🛠️</span>
+            <span class="role-name">ICT-coördinator</span>
+          </div>
+          <div class="role-who">Operationeel beheer</div>
+          <ul>
+            <li>Dagelijks beheer van toestellen, netwerk en software</li>
+            <li>Eerste aanspreekpunt en ondersteuning voor leerkrachten</li>
+            <li>Evalueert en adviseert nieuwe tools en licenties</li>
+            <li>Contact met leveranciers en rapportage aan Digisprong</li>
+          </ul>
+        </div>
+
+        <div class="role-card" style="--rc:#16a34a;">
+          <div class="role-head">
+            <span class="role-icon">👩‍🏫</span>
+            <span class="role-name">Leerkrachten</span>
+          </div>
+          <div class="role-who">Uitvoering in de klas</div>
+          <ul>
+            <li>Zetten ICT pedagogisch en doelgericht in volgens de leerlijn</li>
+            <li>Leren leerlingen veilig en kritisch digitaal gedrag aan</li>
+            <li>Volgen professionalisering en delen kennis met collega's</li>
+            <li>Passen de privacy- en AI-afspraken toe in de klas</li>
+          </ul>
+        </div>
+
+        <div class="role-card" style="--rc:#db2777;">
+          <div class="role-head">
+            <span class="role-icon">💙</span>
+            <span class="role-name">Zorgteam</span>
+          </div>
+          <div class="role-who">Digitale inclusie</div>
+          <ul>
+            <li>Bewaakt gelijke digitale kansen voor elke leerling</li>
+            <li>Ondersteunt leerlingen uit kwetsbare gezinnen (uitleendienst)</li>
+            <li>Werkt samen met CLB en brugfiguur</li>
+            <li>Signaleert digitale drempels bij leerlingen</li>
+          </ul>
+        </div>
+
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- ADD MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h3 id="modalTitle">Nieuw actiepunt</h3>
+    <div class="form-group">
+      <label>Titel van het actiepunt *</label>
+      <input type="text" id="f-title" placeholder="Beschrijf het actiepunt kort en duidelijk">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Prioriteit</label>
+        <select id="f-prio">
+          <option value="1">1 — Hoog</option>
+          <option value="2">2 — Gemiddeld</option>
+          <option value="3">3 — Laag</option>
+          <option value="4">4 — Later</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Status</label>
+        <select id="f-status">
+          <option value="gepland">Gepland</option>
+          <option value="actief">Actief</option>
+          <option value="klaar">Klaar</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Trekker (Wie?)</label>
+        <input type="text" id="f-trekker" placeholder="Naam of functie">
+      </div>
+      <div class="form-group">
+        <label>Deadline</label>
+        <input type="text" id="f-deadline" placeholder="bijv. April 2026">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Thema</label>
+      <select id="f-tag">
+        <option value="beleid">Beleid</option>
+        <option value="team">Team</option>
+        <option value="lln">Leerlingen</option>
+        <option value="infra">Infrastructuur</option>
+        <option value="ouders">Ouders</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Beschrijving / concrete stappen</label>
+      <div class="editor-toolbar">
+        <button type="button" onmousedown="event.preventDefault();fmt('bold')"        title="Vet"><b>B</b></button>
+        <button type="button" onmousedown="event.preventDefault();fmt('italic')"      title="Cursief"><i>I</i></button>
+        <button type="button" onmousedown="event.preventDefault();fmt('underline')"   title="Onderstrepen"><u>U</u></button>
+        <button type="button" onmousedown="event.preventDefault();fmt('insertUnorderedList')" title="Opsomming">• Lijst</button>
+        <button type="button" onmousedown="event.preventDefault();fmt('insertOrderedList')"   title="Genummerde lijst">1. Lijst</button>
+      </div>
+      <div id="f-desc" class="editor-content" contenteditable="true"
+           data-placeholder="Beschrijf wat er concreet moet gebeuren..."></div>
+    </div>
+    <div class="form-group">
+      <label>Voortgang — <span id="f-prog-label">0%</span></label>
+      <div class="prog-row">
+        <input type="range" id="f-prog" min="0" max="100" value="0"
+               oninput="document.getElementById('f-prog-label').textContent=this.value+'%'">
+        <span class="prog-value" id="f-prog-display">0%</span>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Annuleren</button>
+      <button class="btn-primary" id="modalSaveBtn" onclick="saveAction()">Toevoegen</button>
+    </div>
+  </div>
+</div>
+
+<footer>GBS De Krekel · Zelzate · ICT-beleidsplan 2025–2028 · <a href="Digiplan.html" style="color:inherit">← Dashboard</a></footer>
+
+<script>
+  const tagLabels = {
+    beleid: { label: 'Beleid',         cls: 'tag-beleid' },
+    team:   { label: 'Team',           cls: 'tag-team'   },
+    lln:    { label: 'Leerlingen',     cls: 'tag-lln'    },
+    infra:  { label: 'Infrastructuur', cls: 'tag-infra'  },
+    ouders: { label: 'Ouders',         cls: 'tag-ouders' }
+  };
+  const statusLabels = {
+    gepland: { label: 'Gepland', cls: 'status-gepland' },
+    actief:  { label: 'Actief',  cls: 'status-actief'  },
+    klaar:   { label: 'Klaar',   cls: 'status-klaar'   }
+  };
+
+  /* ════════════════════════════════════════════════════════
+     DATA-GEDREVEN OPSLAG (JSON in localStorage)
+     De statische kaarten in de HTML dienen als startdata en
+     als fallback wanneer JavaScript uit staat.
+     ════════════════════════════════════════════════════════ */
+  const STORE_KEY = 'digiplan_acties_v2';
+  let actions = [];
+  let editingIndex = null;
+  let activeFilter = 'alle';
+
+  function esc(s) {
+    return String(s ?? '').replace(/[&<>"']/g, c =>
+      ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function toggleCard(card) {
+    const body = card.querySelector('.action-body');
+    const isOpen = card.classList.contains('open');
+    card.classList.toggle('open');
+    body.style.maxHeight = isOpen ? '0' : body.scrollHeight + 'px';
+  }
+
+  function fmt(cmd) { document.execCommand(cmd, false, null); }
+
+  function setProgSlider(val) {
+    document.getElementById('f-prog').value = val;
+    document.getElementById('f-prog-label').textContent   = val + '%';
+    document.getElementById('f-prog-display').textContent = val + '%';
+  }
+
+  /* ── DOM → DATA (voor startdata en migratie van oude opslag) ── */
+  function serializeDom(container) {
+    return [...container.querySelectorAll('.action-card')].map(card => {
+      const tags = [...card.querySelectorAll('.action-tag')].map(t => {
+        const cls = [...t.classList].find(c => c.startsWith('tag-'));
+        return cls ? cls.replace('tag-','') : 'beleid';
+      });
+      const statusEl = card.querySelector('.action-status');
+      const statusCls = statusEl ? [...statusEl.classList].find(c => c.startsWith('status-')) : null;
+      const metaSpans = card.querySelectorAll('.meta-item span');
+      const fill = card.querySelector('.progress-fill');
+      const progStr = fill ? (fill.style.getPropertyValue('--prog') || '0%') : '0%';
+      return {
+        title:    card.querySelector('.action-title')?.textContent.trim() || '',
+        prio:     card.querySelector('.action-prio')?.textContent.trim() || '1',
+        status:   (statusCls || 'status-gepland').replace('status-',''),
+        trekker:  metaSpans[0]?.textContent.trim() || '–',
+        deadline: metaSpans[1]?.textContent.trim() || '–',
+        tags:     tags.length ? tags : ['beleid'],
+        desc:     card.querySelector('.action-desc')?.innerHTML.trim() || '',
+        prog:     parseInt(progStr) || 0
+      };
+    });
+  }
+
+  /* ── DATA → DOM ── */
+  function renderActions() {
+    const list = document.getElementById('actionList');
+    list.innerHTML = actions.map((a, i) => {
+      const s = statusLabels[a.status] || statusLabels.gepland;
+      const tagsHtml = (a.tags || ['beleid']).map(k => {
+        const t = tagLabels[k] || tagLabels.beleid;
+        return `<span class="action-tag ${t.cls}">${t.label}</span>`;
+      }).join('');
+      const metaStatus = a.status === 'klaar' ? '✅ Afgerond' : s.label;
+      return `
+        <div class="action-card" id="ac-${i}" data-tags="${esc((a.tags||[]).join(' '))}">
+          <div class="action-header" onclick="toggleCard(this.parentElement)">
+            <div class="action-prio prio-${esc(a.prio)}">${esc(a.prio)}</div>
+            <div class="action-title">${esc(a.title)}</div>
+            <div class="action-tags">${tagsHtml}</div>
+            <span class="action-status ${s.cls}">${s.label}</span>
+            <button class="action-edit-btn" onclick="openEditModal(${i});event.stopPropagation()" aria-label="Actiepunt bewerken">✏ Bewerken</button>
+            <button class="action-del-btn" onclick="deleteAction(${i});event.stopPropagation()" title="Verwijderen" aria-label="Actiepunt verwijderen">🗑 Verwijderen</button>
+            <span class="action-chevron">›</span>
+          </div>
+          <div class="action-body">
+            <div class="action-body-inner">
+              <div class="action-meta">
+                <div class="meta-item"><label>Trekker</label><span>${esc(a.trekker)}</span></div>
+                <div class="meta-item"><label>Deadline</label><span>${esc(a.deadline)}</span></div>
+                <div class="meta-item"><label>Status</label><span>${metaStatus}</span></div>
+              </div>
+              <div class="action-desc">${a.desc}</div>
+              <div class="progress-bar"><div class="progress-fill" style="--prog:${parseInt(a.prog)||0}%"></div></div>
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+    filterActions(activeFilter);
+    updateStats();
+  }
+
+  function persistActions() {
+    localStorage.setItem(STORE_KEY, JSON.stringify(actions));
+  }
+
+  function openModal() {
+    editingIndex = null;
+    document.getElementById('modalTitle').textContent = 'Nieuw actiepunt';
+    document.getElementById('modalSaveBtn').textContent = 'Toevoegen';
+    ['f-title','f-trekker','f-deadline'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('f-desc').innerHTML = '';
+    document.getElementById('f-prio').value   = '1';
+    document.getElementById('f-status').value = 'gepland';
+    document.getElementById('f-tag').value    = 'beleid';
+    setProgSlider(0);
+    document.getElementById('modalOverlay').classList.add('open');
+  }
+
+  function openEditModal(index) {
+    editingIndex = index;
+    const a = actions[index];
+    if (!a) return;
+
+    document.getElementById('f-title').value    = a.title;
+    document.getElementById('f-prio').value     = a.prio;
+    document.getElementById('f-status').value   = a.status;
+    document.getElementById('f-trekker').value  = a.trekker === '–' ? '' : a.trekker;
+    document.getElementById('f-deadline').value = a.deadline === '–' ? '' : a.deadline;
+    document.getElementById('f-tag').value      = (a.tags && a.tags[0]) || 'beleid';
+    document.getElementById('f-desc').innerHTML = a.desc;
+    setProgSlider(parseInt(a.prog) || 0);
+
+    document.getElementById('modalTitle').textContent    = 'Actiepunt bewerken';
+    document.getElementById('modalSaveBtn').textContent  = 'Opslaan';
+    document.getElementById('modalOverlay').classList.add('open');
+  }
+
+  function deleteAction(index) {
+    if (!confirm('Dit actiepunt verwijderen?')) return;
+    actions.splice(index, 1);
+    persistActions();
+    renderActions();
+  }
+
+  function closeModal() {
+    document.getElementById('modalOverlay').classList.remove('open');
+  }
+  document.getElementById('modalOverlay').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+
+  function saveAction() {
+    const title = document.getElementById('f-title').value.trim();
+    if (!title) { alert('Geef een titel in.'); return; }
+    const obj = {
+      title,
+      prio:     document.getElementById('f-prio').value,
+      status:   document.getElementById('f-status').value,
+      trekker:  document.getElementById('f-trekker').value.trim() || '–',
+      deadline: document.getElementById('f-deadline').value.trim() || '–',
+      tags:     [document.getElementById('f-tag').value],
+      desc:     document.getElementById('f-desc').innerHTML,
+      prog:     parseInt(document.getElementById('f-prog').value) || 0
+    };
+    if (editingIndex !== null) {
+      // Bewaar eventuele extra tags die de kaart al had
+      const oldTags = actions[editingIndex].tags || [];
+      if (oldTags.length > 1 && oldTags[0] === obj.tags[0]) obj.tags = oldTags;
+      actions[editingIndex] = obj;
+    } else {
+      actions.push(obj);
+    }
+    persistActions();
+    renderActions();
+    closeModal();
+    editingIndex = null;
+  }
+
+  function filterActions(tag) {
+    activeFilter = tag;
+    document.querySelectorAll('.action-card').forEach(card => {
+      card.style.display = (tag === 'alle' || card.dataset.tags.includes(tag)) ? '' : 'none';
+    });
+  }
+
+  function updateStats() {
+    let actief = 0, klaar = 0, gepland = 0;
+    actions.forEach(a => {
+      if (a.status === 'actief')     actief++;
+      else if (a.status === 'klaar') klaar++;
+      else                           gepland++;
+    });
+    document.getElementById('statTotal').textContent  = actions.length;
+    document.getElementById('statActief').textContent = actief;
+    document.getElementById('statKlaar').textContent  = klaar;
+    document.getElementById('statGepland').textContent= gepland;
+  }
+
+  /* ── INITIALISATIE & MIGRATIE ── */
+  (function init() {
+    const savedV2 = localStorage.getItem(STORE_KEY);
+    const legacy  = localStorage.getItem('digiplan_acties'); // oud formaat: ruwe HTML
+    if (savedV2) {
+      try { actions = JSON.parse(savedV2); }
+      catch (e) { actions = serializeDom(document.getElementById('actionList')); }
+    } else if (legacy) {
+      // Migreer oude HTML-opslag éénmalig naar JSON
+      const tmp = document.createElement('div');
+      tmp.innerHTML = legacy;
+      actions = serializeDom(tmp);
+      persistActions();
+      localStorage.removeItem('digiplan_acties');
+    } else {
+      // Startdata uit de statische HTML-kaarten
+      actions = serializeDom(document.getElementById('actionList'));
+    }
+    renderActions();
+  })();
+</script>
+</body>
+</html>

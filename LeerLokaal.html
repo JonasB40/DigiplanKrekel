@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>LeerLokaal – Digitale Competenties OVSG</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+:root { --accent: #2563a8; --accent-light: #dbeafe; }
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:#1E293B;font-size:15px}
+.wrap{max-width:1100px;margin:-28px auto 0;padding:0 5% 60px;position:relative;z-index:5}
+.app-card{background:white;border-radius:var(--radius);padding:30px 28px;box-shadow:0 2px 16px rgba(15,31,48,0.07);border:1px solid var(--border)}
+.header{display:flex;align-items:center;gap:14px;margin-bottom:28px;padding-bottom:20px;border-bottom:2px solid #E2E8F0}
+.logo{width:44px;height:44px;background:linear-gradient(135deg,var(--accent),#7C3AED);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.app-title{font-size:20px;font-weight:700;color:#1E293B;font-family:'Playfair Display',serif}
+.app-sub{font-size:12px;color:#94A3B8;margin-top:2px}
+.step-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#94A3B8;margin-bottom:6px}
+.section-title{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:#1E293B;margin-bottom:14px}
+.ll-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:28px}
+.ll-card{background:#fff;border:2px solid #E2E8F0;border-radius:14px;padding:18px 14px;cursor:pointer;text-align:center;transition:all .18s}
+.ll-card:hover{border-color:#94A3B8;transform:translateY(-2px)}
+.ll-card.sel-ict{border-color:var(--accent);background:var(--accent-light)}
+.ll-card.sel-comp{border-color:#7C3AED;background:#F5F3FF}
+.ll-card.sel-media{border-color:#059669;background:#ECFDF5}
+.ll-icon{font-size:32px;margin-bottom:8px}
+.ll-name{font-size:14px;font-weight:800;color:#1E293B;margin-bottom:4px}
+.ll-desc{font-size:11px;color:#64748B;line-height:1.5}
+.phase-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:28px}
+.phase-btn{background:#fff;border:2px solid #E2E8F0;border-radius:12px;padding:10px 18px;cursor:pointer;font-size:13px;font-weight:700;color:#1E293B;transition:all .15s;text-align:center}
+.phase-btn:hover{border-color:#94A3B8}
+.phase-btn.active{border-color:var(--accent);background:var(--accent-light);color:var(--accent)}
+.phase-age{font-size:10px;font-weight:600;color:#94A3B8;margin-top:2px}
+/* Weergave-keuze */
+.view-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:26px}
+.view-btn{background:#fff;border:2px solid #E2E8F0;border-radius:12px;padding:10px 18px;cursor:pointer;font-size:13px;font-weight:700;color:#64748B;transition:all .15s;display:flex;align-items:center;gap:7px}
+.view-btn:hover{border-color:#94A3B8}
+.view-btn.active{border-color:var(--accent);background:var(--accent-light);color:var(--accent)}
+/* Leerjaar-chips */
+.jaar-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:26px}
+.jaar-btn{background:#fff;border:2px solid #E2E8F0;border-radius:10px;padding:8px 15px;cursor:pointer;font-size:13px;font-weight:700;color:#1E293B;transition:all .15s}
+.jaar-btn:hover{border-color:#94A3B8}
+.jaar-btn.active{border-color:var(--accent);background:var(--accent-light);color:var(--accent)}
+/* Gegroepeerde doelen per leerlijn */
+.ll-group{margin-bottom:20px}
+.ll-group-header{display:flex;align-items:center;gap:8px;font-weight:800;font-size:14px;margin-bottom:8px;padding:7px 12px;border-radius:9px}
+/* Fase-badge op doelkaart */
+.fase-badge{font-size:10px;font-weight:700;background:#F1F5F9;color:#64748B;padding:2px 9px;border-radius:100px;margin-left:auto;flex-shrink:0;align-self:center}
+/* Zoekveld doelen */
+.goal-search{width:100%;padding:11px 15px;border:2px solid #E2E8F0;border-radius:12px;font-size:13px;font-family:inherit;margin-bottom:16px;background:#fff}
+.goal-search:focus{outline:none;border-color:var(--accent)}
+.no-results{padding:18px;text-align:center;color:#94A3B8;font-size:13px;display:none}
+/* Globale zoekbalk */
+.global-search{padding:14px 18px;font-size:14.5px;border-color:#cbd5e1;box-shadow:0 2px 10px rgba(15,31,48,0.05);margin-bottom:6px}
+.global-search:focus{border-color:var(--accent);box-shadow:0 2px 14px rgba(37,99,168,0.15)}
+.global-hint{font-size:11.5px;color:#94A3B8;margin-bottom:20px}
+.tool-badge{font-size:10px;font-weight:700;background:#FEF3C7;color:#92400E;padding:2px 8px;border-radius:100px;flex-shrink:0;align-self:center;white-space:nowrap}
+.clear-search-row{display:flex;justify-content:flex-end;margin-bottom:10px}
+.goals-list{display:flex;flex-direction:column;gap:8px;margin-bottom:24px}
+.goal-card{background:#fff;border:2px solid #E2E8F0;border-radius:12px;padding:12px 16px;cursor:pointer;display:flex;flex-direction:column;gap:6px;transition:all .15s}
+.goal-card:hover{border-color:#94A3B8}
+.goal-card.active{border-color:var(--accent);background:var(--accent-light)}
+.goal-row{display:flex;gap:14px;align-items:flex-start;width:100%}
+.goal-code{font-size:11px;font-weight:800;color:var(--accent);min-width:76px;padding-top:2px;flex-shrink:0}
+.goal-text{font-size:13px;color:#1E293B;line-height:1.55;flex:1}
+.badge-nieuw{font-size:10px;font-weight:800;background:#FEF3C7;color:#B45309;padding:2px 8px;border-radius:100px;flex-shrink:0;letter-spacing:.05em;align-self:center}
+.goal-meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:11px;color:#94A3B8;font-weight:600;padding-left:90px;line-height:1.5}
+.meta-pill{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:700;padding:2.5px 10px;border-radius:100px;white-space:nowrap}
+.mp-age{background:#E0F2FE;color:#075985}
+.mp-fase{background:#EDE9FE;color:#5B21B6}
+.mp-jaar{background:#DCFCE7;color:#166534}
+.meta-extra{font-size:10.5px;color:#94A3B8;font-weight:600}
+.diff-toggle{background:none;border:none;color:var(--accent);font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;padding:0}
+.diff-panel{padding:10px 12px;background:#F8FAFC;border:1.5px solid #E2E8F0;border-radius:10px;margin-left:90px}
+.diff-line{font-size:12px;color:#475569;line-height:1.55;margin-bottom:7px;display:flex;gap:8px;align-items:flex-start}
+.diff-line:last-child{margin-bottom:0}
+.diff-tag{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;padding:2px 7px;border-radius:100px;flex-shrink:0;margin-top:2px}
+.dt-onder{background:#FFF7ED;color:#EA580C}
+.dt-verdiep{background:#F5F3FF;color:#7C3AED}
+@media(max-width:600px){.goal-meta,.diff-panel{padding-left:0;margin-left:0}}
+/* ── TEACHER PROGRESS ── */
+.prog-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:2.5px 9px;border-radius:100px;flex-shrink:0;cursor:pointer;border:1.5px solid currentColor;background:transparent;font-family:inherit;transition:all .15s;white-space:nowrap}
+.prog-badge:hover{opacity:.75}
+.prog-none{color:#94A3B8;border-color:#CBD5E1}
+.prog-bezig{color:#92400E;background:#FEF9C3;border-color:#FDE047}
+.prog-behandeld{color:#166534;background:#DCFCE7;border-color:#4ADE80}
+.prog-geval{color:#1e4d96;background:#DBEAFE;border-color:#60A5FA}
+.rubric-btn{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;padding:2.5px 9px;border-radius:100px;background:#F0F9FF;color:#0369A1;border:1.5px solid #BAE6FD;text-decoration:none;cursor:pointer;flex-shrink:0;white-space:nowrap}
+.rubric-btn:hover{background:#BAE6FD}
+.prog-summary{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px;align-items:center}
+.prog-stat{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:#1E293B}
+.prog-stat-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+.prog-empty{padding:40px 0;text-align:center;color:#94A3B8;font-size:14px;line-height:1.7}
+.btn-primary{background:var(--accent);color:#fff;border:none;border-radius:10px;padding:12px 24px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;transition:background .15s}
+.btn-primary:hover{background:#1e4276}
+.btn-green{background:#059669;color:#fff;border:none;border-radius:10px;padding:12px 24px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit}
+.btn-green:hover{background:#047857}
+.btn-ghost{background:transparent;color:#64748B;border:2px solid #E2E8F0;border-radius:10px;padding:11px 22px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit}
+.btn-ghost:hover{background:#F8FAFC}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.crumb{font-size:12px;color:#64748B;margin-bottom:18px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.crumb-link{color:#64748B;cursor:pointer;text-decoration:underline}
+.crumb-link:hover{color:var(--accent)}
+.crumb-sep{color:#CBD5E1}
+.spinner{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4rem 0;gap:14px}
+.spin-ring{width:44px;height:44px;border:4px solid #E2E8F0;border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin-msg{font-size:15px;font-weight:700;color:#475569}
+.spin-sub{font-size:12px;color:#94A3B8}
+.err-box{background:#FFF1F2;border:1.5px solid #FECDD3;border-radius:10px;padding:12px 16px;color:#BE123C;font-size:13px;margin-bottom:14px}
+.lib-section{margin-bottom:6px}
+.lib-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#94A3B8;margin-bottom:8px}
+.lib-ideas{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.lib-idea{background:#fff;border:1.5px solid #E2E8F0;border-radius:10px;padding:11px 16px;cursor:pointer;font-size:13px;color:#1E293B;transition:all .15s;font-weight:600}
+.lib-idea:hover{border-color:#94A3B8}
+.lib-idea.selected{border-color:var(--accent);background:var(--accent-light);color:#1e4276}
+.ai-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px}
+.ai-card{background:#fff;border:1.5px solid #E2E8F0;border-radius:12px;padding:14px;cursor:pointer;transition:all .15s}
+.ai-card:hover{border-color:var(--accent);transform:translateY(-2px)}
+.ai-num{font-size:11px;color:#94A3B8;margin-bottom:6px;font-weight:700}
+.ai-title{font-size:14px;font-weight:800;color:#1E293B;margin-bottom:6px}
+.ai-desc{font-size:12px;color:#64748B;line-height:1.55}
+.ai-arrow{margin-top:10px;font-size:16px;color:var(--accent)}
+.info-box{background:#F0F9FF;border:1.5px solid #BAE6FD;border-radius:10px;padding:10px 14px;font-size:12px;color:#0369A1;margin-bottom:16px;line-height:1.5}
+/* FICHE */
+.fiche-header{background:#fff;border:2px solid #E2E8F0;border-radius:14px;padding:22px 24px;margin-bottom:14px}
+.fiche-age-badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;padding:3px 10px;border-radius:100px;margin-bottom:10px}
+.fiche-title-main{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:#1E293B;margin-bottom:4px}
+.fiche-subtitle{font-size:13px;color:#64748B;font-weight:600;margin-bottom:12px}
+.fiche-meta{display:flex;gap:18px;flex-wrap:wrap}
+.fiche-meta span{font-size:12px;color:#64748B;font-weight:600}
+.tabs{display:flex;background:#fff;border-radius:12px;padding:5px;border:2px solid #E2E8F0;margin-bottom:16px;gap:4px}
+.tab-btn{flex:1;padding:10px 6px;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;background:transparent;color:#64748B;transition:all .15s}
+.tab-btn.active{background:var(--accent);color:#fff}
+.card{background:#fff;border:2px solid #E2E8F0;border-radius:14px;padding:18px 20px;margin-bottom:12px}
+.card-title{font-size:14px;font-weight:800;color:#1E293B;margin-bottom:12px}
+.goal-banner{background:#F0FDF4;border-left:4px solid #10B981;border-radius:0 10px 10px 0;padding:12px 16px;font-size:14px;font-weight:700;color:#1E293B;margin-bottom:10px}
+.subdoel{display:flex;gap:8px;margin-bottom:7px;font-size:13px;color:#475569;line-height:1.5}
+.dot{width:7px;height:7px;border-radius:50%;background:#10B981;margin-top:5px;flex-shrink:0}
+.tag{display:inline-block;background:var(--accent-light);color:var(--accent);font-size:11px;padding:4px 10px;border-radius:100px;margin:3px 3px 3px 0;font-weight:700}
+.diff-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.diff-easy{background:#FFF7ED;border:1.5px solid #FED7AA;border-radius:10px;padding:14px}
+.diff-hard{background:#F5F3FF;border:1.5px solid #DDD6FE;border-radius:10px;padding:14px}
+.diff-label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.diff-easy .diff-label{color:#EA580C}
+.diff-hard .diff-label{color:#7C3AED}
+.diff-text{font-size:13px;color:#1E293B;line-height:1.55}
+.opwarmer{background:#FFFBEB;border:1.5px solid #FDE68A;border-radius:10px;padding:14px;margin-bottom:18px}
+.opwarmer-label{font-size:11px;font-weight:800;color:#D97706;margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em}
+.opwarmer-text{font-size:13px;color:#1E293B;line-height:1.6}
+.step-row{display:flex;gap:16px;margin-bottom:20px}
+.step-line{display:flex;flex-direction:column;align-items:center;flex-shrink:0}
+.step-num{width:32px;height:32px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800}
+.step-connector{width:2px;background:#E2E8F0;flex:1;margin-top:6px;min-height:20px}
+.step-body{flex:1;padding-bottom:4px}
+.step-title-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap}
+.step-title{font-size:14px;font-weight:800;color:#1E293B}
+.step-time{font-size:11px;color:#94A3B8;background:#F1F5F9;padding:3px 10px;border-radius:100px;font-weight:700}
+.step-desc{font-size:13px;color:#475569;line-height:1.6;margin-bottom:10px}
+.dialoog-box{background:#F8FAFC;border:1.5px solid #E2E8F0;border-radius:10px;padding:12px 16px}
+.dialoog-label{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--accent);margin-bottom:5px}
+.dialoog-text{font-size:13px;color:#1E293B;line-height:1.6;font-style:italic}
+.afsluiting{background:#F0FDF4;border:1.5px solid #A7F3D0;border-radius:10px;padding:14px;margin-bottom:10px}
+.afsluiting-label{font-size:11px;font-weight:800;color:#059669;margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em}
+.afsluiting-text{font-size:13px;color:#1E293B;line-height:1.6}
+.toetsing{background:#F8FAFC;border:1.5px solid #E2E8F0;border-radius:10px;padding:14px}
+.mat-item{display:flex;gap:10px;margin-bottom:8px;font-size:13px;color:#475569;line-height:1.5}
+.mat-dot{color:var(--accent);font-weight:800;flex-shrink:0}
+.mat-uitleg{background:#F8FAFC;border-radius:10px;padding:14px;margin-bottom:10px}
+.mat-uitleg-title{font-size:13px;font-weight:800;color:#1E293B;margin-bottom:5px}
+.mat-uitleg-text{font-size:13px;color:#475569;line-height:1.6}
+.tip-item{border-left:3px solid var(--accent);padding-left:14px;margin-bottom:14px}
+.tip-title{font-size:13px;font-weight:800;color:#1E293B;margin-bottom:4px}
+.tip-text{font-size:13px;color:#475569;line-height:1.55}
+.begrip-item{background:var(--accent-light);border-radius:10px;padding:12px 14px;margin-bottom:8px}
+.begrip-term{font-size:13px;font-weight:800;color:var(--accent);margin-bottom:3px}
+.begrip-def{font-size:12px;color:#475569;line-height:1.55}
+/* Print */
+@media print{
+  .no-print{display:none!important}
+  body{background:#fff}
+  .topbar,.page-header,footer{display:none!important}
+  .wrap{padding:10px;margin:0 auto}
+  .app-card{border:none;box-shadow:none;padding:0}
+  .card,.fiche-header{border:1px solid #ccc;break-inside:avoid}
+  .tabs,.btn-row,.header{display:none}
+  .tab-content{display:block!important}
+}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a href="Digiplan.html">← Terug naar Dashboard</a>
+  <span>GBS De Krekel · Digiplan 2025–2028</span>
+</div>
+
+<div class="page-header">
+  <div class="page-header-inner">
+    <div class="page-header-label">LeerLokaal · OVSG-leerplan</div>
+    <h1>Verticale leerlijnen</h1>
+    <p>Digitale competenties doorheen alle leerjaren: kies een leerlijn, fase en leerplandoel en genereer een volledig uitgewerkte lesfiche.</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:16px">
+      <a href="woordenlijst.html" style="display:inline-flex;align-items:center;gap:8px;background:#fff;color:var(--accent);text-decoration:none;font-weight:700;font-size:0.9rem;padding:11px 20px;border-radius:999px;box-shadow:0 4px 14px rgba(0,0,0,0.18);transition:transform .15s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">📖 Woordenlijst digitale competenties</a>
+      <a href="rubrics_digitale_geletterdheid.html" style="display:inline-flex;align-items:center;gap:8px;background:#fff;color:#059669;text-decoration:none;font-weight:700;font-size:0.9rem;padding:11px 20px;border-radius:999px;box-shadow:0 4px 14px rgba(0,0,0,0.18);transition:transform .15s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">📋 Rubrics digitale geletterdheid</a>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="app-card" id="app"></div>
+</div>
+
+<footer>GBS De Krekel · Zelzate · ICT-beleidsplan 2025–2028 · <a href="Digiplan.html" style="color:inherit">← Dashboard</a></footer>
+
+<script>
+// ─── DATA ─────────────────────────────────────────────────────────────
+const LIBRARY = {
+  "DIG 1 B.1":["Digitaal speel-hoekje inrichten","Kleutersoftware ontdekken","Tablet-speelkwartiertje","Touchscreen-raadspel","Digitale verhalenhoek"],
+  "DIG 1 B.2":["Veegspelletjes op tablet","Pijlspelletje op scherm","Tik de letter aan","Schuifpuzzel app","Stippen volgen op touchscreen"],
+  "DIG 1 B.3":["Vertrouwd tekenprogramma","Foto's bekijken in gallery","Eenvoudig kleurprogramma","Educatieve game herhalen","Digitale stempels"],
+  "DIG 1 B.4":["Rekenmachine ontdekken","Tellen op tablet","Cijfers aanraken op scherm","Getallenlied met app","Digitale dobbelsteen"],
+  "DIG 1 B.5":["Rekenmachine vs. vingers","Som op tablet oplossen","Digitale telrij","Optellen met app","Getallen linken aan tool"],
+  "DIG 1 B.6":["Blindtypen oefening","Jouw naam tikken","Letterzoekspel op toetsenbord","Typrij oefening","Toetsenbord-bingo"],
+  "DIG 1 B.7":["Klasfoto's maken","Video van experiment","Selfie-project","Natuur fotograferen","Foto's sorteren"],
+  "DIG 1 B.8":["Verven in Paint","Bestand opslaan oefenen","Map aanmaken","Zoomen en scrollen","Kopiëren en plakken"],
+  "DIG 1 B.9":["Verhaal tikken in Word","Briefje typen","Woordenlijst maken","Tekst opmaken","Dictee in tekstverwerker"],
+  "DIG 1 B.10":["Digitaal kunstwerk maken","Presentatie illustreren","Collage met foto's","Animatie bouwen","Digitaal kleurboek"],
+  "DIG 1 B.11":["Beveiligd zoeken in browser","Afbeelding opzoeken","Dierenfeitenzoektocht","Zoekopdracht in klas","Veilig surfen-les"],
+  "DIG 1 B.12":["Geluidsfragment opnemen","Podcast-intro","Geluiden van dieren opnemen","Interview opnemen","Muziek opnemen"],
+  "DIG 1 B.13":["Foto bewerken met filter","Achtergrond veranderen","Collage maken","Kleur aanpassen","Bijschrift toevoegen"],
+  "DIG 1 B.14":["Tekst opmaken in Word","Koptitels instellen","Lettertype kiezen","Lijst maken","Afbeelding invoegen"],
+  "DIG 1 B.15":["Rekenmachine gebruiken","Sommetjes controleren","Eenvoudige berekeningen","Procenten uitrekenen","Tabel invullen met calculator"],
+  "DIG 1 B.16":["Rekenmachine vs. hoofdrekenen","Antwoord controleren","Sommen twee keer checken","Fout zoeken","Rekentool vergelijken"],
+  "DIG 1 B.17":["E-mail schrijven","Digitale begroeting","Chat-etiquette oefenen","Bericht sturen in veilige omgeving","Online samenwerken"],
+  "DIG 1 B.18":["Digitale presentatie maken","Poster in Canva","Slidedeck met foto's","Infographic ontwerpen","Video-intro maken"],
+  "DIG 1 B.19":["Kort verhaal tikken","Dagboek digitaal","Zin per dag","Woorden typen","Tekst met opmaak"],
+  "DIG 1 B.20":["Zelfstandig in oefenapp","Khan Academy","Educatieve game","Digitale leerkring","Online quiz"],
+  "DIG 1 B.21":["Informatie opzoeken en bewaren","Research-opdracht","Knipselmand digitaal","Bronnen ordenen","Favorietenmap aanmaken"],
+  "DIG 1 B.22":["Complexe berekening met tool","Statistieken uitrekenen","Gemiddelde berekenen","Rekenmachine-wedstrijd","Complexe som checken"],
+  "DIG 1 B.23":["Opslaan op USB","Bewaren in cloud","Drive-les","Lokale vs. cloudopslag","Backup maken"],
+  "DIG 1 B.24":["Bestand delen met klasgenoot","Samenwerken in Drive","Upload-oefening","Gedeelde map","Link delen"],
+  "DIG 1 B.25":["ICT-meerwaarde bespreken","Voor/nadelen ICT","Reflectieposter","Nut van apps","Digitale vs. analoge aanpak"],
+  "DIG 2 B.1":["Voorwerpen sorteren: computer vs. niet-computer","Speelhoek met oude apparaten","Prenten zoeken: waar zie jij een computer?","Computers in de klas tellen","Memoryspel: apparaat ↔ functie"],
+  "DIG 2 B.2":["Kringgesprek met foto's van thuis","Speurtocht in de school","Tekenopdracht: 'Hier zie ik een computer'","Rollenspel: kassa, dokter, treinbestuurder","Pictogrammen koppelen aan situaties"],
+  "DIG 2 B.3":["Robot-dans","Herhalingspatronen met blokjes","Liedjes met refreinen","Volg-de-leider met herhaling","Herhaal-machine spel"],
+  "DIG 2 B.4":["Verhaalstroken ordenen","Dagritmekaarten sorteren","Foto's van activiteiten in volgorde leggen","Puzzel zonder voorbeeld","'Wat komt eerst?'-spel"],
+  "DIG 2 B.5":["Kartonnen computer met losse onderdelen","Lego-bouw: benoem de onderdelen","Fiets of auto tekenen en benoemen","Deel ↔ geheel sorteren","Speelgoed uit elkaar halen (veilig)"],
+  "DIG 2 B.6":["Kralenpatronen uitbreiden","Bewegingspatronen","Muziekritmes","Patronen in de natuur","Pixelpatronen op ruitjespapier"],
+  "DIG 2 B.7":["Sandwich maken in stappen","Speelgoed opruimen in stappen","Tandenpoetsen in stappen","Lego-bouwplan maken","Route naar de speelplaats"],
+  "DIG 2 B.8":["Dansroutine","Patronen in muziek","Herhalende stappen in een recept","Bewegingsspel met triggers","Patronen in kleding"],
+  "DIG 2 B.9":["Reflectiekaartjes","Stripverhaal tekenen","Nabespreking na digitale oefening","Foto's van stappen bespreken","Probleem-detective"],
+  "DIG 2 B.10":["Getallenreeksen leggen","Reeksen in de natuur","Domino's sorteren","Reeksen met kleuren/vormen","'Wat hoort hier?'-spel"],
+  "DIG 2 B.11":["Programmeer de leerkracht","Bee-Bot unplugged","Pijlenkaartjes","Speurtocht met instructies","Robot-vriendje"],
+  "DIG 2 B.12":["Recept volgen","Bouwplan volgen","Route volgen op grid","Puzzel met stappenkaart","Origami"],
+  "DIG 2 B.13":["Foto's van automatische systemen","Wandeling door de school","Tekenopdracht","Memoryspel systeem ↔ functie","Mini-museum"],
+  "DIG 2 B.14":["Recept ontleden","Lego-bouwplan analyseren","Fiets ontleden","Stripverhaal maken","Flowchart tekenen"],
+  "DIG 2 B.15":["Onduidelijke instructies spel","Programmeer de leerkracht fout","Exacte tekenopdrachten","Tangram met instructies","Foute vs. correcte algoritmes"],
+  "DIG 2 B.16":["Discussie: robotstofzuiger","Voor/nadelenmatrix","Rollenspel mens vs. machine","Video's van robots","'Wat als?'-scenario's"],
+  "DIG 2 B.17":["Flowcharts","Stripverhalen","Pictogram-instructies","Routekaarten","Lego-bouwplan ontwerpen"],
+  "DIG 2 B.18":["Patronen zoeken in klassen","Sorteren op eigenschap","Symmetriepatronen","Rekenpatronen","Abstracte vormen vergelijken"],
+  "DIG 2 B.19":["Kaartspel met voorwaarden","Bewegingsspel met regels","Weerstation","Sorteeropdrachten","Eigen spelregels ontwerpen"],
+  "DIG 2 B.20":["Unplugged pijlen-programmeren","Flowchart → code","Kaartspel met loops","Scratch-project","Micro:bit basisprogramma's"],
+  "DIG 3 B.1":["Media-speurtocht in de klas","Reclame vs. verhaal","Geluidenspel","Mediahoek bouwen","Emotiekaartjes"],
+  "DIG 3 B.2":["Mijn mediadagboek","Praatkring 'Wat doe jij online?'","Goed idee / minder goed idee-kaartjes","Media-memory","Rollenspel"],
+  "DIG 3 B.3":["Wachtwoord-verhalen","Inlog-oefenhoek","Goed of fout?","Sterk wachtwoord bouwen","Digitale oefenomgeving"],
+  "DIG 3 B.4":["Verhaal Sunita — nepnieuws (2de lj)","Waar of niet waar-quiz","Foto-manipulatie herkennen","Mini-onderzoek","Fabel of feit?","Reclame herkennen"],
+  "DIG 3 B.5":["Verhaal Nuram — catfish & digitale identiteit (4de–5de lj)","Avatar-spel","Chat-rollenspel","Verhaal 'Wie zit er achter het scherm?'","Foto vs. werkelijkheid","Veiligheidsregels opstellen"],
+  "DIG 3 B.6":["Verhaal Sarah — phishing & privacy (4de lj)","Gegevens-stoplicht","Situatiekaartjes","Poster 'Mijn gegevens zijn van mij'","Website-check","Verhaal met cliffhanger"],
+  "DIG 3 B.7":["Nettiquette-kaartjes","Emoji-interpretatie","Chat-simulatie","Voorbeeld vs. tegenvoorbeeld","Digitale complimentenronde"],
+  "DIG 3 B.8":["Stop-denk-doe-schema","Situaties nabootsen","Vertrouwenspersonen-poster","Verhaal 'De vreemde boodschap'","Knop 'Help!'"],
+  "DIG 3 B.9":["Verhaal Souffian — cyberpesten (3de lj)","Cyberpest-scenario's","Digitale empathie-oefening","Poster 'Wij zijn een respectvolle klas'","Rollenspel","Complimentenmuur"],
+  "DIG 3 B.10":["Reclame-analyse","Influencer-experiment","Discussie 'Waarom vind ik dit leuk?'","Vooroordelen in media","Meningsmeter"],
+  "DIG 3 B.11":["Media-skills zelftest","Reflectieposter","Media-competentie-cirkel","Mini-workshops","Portfolio-opdracht"],
+  "DIG 3 B.12":["Risico-rad","Kansenkaartjes","Fake news-detective","Privacy-lab","Voor- en nadelenmatrix"],
+  "DIG 3 B.13":["Debat 'Online zijn: top of flop?'","Digitale burger-case","Voor/nadelen-kaartenset","Reflectieopdracht","Interview met ouders/grootouders"],
+  "DIG 3 B.14":["Phishing-simulatie","STOP-methode","Berichten analyseren","Veiligheidschecklist","Rollenspel"],
+  "DIG 3 B.15":["Respect-challenge","Privacy-overtredingen herkennen","Digitale gedragsregels opstellen","Voorbeeldgedrag analyseren","Reflectie"],
+  "DIG 3 B.16":["Verhaal Lucas — digitale voetafdruk (5de lj)","Digitale voetafdruk-visualisatie","Voorbeeldcases","Denk-voor-je-post-oefening","Tijdlijnspel","Reflectieopdracht"],
+  "DIG 3 B.17":["Verhaal Thomas — auteurs- & portretrecht (6de lj)","Auteursrecht-intro","Toestemmingsspel","Licentie-pictogrammen leren","Schoolregels analyseren","Praktijkopdracht"],
+
+  /* ── Nieuwe doelen zonder oude code: onze eigen Scratch-progressie ── */
+  "DIG 2.21":["Scratch — fouten in je code opsporen en verbeteren (debuggen)","Stappenplan testen en bijsturen"],
+  "DIG 2.22":["Scratch Jr → Scratch: sprites toevoegen, personaliseren & laten bewegen (toetsen/random/naar een punt)","Scratch — een eigen spel bouwen (bv. paaseieren vangen)","Scratch — een lineair algoritme stap voor stap opbouwen, testen en debuggen"],
+  "DIG 2.33":["Scratch — variabelen & als-dan-constructies (bv. Sint gooit pakjes)","Scratch — signalen gebruiken (bv. spel kat/vleermuis/bal)","Scratch-spel: motorboot of sneeuwvlokken vangen","Scratch — meervoudige code combineren: sequentie, herhaling en keuze"]
+};
+
+/* ════════════════════════════════════════════════════════════════
+   CONCRETE INHOUDEN UIT ONZE EIGEN RUBRICS (OVSG — Baes, De Clercq,
+   Griffioen & Troch). Per doel concrete deelvaardigheden en
+   voorbeeldcontexten, gedistilleerd uit de rubrickolommen
+   "subdoel" en "inhouden". Gekoppeld aan de oude doelcode.
+   ════════════════════════════════════════════════════════════════ */
+const RUBRIC_IDEAS = {
+  // ICT-basisvaardigheden
+  "DIG 1 B.1":["Toestellen herkennen & benoemen: computer, scherm, tablet, kassa","Complexere toestellen ontdekken: printer, beamer, smartwatch, VR-bril","Digitale infrastructuur gebruiken in een rollenspel"],
+  "DIG 1 B.2":["Touchscreen: tikken, gericht aanklikken en verslepen","Muis hanteren: klikken en slepen"],
+  "DIG 1 B.3":["Digitaal voorleesverhaal beluisteren","Digitale prentenboeken verkennen","Eenvoudige educatieve spelletjes spelen"],
+  "DIG 1 B.4":["Cijfers en symbolen (+ − =) op een digitale tool leren kennen","Wiskundige initiatie via apps"],
+  "DIG 1 B.5":["Winkelhoek: de +toets per product gebruiken","Optellen met visuele + en = in apps"],
+  "DIG 1 B.6":["Speciale toetsen: spatie, pijltjes, enter","Cijfertoetsen gericht aantikken via een spelletje"],
+  "DIG 1 B.7":["Foto's maken: compositie en perspectief (vogel-/kikvorsperspectief)","Cameraknoppen: zoom, flits, timer, selfie","Met zorg en stabiel filmen"],
+  "DIG 1 B.8":["Tool starten, opslaan, sluiten, vergroten/verkleinen","Inloggen met gebruikersnaam en wachtwoord","Basisiconen herkennen: vuilbak, diskette, kruisje, pijl"],
+  "DIG 1 B.9":["Hoofdletters via de Shift-toets","Beide handen op het toetsenbord","Symbolen typen: @ * / ! ( )"],
+  "DIG 1 B.10":["Eigen tekening in een tekenprogramma","GIF of animatie maken","Geluid bewerken: knippen, in- en uitfaden"],
+  "DIG 1 B.11":["Navigeren binnen een educatieve website","Zoeken op verschillende websites","Bladwijzers en favorieten gebruiken"],
+  "DIG 1 B.12":["Geluid opnemen richting de microfoon","Letten op akoestiek en geluidskwaliteit","Audio bewerken: faden, bijsnijden, effecten"],
+  "DIG 1 B.13":["Foto bijsnijden en formaat wijzigen","Effecten: zwart-wit, spiegelen, sepia, filter","Iets aanduiden: pijl, kader, cirkel, markeren","Achtergrond verwijderen"],
+  "DIG 1 B.14":["Lettertype, grootte, vet en onderlijnen","Opsommingstekens en uitlijnen","Kop- en voettekst, paginanummers"],
+  "DIG 1 B.15":["Rekenmachine: cijfers en + − = × :","Natuurlijke getallen intikken en berekenen"],
+  "DIG 1 B.16":["Uitkomst van een bewerking controleren","Weten wanneer een rekentool zinvol is"],
+  "DIG 1 B.17":["E-mail: onderwerp, lay-out, handtekening","Formeel versus informeel communiceren","Chatafspraken toepassen"],
+  "DIG 1 B.18":["Presentatie volgens de 1-6-6-regel","Affiche of wenskaart ontwerpen","Infographic met grafieken en kleur","Stopmotion of filmpje maken"],
+  "DIG 1 B.19":["Structuur: titels, koppen en stijlen","Opmaak: vet/cursief, uitlijnen, opsomming","Documentoverzicht gebruiken"],
+  "DIG 1 B.20":["Zelfstandig oefenen op Bingel, Kabas, Scoodle Play of Quizlet","Correct gebruik van ICT-middelen"],
+  "DIG 1 B.21":["Trefwoord kiezen om info op te zoeken","Gepaste afbeeldingen zoeken (Creative Commons)","Info verwerken in een presentatie en bewaren"],
+  "DIG 1 B.22":["Winst, verlies en korting berekenen","Percentages en kommagetallen","Opeenvolgende bewerkingen met haakjes"],
+  "DIG 1 B.23":["Mappen en bestanden aanmaken en benoemen","Ordenen, verplaatsen en verwijderen"],
+  "DIG 1 B.24":["Bestand uploaden en terugvinden","Delen met een klasgenoot","Rechten instellen"],
+  "DIG 1 B.25":["Digitale toepassingen in ons dagelijks leven","Vergelijken met vroeger","Voor- en nadelen en de invloed van AI bespreken"],
+  // Computationeel denken
+  "DIG 2 B.1":["Computers vergelijken: laptop, tablet, smartphone","Mogelijkheden benoemen: filmpje, spel, verhaal"],
+  "DIG 2 B.2":["Speurtocht: waar zie je computers in de buurt? (bakker, bib, supermarkt)","Hoe maken computers het leven makkelijker?"],
+  "DIG 2 B.3":["Herhaalknop bij liedjes","Bee-Bot of mTiny met herhaalde acties","Een patroon dat zich eindeloos herhaalt"],
+  "DIG 2 B.4":["Verhaalprenten in volgorde leggen","Foto's van een recept ordenen","Ochtendroutine in stappen"],
+  "DIG 2 B.5":["Puzzelstukken: deel en geheel","Onderdelen van een keukenset of speelgoedauto benoemen"],
+  "DIG 2 B.6":["Kralenpatroon verderzetten","Blokkenpatroon bouwen","Muzikaal patroon (klap-klap-tik) voortzetten"],
+  "DIG 2 B.7":["Speelgoed opruimen in deelstappen","Handen wassen in stappen","Gekende stappenplannen en routines"],
+  "DIG 2 B.8":["Herhaling in de dagplanning herkennen","Herhaling in een verhaal of knutselproject"],
+  "DIG 2 B.9":["Praten: welk probleem loste je op met een computer?","Spellingscorrector, digitaal woordenboek, oefenspel"],
+  "DIG 2 B.10":["Volgorde in dagelijkse routines","Volgorde bij een papieren vliegtuigje vouwen","Het belang van de juiste volgorde"],
+  "DIG 2 B.11":["Unplugged: levende robot met pictogrammen","Een route uittekenen voor een andere groep","Boterham smeren via instructies"],
+  "DIG 2 B.12":["Een recept volgen","Scratch Jr met blokjes","Unplugged programmeren met pijlen op de grond"],
+  "DIG 2 B.13":["Geautomatiseerde systemen opsommen: stoplicht, lift, kassa, broodautomaat","Mini-museum van automatische systemen"],
+  "DIG 2 B.14":["Een proces opdelen in hoofd- en deelstappen","Robot knutselen: ontwerp, knippen, monteren","Stappenplan schrijven (PCDA, Stop-denk-doe)"],
+  "DIG 2 B.15":["Unplugged een algoritme bouwen","Scratch, Lightbot of Hour of Code","Boterham smeren als 'programma'"],
+  "DIG 2 B.16":["Voor- en nadelen van automatisering","Resultaat van mens versus machine vergelijken","Wanneer schakel je een computer in?"],
+  "DIG 2 B.17":["Stap-voor-stap-instructies met een flowchart","Een gewandelde route in stappen verwoorden","Visueel stappenplan voor een dansje"],
+  "DIG 2 B.18":["Patronen in kunst, muziek en natuur","Wiskundige patronen (sprongen tellen)","Herhalingen in een verhaal"],
+  "DIG 2 B.19":["Als-dan-spel in groep","Oorzaak-gevolg-routines","Scratch: als de kat de rand raakt, keert hij om"],
+  "DIG 2 B.20":["Blokprogrammeertaal: Scratch, micro:bit, Code.org, Blockly","Een probleem oplossen met eigen code","Herhalingen, voorwaarden en debuggen"],
+  // Mediawijsheid
+  "DIG 3 B.1":["Mediavormen herkennen: tekst, foto, audio, video","Ook QR-codes en logo's","Mediaboodschappen benoemen: reclame, YouTube, podcast"],
+  "DIG 3 B.2":["Mijn mediadagboek","Eens/oneens-stelling: hoe gebruik jij media?","Schermtijd en afspraken thuis"],
+  "DIG 3 B.3":["Een sterk wachtwoord of wachtzin bouwen","Wachtwoordregels: afschermen, niet delen, uitloggen","Waarom is een wachtwoord persoonlijk?"],
+  "DIG 3 B.4":["Gemanipuleerde media herkennen","Clickbait ontmaskeren","Begrippen: fake news, factcheck, filterbubbel, deepfake"],
+  "DIG 3 B.5":["Catfishing en grooming herkennen","Alarmsignalen bij online profielen","Hoe gepast reageren bij twijfel?"],
+  "DIG 3 B.6":["Welke gegevens wel/niet delen?","Een nickname gebruiken in plaats van je echte naam","Gevaren: identiteitsdiefstal en phishing"],
+  "DIG 3 B.7":["E-mail: aanspreking, vorm en afsluiting","Nettiquette opstellen","(Blinde) kopie correct gebruiken","Chatafspraken en emoji-gebruik"],
+  "DIG 3 B.8":["Ongewenste of schokkende berichten herkennen","Melden aan een volwassene en een screenshot nemen","Wanneer roep je hulp in?"],
+  "DIG 3 B.9":["Cyberpesten herkennen (de 3 voorwaarden)","Gepast reageren op ongepast gedrag online","De effecten van pesten benoemen"],
+  "DIG 3 B.10":["Invloed op je zelfbeeld (positief en negatief)","Invloed van AI, nepnieuws, influencers en challenges"],
+  "DIG 3 B.11":["Wat is mediawijsheid? (weten, kunnen, willen)","Reflecteren op je eigen mediagebruik","Belang: digitale veiligheid en kritisch denken"],
+  "DIG 3 B.12":["Kansen én risico's van media","Privacy-instellingen en de filterbubbel","Beschermen: incognito, actief zoeken"],
+  "DIG 3 B.13":["Voor- en nadelen van sociale netwerken","Bereik, contacten, verslaving, schoonheidsidealen"],
+  "DIG 3 B.14":["Phishing en verdachte links herkennen","Deepfake en fake news bespreken","Cookies: enkel noodzakelijke accepteren"],
+  "DIG 3 B.15":["Vriendelijk en respectvol online","Geen foto's of gegevens delen zonder toestemming","Doxing bespreken"],
+  "DIG 3 B.16":["Digitale voetafdruk: wat deel ik?","Online permanentie: googel jezelf","De gevolgen inschatten"],
+  "DIG 3 B.17":["Auteurs- en portretrecht bespreken","Wanneer is sexting strafbaar?","Regels voor delen opzoeken en toepassen"]
+};
+
+/* ════════════════════════════════════════════════════════════════
+   VERNIEUWDE LEERLIJN DIGITALE GELETTERDHEID (LeerLokaal/OVSG)
+   Conform de nieuwe minimumdoelen — versie "nog niet goedgekeurd".
+   Per doel: code (nieuw), oud (oude code of null = NIEUW doel),
+   age (vanaf-leeftijd), md (concordantie minimumdoelen),
+   onder (ondersteuningsleerlijn), verdiep (verdiepingsleerlijn).
+   ════════════════════════════════════════════════════════════════ */
+const DATA = {
+  ict:{label:"ICT-basisvaardigheden",icon:"💻",color:"#2563a8",colorLight:"#dbeafe",doelen:{
+    1:[
+      {code:"DIG 1.1",oud:"DIG 1 B.1",age:2.5,md:"MD L4-8.2.2",text:"Spelenderwijs leren omgaan met digitale infrastructuur.",onder:"Spelenderwijs leren omgaan met digitale infrastructuur zoals een tablet, computer, laptop of digitaal speelgoed."},
+      {code:"DIG 1.2",oud:"DIG 1 B.2",age:3,md:"MD L4-8.2.2",text:"Vlot bewegen op een digitaal scherm.",onder:"Vlot bewegen op een digitaal scherm met een vinger.",verdiep:"Vlot bewegen op een digitaal scherm met een digitale pen, computermuis, touchpad of controller."},
+      {code:"DIG 1.3",oud:"DIG 1 B.3",age:3,md:"MD L4-8.2.2",text:"Met aangereikte en vertrouwde digitale tools oefenen.",onder:"Spelenderwijs met digitale tools oefenen binnen een veilige, afgeschermde omgeving."}
+    ],
+    2:[
+      {code:"DIG 1.4",oud:"DIG 1 B.6",age:5,md:"MD L4-8.2.2",text:"Toetsen op een toetsenbord gericht aantikken.",onder:"Toetsen op het toetsenbord van een tablet, computer of laptop gericht aantikken."},
+      {code:"DIG 1.5",oud:"DIG 1 B.7",age:6,md:"MD L4-8.2.2",text:"Foto's en video's maken met een digitaal apparaat."},
+      {code:"DIG 1.6",oud:"DIG 1 B.8",age:6,md:"MD L4-8.2.2",text:"Eenvoudige, functionele handelingen in een gekende tool begrijpen en correct uitvoeren.",onder:"Gericht eenvoudige handelingen uitvoeren zoals slepen, navigeren, selecteren, tools openen en sluiten, geluid regelen, inloggen met visuele codes."}
+    ],
+    3:[
+      {code:"DIG 1.7",oud:null,age:7,md:"MD L4-8.2.1",text:"Het begrip 'het bestand' kennen en gebruiken.",onder:"Het bestand kennen als tekst, beeld, geluid, video of programma dat je kunt opslaan, openen of bewerken."},
+      {code:"DIG 1.8",oud:"DIG 1 B.9",age:7,md:"MD L4-8.2.2",text:"Cijfers, letters en symbolen gericht aantikken op een toetsenbord."},
+      {code:"DIG 1.9",oud:"DIG 1 B.10",age:7,md:"MD L4-8.2.2",text:"Een aangereikte digitale tool gebruiken om eigen ideeën creatief vorm te geven.",verdiep:"Experimenteren met (nieuwe) digitale tools om eigen ideeën creatief vorm te geven."},
+      {code:"DIG 1.10",oud:"DIG 1 B.11",age:7,md:"MD L4-8.2.4",text:"Op internet digitale informatie opzoeken in een beveiligde omgeving."},
+      {code:"DIG 1.11",oud:"DIG 1 B.12",age:7,md:"MD L4-8.2.2",text:"Een aangereikt digitaal apparaat gebruiken om geluid op te nemen."},
+      {code:"DIG 1.12",oud:null,age:8,md:"MD L4-8.2.2",text:"Invoer- en uitvoerapparaten functioneel gebruiken met inbegrip van het basisgebruik van een toetsenbord.",onder:"Invoerapparaten zoals toetsenbord, muis en touchscreen en uitvoerapparaten zoals beeldscherm, koptelefoon en luidsprekers functioneel gebruiken."},
+      {code:"DIG 1.13",oud:null,age:8,md:"MD L4-8.2.4",text:"Een zoekvraag formuleren als zoekstrategie om in digitale bronnen informatie te vinden en te raadplegen."},
+      {code:"DIG 1.14",oud:null,age:8,md:"MD L4-8.2.4",text:"Een zoektool kiezen als zoekstrategie om in digitale bronnen informatie te vinden en te raadplegen."},
+      {code:"DIG 1.15",oud:null,age:8,md:"MD L4-8.2.4",text:"Een zoekopdracht formuleren als zoekstrategie om in digitale bronnen informatie te vinden en te raadplegen."},
+      {code:"DIG 1.16",oud:"DIG 1 B.13",age:8,md:"MD L4-8.2.2",text:"Met een aangereikte tool afbeeldingen of foto's bewerken om eigen ideeën creatief vorm te geven.",onder:"Met een eenvoudige tool bewerken: grootte wijzigen, bijsnijden, filters gebruiken, roteren, sepia- of zwart-witeffect toepassen."},
+      {code:"DIG 1.17",oud:"DIG 1 B.14",age:8,md:"MD L4-8.2.2",text:"Van een aangereikte tool basisfuncties gebruiken voor het schrijven en creatief opmaken van een tekst.",onder:"Een beperkt aantal aangeleerde basisfuncties gebruiken."},
+      {code:"DIG 1.18",oud:"DIG 1 B.17",age:8,md:"MD L6-8.4.1",text:"Een aangereikte tool gebruiken om op een veilige, verantwoorde en doelmatige manier te communiceren.",onder:"Met aandacht voor persoonsgegevens, paswoorden en het delen van foto's; de klas- en schoolafspraken rond digitale communicatie volgen."},
+      {code:"DIG 1.19",oud:"DIG 1 B.18",age:9,md:"MD L4-8.2.2",text:"Een aangereikte tool gebruiken om informatie aan anderen voor te stellen."},
+      {code:"DIG 1.20",oud:"DIG 1 B.19",age:9,md:"MD L4-8.2.2",text:"Met een aangereikte tool eenvoudige teksten digitaal schrijven.",onder:"Zoals digitale elfjes of gedichten schrijven, een dagelijkse waarneming bijhouden."},
+      {code:"DIG 1.21",oud:"DIG 1 B.20",age:9,md:"MD L4-8.2.2",text:"Met aangereikte digitale tools zelfstandig oefenen en leren."},
+      {code:"DIG 1.22",oud:null,age:9,md:"MD L4-8.2.3",text:"Bestanden gebruiken via de bestaande mappenstructuur van het systeem."}
+    ],
+    4:[
+      {code:"DIG 1.23",oud:null,age:10,md:"MD L6-8.2.2",text:"Bestanden openen om te bewerken en sluiten om te bewaren."},
+      {code:"DIG 1.24",oud:null,age:10,md:"MD L6-8.2.4",text:"Eenvoudige systeeminstellingen aanpassen.",onder:"Zoals de weergave- en taalinstellingen aanpassen, wifi aan- of uitzetten."},
+      {code:"DIG 1.25",oud:"DIG 1 B.21",age:10,md:"MD L6-8.2.2",text:"Zoekresultaten uit digitale bronnen verwerken en bewaren."},
+      {code:"DIG 1.26",oud:null,age:11,md:"MD L6-8.2.3",text:"Bestanden beheren via een aangereikte structuur."},
+      {code:"DIG 1.27",oud:"DIG 1 B.23",age:11,md:"MD L6-8.2.2",text:"Bestanden downloaden en opslaan op verschillende door hen gekende opslagmedia.",onder:"Bestanden downloaden en opslaan volgens de afgesproken criteria in de instructie."},
+      {code:"DIG 1.28",oud:"DIG 1 B.24",age:11,md:"MD L6-8.2.2",text:"Bestanden uploaden, terugvinden en delen met een klasgenoot in een door hen gekende digitale omgeving.",onder:"Bestanden uploaden, terugvinden en delen volgens de afgesproken criteria in de instructie."},
+      {code:"DIG 1.29",oud:null,age:11,md:"MD L6-8.2.1",text:"Invoer- en uitvoerapparaten doelgericht gebruiken en instellen, met inbegrip van vlot gebruik van een toetsenbord.",onder:"Invoerapparaten zoals toetsenbord, muis, touchscreen, microfoon en camera en uitvoerapparaten zoals beeldscherm, printer, luidspreker en projector doelgericht gebruiken en instellen."},
+      {code:"DIG 1.30",oud:null,age:11,md:"MD L6-8.4.1",text:"Mogelijkheden van digitale tools om te communiceren kennen.",onder:"Zoals berichten, e-mail, chat, reacties of videogesprekken."},
+      {code:"DIG 1.31",oud:null,age:11,md:"MD L6-8.2.5",text:"Het begrip artificiële intelligentie kennen.",onder:"AI kennen als een tool die taken uitvoert waarvoor normaal menselijke intelligentie nodig is, zoals taal begrijpen, beelden herkennen of beslissingen nemen."},
+      {code:"DIG 1.32",oud:null,age:11,md:"MD L6-8.2.8",text:"Voorbeelden geven van toepassingen waarin artificiële intelligentie (AI) gebruikt wordt.",onder:"Voorbeelden zoals spraakherkenning, vertaaltools, virtuele assistenten en gezichtsherkenning."},
+      {code:"DIG 1.33",oud:null,age:11,md:"MD L6-8.2.7",text:"Aan de hand van aangereikte criteria digitale bronnen beoordelen op bruikbaarheid, betrouwbaarheid en correctheid.",onder:"Criteria zoals: is de informatie verouderd, is er een bronnenlijst, van wie komt de informatie, dubbelchecken, geeft het antwoord op de onderzoeksvraag, mag de informatie zomaar gebruikt worden."},
+      {code:"DIG 1.34",oud:"DIG 1 B.25",age:11,md:"",text:"Reflecteren op de meerwaarde van het gebruik van digitale toepassingen.",verdiep:"Reflecteren op basis van vooraf bepaalde criteria over de meerwaarde van het gebruik van digitale toepassingen."}
+    ]
+  }},
+  comp:{label:"Computationeel denken",icon:"🧩",color:"#7C3AED",colorLight:"#F5F3FF",doelen:{
+    1:[
+      {code:"DIG 2.1",oud:"DIG 2 B.2",age:3,md:"MD L4-8.1.1",text:"Onder begeleiding verwoorden waar computers in hun leefwereld te zien zijn en hoe ze het leven leuker of eenvoudiger kunnen maken."},
+      {code:"DIG 2.2",oud:"DIG 2 B.3",age:3,md:"MD L4-8.1.3",text:"Begrijpen dat een computer een opdracht eindeloos kan herhalen (patroonherkenning)."},
+      {code:"DIG 2.3",oud:"DIG 2 B.4",age:3,md:"MD L4-8.1.3",text:"In een logische volgorde plaatsen van prenten, foto's, deelopdrachten (patroonherkenning)."},
+      {code:"DIG 2.4",oud:"DIG 2 B.5",age:3,md:"MD L4-8.1.3",text:"Onderdelen van een voorwerp als delen van een groter geheel benoemen (abstractie)."},
+      {code:"DIG 2.5",oud:"DIG 2 B.6",age:5,md:"MD L4-8.1.3",text:"Vanuit een patroon een rij of een reeks verder zetten (patroonherkenning)."},
+      {code:"DIG 2.6",oud:"DIG 2 B.7",age:5,md:"MD L4-8.1.3",text:"Een eenvoudige opdracht in deelopdrachten opdelen (decompositie)."}
+    ],
+    2:[
+      {code:"DIG 2.7",oud:"DIG 2 B.8",age:5,md:"MD L4-8.1.3",text:"De herhaling van opdrachten in verschillende situaties herkennen (patroonherkenning)."},
+      {code:"DIG 2.8",oud:"DIG 2 B.12",age:5,md:"MD L4-8.1.2",text:"Een opdracht uitvoeren door stap voor stap een reeks handelingen uit te voeren (algoritme)."},
+      {code:"DIG 2.9",oud:"DIG 2 B.11",age:6,md:"MD L4-8.1.2",text:"Eenvoudige reeksen van instructies aan een ander geven (mondeling of via symbolen) die leiden tot een bepaald doel (algoritme)."},
+      {code:"DIG 2.10",oud:"DIG 2 B.13",age:6,md:"MD L4-8.1.3",text:"Voorbeelden van geautomatiseerde systemen in het dagelijkse leven verwoorden."}
+    ],
+    3:[
+      {code:"DIG 2.11",oud:"DIG 2 B.14",age:7,md:"MD L4-8.1.3",text:"Een proces in verschillende stappen opdelen en waar mogelijk elke stap weer in deelstappen (decompositie)."},
+      {code:"DIG 2.12",oud:null,age:7,md:"MD L4-8.1.1",text:"De begrippen digitaal en het internet kennen en gebruiken."},
+      {code:"DIG 2.13",oud:null,age:7,md:"MD L4-8.1.1",text:"De begrippen hardware, software, invoer, verwerking, uitvoer en opslag kennen en gebruiken."},
+      {code:"DIG 2.14",oud:"DIG 2 B.15",age:8,md:"MD L4-8.1.2",text:"Het begrip algoritme kennen als een stappenplan of instructie om een specifiek probleem in een vaste volgorde op te lossen.",onder:"Zoals een kookrecept, een bouwplan, een routebeschrijving of de werking van een computer."},
+      {code:"DIG 2.15",oud:"DIG 2 B.16",age:8,md:"MD L4-8.1.3",text:"Voor- en nadelen van het geautomatiseerd uitvoeren van opdrachten verwoorden."},
+      {code:"DIG 2.16",oud:null,age:9,md:"MD L4-8.1.3",text:"Het principe 'abstractie' van computationeel denken herkennen als focussen op wat belangrijk is en het weglaten van overbodige details."},
+      {code:"DIG 2.17",oud:null,age:9,md:"MD L4-8.1.3",text:"Het principe 'decompositie' van computationeel denken herkennen als het opdelen van een groot probleem in kleinere, hanteerbare delen."},
+      {code:"DIG 2.18",oud:null,age:9,md:"MD L4-8.1.3",text:"Het principe 'patroonherkenning' van computationeel denken herkennen als het zien van gelijkenissen en herhalingen in gegevens of opdrachten."},
+      {code:"DIG 2.19",oud:null,age:9,md:"MD L4-8.1.3",text:"Het principe 'algoritme' van computationeel denken herkennen als een expliciete reeks eenduidige instructies die stapsgewijs worden uitgevoerd."},
+      {code:"DIG 2.20",oud:null,age:9,md:"MD L4-8.1.3",text:"Het principe 'sequentie' van computationeel denken herkennen als de vaste volgorde waarin de stappen of instructies worden uitgevoerd."},
+      {code:"DIG 2.21",oud:"A.6",age:9,md:"MD L4-8.1.3",text:"Onder begeleiding fouten in een stappenplan of instructie vinden en verbeteren (debuggen)."},
+      {code:"DIG 2.22",oud:null,age:9,md:"MD L4-8.1.3",text:"Onder begeleiding de principes van computationeel denken toepassen om een lineair algoritme te ontwerpen, testen en debuggen om tot een werkende oplossing te komen.",onder:"Onder begeleiding beschrijven wat een computerprogramma uitvoert; een instructie of stappenplan uitschrijven (algoritme), letterlijk uitvoeren (testen) en waar iets foutloopt aanpassen (debuggen).",verdiep:"Foutenanalyse van de computercode (instructie) maken als de uitvoer van de instructie fout loopt."},
+      {code:"DIG 2.23",oud:null,age:9,md:"MD L4-8.2.5",text:"Onder begeleiding een zoekstrategie uitwerken en toepassen vanuit de principes van computationeel denken."},
+      {code:"DIG 2.24",oud:null,age:9,md:"MD L4-8.1.1",text:"De begrippen verzenden, ontvangen, offline en online kennen en gebruiken."}
+    ],
+    4:[
+      {code:"DIG 2.25",oud:null,age:11,md:"MD L6-8.1.2",text:"De begrippen de invoer, de informatieverwerking, de uitvoer en de opslag kennen en gebruiken."},
+      {code:"DIG 2.26",oud:null,age:11,md:"MD L6-8.1.1",text:"Begrijpen hoe invoer, verwerking, uitvoer en opslag samen een digitaal informatieverwerkingsproces vormen."},
+      {code:"DIG 2.27",oud:null,age:11,md:"MD L6-8.1.2",text:"De begrippen het netwerk en de verbinding kennen en gebruiken."},
+      {code:"DIG 2.28",oud:null,age:11,md:"MD L6-8.1.1",text:"Begrijpen dat een verbinding nodig is om informatie te delen."},
+      {code:"DIG 2.29",oud:null,age:11,md:"MD L6-8.1.1",text:"Weten dat digitale systemen via netwerken (kabel, wifi, mobiel netwerk) met elkaar verbonden zijn en zo gegevens kunnen delen."},
+      {code:"DIG 2.30",oud:null,age:11,md:"MD L6-8.1.1",text:"Weten dat gegevens op een andere locatie dan het eigen digitale apparaat kunnen worden verwerkt en opgeslagen."},
+      {code:"DIG 2.31",oud:"DIG 2 B.17",age:11,md:"MD L6-8.1.3",text:"Een concreet probleem in een passende visuele weergave zoals een stappenplan omzetten (abstractie)."},
+      {code:"DIG 2.32",oud:"DIG 2 B.18",age:11,md:"MD L6-8.1.3",text:"Patronen in abstracte situaties herkennen en beschrijven (patroonherkenning)."},
+      {code:"DIG 2.33",oud:null,age:11,md:"MD L6-8.1.3",text:"Onder begeleiding de principes van computationeel denken toepassen om een algoritme te ontwerpen, testen en debuggen om tot een werkende oplossing te komen (combinatie van sequentie, herhaling, keuze).",onder:"Onder begeleiding ervaring opdoen met computercode: een parcours doorlopen (sequentie) met herhaling en ALS-DAN-ANDERS-keuzes, de stappen uitvoeren (testen) en voorwaarden aanpassen waar het foutloopt (debuggen).",verdiep:"Eigen computercode aanpassen op basis van foutenanalyse; de werking van computercode door logisch redeneren verklaren; onder begeleiding een eenvoudige computercode ontwikkelen."},
+      {code:"DIG 2.34",oud:null,age:11,md:"MD L6-8.2.6",text:"Een zoekstrategie uitwerken, toepassen en indien nodig bijsturen vanuit de principes van computationeel denken.",verdiep:"Een eenvoudige en effectieve prompt formuleren in een door de school beschikbaar gestelde AI-tool om content of informatie te verkrijgen."}
+    ]
+  }},
+  media:{label:"Mediawijsheid",icon:"📱",color:"#059669",colorLight:"#ECFDF5",doelen:{
+    1:[
+      {code:"DIG 3.1",oud:"DIG 3 B.1",age:3,md:"MD L6-8.3.4",text:"Kennismaken met verschillende vormen van mediaboodschappen."}
+    ],
+    2:[
+      {code:"DIG 3.2",oud:"DIG 3 B.2",age:5,md:"MD L6-8.3.4",text:"Reflecteren over hoe zij digitale media gebruiken in hun dagelijks leven."},
+      {code:"DIG 3.3",oud:"DIG 3 B.3",age:7,md:"MD L6-8.3.3 · MD L4-8.3.1",text:"Voor hen gekende login en wachtwoord gebruiken en hier veilig mee werken."}
+    ],
+    3:[
+      {code:"DIG 3.4",oud:"DIG 3 B.4",age:7,md:"MD L6-8.3.4",text:"Weten dat veel informatie digitaal beschikbaar is en dat de wereld doordrongen is van audiovisuele boodschappen, maar dat wat online staat niet noodzakelijk waar is.",onder:"Onder begeleiding voorbeelden van gemanipuleerde media zoals reclameboodschappen en nepnieuws bekijken en de manipulatie benoemen."},
+      {code:"DIG 3.5",oud:"DIG 3 B.5",age:8,md:"MD L6-8.3.4",text:"Weten dat personen zich via digitale media anders kunnen voordoen dan in werkelijkheid en hier alert en gepast op reageren (veiligheidsaspecten).",onder:"Bij twijfel alert en gepast reageren door dit te melden aan een bekende volwassene."},
+      {code:"DIG 3.6",oud:"DIG 3 B.6",age:8,md:"MD L6-8.3.3 · MD L4-8.3.1",text:"Waakzaam zijn bij het doorgeven van persoonlijke gegevens.",onder:"Onder begeleiding reflecteren over de gevaren van het doorgeven van persoonlijke gegevens."},
+      {code:"DIG 3.7",oud:"DIG 3 B.7",age:8,md:"MD L6-8.3.4",text:"Elementaire regels en omgangsvormen bij digitale communicatie respecteren (ethische aspecten).",onder:"Een vooraf afgesproken en gekend communicatiekanaal gebruiken; de klas- en schoolafspraken rond digitale communicatie volgen."},
+      {code:"DIG 3.8",oud:"DIG 3 B.8",age:8,md:"MD L6-8.3.3",text:"Bij ongewenste boodschappen of schokkende informatie een bekende volwassene verwittigen.",onder:"Onder begeleiding bespreken in welke situaties je hulp inroept van een volwassene die je vertrouwt."},
+      {code:"DIG 3.9",oud:"DIG 3 B.9",age:8,md:"MD L6-8.3.4",text:"Inzien dat digitale media niet mogen gebruikt worden om anderen lastig te vallen of te pesten en dit toepassen (ethische aspecten).",verdiep:"De effecten van pesten via digitale media op anderen benoemen."},
+      {code:"DIG 3.10",oud:null,age:9,md:"MD L6-8.3.1",text:"De begrippen de online privacy, de persoonlijke gegevens en de/het account kennen en gebruiken."},
+      {code:"DIG 3.11",oud:"DIG 3 B.10",age:9,md:"MD L6-8.3.4",text:"De invloed van digitale media herkennen op je eigen mening en de mening van anderen (sociale aspecten).",onder:"Onder begeleiding ervaren dat onze keuzes beïnvloed worden door digitale media."}
+    ],
+    4:[
+      {code:"DIG 3.12",oud:"A.9",age:10,md:"MD L6-8.3.4",text:"Weten dat hun gedrag kan beïnvloed worden door reclame en media."},
+      {code:"DIG 3.13",oud:"A.3",age:10,md:"MD L6-8.3.4",text:"ICT op een veilige, verantwoorde en doelmatige manier gebruiken."},
+      {code:"DIG 3.14",oud:"A.8",age:10,md:"MD L6-8.3.4",text:"Een kritische houding aannemen tegenover digitaal mediagebruik."},
+      {code:"DIG 3.15",oud:null,age:10,md:"MD L6-8.3.1",text:"De begrippen de online veiligheid en het nepnieuws kennen."},
+      {code:"DIG 3.16",oud:"DIG 3 B.13",age:10,md:"MD L6-8.3.4",text:"De voor- en nadelen verwoorden van het participeren aan een sociale digitale samenleving (sociale aspecten).",onder:"Beschrijven wat een sociale digitale samenleving is."},
+      {code:"DIG 3.17",oud:"DIG 3 B.14",age:10,md:"MD L6-8.3.3",text:"Niet of gepast reageren op dubieuze berichten of verzoeken met een onduidelijke herkomst (veiligheidsaspecten).",onder:"Uit aangereikte keuzemogelijkheden gepast reageren op dubieuze berichten of verzoeken."},
+      {code:"DIG 3.18",oud:"DIG 3 B.15",age:10,md:"MD L6-8.3.4",text:"Online vriendelijk en respectvol omgaan met anderen en hun privacy (ethische aspecten)."},
+      {code:"DIG 3.19",oud:"DIG 3 B.16",age:10,md:"MD L6-8.3.4",text:"Begrijpen dat alles wat je online deelt, online blijft staan en de gevolgen hiervan inschatten (veiligheidsaspecten)."},
+      {code:"DIG 3.20",oud:"DIG 3 B.17",age:10,md:"MD L6-8.3.4 · MD L6-8.3.3",text:"Begrijpen dat er regels bestaan over het plaatsen en delen van media en deze regels toepassen (regelgevende aspecten).",verdiep:"Regels zoals schoolafspraken, auteursrecht, portretrecht, GDPR en communityregels over het plaatsen en delen van media opzoeken."},
+      {code:"DIG 3.21",oud:null,age:10,md:"MD L6-8.3.4",text:"Zowel de fysieke als de mentale impact van digitale media op hun gezondheid verwoorden (gezondheidsaspecten).",onder:"Perfecte plaatjes van influencers of de angst om iets te missen (FOMO) kunnen je onzeker maken (mentaal); urenlang gamen kan leiden tot een 'tabletnek' en blauw schermlicht voor het slapengaan verstoort de slaap (fysiek)."},
+      {code:"DIG 3.22",oud:null,age:11,md:"MD L6-8.3.1",text:"De begrippen het auteursrecht en het portretrecht kennen en toepassen."},
+      {code:"DIG 3.23",oud:null,age:11,md:"MD L6-8.3.2",text:"Weten dat het basisprincipe van het auteursrecht inhoudt dat door anderen zelfgemaakte teksten, foto's of video's niet zonder toestemming gebruikt of gekopieerd mogen worden."},
+      {code:"DIG 3.24",oud:null,age:11,md:"MD L6-8.3.2",text:"Weten dat het basisprincipe van het portretrecht inhoudt dat iemand niet zonder expliciete goedkeuring gefotografeerd of gefilmd mag worden."},
+      {code:"DIG 3.25",oud:null,age:11,md:"MD L6-8.3.2",text:"Weten dat een foto of video waarop iemand herkenbaar afgebeeld staat enkel gepubliceerd of gedeeld mag worden als die persoon toestemming geeft."}
+    ]
+  }}
+};
+
+const FASE_INFO={1:{label:"Kleuteronderwijs",age:"2,5–5 jaar"},2:{label:"Kleuter – begin lager",age:"5–7 jaar"},3:{label:"Lager onderwijs",age:"7–9 jaar"},4:{label:"Lager onderwijs",age:"10–12 jaar"}};
+
+// Koppeling leerjaar → startleeftijden uit de vernieuwde leerlijn.
+// Elk doel heeft een 'vanaf-leeftijd'; een leerjaar toont de doelen
+// waarvan die leeftijd in dat leerjaar valt (met bewuste overlap,
+// want kinderen verjaren doorheen het schooljaar).
+// Pas deze koppeling hier aan als de schoolindeling wijzigt.
+const JAREN=[
+  {key:"K1",label:"1e kleuter",ages:[2.5,3]},
+  {key:"K2",label:"2e kleuter",ages:[2.5,3,5]},
+  {key:"K3",label:"3e kleuter",ages:[5,6]},
+  {key:"L1",label:"1e leerjaar",ages:[6,7]},
+  {key:"L2",label:"2e leerjaar",ages:[7,8]},
+  {key:"L3",label:"3e leerjaar",ages:[8,9]},
+  {key:"L4",label:"4e leerjaar",ages:[9,10]},
+  {key:"L5",label:"5e leerjaar",ages:[10,11]},
+  {key:"L6",label:"6e leerjaar",ages:[11]}
+];
+function ageLabel(a){return String(a).replace(".",",");}
+
+/* Leesbaar leerjaarbereik bij een startleeftijd, bv. 8 → "2e–3e leerjaar" */
+function leerjaarLabel(age){
+  const js=JAREN.filter(j=>j.ages.includes(age));
+  if(!js.length)return"";
+  if(js.length===1)return js[0].label;
+  const a=js[0].label,b=js[js.length-1].label;
+  const as=a.split(" "),bs=b.split(" ");
+  if(as[1]===bs[1])return as[0]+"–"+b;   // "1e–2e kleuter"
+  return a+" – "+b;                       // "3e kleuter – 1e leerjaar"
+}
+
+/* ════════════════════════════════════════════════════════════════
+   PROGRAMMA → DOELEN-KOPPELING voor de globale zoekfunctie.
+   Leerkrachten zoeken vaak op een programmanaam (bv. "Word") die
+   niet letterlijk in het leerplan staat; deze tabel toont dan de
+   leerplandoelen die erbij horen. Vul gerust aan met nieuwe tools.
+   ════════════════════════════════════════════════════════════════ */
+const TOOL_MAP=[
+  {name:"Word",uitleg:"tekstverwerking",aliases:["word","microsoft word","ms word","tekstverwerking","tekstverwerker"],
+   codes:["DIG 1.8","DIG 1.17","DIG 1.20","DIG 1.23"]},
+  {name:"PowerPoint",uitleg:"presentaties maken",aliases:["powerpoint","power point","ppt","presentatie","presenteren"],
+   codes:["DIG 1.19","DIG 1.9"]},
+  {name:"Teams",uitleg:"samenwerken, communiceren en bestanden delen",aliases:["teams","microsoft teams"],
+   codes:["DIG 1.28","DIG 1.30","DIG 1.18","DIG 3.7","DIG 1.26"]},
+  {name:"Outlook",uitleg:"e-mail en digitale communicatie",aliases:["outlook","mail","e-mail","email","mailen"],
+   codes:["DIG 1.18","DIG 1.30","DIG 3.7","DIG 3.17"]},
+  {name:"Microsoft Edge",uitleg:"internetbrowser — informatie opzoeken",aliases:["edge","microsoft edge","browser","internet","surfen"],
+   codes:["DIG 1.10","DIG 1.13","DIG 1.14","DIG 1.15","DIG 1.25","DIG 1.33","DIG 3.4","DIG 2.12"]},
+  {name:"Google Chrome",uitleg:"internetbrowser — informatie opzoeken",aliases:["chrome","google chrome","google","zoekmachine","googelen"],
+   codes:["DIG 1.10","DIG 1.13","DIG 1.14","DIG 1.15","DIG 1.25","DIG 1.33","DIG 3.4"]},
+  {name:"Scratch (Jr)",uitleg:"programmeren met blokjes",aliases:["scratch","scratch junior","scratch jr","programmeren","coderen","code","programmeertaal"],
+   codes:["DIG 2.22","DIG 2.33","DIG 2.21","DIG 2.19","DIG 2.20","DIG 2.14"]},
+  {name:"Bee-Bot",uitleg:"unplugged programmeren (kleuters)",aliases:["bee-bot","beebot","bee bot","robot"],
+   codes:["DIG 2.8","DIG 2.9","DIG 2.2","DIG 2.3"]},
+  {name:"Canva",uitleg:"creatief ontwerpen (affiches, presentaties)",aliases:["canva"],
+   codes:["DIG 1.9","DIG 1.16","DIG 1.19"]},
+  {name:"Bingel / Kabas",uitleg:"digitaal oefenplatform",aliases:["bingel","kabas","oefenplatform"],
+   codes:["DIG 1.21","DIG 1.3","DIG 3.3"]},
+  {name:"iPad / tablet",uitleg:"tabletgebruik",aliases:["ipad","tablet","tablets"],
+   codes:["DIG 1.1","DIG 1.2","DIG 1.4","DIG 1.5"]},
+  {name:"OneDrive / SharePoint",uitleg:"opslaan en delen in de cloud",aliases:["onedrive","one drive","sharepoint","cloud","drive"],
+   codes:["DIG 1.26","DIG 1.27","DIG 1.28","DIG 1.22","DIG 2.30"]},
+  {name:"Microsoft Copilot",uitleg:"artificiële intelligentie",aliases:["copilot","microsoft copilot","ai","artificiële intelligentie","kunstmatige intelligentie","prompt","prompts"],
+   codes:["DIG 1.31","DIG 1.32","DIG 1.33","DIG 2.34"]}
+];
+
+/* ── TEACHER PROGRESS (localStorage) ── */
+const PROG_KEY='teacherProgress_v1';
+let PROG=JSON.parse(localStorage.getItem(PROG_KEY)||'{}');
+function saveProgress(){localStorage.setItem(PROG_KEY,JSON.stringify(PROG));}
+function setProgress(code,status){
+  if(!status){delete PROG[code];}else{PROG[code]={status,updated:new Date().toISOString()};}
+  saveProgress();render();
+}
+function cycleProgress(code){
+  const cycle=[null,'bezig','behandeld','geëvalueerd'];
+  const cur=PROG[code]?.status||null;
+  setProgress(code,cycle[(cycle.indexOf(cur)+1)%cycle.length]);
+}
+function exportProgress(){
+  const blob=new Blob([JSON.stringify({exported:new Date().toISOString(),progress:PROG},null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='voortgang_leerkracht_'+new Date().toISOString().slice(0,10)+'.json';a.click();
+}
+function importProgress(){
+  const inp=document.createElement('input');inp.type='file';inp.accept='.json';
+  inp.onchange=e=>{
+    const f=e.target.files[0];if(!f)return;
+    const r=new FileReader();
+    r.onload=ev=>{try{const d=JSON.parse(ev.target.result);PROG=d.progress||d;saveProgress();render();}catch{alert('Ongeldig bestand.');}};
+    r.readAsText(f);
+  };
+  inp.click();
+}
+function oudToSheet(oud){
+  if(!oud)return null;
+  const m=oud.match(/^DIG (\d) B\.(\d+)$/);
+  if(!m)return null;
+  const p={'1':'BAS','2':'COMP','3':'MEDIA'}[m[1]];
+  return p?`${p} - B${m[2]}`:null;
+}
+/* ──────────────────────────────────── */
+
+/* Vlakke index van alle doelen, met leerlijn en fase */
+const ALL_DOELEN=[];
+Object.entries(DATA).forEach(([ll,l])=>{
+  [1,2,3,4].forEach(f=>{(l.doelen[f]||[]).forEach(d=>ALL_DOELEN.push({ll,f,d}));});
+});
+function findDoel(code){return ALL_DOELEN.find(x=>x.d.code===code);}
+
+function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function escRegex(s){return s.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");}
+function isExactAliasQuery(q){return TOOL_MAP.some(t=>t.aliases.includes(q));}
+function textHit(hay,q){
+  // Programmanamen die ook een Nederlands woorddeel zijn (bv. "word" zit in
+  // "wordt/worden") matchen enkel als exact woord; andere zoektermen blijven
+  // als deelwoord matchen zodat bv. "algorit" → "algoritme" werkt.
+  if(isExactAliasQuery(q))return new RegExp("\\b"+escRegex(q)+"\\b","i").test(hay);
+  return hay.includes(q);
+}
+
+function toolMatches(t,q){
+  return t.aliases.some(a=>{
+    if(a===q)return true;
+    if(q.length>=3&&a.includes(q))return true;        // "powerp" → PowerPoint
+    return q.split(/\s+/).includes(a);                 // "les met word" → Word
+  });
+}
+
+// ─── STATE ────────────────────────────────────────────────────────────
+let S={screen:"select",view:"leerlijn",ll:null,fase:null,jaar:null,doel:null,q:"",gq:"",loading:false,loadingMsg:"",error:null,selectedLib:null,aiIdeas:null,fiche:null,tab:"overzicht"};
+function set(patch){Object.assign(S,patch);render()}
+
+// ─── API ──────────────────────────────────────────────────────────────
+// De AI-functies hebben een Anthropic API-sleutel nodig (console.anthropic.com).
+// De sleutel wordt enkel in deze browser bewaard (localStorage), nooit in dit bestand.
+const API_KEY_STORE="leerlokaal_api_key";
+
+function setApiKey(){
+  const cur=localStorage.getItem(API_KEY_STORE)||"";
+  const k=(prompt("Geef je Anthropic API-sleutel in (begint met 'sk-ant-').\n\nAanmaken kan op console.anthropic.com → API keys.\nDe sleutel wordt alleen in deze browser bewaard.",cur)||"").trim();
+  if(k){localStorage.setItem(API_KEY_STORE,k);set({error:null});}
+}
+
+function getApiKey(){
+  let k=localStorage.getItem(API_KEY_STORE)||"";
+  if(!k){
+    k=(prompt("Voor de AI-functies is een Anthropic API-sleutel nodig (begint met 'sk-ant-').\n\nAanmaken kan op console.anthropic.com → API keys.\nDe sleutel wordt alleen in deze browser bewaard.")||"").trim();
+    if(k)localStorage.setItem(API_KEY_STORE,k);
+  }
+  return k;
+}
+
+async function callClaude(prompt,max=2500){
+  const key=getApiKey();
+  if(!key)throw new Error("Geen API-sleutel ingesteld. Klik onderaan op '🔑 API-sleutel instellen'.");
+  const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01","x-api-key":key,"anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:max,messages:[{role:"user",content:prompt}]})});
+  if(r.status===401){
+    localStorage.removeItem(API_KEY_STORE);
+    throw new Error("De API-sleutel werd geweigerd. Controleer hem op console.anthropic.com en stel hem opnieuw in via '🔑 API-sleutel instellen'.");
+  }
+  if(!r.ok){
+    const raw=await r.text();
+    if(raw.includes("credit balance is too low"))
+      throw new Error("Je API-tegoed is op (of nog niet opgeladen). Ga naar console.anthropic.com → Plans & Billing → Purchase credits. De sleutel zelf is in orde.");
+    if(raw.includes("rate_limit"))
+      throw new Error("Te veel aanvragen kort na elkaar. Wacht even en probeer opnieuw.");
+    if(raw.includes("overloaded"))
+      throw new Error("De AI-dienst is tijdelijk overbelast. Probeer het zo dadelijk opnieuw.");
+    throw new Error(raw);
+  }
+  const d=await r.json();
+  const text=d.content.map(b=>b.text||"").join("");
+  const m=text.match(/\{[\s\S]*\}/);
+  if(!m)throw new Error("Geen JSON: "+text.slice(0,200));
+  return JSON.parse(m[0]);
+}
+
+async function generateAiIdeas(){
+  set({loading:true,loadingMsg:"AI-suggesties genereren…",error:null});
+  try{
+    const fi=FASE_INFO[S.fase];
+    const ll=DATA[S.ll];
+    const bestaande=[...(LIBRARY[S.doel.code]||(S.doel.oud?LIBRARY[S.doel.oud]:null)||[]),...((S.doel.oud?RUBRIC_IDEAS[S.doel.oud]:null)||RUBRIC_IDEAS[S.doel.code]||[])].join(", ");
+    const r=await callClaude(`Je bent een ervaren onderwijsexpert voor het Vlaamse basisonderwijs (OVSG-leerplan, vernieuwde leerlijn digitale competenties conform de nieuwe minimumdoelen).
+Genereer EXACT 3 creatieve, praktische lesideeën voor:
+Leerlijn: ${ll.label}
+Fase: Fase ${S.fase} (${fi.age}, ${fi.label}) — richtleeftijd vanaf ${ageLabel(S.doel.age)} jaar
+Leerplandoel: ${S.doel.code} – ${S.doel.text}${S.doel.md?`
+Concordantie minimumdoelen: ${S.doel.md}`:""}
+Reeds bestaande ideeën (niet herhalen): ${bestaande}
+Antwoord UITSLUITEND als JSON-object, geen markdown:
+{"ideas":[{"title":"...","desc":"2 zinnen."},{"title":"...","desc":"2 zinnen."},{"title":"...","desc":"2 zinnen."}]}
+Varieer in aanpak (unplugged, digitaal, creatief). Taal: Nederlands.`,900);
+    set({aiIdeas:r.ideas,loading:false,screen:"ideas"});
+  }catch(e){set({error:"Fout: "+e.message,loading:false})}
+}
+
+async function generateFiche(idea){
+  set({loading:true,loadingMsg:"Lesfiche uitwerken…",error:null});
+  try{
+    const fi=FASE_INFO[S.fase];
+    const ll=DATA[S.ll];
+    const r=await callClaude(`Je bent een ervaren onderwijsexpert voor het Vlaamse basisonderwijs (OVSG-leerplan).
+Maak een volledige lesfiche als JSON. Geen markdown, geen backticks, enkel JSON.
+Context:
+- Leerlijn: ${ll.label}
+- Fase: Fase ${S.fase} (${fi.age}, ${fi.label}) — richtleeftijd vanaf ${ageLabel(S.doel.age)} jaar
+- Leerplandoel: ${S.doel.code} – ${S.doel.text}${S.doel.md?`
+- Concordantie minimumdoelen: ${S.doel.md}`:""}${S.doel.onder?`
+- Ondersteuningsleerlijn (gebruik dit voor de vereenvoudigde differentiatie): ${S.doel.onder}`:""}${S.doel.verdiep?`
+- Verdiepingsleerlijn (gebruik dit voor de uitdagende differentiatie): ${S.doel.verdiep}`:""}
+- Lesidee: ${idea}
+
+JSON-structuur (vul alles in het Nederlands in):
+{"titel":"...","duur":"50 min","groep":"Klassikaal","beschrijving":"2-3 zinnen over het lesidee.","hoofddoel":"Leerlingen kunnen ...","subdoelen":["...","...","..."],"digcompedu":["competentie 1","competentie 2"],"diff":{"easy":"Vereenvoudigde aanpak voor zwakkere leerlingen.","hard":"Uitdagendere variant voor sterkere leerlingen."},"lesplan":{"opwarmer":"Activerende startopdracht met concrete dialoog.","stappen":[{"titel":"Introductie","tijd":"5 min","omschrijving":"Wat doet de leerkracht.","dialoog":"Leerkracht zegt: '...'"},{"titel":"Demonstratie","tijd":"5 min","omschrijving":"...","dialoog":"Leerkracht zegt: '...'"},{"titel":"Actieve verwerking","tijd":"15 min","omschrijving":"...","dialoog":"Leerkracht zegt: '...'"},{"titel":"Nabespreking","tijd":"5 min","omschrijving":"...","dialoog":"Leerkracht zegt: '...'"}],"afsluiting":"Concrete afsluitingsactiviteit.","toetsing":"Hoe check je begrip bij de leerlingen?"},"materialen":{"lijst":["item 1","item 2","item 3"],"uitleg":[{"titel":"Naam materiaal","tekst":"Hoe maak/gebruik je het?"}]},"tips":[{"titel":"Tip voor de leerkracht","tekst":"Uitleg."},{"titel":"Aandachtspunt","tekst":"Uitleg."}],"begrippen":[{"term":"Begriff","def":"Definitie."},{"term":"Begriff 2","def":"Definitie."}]}`,3500);
+    set({fiche:r,screen:"fiche",loading:false,tab:"overzicht"});
+  }catch(e){set({error:"Fout bij lesfiche: "+e.message,loading:false,screen:"ideas"})}
+}
+
+// ─── RENDER ───────────────────────────────────────────────────────────
+function render(){
+  const app=document.getElementById("app");
+  if(S.loading){
+    app.innerHTML=`<div class="spinner"><div class="spin-ring"></div><div class="spin-msg">${S.loadingMsg}</div><div class="spin-sub">Claude werkt aan je les…</div></div>`;
+    return;
+  }
+  if(S.screen==="select")renderSelect(app);
+  else if(S.screen==="ideas")renderIdeas(app);
+  else if(S.screen==="fiche")renderFiche(app);
+}
+
+// ─── HULPFUNCTIES SELECTIESCHERM ─────────────────────────────────────
+function goalCardHtml(llKey,f,d,showFase,viaTool){
+  const sel=S.doel?.code===d.code&&S.ll===llKey;
+  const c=DATA[llKey].color;
+  const pills=[
+    `<span class="meta-pill mp-age">👶 vanaf ${ageLabel(d.age)} j</span>`,
+    `<span class="meta-pill mp-fase">📍 Fase ${f}</span>`
+  ];
+  const lj=leerjaarLabel(d.age);
+  if(lj)pills.push(`<span class="meta-pill mp-jaar">🎓 ${lj}</span>`);
+  const extra=[];
+  if(d.md)extra.push(d.md);
+  if(d.oud)extra.push(`vroeger ${d.oud}`);
+  const hasDiff=d.onder||d.verdiep;
+  const progStatus=PROG[d.code]?.status||null;
+  const pLabels={bezig:'🟡 Bezig',behandeld:'🟢 Behandeld','geëvalueerd':'🔵 Geëvalueerd'};
+  const pColors={bezig:'prog-bezig',behandeld:'prog-behandeld','geëvalueerd':'prog-geval'};
+  const progHtml=`<button type="button" class="prog-badge ${progStatus?pColors[progStatus]:'prog-none'}" onclick="cycleProgress('${d.code}');event.stopPropagation()" title="Klik om voortgang bij te houden: ➕ → Bezig → Behandeld → Geëvalueerd → wissen">${progStatus?pLabels[progStatus]:'➕ status'}</button>`;
+  const sheetKey=oudToSheet(d.oud);
+  const rubricHtml=sheetKey?`<a class="rubric-btn" href="rubrics_digitale_geletterdheid.html#sheet=${encodeURIComponent(sheetKey)}" target="_blank" onclick="event.stopPropagation()" title="Open rubric voor dit doel">📋 rubric</a>`:'';
+  return `<div class="goal-card${sel?" active":""}" data-ll="${llKey}" data-fase="${f}" data-code="${d.code}">
+    <div class="goal-row">
+      <span class="goal-code" style="color:${c}">${d.code}</span>
+      <span class="goal-text">${d.text}</span>
+      ${viaTool?`<span class="tool-badge">🔗 via ${viaTool}</span>`:""}
+      ${d.oud?"":'<span class="badge-nieuw">NIEUW</span>'}
+    </div>
+    <div class="goal-meta">${pills.join("")}${extra.length?`<span class="meta-extra">${extra.join(" · ")}</span>`:""}${hasDiff?`<button type="button" class="diff-toggle" onclick="toggleDiff(this);event.stopPropagation()">⚖ differentiatie ▾</button>`:""}${progHtml}${rubricHtml}</div>
+    ${hasDiff?`<div class="diff-panel" style="display:none" onclick="event.stopPropagation()">
+      ${d.onder?`<div class="diff-line"><span class="diff-tag dt-onder">Ondersteuning</span><span>${d.onder}</span></div>`:""}
+      ${d.verdiep?`<div class="diff-line"><span class="diff-tag dt-verdiep">Verdieping</span><span>${d.verdiep}</span></div>`:""}
+    </div>`:""}
+  </div>`;
+}
+
+function toggleDiff(btn){
+  const panel=btn.closest(".goal-card").querySelector(".diff-panel");
+  const open=panel.style.display!=="none";
+  panel.style.display=open?"none":"block";
+  btn.innerHTML="⚖ differentiatie "+(open?"▾":"▴");
+}
+
+function groupedGoalsHtml(fases,showFase){
+  let h="";
+  Object.entries(DATA).forEach(([key,l])=>{
+    let cards="";
+    fases.forEach(f=>{(l.doelen[f]||[]).forEach(d=>{cards+=goalCardHtml(key,f,d,showFase);});});
+    if(!cards)return;
+    h+=`<div class="ll-group">
+      <div class="ll-group-header" style="background:${l.colorLight};color:${l.color};border-left:4px solid ${l.color}">${l.icon} ${l.label}</div>
+      <div class="goals-list">${cards}</div>
+    </div>`;
+  });
+  return h;
+}
+
+function groupedGoalsByAges(ages){
+  let h="";
+  Object.entries(DATA).forEach(([key,l])=>{
+    let cards="";
+    [1,2,3,4].forEach(f=>{
+      (l.doelen[f]||[]).forEach(d=>{if(ages.includes(d.age))cards+=goalCardHtml(key,f,d,true);});
+    });
+    if(!cards)return;
+    h+=`<div class="ll-group">
+      <div class="ll-group-header" style="background:${l.colorLight};color:${l.color};border-left:4px solid ${l.color}">${l.icon} ${l.label}</div>
+      <div class="goals-list">${cards}</div>
+    </div>`;
+  });
+  return h;
+}
+
+function searchBoxHtml(){
+  return `<input class="goal-search" type="text" placeholder="🔍 Zoek in de doelen (bv. wachtwoord, typen, B.6...)" value="${(S.q||"").replace(/"/g,"&quot;")}" oninput="filterGoals(this.value)">
+  <div class="no-results" id="noResults">Geen doelen gevonden voor deze zoekterm.</div>`;
+}
+
+function filterGoals(v){
+  S.q=v; // geen re-render: zo behoudt het zoekveld de focus
+  applyGoalFilter();
+}
+function applyGoalFilter(){
+  // Filtert enkel binnen de gewone weergaven, niet in de globale zoekresultaten
+  const q=(S.q||"").toLowerCase();
+  let visible=0;
+  document.querySelectorAll("#viewArea .goal-card").forEach(el=>{
+    const hit=!q||textHit(el.textContent.toLowerCase(),q);
+    el.style.display=hit?"":"none";
+    if(hit)visible++;
+  });
+  document.querySelectorAll("#viewArea .ll-group").forEach(g=>{
+    const any=[...g.querySelectorAll(".goal-card")].some(c=>c.style.display!=="none");
+    g.style.display=any?"":"none";
+  });
+  const nr=document.getElementById("noResults");
+  if(nr)nr.style.display=visible===0?"block":"none";
+}
+
+/* ── GLOBALE ZOEKFUNCTIE (alle 93 doelen + programmaherkenning) ── */
+function globalSearch(v){
+  S.gq=v; // geen volledige re-render: zo behoudt het zoekveld de focus
+  renderGlobalResults();
+}
+function clearGlobalSearch(){
+  S.gq="";
+  const inp=document.getElementById("globalSearch");
+  if(inp)inp.value="";
+  renderGlobalResults();
+}
+function renderGlobalResults(){
+  const wrap=document.getElementById("globalResults");
+  const viewArea=document.getElementById("viewArea");
+  if(!wrap||!viewArea)return;
+  const q=(S.gq||"").trim().toLowerCase();
+  if(q.length<2){
+    wrap.innerHTML="";
+    viewArea.style.display="";
+    return;
+  }
+  viewArea.style.display="none";
+  let h=`<div class="clear-search-row"><button type="button" class="btn-ghost" style="padding:6px 14px;font-size:12px" onclick="clearGlobalSearch()">✕ Wis zoekopdracht</button></div>`;
+  const shown=new Set();
+
+  // 1. Programma-treffers
+  TOOL_MAP.filter(t=>toolMatches(t,q)).forEach(t=>{
+    const cards=t.codes.map(findDoel).filter(Boolean)
+      .map(({ll,f,d})=>{shown.add(d.code);return goalCardHtml(ll,f,d,true,t.name);}).join("");
+    if(cards)h+=`<div class="ll-group">
+      <div class="ll-group-header" style="background:#FEF3C7;color:#92400E;border-left:4px solid #d4820a">🔗 ${t.name} — ${t.uitleg}</div>
+      <div class="goals-list">${cards}</div>
+    </div>`;
+  });
+
+  // 2. Tekstuele treffers in de doelen zelf
+  const txt=ALL_DOELEN.filter(({d})=>
+    !shown.has(d.code)&&
+    textHit([d.code,d.text,d.md||"",d.oud||"",d.onder||"",d.verdiep||""].join(" ").toLowerCase(),q)
+  );
+  if(txt.length){
+    h+=`<div class="ll-group">
+      <div class="ll-group-header" style="background:#f1f5f9;color:#475569;border-left:4px solid #94a3b8">📄 Doelen met "${esc(S.gq.trim())}"</div>
+      <div class="goals-list">${txt.map(({ll,f,d})=>goalCardHtml(ll,f,d,true)).join("")}</div>
+    </div>`;
+  }
+
+  if(shown.size===0&&txt.length===0){
+    h+=`<div class="no-results" style="display:block">Geen doelen gevonden voor "${esc(S.gq.trim())}".<br>Probeer een ander kernwoord (bv. typen, zoeken, algoritme, privacy) of een programmanaam (bv. Word, Scratch, Teams).</div>`;
+  }
+  wrap.innerHTML=h;
+  attachGoalClicks();
+}
+function attachGoalClicks(){
+  document.querySelectorAll(".goal-card[data-code]").forEach(el=>{
+    el.onclick=()=>{
+      const llKey=el.dataset.ll,f=+el.dataset.fase,code=el.dataset.code;
+      const d=(DATA[llKey].doelen[f]||[]).find(x=>x.code===code);
+      if(d)set({ll:llKey,fase:f,doel:d,view:S.view==='voortgang'?'leerlijn':S.view,selectedLib:null,aiIdeas:null,error:null});
+    };
+  });
+  applyGoalFilter();
+}
+
+function renderSelect(app){
+  let h="";
+  if(S.error)h+=`<div class="err-box">⚠️ ${S.error}</div>`;
+
+  // Globale zoekbalk — zoekt door alle 93 doelen, incl. programmanamen
+  h+=`<div class="step-label">Zoek een doel</div>
+  <input id="globalSearch" class="goal-search global-search" type="text"
+         placeholder="🔍 Zoek op kernwoord of programma (bv. Word, Scratch, wachtwoord, algoritme...)"
+         value="${esc(S.gq)}" oninput="globalSearch(this.value)">
+  <div class="global-hint">Tip: ook programmanamen werken — typ bv. <strong>Word</strong>, <strong>Teams</strong> of <strong>Bee-Bot</strong> en je ziet de bijhorende leerplandoelen.</div>
+  <div id="globalResults"></div>`;
+
+  h+=`<div id="viewArea">`;
+  // Weergavekeuze
+  h+=`<div class="step-label">Weergave</div><div class="view-row">`;
+  [["leerlijn","📚 Per leerlijn"],["fase","🎯 Per fase"],["jaar","🎓 Per leerjaar"],["voortgang","📊 Mijn voortgang"]].forEach(([v,label])=>{
+    h+=`<div class="view-btn${S.view===v?" active":""}" onclick="set({view:'${v}',ll:null,fase:null,jaar:null,doel:null,q:'',selectedLib:null,aiIdeas:null,error:null})">${label}</div>`;
+  });
+  h+=`</div>`;
+
+  if(S.view==="leerlijn"){
+    h+=`<div class="step-label">Stap 1</div><div class="section-title">Kies een leerlijn</div><div class="ll-grid">`;
+    Object.entries(DATA).forEach(([key,l])=>{
+      const sel=S.ll===key;
+      h+=`<div class="ll-card${sel?" sel-"+key:""}" onclick="set({ll:'${key}',fase:null,doel:null,selectedLib:null,aiIdeas:null,error:null})">
+        <div class="ll-icon">${l.icon}</div>
+        <div class="ll-name">${l.label}</div>
+      </div>`;
+    });
+    h+=`</div>`;
+    if(S.ll){
+      h+=`<div class="step-label">Stap 2</div><div class="section-title">Kies een fase</div><div class="phase-row">`;
+      [1,2,3,4].forEach(f=>{
+        const fi=FASE_INFO[f];
+        if(!DATA[S.ll].doelen[f]?.length)return;
+        h+=`<div class="phase-btn${S.fase===f?" active":""}" onclick="set({fase:${f},doel:null,selectedLib:null,aiIdeas:null,error:null})">
+          <div>Fase ${f}</div><div class="phase-age">${fi.age} · ${fi.label}</div>
+        </div>`;
+      });
+      h+=`</div>`;
+    }
+    if(S.ll&&S.fase){
+      h+=`<div class="step-label">Stap 3</div><div class="section-title">Kies een leerplandoel</div>`;
+      h+=searchBoxHtml();
+      h+=`<div class="goals-list">`;
+      DATA[S.ll].doelen[S.fase].forEach(d=>{h+=goalCardHtml(S.ll,S.fase,d,false);});
+      h+=`</div>`;
+    }
+  }
+
+  if(S.view==="fase"){
+    h+=`<div class="step-label">Stap 1</div><div class="section-title">Kies een fase</div><div class="phase-row">`;
+    [1,2,3,4].forEach(f=>{
+      const fi=FASE_INFO[f];
+      h+=`<div class="phase-btn${S.fase===f?" active":""}" onclick="set({fase:${f},doel:null,q:'',selectedLib:null,aiIdeas:null,error:null})">
+        <div>Fase ${f}</div><div class="phase-age">${fi.age} · ${fi.label}</div>
+      </div>`;
+    });
+    h+=`</div>`;
+    if(S.fase){
+      h+=`<div class="step-label">Stap 2</div><div class="section-title">Alle doelen van fase ${S.fase} — per leerlijn</div>`;
+      h+=searchBoxHtml();
+      h+=groupedGoalsHtml([S.fase],false);
+    }
+  }
+
+  if(S.view==="jaar"){
+    h+=`<div class="step-label">Stap 1</div><div class="section-title">Kies een leerjaar</div><div class="jaar-row">`;
+    JAREN.forEach(j=>{
+      h+=`<div class="jaar-btn${S.jaar===j.key?" active":""}" onclick="set({jaar:'${j.key}',doel:null,q:'',selectedLib:null,aiIdeas:null,error:null})">${j.label}</div>`;
+    });
+    h+=`</div>`;
+    if(S.jaar){
+      const j=JAREN.find(x=>x.key===S.jaar);
+      const ageTxt=j.ages.map(ageLabel).join(" en ")+" jaar";
+      h+=`<div class="step-label">Stap 2</div><div class="section-title">Doelen voor het ${j.label}</div>`;
+      h+=`<div class="info-box">Getoond: doelen met startleeftijd ${ageTxt} (kinderen verjaren doorheen het schooljaar, vandaar de overlap). Doelen uit eerdere leerjaren blijven doorlopen — gebruik de fase-weergave voor het volledige overzicht.</div>`;
+      h+=searchBoxHtml();
+      h+=groupedGoalsByAges(j.ages);
+    }
+  }
+
+  if(S.view==="voortgang"){
+    const progCodes=Object.keys(PROG);
+    const total=ALL_DOELEN.length;
+    const cnt={bezig:0,behandeld:0,'geëvalueerd':0};
+    progCodes.forEach(c=>{const s=PROG[c]?.status;if(s)cnt[s]=(cnt[s]||0)+1;});
+    h+=`<div class="prog-summary">
+      <span class="prog-stat"><span class="prog-stat-dot" style="background:#FDE047"></span>${cnt.bezig||0} bezig</span>
+      <span class="prog-stat"><span class="prog-stat-dot" style="background:#4ADE80"></span>${cnt.behandeld||0} behandeld</span>
+      <span class="prog-stat"><span class="prog-stat-dot" style="background:#60A5FA"></span>${cnt['geëvalueerd']||0} geëvalueerd</span>
+      <span style="color:#94A3B8;font-size:12px">van ${total} doelen totaal</span>
+      <button class="btn-ghost" style="padding:6px 14px;font-size:12px;margin-left:auto" onclick="exportProgress()">⬇ Exporteer</button>
+      <button class="btn-ghost" style="padding:6px 14px;font-size:12px" onclick="importProgress()">⬆ Importeer</button>
+      <button class="btn-ghost" style="padding:6px 14px;font-size:12px;color:#dc2626;border-color:#fca5a5" onclick="if(confirm('Alle voortgangstatussen wissen?')){PROG={};saveProgress();render()}">🗑 Wis alles</button>
+    </div>`;
+    if(progCodes.length===0){
+      h+=`<div class="prog-empty">Je hebt nog geen doelen gemarkeerd.<br><br>Klik op <strong>➕ status</strong> bij een doel in de andere weergaven<br>om bij te houden aan welke doelen je al gewerkt hebt.</div>`;
+    }else{
+      const statusDefs=[
+        {s:'bezig',     label:'🟡 Bezig',       bg:'#FEF9C3',border:'#FDE047'},
+        {s:'behandeld', label:'🟢 Behandeld',    bg:'#DCFCE7',border:'#4ADE80'},
+        {s:'geëvalueerd',label:'🔵 Geëvalueerd',bg:'#DBEAFE',border:'#60A5FA'}
+      ];
+      statusDefs.forEach(({s,label,bg,border})=>{
+        const items=ALL_DOELEN.filter(({d})=>PROG[d.code]?.status===s);
+        if(!items.length)return;
+        h+=`<div class="ll-group">
+          <div class="ll-group-header" style="background:${bg};color:#1E293B;border-left:4px solid ${border}">${label} — ${items.length} doel${items.length!==1?'en':''}</div>
+          <div class="goals-list">${items.map(({ll,f,d})=>goalCardHtml(ll,f,d,true)).join('')}</div>
+        </div>`;
+      });
+    }
+  }
+
+  h+=`</div><!-- /viewArea -->`;
+
+  if(S.doel){
+    h+=`<button class="btn-primary" onclick="set({screen:'ideas',error:null})">Bekijk lessuggesties →</button>`;
+  }
+
+  // API-sleutel beheren
+  const hasKey=!!localStorage.getItem(API_KEY_STORE);
+  h+=`<div style="margin-top:30px;padding-top:16px;border-top:1px solid #E2E8F0;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+    <button class="btn-ghost" onclick="setApiKey()">🔑 AI-sleutel ${hasKey?"wijzigen":"instellen"}</button>
+    <span style="font-size:11px;color:#94A3B8;line-height:1.5">${hasKey?"✅ Sleutel ingesteld in deze browser.":"Optioneel: voor AI-gegenereerde lessuggesties en lesfiches."} De bibliotheek-ideeën bekijken kan altijd, ook zonder sleutel. <strong style="color:#d97706">Let op:</strong> dit is een persoonlijke sleutel buiten het schoolaccount — gebruik nooit leerlingnamen of vertrouwelijke schoolinfo in de prompts.</span>
+  </div>`;
+
+  app.innerHTML=h;
+  renderGlobalResults();
+  attachGoalClicks();
+}
+
+function renderIdeas(app){
+  const d=S.doel;
+  const ll=DATA[S.ll];
+  // Bibliotheekideeën zijn gekoppeld aan de oude doelcodes;
+  // via d.oud blijven ze beschikbaar voor de vernieuwde leerlijn.
+  const libIdeas=LIBRARY[d.code]||(d.oud?LIBRARY[d.oud]:null)||[];
+  const rubricIdeas=(d.oud?RUBRIC_IDEAS[d.oud]:null)||RUBRIC_IDEAS[d.code]||[];
+  let h=`<div class="crumb no-print">
+    <span class="crumb-link" onclick="set({screen:'select',aiIdeas:null,selectedLib:null,error:null})">← Leerlijn & doel</span>
+    <span class="crumb-sep">›</span><span>${ll.icon} ${ll.label}</span>
+    <span class="crumb-sep">›</span><span>Fase ${S.fase}</span>
+    <span class="crumb-sep">›</span><span style="font-weight:700">${d.code}</span>
+  </div>`;
+  h+=`<div class="section-title">${d.text}</div>`;
+  h+=`<div class="info-box">Selecteer een lessuggestie of laat AI extra suggesties genereren. Klik daarna op "Maak lesfiche" voor de volledige uitwerking.</div>`;
+  if(S.error)h+=`<div class="err-box">⚠️ ${S.error}</div>`;
+  // Bibliotheek- en rubriekideeën samenvoegen tot één lijst met suggesties
+  // bij dit doel (ontdubbeld op exacte tekst).
+  const seen=new Set();
+  const allIdeas=[...libIdeas,...rubricIdeas].filter(idea=>{
+    const k=idea.trim().toLowerCase();
+    if(seen.has(k))return false;
+    seen.add(k);
+    return true;
+  });
+  if(allIdeas.length){
+    h+=`<div class="step-label" style="margin-bottom:8px">Lessuggesties bij dit doel</div><div class="lib-ideas">`;
+    allIdeas.forEach(idea=>{
+      const sel=S.selectedLib===idea;
+      h+=`<div class="lib-idea${sel?" selected":""}" onclick="selectLib('${idea.replace(/'/g,"\\'")}')">${sel?'✔ ':''}<strong>${idea}</strong></div>`;
+    });
+    h+=`</div>`;
+  }else{
+    h+=`<div class="info-box">✨ Dit is een <strong>nieuw doel</strong> in de vernieuwde leerlijn — er zijn nog geen lessuggesties. Gebruik de knop "Andere suggestie (AI)" hieronder om lesideeën te genereren.</div>`;
+  }
+  if(S.aiIdeas){
+    h+=`<div class="step-label" style="margin:14px 0 8px">Extra AI-suggesties</div><div class="ai-grid">`;
+    S.aiIdeas.forEach((idea,i)=>{
+      h+=`<div class="ai-card" onclick="generateFiche('${(idea.title+" – "+idea.desc).replace(/'/g,"\\'")}')">
+        <div class="ai-num">AI-idee ${i+1}</div>
+        <div class="ai-title">${idea.title}</div>
+        <div class="ai-desc">${idea.desc}</div>
+        <div class="ai-arrow">→ Maak lesfiche</div>
+      </div>`;
+    });
+    h+=`</div>`;
+  }
+  h+=`<div class="btn-row">`;
+  if(S.selectedLib)h+=`<button class="btn-primary" onclick="generateFiche('${S.selectedLib.replace(/'/g,"\\'")}')">Maak lesfiche →</button>`;
+  h+=`<button class="btn-ghost" onclick="generateAiIdeas()">✨ Andere suggestie (AI)</button>`;
+  h+=`<button class="btn-ghost" onclick="set({screen:'select',aiIdeas:null,selectedLib:null,error:null})">← Terug</button>`;
+  h+=`</div>`;
+  app.innerHTML=h;
+}
+
+function selectLib(idea){set({selectedLib:idea,aiIdeas:null})}
+
+function renderFiche(app){
+  const f=S.fiche;
+  const d=S.doel;
+  const ll=DATA[S.ll];
+  const fi=FASE_INFO[S.fase];
+  const tabs=[{k:"overzicht",l:"📋 Overzicht"},{k:"lesplan",l:"📖 Lesplan"},{k:"materialen",l:"🎒 Materialen"},{k:"tips",l:"💡 Tips"}];
+
+  let h=`<div class="crumb no-print">
+    <span class="crumb-link" onclick="set({screen:'select',fiche:null,aiIdeas:null,selectedLib:null})">← Leerlijn & doel</span>
+    <span class="crumb-sep">›</span>
+    <span class="crumb-link" onclick="set({screen:'ideas',fiche:null})">Lessuggesties</span>
+    <span class="crumb-sep">›</span><span style="font-weight:700">Lesfiche</span>
+  </div>`;
+
+  // Header
+  const ageBg=ll.color+"22";
+  h+=`<div class="fiche-header">
+    <div class="fiche-age-badge" style="background:${ageBg};color:${ll.color}">${ll.icon} ${ll.label} · Fase ${S.fase} · ${fi.age} · ${fi.label}</div>
+    <div class="fiche-title-main">${f.titel||""}</div>
+    <div class="fiche-subtitle">${d.code} – ${d.text}</div>
+    <div class="fiche-meta">
+      <span>⏱ ${f.duur||"50 min"}</span>
+      <span>👥 ${f.groep||"Klassikaal"}</span>
+      <span>🎂 ${fi.age}</span>
+    </div>
+  </div>`;
+
+  // Tabs
+  h+=`<div class="tabs no-print">`;
+  tabs.forEach(t=>{ h+=`<button class="tab-btn${S.tab===t.k?" active":""}" onclick="set({tab:'${t.k}'})">${t.l}</button>`; });
+  h+=`</div>`;
+
+  // Content
+  if(S.tab==="overzicht"||true){
+    const vis=S.tab==="overzicht";
+    h+=`<div style="${vis?"":"display:none"}">`;
+    h+=`<div class="card"><div class="card-title">📝 Beschrijving</div><p style="font-size:14px;color:#475569;line-height:1.7">${f.beschrijving||""}</p></div>`;
+    h+=`<div class="card"><div class="card-title">🎯 Hoofdlesdoel</div><div class="goal-banner">${f.hoofddoel||""}</div>`;
+    (f.subdoelen||[]).forEach(s=>{ h+=`<div class="subdoel"><div class="dot"></div><span>${s}</span></div>`; });
+    h+=`</div>`;
+    if(f.digcompedu?.length){h+=`<div class="card"><div class="card-title">🏫 DigCompEdu-competenties</div><div>`;f.digcompedu.forEach(c=>{h+=`<span class="tag">${c}</span>`;});h+=`</div></div>`;}
+    h+=`<div class="card"><div class="card-title">⚖️ Differentiatie</div><div class="diff-grid">
+      <div class="diff-easy"><div class="diff-label">🟠 Vereenvoudigd</div><div class="diff-text">${f.diff?.easy||""}</div></div>
+      <div class="diff-hard"><div class="diff-label">🟣 Uitdagend</div><div class="diff-text">${f.diff?.hard||""}</div></div>
+    </div></div>`;
+    h+=`</div>`;
+  }
+  if(S.tab==="lesplan"||true){
+    const vis=S.tab==="lesplan";
+    h+=`<div style="${vis?"":"display:none"}">`;
+    h+=`<div class="opwarmer"><div class="opwarmer-label">🔥 Opwarmer / Startopdracht</div><div class="opwarmer-text">${f.lesplan?.opwarmer||""}</div></div>`;
+    (f.lesplan?.stappen||[]).forEach((stap,i,arr)=>{
+      h+=`<div class="step-row">
+        <div class="step-line"><div class="step-num">${i+1}</div>${i<arr.length-1?'<div class="step-connector"></div>':''}</div>
+        <div class="step-body">
+          <div class="step-title-row"><span class="step-title">${stap.titel}</span><span class="step-time">⏱ ${stap.tijd}</span></div>
+          <div class="step-desc">${stap.omschrijving}</div>
+          <div class="dialoog-box"><div class="dialoog-label">💬 Wat de leerkracht zegt/vraagt</div><div class="dialoog-text">${stap.dialoog}</div></div>
+        </div>
+      </div>`;
+    });
+    h+=`<div class="afsluiting"><div class="afsluiting-label">✅ Afsluiting</div><div class="afsluiting-text">${f.lesplan?.afsluiting||""}</div></div>`;
+    h+=`<div class="toetsing"><div style="font-weight:800;color:#059669;margin-bottom:6px;font-size:12px;text-transform:uppercase;letter-spacing:.05em">🔍 Toetsing / Hoe check je begrip?</div><div style="font-size:13px;color:#1E293B;line-height:1.6">${f.lesplan?.toetsing||""}</div></div>`;
+    h+=`</div>`;
+  }
+  if(S.tab==="materialen"||true){
+    const vis=S.tab==="materialen";
+    h+=`<div style="${vis?"":"display:none"}">`;
+    h+=`<div class="card"><div class="card-title">📦 Benodigde materialen</div>`;
+    (f.materialen?.lijst||[]).forEach(m=>{ h+=`<div class="mat-item"><span class="mat-dot">•</span><span>${m}</span></div>`; });
+    h+=`</div>`;
+    (f.materialen?.uitleg||[]).forEach(u=>{ h+=`<div class="mat-uitleg"><div class="mat-uitleg-title">${u.titel}</div><div class="mat-uitleg-text">${u.tekst}</div></div>`; });
+    h+=`</div>`;
+  }
+  if(S.tab==="tips"||true){
+    const vis=S.tab==="tips";
+    h+=`<div style="${vis?"":"display:none"}">`;
+    h+=`<div class="card"><div class="card-title">💡 Tips voor de leerkracht</div>`;
+    (f.tips||[]).forEach(t=>{ h+=`<div class="tip-item"><div class="tip-title">${t.titel}</div><div class="tip-text">${t.tekst}</div></div>`; });
+    h+=`</div>`;
+    if(f.begrippen?.length){
+      h+=`<div class="card"><div class="card-title">📖 Begrippen</div>`;
+      f.begrippen.forEach(b=>{ h+=`<div class="begrip-item"><div class="begrip-term">${b.term}</div><div class="begrip-def">${b.def}</div></div>`; });
+      h+=`</div>`;
+    }
+    h+=`</div>`;
+  }
+
+  h+=`<div class="btn-row no-print">
+    <button class="btn-ghost" onclick="set({screen:'ideas',fiche:null})">← Andere lessuggestie</button>
+    <button class="btn-ghost" onclick="set({screen:'select',fiche:null,aiIdeas:null,selectedLib:null})">↩ Opnieuw beginnen</button>
+    <button class="btn-primary" onclick="window.print()">🖨️ Print lesfiche</button>
+  </div>`;
+
+  app.innerHTML=h;
+
+  // Tab switching after render
+  tabs.forEach(t=>{
+    const btn=app.querySelector(`.tab-btn[onclick*="${t.k}"]`);
+    if(btn)btn.onclick=()=>set({tab:t.k});
+  });
+}
+
+render();
+</script>
+</body>
+</html>

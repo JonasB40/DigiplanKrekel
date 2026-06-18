@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pedagogisch Project – GBS De Krekel</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shared.css">
+  <style>
+    :root {
+      --accent: #1a4f7a;
+      --accent-light: #dbeafe;
+    }
+
+    /* ── ACCORDION ── */
+    .accordion-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .accordion-item {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      background: white;
+      transition: box-shadow 0.2s;
+    }
+
+    .accordion-item.open {
+      box-shadow: 0 4px 18px rgba(26,79,122,0.10);
+      border-color: var(--accent);
+    }
+
+    .accordion-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      text-align: left;
+      gap: 12px;
+    }
+
+    .accordion-btn-inner {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .accordion-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: var(--accent-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.15rem;
+      flex-shrink: 0;
+      transition: background 0.2s;
+    }
+
+    .accordion-item.open .accordion-icon {
+      background: var(--accent);
+    }
+
+    .accordion-label {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .accordion-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--dark);
+    }
+
+    .accordion-subtitle {
+      font-size: 0.76rem;
+      color: var(--muted);
+    }
+
+    .accordion-chevron {
+      font-size: 0.78rem;
+      color: var(--accent);
+      background: var(--accent-light);
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: transform 0.25s;
+    }
+
+    .accordion-item.open .accordion-chevron {
+      transform: rotate(180deg);
+    }
+
+    .accordion-body {
+      display: none;
+      padding: 4px 18px 18px 18px;
+      border-top: 1px solid var(--border);
+    }
+
+    .accordion-item.open .accordion-body {
+      display: block;
+    }
+
+    .accordion-body p {
+      font-size: 0.9rem;
+      line-height: 1.75;
+      color: #374151;
+      margin-top: 14px;
+      margin-bottom: 8px;
+    }
+
+    .accordion-body ul {
+      list-style: none;
+      padding: 0;
+      margin: 8px 0 0;
+    }
+
+    .accordion-body ul li {
+      padding: 5px 0 5px 22px;
+      position: relative;
+      font-size: 0.88rem;
+      line-height: 1.65;
+      color: #374151;
+    }
+
+    .accordion-body ul li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-size: 0.85rem;
+    }
+
+    /* kernwoord styling: vet én onderlijnd uit het originele document */
+    .kw {
+      font-weight: 600;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+    /* subtitel met nummer */
+    .section h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--dark);
+      margin: 22px 0 8px;
+    }
+
+    .section h3.numbered {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .section h3.numbered .num {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      color: var(--accent);
+      line-height: 1;
+    }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="Digiplan.html">← Terug naar Dashboard</a>
+  <span>GBS De Krekel · Digiplan 2025–2028</span>
+</div>
+
+<div class="page-header">
+  <div class="page-header-inner">
+    <div class="page-header-label">Gemeentelijke Basisschool · Zelzate</div>
+    <h1>Pedagogisch Project</h1>
+    <p>Missie, visie en kernwaarden van GBS De Krekel en Het Krekeltje.</p>
+  </div>
+</div>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-card">
+      <div class="sidebar-title">Inhoud</div>
+      <nav>
+        <a href="#wie" class="active"><span class="nav-dot"></span>Wie zijn wij?</a>
+        <a href="#missie"><span class="nav-dot"></span>Onze krekelmissie</a>
+        <a href="#visie"><span class="nav-dot"></span>Onze krekelvisie</a>
+        <a href="#verwezenlijken"><span class="nav-dot"></span>Hoe verwezenlijken we onze visie?</a>
+      </nav>
+      <div class="sidebar-back">
+        <a href="Digiplan.html">← Terug naar Dashboard</a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main>
+
+    <!-- WIE ZIJN WIJ -->
+    <section class="section" id="wie">
+      <div class="section-label">Introductie</div>
+      <h2>Wie zijn wij?</h2>
+      <p>Misschien vraagt u zich af vanwaar de naam <span class="kw">'De Krekel'</span> afkomstig is… Deze naam verwijst naar een groot stuk land ten oosten van onze hoofdschool: <span class="kw">'De Krekelmuyter'</span>. Langs deze landweg stonden vroeger op zomerse dagen veel hooimijten (muyten). Laat deze hooimijten nu net dé favoriete verblijfplaats zijn van vrolijk, luidruchtig tjilpende krekels! Bovendien is dit beestje één van de meest vrolijke insecten. <span class="kw">Vrolijkheid en speelsheid</span> staan dan ook centraal op onze school!</p>
+      <p><span class="kw">'De Krekel'</span> is een <span class="kw">gemeentelijke basisschool</span> die behoort tot het <span class="kw">officieel gesubsidieerd onderwijs</span>. Het schoolbestuur is het gemeentebestuur van Zelzate.</p>
+
+      <div class="two-col">
+        <div class="info-block">
+          <div style="font-size:2.2rem; margin-bottom:8px;">🏫</div>
+          <h4>E. Caluslaan 9 · Zelzate West</h4>
+          <p>Lager onderwijs en kleuteronderwijs</p>
+        </div>
+        <div class="info-block">
+          <div style="font-size:2.2rem; margin-bottom:8px;">🏡</div>
+          <h4>Schwarzenbeklaan 16 · Zelzate Oost</h4>
+          <p>Kleuteronderwijs</p>
+        </div>
+      </div>
+
+      <p>Het onderwijs is bestemd voor alle kinderen <span class="kw">vanaf de leeftijd van 2½ jaar</span>, zodat kinderen binnen een periode van 9 aansluitende jaren de school kunnen doorlopen. Gemeentelijk onderwijs heeft een <span class="kw">pluralistische grondslag</span> en staat open voor alle kinderen. We waarborgen de <span class="kw">vrije keuze van de levensbeschouwelijke vakken</span> (Rooms Katholieke godsdienst, niet-confessionele zedenleer, Islam, Protestantse godsdienst).</p>
+      <p>Onze school is het <span class="kw">kloppend hart van de buurt</span>, waar een heel divers publiek elkaar ontmoet en waar ieder zijn talent kan ontplooien. Wij profileren ons als <span class="kw">kwaliteitsvolle, warme en zorgzame buurtschool</span>.</p>
+      <p>Hoe we dit willen realiseren, kunt u terugvinden in ons pedagogisch project. Dit project wordt gedragen door het volledige schoolteam. Volgens de richtlijnen van dit project biedt de school opvoeding en onderwijs. De waarden, normen en doelen die hierin beschreven staan, geven betekenis aan het dagelijkse leven van de kinderen en hun verdere ontwikkeling in de maatschappij.</p>
+      <p>Het onderwijs op onze school legt de grondslag voor het volgen van voortgezet onderwijs.</p>
+    </section>
+
+    <!-- KREKELMISSIE -->
+    <section class="section" id="missie">
+      <div class="section-label">Krekelmissie</div>
+      <h2>Onze krekelmissie</h2>
+      <p>Onze school wil kinderen optimaal vormen tot <span class="kw">succesvolle 'leerders'</span>. We begeleiden hen zodat zij kunnen opgroeien tot <span class="kw">gelukkige, zelfstandige en respectvolle jongeren</span>.</p>
+      <p>Ieder kind is uniek en verschilt van andere kinderen. Al onze leerinhouden en werkvormen worden afgestemd op de <span class="kw">totale persoonlijkheidsontwikkeling</span> van het kind. Als school zetten we ons héél hard in om een zicht te krijgen op de <span class="kw">individuele ontwikkeling</span> van elk kind.</p>
+
+      <div class="divider"></div>
+
+      <p>Onze fundamentele uitgangspunten waarbinnen we kwalitatief onderwijs in onze basisschool willen realiseren, rust op onderstaande doelen:</p>
+
+      <h3>Basisdoelen <span style="font-weight:400; font-size:0.85rem; color:var(--muted);">— vormen de kern van de ontwikkeling</span></h3>
+      <ul>
+        <li>Het beschikken over een <span class="kw">positief zelfbeeld</span></li>
+        <li><span class="kw">Gemotiveerd zijn</span></li>
+        <li>Zelf <span class="kw">initiatief nemen</span></li>
+      </ul>
+
+      <h3>Algemene doelen <span style="font-weight:400; font-size:0.85rem; color:var(--muted);">— voor de algemene ontwikkeling</span></h3>
+      <ul>
+        <li>Het kunnen <span class="kw">communiceren en samenwerken</span> (sociale vaardigheden)</li>
+        <li><span class="kw">Zelfstandigheid</span> aan de dag kunnen leggen</li>
+        <li><span class="kw">Creatief en probleemoplossend</span> omgaan met de omringende wereld</li>
+        <li><span class="kw">Zelfgestuurd leren</span> (leren leren)</li>
+        <li><span class="kw">ICT-vaardigheden</span> ontwikkelen</li>
+      </ul>
+
+      <h3>Vakspecifieke doelen <span style="font-weight:400; font-size:0.85rem; color:var(--muted);">— waarvan we de inhouden kunnen ordenen volgens de leergebieden voor een meer specifieke ontwikkeling</span></h3>
+      <ul>
+        <li>Lichamelijke opvoeding</li>
+        <li>Muzische vorming</li>
+        <li>Nederlandse taal</li>
+        <li>Wereldoriëntatie</li>
+        <li>Wiskunde</li>
+        <li>Franse taal</li>
+      </ul>
+      <p>Deze doelen worden geconcretiseerd door het gebruik van de <span class="kw">leerplannen van OVSG</span>.</p>
+    </section>
+
+    <!-- KREKELVISIE -->
+    <section class="section" id="visie">
+      <div class="section-label">Krekelvisie</div>
+      <h2>Onze krekelvisie</h2>
+      <p>Onze school streeft ernaar om <span class="kw">gelukkige, zelfstandige</span> en <span class="kw">respectvolle burgers</span> te vormen die als <span class="kw">succesvolle 'leerders'</span> door het leven gaan.</p>
+      <p>We kiezen voor een brede vorming waarbij de <span class="kw">totale persoonlijkheid</span> van elk kind ontwikkeld wordt. Dus niet enkel waarbij het hoofd (kennis) maar ook het hart (sociale vaardigheden, het welbevinden) en de handen (bewegen, muzisch bezig zijn…) ontplooid worden.</p>
+
+      <div class="card">
+        <strong>Ieder kind heeft talenten</strong> én kan een topper worden met zijn eigen talenten! Wij geloven erin dat talenten zoals 'voor jezelf opkomen, zorgen voor anderen, oplossingen bedenken, rekening houden met anderen, lef hebben, doorzetten…' door onze aanmoediging in bloei kunnen komen!
+      </div>
+
+      <p>Wij willen een <span class="kw">warme, zorgzame school</span> zijn, waarbij respectvol wordt omgegaan met iedereen. Onze school houdt rekening met de <span class="kw">diversiteit</span> in onze maatschappij, die ook sterk aanwezig is in onze school. Door <span class="kw">actief te leren</span> en <span class="kw">samen te werken</span> met elkaar, streven wij naar <span class="kw">gezonde</span> en <span class="kw">respectvolle</span> leerlingen. We proberen via een <span class="kw">gedifferentieerde werking</span> aan de noden van elke leerling tegemoet te komen.</p>
+      <p>Wij hebben aandacht voor <span class="kw">continuïteit en samenhang</span>: we maken de drempels tussen de verschillende fasen van de schoolloopbaan zo laag mogelijk en zorgen voor herkenbare leersituaties via horizontale samenhang binnen de leergebieden.</p>
+      <p>Zo vormen we de basis tot het uitbouwen van een mooie toekomst voor onze kinderen, gericht op een steeds <span class="kw">mediarijker</span> wordende samenleving.</p>
+    </section>
+
+    <!-- HOE VERWEZENLIJKEN WE ONZE VISIE -->
+    <section class="section" id="verwezenlijken">
+      <div class="section-label">In de praktijk</div>
+      <h2>Hoe verwezenlijken we onze visie?</h2>
+      <p>De visie van GBS De Krekel wordt dagelijks waargemaakt via zes pijlers. Klik op een pijler voor meer informatie.</p>
+
+      <div class="accordion-list">
+
+        <!-- 1. Warme school -->
+        <div class="accordion-item">
+          <button class="accordion-btn" onclick="toggleAcc(this)">
+            <div class="accordion-btn-inner">
+              <div class="accordion-icon">🌱</div>
+              <div class="accordion-label">
+                <div class="accordion-title">1. Wij zijn een warme school!</div>
+                <div class="accordion-subtitle">Zorg op maat · Samenwerken · Iedereen welkom · Gelijke kansen</div>
+              </div>
+            </div>
+            <div class="accordion-chevron">▾</div>
+          </button>
+          <div class="accordion-body">
+            <p>Een <span class="kw">warme school</span> betekent voor ons een school waar iedereen zich goed voelt en betrokken bezig is. Een <span class="kw">hecht en enthousiast leerkrachtenteam</span> staat elke dag met hart en ziel klaar voor de leerlingen. We willen een warm klimaat realiseren, waarbij iedereen <span class="kw">zich thuis voelt</span>. Hiervoor zetten we ons in op onderstaande thema's:</p>
+
+            <p><strong>Zorg op maat</strong></p>
+            <ul>
+              <li>Sterke ondersteuning via <span class="kw">recente didactische materialen</span> voor alle leergebieden.</li>
+              <li>Voor kinderen met specifieke noden: <span class="kw">ondersteuningsmateriaal</span> (study-buddy, hoofdtelefoon, tangles, tafelkaarten, hulpkaarten…).</li>
+              <li>Via <span class="kw">peertutoring, coöperatief leren</span> en <span class="kw">buddy-werking</span> leren kinderen ook van en met elkaar.</li>
+              <li><span class="kw">Procesgericht werken</span> is een belangrijke pijler: kinderen worden aangezet tot zelfstandig onderzoek en kritisch denkvermogen.</li>
+              <li>Een <span class="kw">gedifferentieerde begeleiding</span> met aangepast leeraanbod (basis- en verdiepingsleerstof) voor elk kind. Zo kan elk kind ontplooien tot een zelfstandig individu!</li>
+              <li>Regelmatig komen <span class="kw">vrijwilligers</span> (o.a. brugfiguren van het Rode Kruis) helpen waar nodig.</li>
+              <li>Samenwerking met <span class="kw">CLB, REVA en logopedisten</span>, gecoördineerd door de zorgcoördinatoren.</li>
+              <li>Via het <span class="kw">ondersteuningsnetwerk 'Oost-Vlaanderen 2'</span> en nauwe contacten met het buitengewoon onderwijs proberen we om kinderen met specifieke onderwijsbehoeften zo goed mogelijk te ondersteunen.</li>
+            </ul>
+
+            <p><strong>Wij hechten veel belang aan samenwerken!</strong></p>
+            <ul>
+              <li><span class="kw">Kinderen</span> via de leerlingenraad en groepswerken.</li>
+              <li><span class="kw">Ouders</span> via de schoolraad en het OBC (ouder- en beschermcomité).</li>
+              <li><span class="kw">Leerkrachten</span> via personeelsvergaderingen en werkgroepen.</li>
+              <li><span class="kw">Externen</span>: CLB, logopedisten, revalidatiecentrum, ondersteuningsnetwerk, brugfiguren van het Rode Kruis, vrijwilligers.</li>
+              <li><span class="kw">Buurtnetwerk</span>: bib, sportdienst, jeugddienst, politie, gemeentebestuur, secundaire scholen.</li>
+              <li>Samen met <span class="kw">OVSG, scholengemeenschap Meetjesland</span> en het gemeentebestuur.</li>
+            </ul>
+
+            <p><strong>Iedereen is welkom!</strong></p>
+            <ul>
+              <li><span class="kw">Respect voor ieders geloofsovertuiging</span> en aanbod van verschillende levensbeschouwelijke vakken.</li>
+              <li>Projecten en uitstappen waarbij diversiteit centraal staat (vb. Superwereldmol, bezoeken van gebedshuizen).</li>
+              <li>Pictogrammen op brieven en formulieren voor <span class="kw">anderstalige ouders</span>.</li>
+              <li>Transparante communicatie via agenda, heen-en-weerschriftje, rapport, e-mail en website.</li>
+            </ul>
+
+            <p><strong>Gelijke kansen voor iedereen!</strong></p>
+            <ul>
+              <li><span class="kw">Schoolmateriaal is voor alle kinderen gratis</span>: schriften, boeken, latten, schrijfmateriaal.</li>
+              <li>Naleving van de <span class="kw">vastgelegde maximumfactuur</span>.</li>
+              <li>Binnen ons team werden <span class="kw">schoolafspraken omtrent gelijke kansen</span> gemaakt.</li>
+              <li>Effectieve <span class="kw">algemene en vakdidactiek</span> (directe instructie, modelleren, geleidelijk zelfstandig leren).</li>
+              <li>Brede schoolwerking met activiteiten tijdens de middagpauze en na school.</li>
+              <li><span class="kw">Binnenklasdifferentiatie en streaming</span> zodat elk kind op eigen tempo zijn maximale leerkansen benut.</li>
+            </ul>
+            <p>Op onze school staan <span class="kw">samenwerking en open communicatie</span> centraal. Een goede samenwerking tussen leerlingen, leerkrachten, ouders en externen zorgen voor kwaliteitsvol onderwijs. Daardoor krijgen de kinderen groeikansen om zich op eigen tempo te ontwikkelen.</p>
+          </div>
+        </div>
+
+        <!-- 2. Persoonlijkheidsontwikkeling -->
+        <div class="accordion-item">
+          <button class="accordion-btn" onclick="toggleAcc(this)">
+            <div class="accordion-btn-inner">
+              <div class="accordion-icon">🧠</div>
+              <div class="accordion-label">
+                <div class="accordion-title">2. Wij werken aan een totale persoonlijkheidsontwikkeling.</div>
+                <div class="accordion-subtitle">Hoofd · Hart · Handen</div>
+              </div>
+            </div>
+            <div class="accordion-chevron">▾</div>
+          </button>
+          <div class="accordion-body">
+            <p>De <span class="kw">persoonlijkheidsontwikkeling van kinderen verschilt</span>. Als school willen wij een <span class="kw">harmonische</span> vorming bieden waarbij alle aspecten van de persoonlijkheid op een <span class="kw">evenwichtige</span> wijze gestimuleerd worden, door uitdagende werkvormen waarbij <span class="kw">actief leren centraal</span> staat. Zowel sport als culturele uitstappen, sociale, muzische en creatieve activiteiten dragen bij tot deze ontwikkeling.</p>
+            <ul>
+              <li>Het <span class="kw">cognitieve</span>: kennis en kritisch denken.</li>
+              <li>Het <span class="kw">sociale</span>: samenwerken, luisteren en groepsgeest.</li>
+              <li>Het <span class="kw">psychomotorische</span>: bewegen en fijne motoriek.</li>
+              <li>Het <span class="kw">dynamisch-affectieve</span>: welbevinden en emotionele ontwikkeling.</li>
+              <li>Het <span class="kw">muzisch-creatieve</span>: creatieve en culturele expressie.</li>
+            </ul>
+            <p>Bij de keuze van doelen, leerprocessen, leerinhouden, werkvormen, groeperingsvormen, leermiddelen, evaluatiewijzen… houden leerkrachten er rekening mee dat al deze facetten van de leersituatie hun impact hebben op de persoonlijkheidsvorming die men vanuit de school aanbiedt.</p>
+            <p>Wij streven ernaar om <span class="kw">bewuste, respectvolle leerlingen</span> te vormen met een <span class="kw">kritische reflectie</span> op zichzelf en op anderen. Elk kind werkt vanuit zijn eigen persoonlijkheid mee aan de <span class="kw">groepsgeest in de klas</span>, aan de sociale cohesie en aan de socialisatie.</p>
+          </div>
+        </div>
+
+        <!-- 3. Actief leren -->
+        <div class="accordion-item">
+          <button class="accordion-btn" onclick="toggleAcc(this)">
+            <div class="accordion-btn-inner">
+              <div class="accordion-icon">⚡</div>
+              <div class="accordion-label">
+                <div class="accordion-title">3. Wij leren actief!</div>
+                <div class="accordion-subtitle">Procesgericht · Uitdagend · Zelfstandig</div>
+              </div>
+            </div>
+            <div class="accordion-chevron">▾</div>
+          </button>
+          <div class="accordion-body">
+            <p>Stap voor stap willen wij onze peuters, kleuters en lagere schoolkinderen laten groeien tot <span class="kw">zelfstandige, verantwoordelijke jongeren</span>, die klaar zijn om de toekomst in te springen!</p>
+            <p>Actieve kinderen leren beter! Daarom zetten wij in op <span class="kw">procesgericht, uitdagend en actief onderwijs</span>. Kinderen zijn actief betrokken bij hun leerproces en krijgen de kans om al doende te <span class="kw">exploreren</span> en te <span class="kw">experimenteren</span> in een uitdagende, gevarieerde en betekenisvolle leeromgeving. Zo wordt terug de totale persoonlijkheidsontwikkeling van elk individueel kind gestimuleerd.</p>
+            <ul>
+              <li>De klemtoon ligt op het volledige leerproces met een duidelijke <span class="kw">horizontale en verticale samenhang</span> zodat leerstof beter verankerd wordt.</li>
+              <li><span class="kw">Actieve lessen binnen en buiten de klasmuren</span> met een gevarieerd aanbod aan materialen dagen onze kinderen uit op het vlak van denken en doen.</li>
+            </ul>
+            <p>Zo willen wij onze krekels ervaringen meegeven die hun <span class="kw">creativiteit, probleemoplossende vaardigheden en zelfstandigheid</span> stimuleren.</p>
+          </div>
+        </div>
+
+        <!-- 4. Gezonde school -->
+        <div class="accordion-item">
+          <button class="accordion-btn" onclick="toggleAcc(this)">
+            <div class="accordion-btn-inner">
+              <div class="accordion-icon">🍎</div>
+              <div class="accordion-label">
+                <div class="accordion-title">4. Wij zijn een gezonde school!</div>
+                <div class="accordion-subtitle">Voeding · Beweging · Rust</div>
+              </div>
+            </div>
+            <div class="accordion-chevron">▾</div>
+          </button>
+          <div class="accordion-body">
+            <p>Wij werken samen aan een <span class="kw">gezondheidsbeleid</span> waarbij variatie van gezonde voeding centraal staat.</p>
+            <ul>
+              <li>Afspraken over <span class="kw">gezonde tussendoortjes</span>: enkel water en melk worden toegelaten als drank.</li>
+              <li><span class="kw">Ruime speelplaatsen</span> en begeleide bewegingsmomenten tijdens de middagpauze.</li>
+              <li>Sportactiviteiten na school via <span class="kw">Sportsnack en SVS</span> door de sportleerkrachten.</li>
+              <li>Een <span class="kw">groene speelplaats</span> als leerrijke, explorerende en gezonde omgeving.</li>
+              <li>Bewust aandacht voor <span class="kw">rust</span>: kinderen leren genieten van stilte als tegenwicht voor de drukke maatschappij.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 5. Nieuwe sprong vooruit -->
+        <div class="accordion-item">
+          <button class="accordion-btn" onclick="toggleAcc(this)">
+            <div class="accordion-btn-inner">
+              <div class="accordion-icon">🚀</div>
+              <div class="accordion-label">
+                <div class="accordion-title">5. Wij springen samen een nieuwe, grote sprong vooruit!</div>
+                <div class="accordion-subtitle">Innovatie · Toekomstgericht</div>
+              </div>
+            </div>
+            <div class="accordion-chevron">▾</div>
+          </button>
+          <div class="accordion-body">
+            <p>De wereld staat niet stil! Wij zijn gepassioneerd om <span class="kw">zinvolle vernieuwingen</span> door te voeren die kwalitatieve verbeteringen betekenen in ons onderwijs.</p>
+            <p>De spirituele betekenis van 'krekel' is: <span class="kw">'een nieuwe sprong vooruit!'</span> Samen met leerkrachten en leerlingen willen we een nieuwe, grote stap voorwaarts maken in een wereld vol vernieuwingen.</p>
+          </div>
+        </div>
+
+        <!-- 6. Respectvolle school -->
+        <div class="accordion-item">
+          <button class="accordion-btn" onclick="toggleAcc(this)">
+            <div class="accordion-btn-inner">
+              <div class="accordion-icon">🤝</div>
+              <div class="accordion-label">
+                <div class="accordion-title">6. Wij zijn een respectvolle school!</div>
+                <div class="accordion-subtitle">Gedragsregels · Anti-pesten · Wederzijds respect</div>
+              </div>
+            </div>
+            <div class="accordion-chevron">▾</div>
+          </button>
+          <div class="accordion-body">
+            <p>Om kinderen tot respectvolle burgers op te voeden, hanteren we verschillende <span class="kw">methodieken en materialen</span> (praatkaart, speelplaatsafspraken, no-blame-methode, open gesprekken met de (zorg)juf…) welke helpen om onderwerpen bespreekbaar te maken.</p>
+            <ul>
+              <li>We zijn beleefd.</li>
+              <li>We doen elkaar geen pijn.</li>
+              <li>We luisteren naar elkaar.</li>
+              <li>We komen op tijd in de rij.</li>
+              <li>We laten iedereen meespelen.</li>
+              <li>We dragen zorg voor materiaal en kledij.</li>
+              <li>We zijn eerlijk.</li>
+              <li>We helpen elkaar.</li>
+            </ul>
+            <p>Ons doel is om kinderen te leren om op een respectvolle manier met anderen om te gaan, zowel op school als daarbuiten.</p>
+            <p><span class="kw">Pesten kan niet op onze school!</span> Hier neemt het schoolteam een heel duidelijk standpunt in. Een <span class="kw">open, beleefde houding en luisterbereidheid</span> t.o.v. elkaar vormen de basis. Wij streven naar <span class="kw">wederzijds respect!</span></p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>GBS De Krekel · E. Caluslaan 9, 9060 Zelzate · T. 09/344 63 39 · ICT-beleidsplan 2025–2028 · <a href="Digiplan.html" style="color:inherit">← Dashboard</a></footer>
+
+<script>
+  function toggleAcc(btn) {
+    const item = btn.closest('.accordion-item');
+    item.classList.toggle('open');
+  }
+
+  // Actieve nav bij scrollen
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.sidebar nav a');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        navLinks.forEach(l => l.classList.remove('active'));
+        const match = document.querySelector(`.sidebar nav a[href="#${e.target.id}"]`);
+        if (match) match.classList.add('active');
+      }
+    });
+  }, { threshold: 0.35 });
+
+  sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>

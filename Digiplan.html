@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Digiplan – GBS De Krekel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --dark:    #1a4f7a;
+      --surface: #123a5a;
+      --gold:    #d4820a;
+      --cream:   #fafaf8;
+      --border:  #e2e8f0;
+      --radius:  18px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--cream);
+      color: #1e293b;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      background: linear-gradient(135deg, #123a5a 0%, #1a4f7a 60%, #2563a8 100%);
+      color: white;
+      height: 26vh;
+      min-height: 130px;
+      display: flex;
+      align-items: center;
+      padding: 0 5%;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* decorative circles */
+    .hero::before, .hero::after {
+      content: '';
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .hero::before {
+      width: 360px; height: 360px;
+      top: -120px; right: 10%;
+      background: radial-gradient(circle, rgba(212,130,10,0.12) 0%, transparent 70%);
+    }
+    .hero::after {
+      width: 200px; height: 200px;
+      bottom: -80px; left: 8%;
+      background: radial-gradient(circle, rgba(255,255,255,0.07) 0%, transparent 70%);
+    }
+
+    .hero-inner {
+      max-width: 1440px;
+      margin: 0 auto;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 2fr 1fr;
+      align-items: center;
+      position: relative;
+      z-index: 2;
+    }
+
+    .title-group {
+      grid-column: 2;
+      text-align: center;
+    }
+
+    .hero-subtitle {
+      font-size: 0.8rem;
+      letter-spacing: 0.45em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 4px;
+      font-weight: 600;
+    }
+
+    .hero-title {
+      font-family: 'Poppins', sans-serif;
+      font-size: clamp(2.4rem, 5vw, 4.2rem);
+      font-weight: 800;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 3px;
+      line-height: 1.1;
+      padding-bottom: 12px;
+    }
+
+    .hero-symbol {
+      font-size: 2.2rem;
+      margin-right: 12px;
+      filter: drop-shadow(0 0 10px rgba(212,130,10,0.7));
+    }
+
+    .hero-title span {
+      display: inline-block;
+      opacity: 0;
+      transform: translateY(18px);
+      animation: fadeUp 0.55s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+      background: linear-gradient(to bottom, #ffffff 50%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+    .hero-title span:nth-child(1) { animation-delay: 0.08s; }
+    .hero-title span:nth-child(2) { animation-delay: 0.13s; }
+    .hero-title span:nth-child(3) { animation-delay: 0.18s; }
+    .hero-title span:nth-child(4) { animation-delay: 0.23s; }
+    .hero-title span:nth-child(5) { animation-delay: 0.28s; }
+    .hero-title span:nth-child(6) { animation-delay: 0.33s; }
+    .hero-title span:nth-child(7) { animation-delay: 0.38s; }
+    .hero-title span:nth-child(8) { animation-delay: 0.43s; }
+
+    .hero-tagline {
+      font-size: 0.82rem;
+      color: rgba(255,255,255,0.45);
+      letter-spacing: 0.06em;
+    }
+
+    .hero-logo {
+      grid-column: 3;
+      justify-self: end;
+    }
+    .hero-logo img {
+      height: 14vh;
+      min-height: 60px;
+      filter: drop-shadow(0 8px 18px rgba(0,0,0,0.45));
+    }
+
+    /* ── DASHBOARD GRID ── */
+    .dashboard {
+      max-width: 1440px;
+      width: 100%;
+      margin: -36px auto 0;
+      padding: 0 28px 16px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .tile-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr 1fr 1fr 1fr 1.2fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 14px;
+      width: 100%;
+      height: 56vh;
+      min-height: 320px;
+    }
+
+    /* ── BEHEER STRIP ── */
+    .beheer-strip {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .beheer-strip a {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 16px;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      text-decoration: none;
+      color: #1e293b;
+      font-size: 0.82rem;
+      font-weight: 600;
+      box-shadow: 0 2px 8px rgba(15,31,48,0.05);
+      transition: all 0.2s;
+    }
+    .beheer-strip a:hover {
+      transform: translateY(-2px);
+      border-color: var(--gold);
+      color: var(--gold);
+      box-shadow: 0 6px 18px rgba(212,130,10,0.18);
+    }
+    .beheer-strip a .lock {
+      font-size: 0.75rem;
+      background: #fef3c7;
+      color: #92400e;
+      padding: 1px 7px;
+      border-radius: 999px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+    .beheer-strip a:hover .lock { background: #fde68a; }
+
+    /* ── TILES ── */
+    .tile {
+      background: #d6e2f0;
+      border-radius: var(--radius);
+      padding: 22px 20px;
+      text-decoration: none;
+      color: #1e293b;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 3px 14px rgba(0,0,0,0.05);
+      border: 1px solid var(--border);
+      transition: transform 0.3s cubic-bezier(0.4,0,0.2,1),
+                  box-shadow 0.3s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    /* featured (tall) tile */
+    .tile-featured {
+      grid-row: span 2;
+      text-align: center;
+      align-items: center;
+      border-top: 5px solid var(--c);
+      justify-content: center;
+    }
+
+    /* regular tile */
+    .tile-regular {
+      border-left: 5px solid var(--c);
+    }
+
+    /* Pictos-stappen tegels */
+    .tile-pictos {
+      background: #c2ede3;
+      border-left: 5px solid var(--c);
+    }
+
+    /* top-sweep on hover */
+    .tile::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 4px;
+      background: var(--c);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.35s ease;
+      z-index: 4;
+    }
+    .tile-featured::before { display: none; }
+    .tile:hover::before { transform: scaleX(1); }
+
+    /* shimmer */
+    .tile::after {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 45%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.38), transparent);
+      pointer-events: none;
+      transition: none;
+    }
+    .tile:hover::after {
+      left: 150%;
+      transition: left 0.75s ease;
+    }
+
+    .tile:hover {
+      transform: translateY(-7px);
+      box-shadow: 0 18px 40px rgba(15,31,48,0.13);
+    }
+
+    .tile-badge {
+      font-size: 0.62rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--c);
+      margin-bottom: 5px;
+    }
+
+    .tile-icon {
+      font-size: 2.0rem;
+      margin-bottom: 10px;
+      display: inline-block;
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .tile:hover .tile-icon { transform: scale(1.28); }
+
+    .tile-featured .tile-icon { font-size: 2.6rem; margin-bottom: 14px; }
+
+    .tile h2 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 5px;
+      color: #0f172a;
+    }
+    .tile-featured h2 { font-size: 1.25rem; }
+
+    .tile p {
+      font-size: 0.79rem;
+      color: #64748b;
+      line-height: 1.45;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      padding: 9px;
+      font-size: 0.73rem;
+      color: #94a3b8;
+      border-top: 1px solid var(--border);
+      background: white;
+      flex-shrink: 0;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1100px) {
+      body { height: auto; overflow-y: auto; }
+      .tile-grid {
+        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-rows: auto;
+        height: auto;
+        margin-top: 16px;
+      }
+      .tile-featured { grid-row: span 1; }
+      .hero { height: auto; padding: 36px 5%; }
+      .hero-inner { grid-template-columns: 1fr; text-align: center; }
+      .hero-logo { grid-column: 1; justify-self: center; margin-top: 14px; }
+      .dashboard { margin-top: 12px; padding-bottom: 24px; }
+    }
+    @media (max-width: 640px) {
+      .tile-grid { grid-template-columns: 1fr; gap: 12px; }
+      .dashboard { padding: 0 16px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── HERO ── -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="title-group">
+      <div class="hero-subtitle">GBS De Krekel · Zelzate</div>
+      <div style="display:flex; align-items:center; justify-content:center;">
+        <span class="hero-symbol">🌐</span>
+        <h1 class="hero-title">
+          <span>D</span><span>i</span><span>g</span><span>i</span><span>p</span><span>l</span><span>a</span><span>n</span>
+        </h1>
+      </div>
+      <div class="hero-tagline">ICT-beleidsplan 2025–2028</div>
+    </div>
+    <div class="hero-logo">
+      <img src="https://dekrekel.net/wp-content/uploads/2022/04/Afbeelding1.png" alt="Logo GBS De Krekel">
+    </div>
+  </div>
+</div>
+
+<!-- ── DASHBOARD GRID ── -->
+<div class="dashboard">
+  <div class="tile-grid">
+
+    <!-- COL 1 (tall) — Verticale Leerlijnen -->
+    <a class="tile tile-featured" href="LeerLokaal.html" style="--c:#2563a8; grid-column:1; grid-row:1/span 2;">
+      <div class="tile-badge">LeerLokaal</div>
+      <div class="tile-icon">📚</div>
+      <h2>Verticale leerlijnen</h2>
+      <p>Digitale competenties doorheen alle leerjaren</p>
+    </a>
+
+    <!-- ROW 1 — cols 2-4 -->
+    <a class="tile tile-pictos" href="visie.html" style="--c:#3b82f6;">
+      <div class="tile-badge">Fase 1</div>
+      <div class="tile-icon">🔭</div>
+      <h2>Visie</h2>
+      <p>ICT-ambitie en MoSCoW-analyse voor het onderwijs</p>
+    </a>
+
+    <a class="tile tile-pictos" href="Context.html" style="--c:#0d9488;">
+      <div class="tile-badge">Fase 2</div>
+      <div class="tile-icon">🏫</div>
+      <h2>Context</h2>
+      <p>Schoolpopulatie en omgevingsanalyse</p>
+    </a>
+
+    <a class="tile tile-pictos" href="analyse.html" style="--c:#8b5cf6;">
+      <div class="tile-badge">Fase 3</div>
+      <div class="tile-icon">🔍</div>
+      <h2>Analyse</h2>
+      <p>Inventaris, middelen en SWOT-analyse</p>
+    </a>
+
+    <!-- ROW 2 — cols 2-4 -->
+    <a class="tile tile-pictos" href="actieplan.html" style="--c:#f59e0b;">
+      <div class="tile-badge">Fase 4</div>
+      <div class="tile-icon">🚀</div>
+      <h2>Actieplan</h2>
+      <p>Concrete doelen, trekkers en deadlines</p>
+    </a>
+
+    <a class="tile tile-regular" href="digitale-inclusie.html" style="--c:#22c55e; grid-column:2/span 2; grid-row:2;">
+      <div class="tile-badge">Inclusie</div>
+      <div class="tile-icon">🤝</div>
+      <h2>Digitale inclusie</h2>
+      <p>Gelijke digitale kansen voor elk kind</p>
+    </a>
+
+    <a class="tile tile-regular" href="AI-good_practices.html" style="--c:#06b6d4; grid-column:4/span 2; grid-row:2;">
+      <div class="tile-badge">AI</div>
+      <div class="tile-icon">🤖</div>
+      <h2>AI Good Practices</h2>
+      <p>Richtlijnen voor verantwoord AI-gebruik</p>
+    </a>
+
+    <!-- COL 6 (tall) — Pedagogisch Project -->
+    <a class="tile tile-featured" href="Pedagogisch project.html" style="--c:#1e293b; grid-column:6; grid-row:1/span 2;">
+      <div class="tile-badge">Fundament</div>
+      <div class="tile-icon">🌱</div>
+      <h2>Pedagogisch project</h2>
+      <p>Kernwaarden, missie en de identiteit van onze school</p>
+    </a>
+
+  </div>
+
+  <!-- ── BEHEER (BEVEILIGD) ── -->
+  <div class="beheer-strip">
+    <a href="inventaris.html">
+      <span>📋</span>
+      <span>Inventaris toestellen</span>
+      <span class="lock">🔒 Beveiligd</span>
+    </a>
+    <a href="budget.html">
+      <span>💰</span>
+      <span>Budget &amp; meerjarenplanning</span>
+      <span class="lock">🔒 Beveiligd</span>
+    </a>
+  </div>
+</div>
+
+<footer>&copy; 2025 GBS De Krekel · Zelzate · ICT-beleidsplan 2025–2028</footer>
+
+</body>
+</html>

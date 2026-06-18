@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <title>AI Good Practices – Digiplan GBS De Krekel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shared.css">
+  <style>
+    :root { --accent: #0891b2; --accent-light: #cffafe; }
+
+    /* Sectie-accenten per thema */
+    .section { border-top: 4px solid var(--sc, var(--accent)); }
+    .section[data-c="blue"]   { --sc: #0891b2; }
+    .section[data-c="green"]  { --sc: #16a34a; }
+    .section[data-c="red"]    { --sc: #dc2626; }
+    .section[data-c="amber"]  { --sc: #d97706; }
+    .section[data-c="purple"] { --sc: #7c3aed; }
+    .section[data-c="teal"]   { --sc: #0d9488; }
+    .section .section-label { color: var(--sc, var(--accent)); }
+
+    .section-sub { font-size: 0.9rem; color: var(--muted); margin-bottom: 16px; }
+
+    /* ── TABS ── */
+    .tabs { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
+    .tab-btn {
+      padding: 6px 14px; border-radius: 999px; font-size: 0.82rem; cursor: pointer;
+      border: 1.5px solid var(--border); background: white; color: var(--muted);
+      font-family: inherit; font-weight: 600;
+      transition: all 0.2s;
+    }
+    .tab-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .tab-btn.active { background: var(--accent-light); border-color: var(--accent); color: var(--accent); }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+    .tab-panel p { font-size: 0.92rem; line-height: 1.7; margin-bottom: 8px; color: #374151; }
+    .tab-panel ul { padding-left: 0; list-style: none; margin: 8px 0; }
+    .tab-panel ul li { font-size: 0.89rem; padding: 6px 0 !important; border-bottom: 1px solid #f1f5f9; display: flex; gap: 8px; color: #374151; line-height: 1.6; }
+    .tab-panel ul li::before { display: none; }
+    .tab-panel ul li:last-child { border-bottom: none; }
+    .li-dot { color: var(--accent); font-size: 10px; margin-top: 6px; flex-shrink: 0; }
+
+    /* ── TOOLS GRID ── */
+    .tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 320px)); gap: 10px; margin-top: 8px; justify-content: center; }
+    @media(max-width:500px) { .tools-grid { grid-template-columns: 1fr; } }
+    .tools-audience { margin-top: 18px; }
+    .tools-audience:first-of-type { margin-top: 10px; }
+    .tools-audience-label { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em; color: var(--dark); margin-bottom: 2px; }
+    .tools-audience-sub { font-size: 0.81rem; color: var(--muted); margin-bottom: 6px; }
+
+    /* ── RULE BLOCK LABELS ── */
+    .rule-block-label { font-size: 0.76rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 5px 10px; border-radius: 6px; display: inline-block; margin-bottom: 8px; }
+    .rule-block-label--stop { background: #fef2f2; color: #991b1b; }
+    .rule-block-label--ok   { background: #f0fdf4; color: #166534; }
+    .tool-card {
+      background: #f8fafc; border: 1px solid var(--border);
+      border-radius: 10px; padding: 14px 12px; text-align: center;
+    }
+    .tool-icon { font-size: 22px; margin-bottom: 6px; }
+    .tool-name { font-size: 0.88rem; font-weight: 600; margin-bottom: 3px; color: var(--dark); }
+    .tool-desc { font-size: 0.78rem; color: var(--muted); line-height: 1.45; }
+
+    /* ── TOEPASSINGEN — flip cards ── */
+    .practice-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+      margin-top: 12px;
+    }
+    .practice-card {
+      border-radius: 14px;
+      padding: 0;
+      text-align: center;
+      cursor: pointer;
+      position: relative;
+      perspective: 900px;
+    }
+    .practice-icon { font-size: 1.6rem; margin-bottom: 6px; }
+    .flip-inner {
+      position: relative;
+      width: 100%;
+      height: 160px;
+      transition: transform 0.6s;
+      transform-style: preserve-3d;
+    }
+    .practice-card.flipped .flip-inner { transform: rotateY(180deg); }
+    .flip-front, .flip-back {
+      position: absolute;
+      inset: 0;
+      backface-visibility: hidden;
+      border-radius: 14px;
+      padding: 14px 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      text-align: center;
+    }
+    .flip-front {
+      background: white;
+      border: 1.5px solid var(--border);
+      box-shadow: 0 2px 10px rgba(15,31,48,0.05);
+      transition: border-color 0.2s;
+    }
+    .practice-card:hover .flip-front { border-color: var(--accent); }
+    .flip-front p { font-size: 0.88rem; color: var(--dark); font-weight: 600; }
+    .flip-back {
+      background: var(--accent-light);
+      border: 1.5px solid var(--accent);
+      transform: rotateY(180deg);
+    }
+    .flip-back h4 { margin-bottom: 6px; font-size: 0.92rem; color: #0e7490; }
+    .flip-back p { font-size: 0.8rem; color: #164e63; line-height: 1.5; }
+    .practice-warning {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-left: 4px solid #dc2626;
+      color: #991b1b;
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    /* ── DO/DON'T ACCORDION ── */
+    .acc-item { border-bottom: 1px solid var(--border); }
+    .acc-item:last-child { border-bottom: none; }
+    .acc-header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 12px 0; cursor: pointer; font-size: 0.93rem; font-weight: 600;
+      color: var(--dark);
+      transition: color 0.2s;
+    }
+    .acc-header:hover { color: var(--accent); }
+    .acc-arrow { font-size: 0.75rem; color: var(--muted); transition: transform 0.25s; flex-shrink: 0; }
+    .acc-item.open .acc-arrow { transform: rotate(90deg); }
+    .acc-body { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+    .acc-body-inner { padding: 0 0 14px; font-size: 0.88rem; color: #475569; line-height: 1.7; }
+    .acc-item[data-t="do"] .acc-header::before { content: "✓"; color: #16a34a; margin-right: 8px; font-size: 13px; }
+    .acc-item[data-t="dont"] .acc-header::before { content: "✕"; color: #dc2626; margin-right: 8px; font-size: 13px; }
+
+    /* ── LEERLINGEN-REGELS ── */
+    .rule-grid { display: grid; gap: 10px; margin-top: 12px; }
+    .rule-item {
+      background: #f8fafc; border: 1px solid var(--border); border-radius: 9px; padding: 12px 14px;
+      display: flex; gap: 12px; align-items: flex-start;
+      border-left: 4px solid transparent;
+    }
+    .rule-item[data-s="ok"]   { border-left-color: #16a34a; }
+    .rule-item[data-s="warn"] { border-left-color: #d97706; }
+    .rule-item[data-s="stop"] { border-left-color: #dc2626; }
+    .rule-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+    .rule-title { font-size: 0.91rem; font-weight: 600; margin-bottom: 2px; color: var(--dark); }
+    .rule-desc  { font-size: 0.84rem; color: var(--muted); line-height: 1.55; }
+
+    /* ── WETSBLOK / ALERT ── */
+    .law-block {
+      background: var(--gold-light); border: 1px solid #fde68a;
+      border-left: 4px solid var(--gold);
+      border-radius: 9px; padding: 12px 14px; font-size: 0.88rem; margin-top: 10px;
+      color: #78350f; line-height: 1.65;
+    }
+    .law-block strong { color: #92400e; }
+    .alert {
+      background: #fef2f2; border: 1px solid #fecaca;
+      border-left: 4px solid #dc2626;
+      border-radius: 9px; padding: 10px 14px; font-size: 0.86rem;
+      color: #991b1b; margin-top: 12px; line-height: 1.6;
+    }
+
+    /* ── VIDEO-KNOP ── */
+    .video-button {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: var(--accent-light);
+      border: 1px solid var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      color: var(--accent);
+      text-decoration: none;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      z-index: 2;
+    }
+    .video-button:hover {
+      transform: scale(1.1);
+      box-shadow: 0 4px 12px rgba(8,145,178,0.3);
+    }
+
+    /* ── DO-KAARTEN met foto en info-bolletje ── */
+    .do-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin-top: 12px;
+    }
+    .do-card {
+      position: relative;
+      border-radius: 14px;
+      overflow: hidden;
+      background: white;
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 12px rgba(15,31,48,0.06);
+      transition: box-shadow 0.2s;
+    }
+    .do-card:hover { box-shadow: 0 6px 20px rgba(15,31,48,0.1); }
+    .do-card img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+      display: block;
+    }
+    .do-card h3 {
+      padding: 10px 12px;
+      font-size: 0.95rem;
+      margin: 0;
+      color: var(--dark);
+    }
+    .info-dot {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 10px rgba(8,145,178,0.7);
+      cursor: pointer;
+      animation: blink 1.2s infinite;
+      z-index: 2;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.35; }
+    }
+
+    /* ── POPUP ── */
+    .popup-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15,31,48,0.6);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+    .popup {
+      background: white;
+      border-radius: 14px;
+      padding: 22px;
+      max-width: 440px;
+      width: 90%;
+      border: 1px solid var(--border);
+      box-shadow: 0 20px 50px rgba(15,31,48,0.3);
+    }
+    .popup h3 { margin-bottom: 8px; font-size: 1.05rem; color: var(--dark); }
+    .popup p { margin-bottom: 6px; font-size: 0.92rem; color: #475569; line-height: 1.65; }
+    .popup button {
+      margin-top: 10px;
+      padding: 8px 18px;
+      border: none;
+      border-radius: 8px;
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.15s;
+    }
+    .popup button:hover { background: #0e7490; }
+
+    /* ── BRONNEN ── */
+    .bronnen-list { list-style: none; padding: 0; margin: 0; }
+    .bronnen-list li { margin-bottom: 10px; padding: 0 !important; }
+    .bronnen-list li::before { display: none; }
+    .bronnen-list a {
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.93rem;
+      transition: opacity 0.2s;
+    }
+    .bronnen-list a:hover { opacity: 0.75; text-decoration: underline; }
+
+    /* ── TUSSENNOOT ── */
+    .note-line { text-align: center; margin: 4px 0 20px; font-size: 0.8rem; color: var(--muted); }
+
+    /* Fade-in */
+    .fade-in { opacity: 0; transform: translateY(14px); transition: opacity 0.45s ease, transform 0.45s ease; }
+    .fade-in.visible { opacity: 1; transform: none; }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="Digiplan.html">← Terug naar Dashboard</a>
+  <span>GBS De Krekel · Digiplan 2025–2028</span>
+</div>
+
+<div class="page-header">
+  <div class="page-header-inner">
+    <div class="page-header-label">AI-beleidsplan</div>
+    <h1>🤖 AI op school</h1>
+    <p>Verantwoord, bewust en veilig gebruik van AI-tools — praktische gids voor leerkrachten van kleuterschool en lagere school.</p>
+  </div>
+</div>
+
+<div class="layout">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-card">
+      <div class="sidebar-title">Inhoud</div>
+      <nav>
+        <a href="#waarom"><span class="nav-dot"></span> Waarom AI?</a>
+        <a href="#wat-is-ai"><span class="nav-dot"></span> Wat is AI?</a>
+        <a href="#soorten"><span class="nav-dot"></span> Soorten AI</a>
+        <a href="#tools"><span class="nav-dot"></span> Welke tools?</a>
+        <a href="#toepassingen"><span class="nav-dot"></span> Toepassingen</a>
+        <a href="#doen"><span class="nav-dot"></span> Wat wel doen</a>
+        <a href="#niet-doen"><span class="nav-dot"></span> Wat niet doen</a>
+        <a href="#leerlingen"><span class="nav-dot"></span> Leerlingen &amp; AI</a>
+        <a href="#regelgeving"><span class="nav-dot"></span> Regelgeving</a>
+        <a href="#bronnen"><span class="nav-dot"></span> Bronnen</a>
+      </nav>
+      <div class="sidebar-back">
+        <a href="Digiplan.html">← Terug naar Dashboard</a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Hoofdinhoud -->
+  <main>
+
+    <!-- 1. Waarom -->
+    <section id="waarom" class="section fade-in" data-c="teal">
+      <div class="section-label">Inleiding</div>
+      <h2>📌 Waarom AI in ons onderwijs?</h2>
+      <p class="section-sub">Klik op een tab voor een korte toelichting</p>
+
+      <div class="tabs">
+        <button class="tab-btn active" onclick="showTabWhy('aanwezig')">🌐 Aanwezig</button>
+        <button class="tab-btn" onclick="showTabWhy('leerlingen')">👧 Leerlingen</button>
+        <button class="tab-btn" onclick="showTabWhy('leerkrachten')">🎓 Leerkrachten</button>
+      </div>
+
+      <div id="tabw-aanwezig" class="tab-panel active">
+        <p>
+          AI zit verweven in veel toepassingen die we dagelijks gebruiken: zoekmachines, vertalingen,
+          smartphones en educatieve platforms. Leerkrachten en leerlingen komen hiermee in contact,
+          vaak zonder het bewust te merken. Daarom maakt AI deel uit van de realiteit waarin ons onderwijs functioneert.
+        </p>
+      </div>
+
+      <div id="tabw-leerlingen" class="tab-panel">
+        <p>
+          Leerlingen groeien op in een wereld waar AI een vaste rol heeft in leren, werken en samenleven.
+          Het is onze taak om hen veilig, bewust en leeftijdsgepast te leren omgaan met deze technologie,
+          zodat zij essentiële digitale competenties ontwikkelen voor nu en later.
+        </p>
+      </div>
+
+      <div id="tabw-leerkrachten" class="tab-panel">
+        <p>
+          AI kan leerkrachten ondersteunen bij lesvoorbereiding, differentiatie, administratie
+          en communicatie. Het maakt processen efficiënter en creëert ruimte voor pedagogisch handelen.
+          AI vervangt nooit de leerkracht, maar kan het onderwijsproces versterken en vereenvoudigen.
+        </p>
+      </div>
+    </section>
+
+    <!-- 2. Wat is AI -->
+    <section id="wat-is-ai" class="section fade-in" data-c="purple">
+      <a class="video-button"
+         href="https://www.youtube.com/watch?v=Xz96MwUjFy0"
+         target="_blank"
+         aria-label="Bekijk video over AI">🔗</a>
+      <div class="section-label">Achtergrond</div>
+      <h2>🤖 Wat is AI?</h2>
+      <p class="section-sub">Klik op een tab voor meer uitleg</p>
+
+      <div class="tabs">
+        <button class="tab-btn active" onclick="showTab('def')">Definitie</button>
+        <button class="tab-btn" onclick="showTab('hoe')">Hoe werkt het?</button>
+        <button class="tab-btn" onclick="showTab('risico')">Risico's</button>
+      </div>
+
+      <div id="tab-def" class="tab-panel active">
+        <p>Artificiële intelligentie (AI) verwijst naar computersystemen die taken uitvoeren die normaal menselijk denken vereisen: tekst schrijven, samenvatten, vertalen, vragen beantwoorden of afbeeldingen genereren.</p>
+        <p>AI begrijpt informatie niet zoals een mens dat doet. Het analyseert grote hoeveelheden gegevens en leert daaruit om steeds betere resultaten te produceren.</p>
+        <p>In de dagelijkse onderwijspraktijk is AI al volop aanwezig — vaak zonder dat we er bij stilstaan. Denk aan automatische vertalingen, tekstsuggesties bij het typen of slimme zoekmachines.</p>
+      </div>
+
+      <div id="tab-hoe" class="tab-panel">
+        <p>De meeste AI-tools zijn gebaseerd op <strong>grote taalmodellen</strong> (Large Language Models of LLM's). Deze modellen zijn getraind op enorme hoeveelheden tekst van het internet: boeken, artikels, websites en meer.</p>
+        <p>Op basis van al die tekst leren ze voorspellen welk woord of welke zin het meest logisch volgt. Het systeem begrijpt de inhoud niet echt — het herkent patronen in taal en past die toe.</p>
+        <p>Stel je voor: een vriend heeft letterlijk alle tekst van het internet gelezen en is heel goed geworden in één ding — raden wat er hierna komt. Niet omdat hij het begrijpt, maar omdat hij dat patroon zo vaak heeft gezien. Dat is een taalmodel.</p>
+      </div>
+
+      <div id="tab-risico" class="tab-panel">
+        <p>Omdat AI geen echte kennis heeft maar patronen herkent, kleven er enkele belangrijke risico's aan:</p>
+        <ul>
+          <li><span class="li-dot">●</span> <span><strong>Hallucineren:</strong> AI verzint soms feiten, namen of bronnen die niet bestaan — met het gezag van een encyclopedie. Een fout antwoord ziet er precies hetzelfde uit als een correct antwoord.</span></li>
+          <li><span class="li-dot">●</span> <span><strong>Verouderde informatie:</strong> AI is getraind tot een bepaalde datum. Recente wijzigingen in leerplannen of minimumdoelen kent het niet automatisch.</span></li>
+          <li><span class="li-dot">●</span> <span><strong>Vooroordelen:</strong> Trainingsdata bevat ook menselijke bias. AI kan onbedoeld stereotypen of eenzijdige formuleringen produceren.</span></li>
+          <li><span class="li-dot">●</span> <span><strong>Privacy:</strong> AI-tools slaan gesprekken op. Wat je invoert, kan worden gebruikt om het model verder te trainen.</span></li>
+        </ul>
+        <div class="alert">Kritisch nalezen blijft altijd noodzakelijk. Beschouw elke AI-output als een eerste versie, nooit als eindproduct.</div>
+      </div>
+    </section>
+
+    <!-- 3. Soorten AI -->
+    <section id="soorten" class="section fade-in" data-c="teal">
+      <div class="section-label">Achtergrond</div>
+      <h2>🔀 Soorten AI</h2>
+      <p class="section-sub">Twee types die je als leerkracht tegenkomt</p>
+
+      <div class="tabs">
+        <button class="tab-btn active" onclick="showTab2('gen')">Generatieve AI</button>
+        <button class="tab-btn" onclick="showTab2('class')">Classificerende AI</button>
+      </div>
+
+      <div id="tab2-gen" class="tab-panel active">
+        <p><strong>Generatieve AI maakt nieuwe inhoud aan</strong> op basis van een vraag of opdracht (een prompt). Je vraagt iets — je krijgt een antwoord in tekst, beeld, muziek of video.</p>
+        <ul>
+          <li><span class="li-dot">●</span> Je vraagt om een ouderbrief → je krijgt een kant-en-klare concepttekst.</li>
+          <li><span class="li-dot">●</span> Je beschrijft een tekening → AI genereert die afbeelding.</li>
+          <li><span class="li-dot">●</span> Je plakt een lange tekst in → je vraagt om een samenvatting voor je leerlingen.</li>
+          <li><span class="li-dot">●</span> Je vraagt tien oefenvragen over een thema → je krijgt ze meteen.</li>
+        </ul>
+        <p style="margin-top:10px;">Dit is het type AI waarover de richtlijnen in dit document gaan.</p>
+      </div>
+
+      <div id="tab2-class" class="tab-panel">
+        <p><strong>Classificerende en voorspellende AI analyseert</strong> bestaande informatie en maakt op basis daarvan een beslissing of voorspelling. Het maakt zelf geen nieuwe inhoud aan.</p>
+        <ul>
+          <li><span class="li-dot">●</span> De spamfilter in je mailbox die verdachte mails tegenhoudt.</li>
+          <li><span class="li-dot">●</span> Tekstsuggesties op je smartphone die voorspellen wat je wil typen.</li>
+          <li><span class="li-dot">●</span> Een zoekmachine die de meest relevante resultaten bovenaan zet.</li>
+          <li><span class="li-dot">●</span> Fotoherkenning die automatisch gezichten of objecten identificeert.</li>
+        </ul>
+        <p style="margin-top:10px;">Dit type AI werkt grotendeels op de achtergrond en vraagt weinig actieve keuzes van jou als leerkracht.</p>
+      </div>
+    </section>
+
+    <!-- 4. Welke tools -->
+    <section id="tools" class="section fade-in" data-c="blue">
+      <div class="section-label">Tools</div>
+      <h2>🛠 Goedgekeurde tools op school</h2>
+      <p class="section-sub">Overzicht per doelgroep — leerkrachten en leerlingen gebruiken verschillende tools</p>
+
+      <div class="tools-audience">
+        <div class="tools-audience-label">🎓 Voor leerkrachten</div>
+        <p class="tools-audience-sub">Via je Microsoft 365-schoolaccount (@dekrekel.net)</p>
+      </div>
+      <div class="tools-grid">
+        <div class="tool-card">
+          <div class="tool-icon">💼</div>
+          <div class="tool-name">Microsoft Copilot</div>
+          <div class="tool-desc">Inbegrepen in de Microsoft 365 A3-licentie van de school. Geïntegreerd in Word, Outlook en Teams via je schoolaccount. De Microsoft Education DPA garandeert dat jouw gegevens niet worden gebruikt om AI-modellen te trainen.</div>
+        </div>
+      </div>
+
+      <div class="tools-audience">
+        <div class="tools-audience-label">👧 Voor leerlingen</div>
+        <p class="tools-audience-sub">Enkel met een klas- of schoolaccount, altijd onder begeleiding van de leerkracht</p>
+      </div>
+      <div class="tools-grid">
+        <div class="tool-card">
+          <div class="tool-icon">🎨</div>
+          <div class="tool-name">Canva for Education</div>
+          <div class="tool-desc">Speciaal gecertificeerd voor gebruik met kinderen. Canva gebruikt inhoud van Education-accounts niet voor het trainen van AI-modellen. Gebruik altijd het klas- of schoolaccount — nooit een persoonlijk of gratis account.</div>
+        </div>
+      </div>
+
+      <div class="alert" style="margin-top:16px;">We werken bewust binnen het Microsoft 365-ecosysteem. Google-tools (waaronder Gemini) gebruiken we niet op school. Gebruik uitsluitend tools die door de school zijn goedgekeurd; installeer of gebruik geen eigen tools zonder toestemming van de directie.</div>
+    </section>
+
+    <!-- 5. Toepassingen -->
+    <section id="toepassingen" class="section fade-in" data-c="green">
+      <div class="section-label">Gebruik</div>
+      <h2>💡 Waarvoor gebruik je AI als leerkracht?</h2>
+      <p class="section-sub">Klik op een kaart om een voorbeeldprompt te zien</p>
+
+      <div class="practice-grid">
+
+        <div class="practice-card" onclick="this.classList.toggle('flipped')">
+          <div class="flip-inner">
+            <div class="flip-front">
+              <div class="practice-icon">📨</div>
+              <p>Oudercommunicatie voorbereiden</p>
+            </div>
+            <div class="flip-back">
+              <h4>Voorbeeldprompt</h4>
+              <p>Schrijf een korte, vriendelijke herinnering voor ouders van het 3e leerjaar over de schoolreis van vrijdag. Max. 80 woorden.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="practice-card" onclick="this.classList.toggle('flipped')">
+          <div class="flip-inner">
+            <div class="flip-front">
+              <div class="practice-icon">💡</div>
+              <p>Lesideeën en werkvormen genereren</p>
+            </div>
+            <div class="flip-back">
+              <h4>Voorbeeldprompt</h4>
+              <p>Geef 3 creatieve werkvormen voor een les rond breuken in het 4e leerjaar. Focus op differentiatie en actieve betrokkenheid.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="practice-card" onclick="this.classList.toggle('flipped')">
+          <div class="flip-inner">
+            <div class="flip-front">
+              <div class="practice-icon">🎯</div>
+              <p>Differentiatiemateriaal laten voorstellen</p>
+            </div>
+            <div class="flip-back">
+              <h4>Voorbeeldprompt</h4>
+              <p>Maak drie differentiatie-opdrachten rond cijferen voor het 5e leerjaar: één basis, één ondersteuning en één uitdaging.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="practice-card" onclick="this.classList.toggle('flipped')">
+          <div class="flip-inner">
+            <div class="flip-front">
+              <div class="practice-icon">📊</div>
+              <p>Rubrics of criteria laten uitschrijven</p>
+            </div>
+            <div class="flip-back">
+              <h4>Voorbeeldprompt</h4>
+              <p>Schrijf een rubric voor een spreekbeurt in het 6e leerjaar met 4 niveaus en duidelijke, meetbare criteria.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="practice-card" onclick="this.classList.toggle('flipped')">
+          <div class="flip-inner">
+            <div class="flip-front">
+              <div class="practice-icon">📝</div>
+              <p>Feedback of rapportcommentaren voorbereiden</p>
+            </div>
+            <div class="flip-back">
+              <h4>Voorbeeldprompt</h4>
+              <p>Schrijf een warme, constructieve feedback voor een leerling die moeite heeft met begrijpend lezen maar wel inzet toont. Max. 60 woorden.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="practice-card" onclick="this.classList.toggle('flipped')">
+          <div class="flip-inner">
+            <div class="flip-front">
+              <div class="practice-icon">📚</div>
+              <p>Samenvattingen van teksten of documenten</p>
+            </div>
+            <div class="flip-back">
+              <h4>Voorbeeldprompt</h4>
+              <p>Maak een samenvatting (max. 120 woorden) van deze tekst voor leerlingen van het 5e leerjaar. Gebruik eenvoudige taal.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="practice-warning">
+        <strong>Belangrijk:</strong> AI is een hulpmiddel, geen vervanging van jouw professionele inschatting en pedagogische expertise.
+      </div>
+    </section>
+
+    <!-- 6. WEL DOEN -->
+    <section id="doen" class="section fade-in" data-c="green">
+      <div class="section-label">Do's</div>
+      <h2>✅ Wat doe je wel?</h2>
+      <p class="section-sub">Klik op het blauwe bolletje voor meer uitleg</p>
+
+      <!-- Popup overlay -->
+      <div id="popupOverlay" class="popup-overlay">
+        <div class="popup">
+          <h3 id="popupTitle"></h3>
+          <p id="popupText"></p>
+          <button type="button" onclick="closePopup()">Sluiten</button>
+        </div>
+      </div>
+
+      <!-- Do-kaarten met foto -->
+      <div class="do-grid">
+
+        <div class="do-card">
+          <img src="https://tse2.mm.bing.net/th/id/OIP.dITXq3O3DCeBxBaf-j8RWQHaHa?pid=ImgDetMain&o=7&rm=3" alt="Schoolaccount gebruiken">
+          <div class="info-dot" onclick="openPopup('tip1')" aria-label="Meer info" role="button"></div>
+          <h3>Schoolaccount gebruiken</h3>
+        </div>
+
+        <div class="do-card">
+          <img src="https://images.unsplash.com/photo-1553877522-43269d4ea984" alt="Anonieme gegevens">
+          <div class="info-dot" onclick="openPopup('tip2')" aria-label="Meer info" role="button"></div>
+          <h3>Anonieme gegevens</h3>
+        </div>
+
+        <div class="do-card">
+          <img src="https://tse1.mm.bing.net/th/id/OIP.nMc1H17xVJgffyUZPGvmAQHaHa?pid=ImgDetMain&o=7&rm=3" alt="Specifieke opdrachten">
+          <div class="info-dot" onclick="openPopup('tip3')" aria-label="Meer info" role="button"></div>
+          <h3>Specifieke opdrachten</h3>
+        </div>
+
+        <div class="do-card">
+          <img src="https://tse1.mm.bing.net/th/id/OIP.jzTq3x7004Rl9_aF1UE8nAHaEx?pid=ImgDetMain&o=7&rm=3" alt="AI als startpunt">
+          <div class="info-dot" onclick="openPopup('tip4')" aria-label="Meer info" role="button"></div>
+          <h3>AI als startpunt</h3>
+        </div>
+
+        <div class="do-card">
+          <img src="https://tse1.mm.bing.net/th/id/OIP.ouWBWLw_aXjSAhqyGWldpwHaHa?pid=ImgDetMain&o=7&rm=3" alt="Inhoud controleren">
+          <div class="info-dot" onclick="openPopup('tip5')" aria-label="Meer info" role="button"></div>
+          <h3>Inhoud controleren</h3>
+        </div>
+
+        <div class="do-card">
+          <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=600&q=70" alt="Ervaringen delen">
+          <div class="info-dot" onclick="openPopup('tip6')" aria-label="Meer info" role="button"></div>
+          <h3>Ervaringen delen</h3>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 7. NIET DOEN -->
+    <section id="niet-doen" class="section fade-in" data-c="red">
+      <div class="section-label">Don'ts</div>
+      <h2>⛔ Wat doe je niet?</h2>
+      <p class="section-sub">Klik op een punt voor de volledige uitleg</p>
+      <div class="acc-item" data-t="dont">
+        <div class="acc-header" onclick="toggleAcc(this)">Geen eigen of niet-goedgekeurde tools gebruiken<span class="acc-arrow">›</span></div>
+        <div class="acc-body"><div class="acc-body-inner">Gebruik alleen AI-tools die door de school zijn goedgekeurd en gecontroleerd. Generatieve AI is laagdrempelig — een gratis account aanmaken is vaak genoeg om aan de slag te gaan. Maar achter die laagdrempeligheid schuilt een belangrijke vraag over veilig en privacyvriendelijk gebruik. Installeer of gebruik geen eigen tools zonder toestemming van de directie.</div></div>
+      </div>
+      <div class="acc-item" data-t="dont">
+        <div class="acc-header" onclick="toggleAcc(this)">Geen persoonsgegevens of vertrouwelijke info invoeren<span class="acc-arrow">›</span></div>
+        <div class="acc-body"><div class="acc-body-inner">Voer nooit namen, adressen, rijksregisternummers of andere identificeerbare gegevens van leerlingen, ouders of collega's in. Dit geldt ook voor het schoolplan, kwaliteitsinformatie of andere vertrouwelijke schooldocumenten — ook als die geen namen bevatten. Notities over een leerling zijn persoonsgegevens. Worden die ingevoerd in een AI-tool, dan kunnen ze onderdeel worden van de trainingsdata. Dit kan leiden tot een datalek.</div></div>
+      </div>
+      <div class="acc-item" data-t="dont">
+        <div class="acc-header" onclick="toggleAcc(this)">AI beslist nooit over leerlingen<span class="acc-arrow">›</span></div>
+        <div class="acc-body"><div class="acc-body-inner">AI kan ondersteunen, maar belangrijke beslissingen vereisen menselijk inzicht en zorgvuldige overwegingen die AI niet kan of zou moeten maken. Doorverwijzingen naar zorg, niveauwijzigingen of rapporten zijn altijd een menselijke verantwoordelijkheid. Een machine mag de toekomst van kinderen niet bepalen.</div></div>
+      </div>
+      <div class="acc-item" data-t="dont">
+        <div class="acc-header" onclick="toggleAcc(this)">Geen AI gebruiken zonder resultaten kritisch te beoordelen<span class="acc-arrow">›</span></div>
+        <div class="acc-body"><div class="acc-body-inner">AI kan vooroordelen bevatten of versterken. Wees alert op stereotypen of eenzijdige formuleringen in gegenereerde teksten, zeker bij feedback aan leerlingen. AI-systemen kunnen onbedoeld het gat vergroten tussen goed presterende en onderpresterende leerlingen.</div></div>
+      </div>
+      <div class="acc-item" data-t="dont">
+        <div class="acc-header" onclick="toggleAcc(this)">Geen gebruik voor persoonlijke doeleinden via schoolmiddelen<span class="acc-arrow">›</span></div>
+        <div class="acc-body"><div class="acc-body-inner">AI-tools die de school ter beschikking stelt, zijn bedoeld voor professionele taken. Gebruik ze niet voor privédoeleinden zoals reisplannen of persoonlijke zoekopdrachten.</div></div>
+      </div>
+      <div class="acc-item" data-t="dont">
+        <div class="acc-header" onclick="toggleAcc(this)">Transparantie: vermeld het gebruik van AI<span class="acc-arrow">›</span></div>
+        <div class="acc-body"><div class="acc-body-inner">Wees als leerkracht transparant over het gebruik van AI. Vermeld het ook als je AI hebt gebruikt bij het opstellen van communicatie of documenten. Stuur geen teksten door waarvan de ontvanger niet weet dat ze AI-ondersteund zijn, tenzij je ze volledig hebt nagelezen en aangepast.</div></div>
+      </div>
+      <div class="acc-item" data-t="dont">
+        <div class="acc-header" onclick="toggleAcc(this)">Merk je iets vreemds? Meld het.<span class="acc-arrow">›</span></div>
+        <div class="acc-body"><div class="acc-body-inner">Geeft AI ongepaste, foutieve of verrassende output? Meld dit aan de directie of ICT-coördinator. Niet om te sanctioneren, maar om de school te helpen leren. Een gemeld probleem kan worden opgevolgd. Een genegeerd probleem herhaalt zich.</div></div>
+      </div>
+    </section>
+
+    <!-- 8. Leerlingen -->
+    <section id="leerlingen" class="section fade-in" data-c="amber">
+      <div class="section-label">Leerlingen</div>
+      <h2>👧 Leerlingen en AI</h2>
+      <p class="section-sub">Heldere regels per categorie — wat nooit mag en wat wel</p>
+
+      <div class="rule-block-label rule-block-label--stop">⛔ Generatieve AI — nooit voor leerlingen</div>
+      <div class="rule-grid">
+        <div class="rule-item" data-s="stop">
+          <div class="rule-icon">⛔</div>
+          <div>
+            <div class="rule-title">Nooit zelfstandig inloggen bij generatieve AI</div>
+            <div class="rule-desc">Onze leerlingen (2,5–12 jaar) zijn te jong voor alle gangbare generatieve AI-tools — de minimumleeftijd is overal minimaal 13 jaar. Ze mogen nooit via een eigen account inloggen, ook niet thuis als onderdeel van een schoolopdracht.</div>
+          </div>
+        </div>
+        <div class="rule-item" data-s="warn">
+          <div class="rule-icon">⚠️</div>
+          <div>
+            <div class="rule-title">De leerkracht kan wel demonstreren</div>
+            <div class="rule-desc">Een leerkracht kan Copilot gebruiken om iets te tonen aan de klas — via het eigen schoolaccount en het digibord. Leerlingen kijken mee maar bedienen de tool nooit zelf.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="rule-block-label rule-block-label--ok" style="margin-top:18px;">✅ Canva for Education — toegestaan onder begeleiding</div>
+      <div class="rule-grid">
+        <div class="rule-item" data-s="ok">
+          <div class="rule-icon">🎨</div>
+          <div>
+            <div class="rule-title">Leerlingen werken altijd via een klasaccount</div>
+            <div class="rule-desc">Canva for Education is gecertificeerd voor gebruik met kinderen en valt onder een aparte privacyregeling. Leerlingen loggen nooit in met een persoonlijk account — enkel via het klas- of schoolaccount dat door de leerkracht beheerd wordt. Zie ook het <a href="#tools" style="color:var(--accent);font-weight:600;">tools-overzicht</a>.</div>
+          </div>
+        </div>
+        <div class="rule-item" data-s="warn">
+          <div class="rule-icon">⚠️</div>
+          <div>
+            <div class="rule-title">Altijd onder begeleiding van de leerkracht</div>
+            <div class="rule-desc">Gebruik van digitale tools in de klas verloopt altijd onder begeleiding. Leerlingen werken nooit volledig zelfstandig, ook niet op een klascomputer.</div>
+          </div>
+        </div>
+        <div class="rule-item" data-s="warn">
+          <div class="rule-icon">⚠️</div>
+          <div>
+            <div class="rule-title">Ouderlijke toestemming registreren</div>
+            <div class="rule-desc">Wil je als leerkracht AI inzetten waarbij leerlingen actief deelnemen? Bespreek dit eerst met de directie. Ouders worden geïnformeerd en geven toestemming voordat hun kind actief met AI aan de slag gaat. Registreer die toestemming.</div>
+          </div>
+        </div>
+        <div class="rule-item" data-s="ok">
+          <div class="rule-icon">💬</div>
+          <div>
+            <div class="rule-title">Bespreek AI met leerlingen</div>
+            <div class="rule-desc">Bespreek op een begrijpelijk niveau wat AI is, wat het kan en wat het niet kan. Dit is een eerste stap naar AI-geletterdheid — in de vernieuwde leerlijn al concreet opgenomen als minimumdoel: <strong>DIG 1.31</strong> (begrip AI), <strong>DIG 1.32</strong> (voorbeelden van AI-toepassingen) en <strong>DIG 2.34</strong> (een prompt formuleren in een AI-tool). Zie de <a href="LeerLokaal.html" style="color:var(--accent);font-weight:600;">verticale leerlijn</a>.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 9. Regelgeving -->
+    <section id="regelgeving" class="section fade-in" data-c="amber">
+      <div class="section-label">Regelgeving</div>
+      <h2>⚖️ Regelgeving</h2>
+      <p class="section-sub">Klik voor meer informatie per thema</p>
+      <div class="acc-item" data-t="do">
+        <div class="acc-header" onclick="toggleAcc(this)">Europese AI-verordening (AI Act)<span class="acc-arrow">›</span></div>
+        <div class="acc-body"><div class="acc-body-inner">De AI Act is de eerste Europese wet die artificiële intelligentie reguleert en deelt AI in volgens vier risiconiveaus. Generatieve AI (zoals Microsoft Copilot) valt onder laag risico. Maar voor scholen gelden twee extra aandachtspunten: (1) Emotieherkenning bij leerlingen is volledig verboden. (2) AI die automatisch werkstukken van leerlingen beoordeelt en cijfers toekent, valt onder hoog risico — een mens moet altijd de eindbeslissing nemen. Als school ben je gebruiksverantwoordelijke en moet je aantonen dat je AI op een conforme manier inzet.</div></div>
+      </div>
+      <div class="acc-item" data-t="do">
+        <div class="acc-header" onclick="toggleAcc(this)">AVG / GDPR — privacywetgeving<span class="acc-arrow">›</span></div>
+        <div class="acc-body"><div class="acc-body-inner">De AI Act bouwt verder op de AVG. Dat betekent: persoonsgegevens van leerlingen mogen niet worden ingevoerd in externe AI-tools. Er moet een verwerkersovereenkomst zijn met de leverancier. Gebruik je een digitaal leerplatform met AI-functies? Controleer dan of er een geldige overeenkomst is afgesloten.</div></div>
+      </div>
+      <div class="acc-item" data-t="do">
+        <div class="acc-header" onclick="toggleAcc(this)">Nieuwe minimumdoelen basisonderwijs<span class="acc-arrow">›</span></div>
+        <div class="acc-body"><div class="acc-body-inner">De nieuwe minimumdoelen voor het basisonderwijs worden gefaseerd ingevoerd: vanaf september 2026 voor Nederlands, wiskunde en wetenschappen; vanaf september 2027 ook voor ICT en digitale competenties. De nadruk ligt op het versterken van het leerproces, niet op het vervangen ervan. Als school anticiperen we nu al door leerlingen op een leeftijdsgebonden manier bewust te maken van wat AI is en hoe het werkt. In onze <a href="LeerLokaal.html" style="color:var(--accent);font-weight:600;">verticale leerlijn</a> zijn de eerste AI-minimumdoelen al opgenomen: DIG 1.31, DIG 1.32 en DIG 2.34 (fase 4, vanaf 11 jaar).</div></div>
+      </div>
+      <div class="law-block">
+        <strong>Opgelet:</strong> De AI Act verplicht aanbieders in de toekomst om te melden of een digitale toepassing op de achtergrond AI gebruikt. Als school anticiperen we hier nu al op door bewust en transparant te zijn over ons AI-gebruik.
+      </div>
+    </section>
+
+    <div class="note-line">
+      Deze richtlijnen gelden voor het gebruik van Microsoft Copilot &nbsp;·&nbsp; Bij twijfel: contacteer de directie of ICT-coördinator
+    </div>
+
+    <!-- Bronnen -->
+    <section id="bronnen" class="section fade-in" data-c="blue">
+      <div class="section-label">Referenties</div>
+      <h2>📚 Bronnen</h2>
+      <p class="section-sub">Gebruikte en aanbevolen bronnen voor verdere verdieping</p>
+      <ul class="bronnen-list">
+        <li>
+          <a href="https://www.vlaanderen.be/kenniscentrum-digisprong" target="_blank">
+            Kenniscentrum Digisprong — bewust en verantwoord omgaan met AI op school | Vlaanderen.be
+          </a>
+        </li>
+        <li>
+          <a href="https://www.kennisnet.nl/artikel/wat-is-generatieve-ai/" target="_blank">
+            Wat is generatieve AI? – Kennisnet
+          </a>
+        </li>
+        <li>
+          <a href="https://www.klasse.be/742009/wetgeving-ai-in-onderwijs-wat-mag-niet-volgens-ai-act/" target="_blank">
+            Wat mag (niet) met AI op school? – Klasse
+          </a>
+        </li>
+        <li>
+          <a href="https://www.kennisnet.nl/artikel/privacy-en-ai-hier-moeten-scholen-op-letten/" target="_blank">
+            Privacy en AI: hier moeten scholen op letten – Kennisnet
+          </a>
+        </li>
+      </ul>
+    </section>
+
+  </main>
+</div>
+
+<footer>GBS De Krekel · Zelzate · ICT-beleidsplan 2025–2028 · <a href="Digiplan.html" style="color:inherit">← Dashboard</a></footer>
+
+<script>
+  function showTabWhy(id) {
+    document.querySelectorAll('#waarom .tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('#waarom .tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tabw-' + id).classList.add('active');
+    event.target.classList.add('active');
+  }
+  function showTab(id) {
+    document.querySelectorAll('#wat-is-ai .tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('#wat-is-ai .tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + id).classList.add('active');
+    event.target.classList.add('active');
+  }
+  function showTab2(id) {
+    document.querySelectorAll('#soorten .tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('#soorten .tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab2-' + id).classList.add('active');
+    event.target.classList.add('active');
+  }
+  function toggleAcc(header) {
+    const item = header.parentElement;
+    const body = item.querySelector('.acc-body');
+    const isOpen = item.classList.contains('open');
+    item.classList.toggle('open');
+    body.style.maxHeight = isOpen ? '0' : body.scrollHeight + 'px';
+  }
+  const fadeObserver = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.fade-in').forEach(el => fadeObserver.observe(el));
+
+  // Popup data en functies
+  const doInfo = {
+    tip1: {
+      title: "Log in met je schoolaccount",
+      text: "Gebruik je Microsoft 365 (@dekrekel.net) voor alle AI-tools op het werk. Via je schoolaccount gelden de afspraken die de school heeft gemaakt met de leverancier over gegevensverwerking. Via een persoonlijk account (Gmail, Hotmail, …) zijn er geen garanties over hoe jouw gegevens of die van leerlingen worden verwerkt."
+    },
+    tip2: {
+      title: "Gebruik anonieme of fictieve gegevens",
+      text: "Voer nooit namen, adressen of andere identificeerbare gegevens van leerlingen, ouders of collega's in bij een AI-tool. Wil je rapportcommentaren laten opstellen? Schrijf 'een leerling van het derde leerjaar heeft moeite met rekenen' — nooit de naam van het kind. Het resultaat is even bruikbaar, maar je beschermt de privacy van de leerling."
+    },
+    tip3: {
+      title: "Geef duidelijke en specifieke opdrachten",
+      text: "Hoe concreter je vraag, hoe beter het resultaat. Vermeld het doel, de doelgroep en de gewenste lengte of toon. Bijvoorbeeld: 'Schrijf een kort berichtje voor ouders van kleuterkinderen om hen te herinneren aan de schoolreis volgende vrijdag. Vriendelijke toon, maximaal 80 woorden.'"
+    },
+    tip4: {
+      title: "Gebruik AI als vertrekpunt",
+      text: "AI kan je helpen om een eerste versie te schrijven van rapportcommentaren, feedback op toetsen of communicatie naar ouders. Maar lees altijd kritisch na en pas aan. AI-teksten vervallen snel in clichés en klinken kunstmatig. Zorg dat je persoonlijke stem en je kennis van de leerling duidelijk aanwezig blijven."
+    },
+    tip5: {
+      title: "Controleer altijd de inhoud",
+      text: "AI kan helpen bij het uitwerken van een lesvoorbereiding of het formuleren van leerplandoelen. Maar AI verzint soms feiten, haalt gebeurtenissen door elkaar of geeft foute informatie. Controleer altijd via betrouwbare bronnen zoals handboeken of de website van je onderwijsnet. Dit geldt ook voor minimumdoelen of eindtermen."
+    },
+    tip6: {
+      title: "Deel ervaringen met collega's",
+      text: "Ontdek je een handige toepassing van AI in je dagelijkse praktijk? Of loop je tegen beperkingen of fouten aan? Deel dit met je collega's. Door ervaringen uit te wisselen, leren we als school sneller wat werkt en wat niet. AI is een nieuw werkinstrument dat we samen leren kennen."
+    }
+  };
+
+  function openPopup(key) {
+    const info = doInfo[key];
+    if (!info) return;
+    document.getElementById('popupTitle').innerText = info.title;
+    document.getElementById('popupText').innerText = info.text;
+    document.getElementById('popupOverlay').style.display = 'flex';
+  }
+
+  function closePopup() {
+    document.getElementById('popupOverlay').style.display = 'none';
+  }
+
+  document.getElementById('popupOverlay').addEventListener('click', function(e) {
+    if (e.target === this) closePopup();
+  });
+
+  /* Actieve sidebar-link bij scrollen */
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.sidebar nav a');
+  const navObserver = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        navLinks.forEach(l => l.classList.remove('active'));
+        const match = document.querySelector(`.sidebar nav a[href="#${e.target.id}"]`);
+        if (match) match.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-30% 0px -60% 0px' });
+  sections.forEach(s => navObserver.observe(s));
+</script>
+</body>
+</html>

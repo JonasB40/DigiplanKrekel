@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Analyse – Digiplan GBS De Krekel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shared.css">
+  <style>
+    :root { --accent: #7c3aed; --accent-light: #ede9fe; }
+
+    /* ── 4 IN BALANS HEADER ── */
+    .balans-intro {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin: 14px 0 6px;
+    }
+    @media (max-width: 720px) { .balans-intro { grid-template-columns: 1fr 1fr; } }
+    .balans-pillar {
+      background: linear-gradient(180deg, #faf8ff, white);
+      border: 1px solid #e9d5ff;
+      border-radius: 12px;
+      padding: 14px 14px;
+      text-align: center;
+    }
+    .balans-pillar .ico { font-size: 1.5rem; margin-bottom: 5px; }
+    .balans-pillar h4 {
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .balans-pillar p { font-size: 0.78rem; color: #475569; line-height: 1.45; }
+
+
+    /* ── LINK BLOCK ── */
+    .link-block {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      background: var(--accent-light);
+      color: var(--accent);
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.88rem;
+      margin-top: 8px;
+      transition: all 0.15s;
+    }
+    .link-block:hover {
+      background: var(--accent);
+      color: white;
+    }
+    .link-block .lock {
+      font-size: 0.7rem;
+      background: rgba(255,255,255,0.6);
+      padding: 1px 7px;
+      border-radius: 99px;
+      font-weight: 700;
+    }
+    .link-block:hover .lock { background: rgba(255,255,255,0.3); color: white; }
+
+    /* ── Device cards ── */
+    .device-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .device-card {
+      background: #faf8ff;
+      border: 1px solid #ddd6fe;
+      border-radius: 12px;
+      padding: 16px 14px;
+      text-align: center;
+    }
+    .device-card .d-icon { font-size: 1.8rem; margin-bottom: 6px; }
+    .device-card .d-title { font-weight: 600; font-size: 0.88rem; margin-bottom: 3px; }
+    .device-card .d-desc { font-size: 0.78rem; color: var(--muted); line-height: 1.4; }
+
+    /* ── Professionalisering niveaus ── */
+    .prof-row {
+      display: flex; gap: 10px; margin-bottom: 10px;
+      align-items: flex-start;
+    }
+    .prof-badge {
+      min-width: 80px; height: 28px;
+      border-radius: 999px;
+      font-size: 0.7rem; font-weight: 700;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .pb-starter  { background:#ede9fe; color:#6d28d9; }
+    .pb-gevorderd{ background:#dbeafe; color:#1d4ed8; }
+    .pb-expert   { background:#d1fae5; color:#065f46; }
+    .prof-content { font-size:0.875rem; line-height:1.65; color:#374151; padding-top:3px; }
+
+    /* ── BIJSCHOLINGEN LOG ── */
+    .nascholing-toolbar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin: 14px 0 12px;
+    }
+    .nascholing-toolbar input[type="text"] {
+      flex: 1;
+      min-width: 200px;
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.86rem;
+      font-family: inherit;
+    }
+    .nascholing-toolbar input:focus { outline: none; border-color: var(--accent); }
+    .add-btn {
+      padding: 8px 14px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.15s;
+    }
+    .add-btn:hover { background: #6d28d9; }
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: white;
+    }
+    .nas-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+    .nas-table th {
+      background: #faf8ff;
+      padding: 10px 12px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.74rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+    }
+    .nas-table td {
+      padding: 9px 12px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .nas-table tr:last-child td { border-bottom: none; }
+    .nas-table tr:hover td { background: #faf8ff; }
+    .niveau-tag {
+      display: inline-block;
+      padding: 2px 9px;
+      border-radius: 99px;
+      font-size: 0.72rem;
+      font-weight: 600;
+    }
+    .niv-starter { background: #ede9fe; color: #6d28d9; }
+    .niv-gevorderd { background: #dbeafe; color: #1d4ed8; }
+    .niv-expert { background: #d1fae5; color: #065f46; }
+    .row-del {
+      width: 28px; height: 28px;
+      border: 1px solid var(--border);
+      background: white;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .row-del:hover { border-color: #dc2626; color: #dc2626; background: #fef2f2; }
+    .empty-state { text-align: center; padding: 30px; color: var(--muted); font-size: 0.9rem; }
+
+    /* ── SWOT ── */
+    .swot-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 14px;
+    }
+    @media(max-width:580px){ .swot-grid{grid-template-columns:1fr;} }
+    .swot-card {
+      border-radius: 14px;
+      padding: 18px 18px;
+      border-top: 5px solid var(--sc, #ccc);
+    }
+    .swot-card h4 {
+      font-size: 0.82rem; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--sc); margin-bottom: 10px;
+    }
+    .swot-card ul { list-style: none; padding: 0; }
+    .swot-card ul li {
+      padding: 5px 0;
+      font-size: 0.87rem;
+      line-height: 1.55;
+      color: #374151;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+    .swot-card ul li:last-child { border-bottom: none; }
+    .swot-card ul li::before { display: none; }
+    .swot-card ul li::after {
+      content: attr(data-icon);
+      float: left;
+      margin-right: 8px;
+      font-size: 0.8rem;
+    }
+    .sc-s { --sc: #16a34a; background: rgba(22,  163,  74, 0.15); }
+    .sc-w { --sc: #dc2626; background: rgba(220,  38,  38, 0.15); }
+    .sc-o { --sc: #2563a8; background: rgba( 37,  99, 168, 0.15); }
+    .sc-t { --sc: #d97706; background: rgba(217, 119,   6, 0.15); }
+
+
+    /* ── BOUWSTEENKAARTEN (SWOT-keuze) ── */
+    .bouwsteen-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 14px;
+      margin-top: 16px;
+    }
+    .bouwsteen-card {
+      display: flex; flex-direction: column; align-items: flex-start;
+      text-align: left; gap: 4px;
+      background: white;
+      border: 1px solid var(--border);
+      border-top: 4px solid var(--bc, var(--accent));
+      border-radius: 14px;
+      padding: 18px 18px 16px;
+      cursor: pointer;
+      font-family: inherit;
+      box-shadow: 0 2px 12px rgba(15,31,48,0.06);
+      transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+    }
+    .bouwsteen-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 22px rgba(15,31,48,0.12);
+    }
+    .bouwsteen-ico { font-size: 1.8rem; }
+    .bouwsteen-name { font-weight: 700; font-size: 1rem; color: var(--dark); }
+    .bouwsteen-desc { font-size: 0.83rem; color: var(--muted); line-height: 1.45; }
+    .bouwsteen-cta {
+      margin-top: 8px; font-size: 0.8rem; font-weight: 700;
+      color: var(--bc, var(--accent));
+    }
+
+    /* ── SWOT POP-UP ── */
+    .swot-modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(15,31,48,0.6);
+      z-index: 999; display: none;
+      align-items: flex-start; justify-content: center;
+      padding: 40px 20px; overflow-y: auto;
+    }
+    .swot-modal-overlay.show { display: flex; }
+    .swot-modal-box {
+      background: white; border-radius: 16px;
+      max-width: 760px; width: 100%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
+    .swot-modal-head {
+      display: flex; align-items: center; gap: 12px;
+      padding: 18px 22px;
+      border-top: 5px solid var(--bc, var(--accent));
+      border-bottom: 1px solid var(--border);
+    }
+    .swot-modal-head .smh-ico { font-size: 1.6rem; }
+    .swot-modal-head .smh-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem; color: var(--dark); flex: 1;
+    }
+    .swot-modal-close {
+      border: 1px solid var(--border); background: white;
+      width: 32px; height: 32px; border-radius: 8px;
+      cursor: pointer; font-size: 1rem; color: var(--muted);
+      transition: all 0.15s; flex-shrink: 0;
+    }
+    .swot-modal-close:hover { border-color: #dc2626; color: #dc2626; background: #fef2f2; }
+    .swot-modal-body { padding: 18px 22px 24px; }
+    @media(max-width:560px){ .swot-modal-body .swot-grid { grid-template-columns: 1fr; } }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(15,31,48,0.6);
+      z-index: 999;
+      display: none;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 40px 20px;
+      overflow-y: auto;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal-box {
+      background: white;
+      border-radius: 14px;
+      padding: 26px;
+      max-width: 520px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    .modal-box h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      margin-bottom: 16px;
+      color: var(--dark);
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px 14px;
+    }
+    @media (max-width: 500px){ .form-grid { grid-template-columns: 1fr; } }
+    .form-row.full { grid-column: 1 / -1; }
+    .form-row label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+    .form-row input, .form-row select {
+      width: 100%; padding: 9px 11px;
+      border: 1px solid var(--border); border-radius: 8px;
+      font-size: 0.9rem; font-family: inherit; background: white;
+    }
+    .form-row input:focus, .form-row select:focus { outline: none; border-color: var(--accent); }
+    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 18px; }
+    .modal-actions button {
+      padding: 9px 18px;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      border: 1px solid var(--border);
+      background: white;
+      color: var(--dark);
+    }
+    .modal-actions .save-btn {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="Digiplan.html">← Terug naar Dashboard</a>
+  <span>GBS De Krekel · Digiplan 2025–2028</span>
+</div>
+
+<div class="page-header">
+  <div class="page-header-inner">
+    <div class="page-header-label">Fase 3 · Pictos</div>
+    <h1>Analyse</h1>
+    <p>Een grondige analyse van onze school volgens het <strong>4-in-balans-model</strong>: visie, deskundigheid, digitaal leermateriaal en infrastructuur — afgesloten met een SWOT-analyse.</p>
+  </div>
+</div>
+
+<div class="layout">
+
+  <aside class="sidebar">
+    <div class="sidebar-card">
+      <div class="sidebar-title">Secties</div>
+      <nav>
+        <a href="#overzicht"><span class="nav-dot"></span> Overzicht</a>
+        <a href="#visie"><span class="nav-dot"></span> Visie</a>
+        <a href="#deskundigheid"><span class="nav-dot"></span> Deskundigheid</a>
+        <a href="#leermateriaal"><span class="nav-dot"></span> Leermateriaal</a>
+        <a href="#infrastructuur"><span class="nav-dot"></span> Infrastructuur</a>
+        <a href="#swot"><span class="nav-dot"></span> SWOT-analyse</a>
+      </nav>
+      <div class="sidebar-back">
+        <a href="Digiplan.html">← Terug naar Dashboard</a>
+      </div>
+    </div>
+  </aside>
+
+  <main>
+
+    <!-- OVERZICHT -->
+    <section class="section" id="overzicht">
+      <div class="section-label">Analysekader</div>
+      <h2>Een geïntegreerde aanpak</h2>
+      <p>Het <strong>4-in-balans-model</strong> stelt dat krachtige ICT-integratie pas werkt wanneer vier bouwstenen in evenwicht zijn. Wanneer er bij één van deze pijlers iets mankeert, blokkeert dat de hele ICT-werking. We introduceerden dit model in de <a href="Context.html#vib" style="color:var(--accent);font-weight:600;">Context</a>; hieronder werken we elke pijler concreet uit voor onze school.</p>
+
+      <div class="balans-intro">
+        <div class="balans-pillar">
+          <div class="ico">🔭</div>
+          <h4>Visie</h4>
+          <p>Waarom en hoe we ICT inzetten in ons onderwijs</p>
+        </div>
+        <div class="balans-pillar">
+          <div class="ico">🎓</div>
+          <h4>Deskundigheid</h4>
+          <p>De digitale competenties van ons team</p>
+        </div>
+        <div class="balans-pillar">
+          <div class="ico">📚</div>
+          <h4>Digitaal leermateriaal</h4>
+          <p>Software, platformen en leermiddelen</p>
+        </div>
+        <div class="balans-pillar">
+          <div class="ico">🖥️</div>
+          <h4>Infrastructuur</h4>
+          <p>Toestellen, netwerk en technische middelen</p>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:14px;">
+        <strong>📋 Volledige inventaris &amp; meerjarenplanning:</strong> de details (per toestel, per licentie, per jaar) staan in afgeschermde pagina's wegens hun bedrijfsgevoelig karakter. De meeste collega's hebben hier geen inzage in nodig; wie de inventaris wil bekijken, kan dat via de toegangscode.
+        <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
+          <a href="inventaris.html" class="link-block">📋 Inventaris bekijken <span class="lock">🔒</span></a>
+          <a href="budget.html" class="link-block">💰 Budget &amp; planning <span class="lock">🔒</span></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- VISIE -->
+    <section class="section" id="visie">
+      <div class="section-label">Pijler 1</div>
+      <h2>🔭 Visie</h2>
+      <p>Onze ICT-visie is verankerd in het pedagogisch project en focust op communiceren, creëren, kritisch denken en samenwerken. ICT is geen doel op zich, maar een middel om elke leerling sterker te maken in een digitale samenleving.</p>
+
+      <h3>Kernprincipes</h3>
+      <ul>
+        <li>Digitale competenties zijn een basisrecht — niet voorbehouden voor wie er thuis mee opgroeit.</li>
+        <li>ICT versterkt het onderwijs in plaats van het te vervangen — papier en scherm vullen elkaar aan.</li>
+        <li>Veilig, kritisch en verantwoord digitaal gedrag wordt aangeleerd vanaf de kleuterklas.</li>
+        <li>Het team blijft groeien in digitale competenties via gerichte professionalisering.</li>
+      </ul>
+
+      <a href="visie.html" class="link-block">→ Volledige visie bekijken</a>
+    </section>
+
+    <!-- DESKUNDIGHEID -->
+    <section class="section" id="deskundigheid">
+      <div class="section-label">Pijler 2</div>
+      <h2>🎓 Deskundigheid</h2>
+      <p>We investeren in de digitale competenties van ons team via een gelaagde aanpak: van basiscompetenties voor iedereen tot diepgaandere expertise voor enthousiastelingen en de ICT-coördinator.</p>
+
+      <div class="card" style="margin-top:12px;">
+        <strong>📅 Ons professionaliseringsbeleid (vanaf 1 september 2026).</strong> Conform het Digiplan professionaliseren we ons team structureel en continu in zowel <strong>technische</strong> als <strong>pedagogisch-didactische</strong> ICT-competenties. Elke leerkracht bouwt de basiscompetenties op; wie verder wil, groeit door naar het gevorderde of expertniveau. We combineren interne kennisdeling, externe nascholing en collegiale klasbezoeken, en leggen elke gevolgde vorming vast in het logboek onderaan deze sectie.
+      </div>
+
+      <h3>Drie niveaus van professionalisering</h3>
+
+      <div class="prof-row">
+        <div class="prof-badge pb-starter">Starter</div>
+        <div class="prof-content"><strong>Basiscompetenties voor alle leerkrachten:</strong> Vlot werken met Scoodle, LVS en Gimme · Digibord gebruiken voor instructie · iPads en laptops klaarleggen en begeleiden · Basisafspraken rond veilig ICT-gebruik toepassen.</div>
+      </div>
+
+      <div class="prof-row">
+        <div class="prof-badge pb-gevorderd">Gevorderd</div>
+        <div class="prof-content"><strong>Pedagogisch inzetten van ICT:</strong> Digitale tools integreren in de lespraktijk met meerwaarde · Differentiëren via adaptieve leerplatformen · Lessen mediawijsheid geven aan leerlingen · AI-tools (Microsoft Copilot) op verantwoorde wijze hanteren.</div>
+      </div>
+
+      <div class="prof-row">
+        <div class="prof-badge pb-expert">Expert</div>
+        <div class="prof-content"><strong>ICT-coördinator &amp; aanspreekpunten:</strong> Het digiplan (ICT-beleidsplan) mee uitwerken en opvolgen · Collega's begeleiden en coachen · Nieuwe tools evalueren en aanbevelen · Contactpersoon voor leveranciers en Digisprong-rapportage.</div>
+      </div>
+
+      <div class="divider"></div>
+
+      <h3>Geplande professionalisering</h3>
+      <p>We werken met terugkerende professionaliseringssporen die we jaarlijks concretiseren en bijsturen:</p>
+      <ul>
+        <li>Scoodle-verdieping: geavanceerde functies en het opbouwen van een gedeelde lessenbibliotheek (intern).</li>
+        <li>Nascholing mediawijsheid: praktische lessenreeksen voor de 2e en 3e graad (extern).</li>
+        <li>AI in de klas: verantwoord gebruik van Microsoft Copilot en generatieve AI (studiedag).</li>
+        <li>Collegiale klasbezoeken rond digitale integratie (doorlopend, per graad).</li>
+        <li>Informatiemoment voor ouders rond digitale veiligheid en mediawijsheid — een ambitie die we, afhankelijk van tijd en partners (bv. de bib van Zelzate), willen waarmaken.</li>
+      </ul>
+
+      <div class="divider"></div>
+
+      <h3>Logboek gevolgde bijscholingen</h3>
+      <p>Een overzicht van de bijscholingen die het team al heeft gevolgd. Volledig bewerkbaar — voeg toe wat collega's bijwoonden.</p>
+
+      <div class="nascholing-toolbar">
+        <input type="text" id="nasSearch" placeholder="🔍 Zoek op leerkracht, titel of organisator..." oninput="renderNascholing()" />
+        <button class="add-btn" onclick="openNasModal()">＋ Bijscholing toevoegen</button>
+      </div>
+
+      <div class="table-wrap">
+        <table class="nas-table">
+          <thead>
+            <tr>
+              <th>Leerkracht</th>
+              <th>Datum</th>
+              <th>Titel</th>
+              <th>Organisator</th>
+              <th>Niveau</th>
+              <th style="width:60px;"></th>
+            </tr>
+          </thead>
+          <tbody id="nasTbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- DIGITAAL LEERMATERIAAL -->
+    <section class="section" id="leermateriaal">
+      <div class="section-label">Pijler 3</div>
+      <h2>📚 Digitaal leermateriaal</h2>
+      <p>Een combinatie van platformen, leerlijnen en methodes ondersteunt de digitale werking van de school.</p>
+
+      <h3>Software en platformen</h3>
+      <div class="two-col" style="margin-top:12px;">
+        <div class="info-block">
+          <h4>🎓 Scoodle</h4>
+          <p>Digitale agenda, lessenbibliotheek en geïntegreerde LeerLokaal-doelen. Lesvoorbereiding en planning centraal beheerd.</p>
+        </div>
+        <div class="info-block">
+          <h4>📊 LVS (Leerlingvolgsysteem)</h4>
+          <p>Nauwkeurige opvolging van leerlinggegevens, zorgtraject en sociaal-emotionele ontwikkeling. Toegankelijk voor leerkracht, zorgco en CLB.</p>
+        </div>
+        <div class="info-block">
+          <h4>📣 Gimme</h4>
+          <p>Berichtenplatform voor oudercommunicatie met ingebouwde vertaalfunctie in meerdere talen. Ook voor anderstalige ouders vlot te gebruiken.</p>
+        </div>
+        <div class="info-block">
+          <h4>🗂️ SharePoint</h4>
+          <p>Overkoepelende intranetstructuur voor schoolbrede informatie, afspraken en documenten — voor het volledige team toegankelijk.</p>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:16px;">
+        <strong>Leerlijn als leidraad:</strong> De verticale leerlijn Digitale Competenties (LeerLokaal/OVSG) biedt leerkrachten houvast en structuur bij het plannen en geven van lessen. Digitale vaardigheden worden stapsgewijs en doordacht opgebouwd van kleuterklas tot 6e leerjaar.
+      </div>
+
+      <h3>Methodes met digitale ondersteuning</h3>
+      <p>De school werkt o.a. met <em>Bingel Max</em> (Van In), <em>Scoodle Track</em> (Plantyn), <em>Tuin van Heden.nu</em> (Van In), <em>Fluo</em> en <em>PassePartout</em> (Die Keure), <em>Veilig Leren Lezen</em> en <em>Ik pen! Kim-versie</em> (Zwijsen), <em>Typp</em>, <em>Krullenbol</em> en <em>Xnapda</em>. De jaarlijkse kosten voor licenties en leermiddelen worden opgenomen in het exploitatiebudget.</p>
+
+      <a href="inventaris.html" class="link-block">📋 Volledige licentielijst <span class="lock">🔒</span></a>
+    </section>
+
+    <!-- INFRASTRUCTUUR -->
+    <section class="section" id="infrastructuur">
+      <div class="section-label">Pijler 4</div>
+      <h2>🖥️ Infrastructuur</h2>
+      <p>Een overzicht van de digitale infrastructuur waarover GBS De Krekel beschikt, vernieuwd dankzij de Digisprong-investeringen.</p>
+
+      <h3>Toestellen en hardware</h3>
+      <div class="device-grid">
+        <div class="device-card">
+          <div class="d-icon">📱</div>
+          <div class="d-title">15 iPads / leerjaar</div>
+          <div class="d-desc">Kleuterschool t.e.m. 3e graad</div>
+        </div>
+        <div class="device-card">
+          <div class="d-icon">💻</div>
+          <div class="d-title">Laptopkar</div>
+          <div class="d-desc">Zelfstandig werken 3e graad</div>
+        </div>
+        <div class="device-card">
+          <div class="d-icon">🖥️</div>
+          <div class="d-title">Computerklas</div>
+          <div class="d-desc">Beschikbaar voor alle klassen</div>
+        </div>
+        <div class="device-card">
+          <div class="d-icon">📺</div>
+          <div class="d-title">Digibord / beamer</div>
+          <div class="d-desc">In elke klas aanwezig</div>
+        </div>
+        <div class="device-card">
+          <div class="d-icon">📡</div>
+          <div class="d-title">Stabiele wifi</div>
+          <div class="d-desc">Vernieuwd netwerk in alle lokalen</div>
+        </div>
+        <div class="device-card">
+          <div class="d-icon">🖨️</div>
+          <div class="d-title">Werklaptop</div>
+          <div class="d-desc">Elke leerkracht beschikt over eigen toestel</div>
+        </div>
+      </div>
+
+      <h3>Vervanging &amp; vernieuwing</h3>
+      <p>De school werkt met een meerjarenplan voor de vervanging van toestellen. Elk jaar wordt een afgebakend budget voorzien voor zowel <strong>investeringen</strong> (eenmalige aankopen) als <strong>exploitatie</strong> (jaarlijks terugkerende kosten). Categorieën: Devices, Schermen, Netwerk, Kabels, PC-Accessoires, Audio en Website.</p>
+
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;">
+        <a href="inventaris.html" class="link-block">📋 Volledige inventaris <span class="lock">🔒</span></a>
+        <a href="budget.html" class="link-block">💰 Meerjarenplanning <span class="lock">🔒</span></a>
+      </div>
+    </section>
+
+    <!-- SWOT -->
+    <section class="section" id="swot">
+      <div class="section-label">SWOT-analyse</div>
+      <h2>SWOT-analyse per bouwsteen</h2>
+      <p>Een eerlijke analyse per bouwsteen van het 4-in-balans-model, gebaseerd op een <strong>bevraging bij ons lerarenteam (19 leerkrachten)</strong> en onze bestaande beleidsdocumenten. <strong>Klik op een bouwsteen</strong> om de SWOT te bekijken.</p>
+
+      <div class="bouwsteen-grid">
+        <button class="bouwsteen-card" style="--bc:#3b82f6;" onclick="openSwot('visie')">
+          <span class="bouwsteen-ico">🔭</span>
+          <span class="bouwsteen-name">Visie</span>
+          <span class="bouwsteen-desc">Waarom en hoe we ICT inzetten in ons onderwijs</span>
+          <span class="bouwsteen-cta">SWOT bekijken →</span>
+        </button>
+        <button class="bouwsteen-card" style="--bc:#16a34a;" onclick="openSwot('deskundigheid')">
+          <span class="bouwsteen-ico">🎓</span>
+          <span class="bouwsteen-name">Deskundigheid</span>
+          <span class="bouwsteen-desc">De digitale competenties van ons team</span>
+          <span class="bouwsteen-cta">SWOT bekijken →</span>
+        </button>
+        <button class="bouwsteen-card" style="--bc:#d97706;" onclick="openSwot('leermateriaal')">
+          <span class="bouwsteen-ico">📚</span>
+          <span class="bouwsteen-name">Digitaal leermateriaal</span>
+          <span class="bouwsteen-desc">Software, platformen en leermiddelen</span>
+          <span class="bouwsteen-cta">SWOT bekijken →</span>
+        </button>
+        <button class="bouwsteen-card" style="--bc:#2563a8;" onclick="openSwot('infrastructuur')">
+          <span class="bouwsteen-ico">🖥️</span>
+          <span class="bouwsteen-name">Infrastructuur</span>
+          <span class="bouwsteen-desc">Toestellen, netwerk en technische middelen</span>
+          <span class="bouwsteen-cta">SWOT bekijken →</span>
+        </button>
+      </div>
+
+      <p style="margin-top:18px;font-size:0.88rem;color:var(--muted);">Deze bevindingen voeden rechtstreeks de prioriteiten in de <a href="visie.html#moscow" style="color:var(--accent);font-weight:600;">MoSCoW-analyse</a> (visie) en het <a href="actieplan.html" style="color:var(--accent);font-weight:600;">actieplan</a>.</p>
+    </section>
+
+  </main>
+</div>
+
+<!-- MODAL BIJSCHOLING -->
+<div class="modal-overlay" id="nasModal">
+  <div class="modal-box">
+    <h3>Bijscholing toevoegen</h3>
+    <div class="form-grid">
+      <div class="form-row full">
+        <label>Leerkracht</label>
+        <input type="text" id="nf_leerkracht" placeholder="Voor- en achternaam (of 'Volledig team')" />
+      </div>
+      <div class="form-row">
+        <label>Datum</label>
+        <input type="date" id="nf_datum" />
+      </div>
+      <div class="form-row">
+        <label>Niveau</label>
+        <select id="nf_niveau">
+          <option>Starter</option>
+          <option>Gevorderd</option>
+          <option>Expert</option>
+        </select>
+      </div>
+      <div class="form-row full">
+        <label>Titel van de bijscholing</label>
+        <input type="text" id="nf_titel" placeholder="bv. AI in de klas" />
+      </div>
+      <div class="form-row full">
+        <label>Organisator</label>
+        <input type="text" id="nf_organisator" placeholder="bv. Digisprong, OVSG, intern" />
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button onclick="closeNasModal()">Annuleren</button>
+      <button class="save-btn" onclick="saveNas()">Opslaan</button>
+    </div>
+  </div>
+</div>
+
+<!-- SWOT POP-UP -->
+<div class="swot-modal-overlay" id="swotModal" onclick="if(event.target===this)closeSwot()">
+  <div class="swot-modal-box" id="swotModalBox" role="dialog" aria-modal="true">
+    <div class="swot-modal-head" id="swotModalHead">
+      <span class="smh-ico" id="swotModalIco"></span>
+      <span class="smh-title" id="swotModalTitle"></span>
+      <button class="swot-modal-close" onclick="closeSwot()" aria-label="Sluiten">✕</button>
+    </div>
+    <div class="swot-modal-body">
+      <div class="swot-grid" id="swotModalGrid"></div>
+    </div>
+  </div>
+</div>
+
+<footer>GBS De Krekel · Zelzate · ICT-beleidsplan 2025–2028 · <a href="Digiplan.html" style="color:inherit">← Dashboard</a></footer>
+
+<script>
+/* ════════════════════════════════════════════════════════════════
+   BIJSCHOLINGEN LOGBOEK (localStorage)
+   ════════════════════════════════════════════════════════════════ */
+const DEFAULT_NAS = [
+  { leerkracht:"Volledig team", datum:"2024-09-15", titel:"Scoodle basis", organisator:"Plantyn", niveau:"Starter" },
+  { leerkracht:"Volledig team", datum:"2024-11-20", titel:"Mediawijsheid in de klas", organisator:"OVSG", niveau:"Gevorderd" },
+  { leerkracht:"ICT-coördinator", datum:"2025-02-05", titel:"Digisprong rapportering", organisator:"Vlaamse overheid", niveau:"Expert" }
+];
+let nasData = JSON.parse(localStorage.getItem('digiplan_nascholing') || 'null') || DEFAULT_NAS;
+
+function persistNas() { localStorage.setItem('digiplan_nascholing', JSON.stringify(nasData)); }
+function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':'&quot;',"'":'&#39;'}[c])); }
+
+function renderNascholing() {
+  const q = (document.getElementById('nasSearch').value||'').toLowerCase();
+  const filtered = nasData.map((r,idx)=>({r,idx})).filter(({r}) => {
+    if (!q) return true;
+    return [r.leerkracht,r.titel,r.organisator,r.niveau].join(' ').toLowerCase().includes(q);
+  });
+  const tb = document.getElementById('nasTbody');
+  if (filtered.length === 0) {
+    tb.innerHTML = `<tr><td colspan="6" class="empty-state">Nog geen bijscholingen geregistreerd.</td></tr>`;
+    return;
+  }
+  tb.innerHTML = filtered.map(({r,idx}) => `<tr>
+    <td><strong>${escapeHtml(r.leerkracht)}</strong></td>
+    <td>${escapeHtml(r.datum)}</td>
+    <td>${escapeHtml(r.titel)}</td>
+    <td>${escapeHtml(r.organisator)}</td>
+    <td><span class="niveau-tag niv-${(r.niveau||'').toLowerCase()}">${escapeHtml(r.niveau)}</span></td>
+    <td><button class="row-del" onclick="delNas(${idx})" title="Verwijderen" aria-label="Bijscholing verwijderen">🗑️</button></td>
+  </tr>`).join('');
+}
+
+function openNasModal() {
+  document.getElementById('nf_leerkracht').value = '';
+  document.getElementById('nf_datum').value = new Date().toISOString().slice(0,10);
+  document.getElementById('nf_titel').value = '';
+  document.getElementById('nf_organisator').value = '';
+  document.getElementById('nf_niveau').value = 'Starter';
+  document.getElementById('nasModal').classList.add('show');
+}
+function closeNasModal() { document.getElementById('nasModal').classList.remove('show'); }
+function saveNas() {
+  const obj = {
+    leerkracht: document.getElementById('nf_leerkracht').value.trim(),
+    datum: document.getElementById('nf_datum').value,
+    titel: document.getElementById('nf_titel').value.trim(),
+    organisator: document.getElementById('nf_organisator').value.trim(),
+    niveau: document.getElementById('nf_niveau').value
+  };
+  if (!obj.leerkracht || !obj.titel) { alert('Vul minstens leerkracht en titel in.'); return; }
+  nasData.push(obj);
+  persistNas();
+  renderNascholing();
+  closeNasModal();
+}
+function delNas(idx) {
+  if (!confirm('Verwijder deze bijscholing?')) return;
+  nasData.splice(idx,1);
+  persistNas();
+  renderNascholing();
+}
+
+renderNascholing();
+
+/* ════════════════════════════════════════════════════════════════
+   SWOT PER BOUWSTEEN — data + pop-up
+   Gebaseerd op een bevraging bij 19 leerkrachten en beleidsdocumenten.
+   ════════════════════════════════════════════════════════════════ */
+const SWOT_DATA = {
+  visie: {
+    ico:"🔭", title:"Visie", color:"#3b82f6",
+    s:[`Uitgewerkte visietekst met heldere kernovertuiging`,`Duidelijke leidende principes die de ICT-keuzes sturen`,`Verankerd in het pedagogisch project`,`Concrete leerlijnen per graad reeds uitgeschreven (ICT-basisvaardigheden, computationeel denken, mediawijsheid)`],
+    w:[`De visie leeft nog onvoldoende bij een deel van het team`,`De leerlijnen zijn nog onvoldoende gekend`,`Leerkrachten vinden het nog moeilijk om de leerlijndoelen naar concrete lessen te vertalen`,`Grote spreiding in vaardigheden binnen het team`],
+    o:[`De visie en leerlijnen zijn al uitgewerkt — de focus kan op het vertalen naar de klaspraktijk liggen (geen nieuw ontwikkelwerk nodig)`,`Regionale partners (bib, CLB) kunnen ondersteunen bij de uitvoering`],
+    t:[`Risico dat het digiplan een "papieren werkelijkheid" blijft`,`Leefwereld van leerlingen (bv. smartphonegebruik) evolueert sneller dan de visie wordt herzien`]
+  },
+  deskundigheid: {
+    ico:"🎓", title:"Deskundigheid", color:"#16a34a",
+    s:[`Professionalisering is een leidend principe in de visie — beleidsmatig draagvlak aanwezig`,`Brede basisvaardigheden (bestandsbeheer, Office 365) goed ingeburgerd`,`Diverse interne expertise aanwezig (Canva, AI, Excel, fotobewerking) en deelbaar`],
+    w:[`Grote spreiding in vaardigheidsniveaus, geen gemeenschappelijke basis`,`Computationeel denken is voor het team nog de minst vertrouwde leerlijn`,`Bestaande activiteiten worden nog niet bewust aan computationeel denken gekoppeld`,`Mediawijsheid blijft afhankelijk van individueel initiatief, ondanks een uitgewerkte leerlijn`,`AI-geletterdheid onvoldoende voor veilig en pedagogisch AI-gebruik`,`Tijd voor voorbereiding scoort zeer laag`],
+    o:[`Bestaand mediawijsheidsmateriaal direct inzetbaar voor de meest gevraagde nood (concrete lesvoorbeelden)`,`Drie leerlijnen bieden een kant-en-klaar kader om individuele input te structureren`,`Peertutoring/buddywerking sluit aan bij de gevraagde collegiale uitwisseling`,`Computationeel denken: laagdrempelige bewustmaking (taal/kader, geen nieuwe vaardigheid) heeft groot bereik`],
+    t:[`Zonder professionalisering blijft het fundament voor andere ambities (AI, evaluatie, mediawijsheid) wankel`,`Te grote afhankelijkheid van één coördinator voor kennisoverdracht`,`Gelijke-kansen-doelstelling onder druk als leerkrachten onvoldoende vaardig zijn om gedifferentieerd te werken met kwetsbare/anderstalige leerlingen`]
+  },
+  leermateriaal: {
+    ico:"📚", title:"Digitaal leermateriaal", color:"#d97706",
+    s:[`Gratis digitaal leermateriaal voor alle leerlingen gerealiseerd (conform pedagogisch project / maximumfactuur)`,`Kabas, Canva, Gynzy en LeerLokaal positief gewaardeerd, sluiten aan bij de leerlijnen`,`Brede, gevarieerde inzet (instructie, differentiatie, evaluatie, klasorganisatie)`],
+    w:[`Digitaal evalueren (digitaal toetsen) wordt nog weinig structureel ingezet`,`Mediawijsheid wordt nog te weinig structureel met materiaal ondersteund`,`Computationeel-denkenmateriaal (mTiny, Scratch (Junior)) wordt nog weinig benut`,`Scoodle (meest gebruikte tool) is tegelijk de grootste frustratiebron`,`Foto's op de schoolwebsite plaatsen wordt als moeilijk ervaren`,`Gimme bereikt niet alle ouders`],
+    o:[`Een digitaal portfolio kan het digitaal evalueren versterken`,`Bestaand leerlijnmateriaal (mTiny, Scratch) actiever inzetten`,`Oudercommunicatie verbeteren via een combinatie van kanalen + pictogrammen, conform het inclusiebeleid`],
+    t:[`Reeds aangekocht leerlijnmateriaal levert geen rendement op zolang het niet gebruikt wordt — investeringsrisico`,`Groeiende kloof tussen de schoolse leeromgeving en de leefwereld van leerlingen (smartphonegebruik vanaf het 3de leerjaar)`]
+  },
+  infrastructuur: {
+    ico:"🖥️", title:"Infrastructuur", color:"#2563a8",
+    s:[`Digisprong-investeringen gerealiseerd: brede hardwarebasis, internet stabiel (ook in de kleuterbouw)`,`Computerklas als belangrijke meerwaarde — o.a. voor de digitale afname van de Vlaamse toetsen`,`Infrastructuur grotendeels op orde`,`Snelle ICT-hulp (scores 3-5/5)`],
+    w:[`Verouderde en ongelijk verdeelde iPads (lager verouderd, tekort in de kleuterbouw) — in spanning met gelijke toegang`,`Geen algemeen ontleensysteem voor thuisgebruik (enkel voor specifieke leerlingen via een contract)`,`Tijd voor voorbereiding van digitaal materiaal scoort zeer laag (randvoorwaardelijk knelpunt)`],
+    o:[`De goede infrastructuur optimaal benutten: AI, digitaal portfolio en gerichte didactische inzet`,`Een uitleenregeling voor kwetsbare gezinnen verder uitbouwen versterkt de digitale inclusie`],
+    t:[`Verouderde toestellen tijdig vervangen vraagt blijvend budget`,`Snelle digitalisering van de leefwereld zet druk op de infrastructuur om relevant te blijven`,`Sterke afhankelijkheid van één coördinator blijft een structureel risico bij toekomstige technische problemen`]
+  }
+};
+
+function swotCard(cls, icon, title, items) {
+  return `<div class="swot-card ${cls}"><h4>${icon} ${title}</h4><ul>` +
+    items.map(t => `<li data-icon="→">${t}</li>`).join('') + `</ul></div>`;
+}
+function openSwot(key) {
+  const d = SWOT_DATA[key];
+  if (!d) return;
+  document.getElementById('swotModalIco').textContent = d.ico;
+  document.getElementById('swotModalTitle').textContent = d.title;
+  document.getElementById('swotModalHead').style.setProperty('--bc', d.color);
+  document.getElementById('swotModalGrid').innerHTML =
+    swotCard('sc-s', '✅', 'Sterktes', d.s) +
+    swotCard('sc-w', '⚠️', 'Zwaktes', d.w) +
+    swotCard('sc-o', '🚀', 'Kansen', d.o) +
+    swotCard('sc-t', '⚡', 'Bedreigingen', d.t);
+  document.getElementById('swotModal').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+function closeSwot() {
+  document.getElementById('swotModal').classList.remove('show');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSwot(); });
+
+/* ── SIDEBAR ACTIVE LINK ── */
+const sections = document.querySelectorAll('section[id]');
+const links = document.querySelectorAll('.sidebar nav a');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      links.forEach(l => l.classList.remove('active'));
+      const match = document.querySelector(`.sidebar nav a[href="#${e.target.id}"]`);
+      if (match) match.classList.add('active');
+    }
+  });
+}, { rootMargin: '-30% 0px -60% 0px' });
+sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>

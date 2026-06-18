@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Budget & meerjarenplanning – Digiplan GBS De Krekel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shared.css">
+  <!-- SheetJS (Excel) + Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    :root { --accent: #b45309; --accent-light: #fef3c7; }
+
+    .layout {
+      max-width: 1500px;
+      grid-template-columns: 180px 1fr;
+      gap: 24px;
+    }
+    .section { padding: 28px 30px; }
+    @media (max-width: 1100px) {
+      .layout { max-width: 100%; padding: 0 3% 80px; }
+    }
+
+    /* ── PIN LOCK ── */
+    .pin-overlay {
+      position: fixed; inset: 0;
+      background: linear-gradient(135deg, #0f1f30, #1a4f7a);
+      z-index: 9999;
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    .pin-box {
+      background: white;
+      border-radius: 16px;
+      padding: 40px 32px;
+      max-width: 380px; width: 100%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      text-align: center;
+    }
+    .pin-box .lock-icon { font-size: 2.5rem; margin-bottom: 12px; }
+    .pin-box h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem; margin-bottom: 6px; color: var(--dark);
+    }
+    .pin-box p { font-size: 0.88rem; color: var(--muted); margin-bottom: 22px; line-height: 1.5; }
+    .pin-box input {
+      width: 100%; padding: 14px 16px; font-size: 1rem;
+      border: 2px solid var(--border); border-radius: 10px;
+      text-align: center; letter-spacing: 0.25em; font-weight: 600;
+      font-family: inherit; margin-bottom: 14px;
+    }
+    .pin-box input:focus { outline: none; border-color: var(--accent); }
+    .pin-box button {
+      width: 100%; padding: 12px;
+      background: var(--accent); color: white; border: none;
+      border-radius: 10px; font-size: 0.95rem; font-weight: 600;
+      cursor: pointer; font-family: inherit; transition: background 0.15s;
+    }
+    .pin-box button:hover { background: #92400e; }
+    .pin-error { color: #dc2626; font-size: 0.85rem; margin-top: 10px; min-height: 1.2em; }
+
+    /* ── BUDGET TOP — 2 KOLOMMEN NAAST ELKAAR ── */
+    .budget-top {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin: 16px 0 24px;
+    }
+    @media (max-width: 720px) { .budget-top { grid-template-columns: 1fr; } }
+    .budget-block {
+      border-radius: 14px;
+      padding: 22px 24px;
+      box-shadow: 0 4px 20px rgba(15,31,48,0.08);
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+    .budget-block.inv {
+      background: linear-gradient(135deg, #b45309, #d97706);
+    }
+    .budget-block.exp {
+      background: linear-gradient(135deg, #1e40af, #2563eb);
+    }
+    .budget-block .bb-label {
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      opacity: 0.85;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .budget-block .bb-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+    .budget-block .bb-line {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 5px 0;
+      font-size: 0.86rem;
+    }
+    .budget-block .bb-line.total {
+      border-bottom: 1px solid rgba(255,255,255,0.25);
+      padding-bottom: 8px;
+      margin-bottom: 6px;
+    }
+    .budget-block .bb-line.rest {
+      border-top: 1px solid rgba(255,255,255,0.25);
+      padding-top: 8px;
+      margin-top: 6px;
+      font-weight: 700;
+    }
+    .budget-block .bb-amount {
+      font-variant-numeric: tabular-nums;
+      font-weight: 700;
+    }
+    .budget-block .bb-amount.big {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+    }
+    .budget-block .bb-bar {
+      height: 6px;
+      background: rgba(255,255,255,0.25);
+      border-radius: 99px;
+      margin-top: 12px;
+      overflow: hidden;
+    }
+    .budget-block .bb-bar-fill {
+      height: 100%;
+      background: white;
+      border-radius: 99px;
+      transition: width 0.4s;
+    }
+    .budget-block .bb-bar-fill.over { background: #fef3c7; }
+    .budget-block .edit-link {
+      position: absolute;
+      top: 14px; right: 16px;
+      color: rgba(255,255,255,0.75);
+      font-size: 0.74rem;
+      text-decoration: none;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      background: rgba(255,255,255,0.12);
+      padding: 3px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.25);
+      transition: background 0.15s;
+    }
+    .budget-block .edit-link:hover {
+      background: rgba(255,255,255,0.22);
+      color: white;
+    }
+
+    /* ── CHART ── */
+    .chart-wrap {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 20px;
+      height: 380px;
+      position: relative;
+    }
+
+    /* ── FILTERS ── */
+    .filter-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+    .filter-row select, .filter-row input[type="text"] {
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.86rem;
+      font-family: inherit;
+      background: white;
+      color: var(--dark);
+    }
+    .filter-row select:focus, .filter-row input:focus { outline:none; border-color: var(--accent); }
+    .filter-search {
+      flex: 1;
+      min-width: 200px;
+    }
+    .filter-search input { width: 100%; }
+
+    /* ── BTN ── */
+    .btn {
+      padding: 9px 14px;
+      border: 1px solid var(--border);
+      background: white;
+      border-radius: 9px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--dark);
+    }
+    .btn:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-primary { background: var(--accent); color: white; border-color: var(--accent); }
+    .btn-primary:hover { background: #92400e; color: white; }
+    .btn-danger:hover { border-color: #dc2626; color: #dc2626; background: #fef2f2; }
+
+    /* ── TABLE ── */
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: white;
+    }
+    table.b-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+    .b-table th {
+      background: #f8fafc;
+      padding: 10px 12px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.76rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    .b-table td {
+      padding: 9px 12px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .b-table tr:last-child td { border-bottom: none; }
+    .b-table tr:hover td { background: #fffbeb; }
+    .b-table td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .b-table tfoot td {
+      background: #fffbeb;
+      font-weight: 700;
+      border-top: 2px solid var(--accent);
+      color: var(--dark);
+    }
+
+    .type-badge {
+      display: inline-block;
+      padding: 2px 9px;
+      border-radius: 99px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .t-inv { background: #fef3c7; color: #92400e; }
+    .t-exp { background: #dbeafe; color: #1e40af; }
+
+    .cat-tag {
+      font-size: 0.74rem;
+      padding: 1px 7px;
+      border-radius: 6px;
+      background: #f1f5f9;
+      color: #475569;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .icon-btn {
+      width: 28px; height: 28px;
+      border: 1px solid var(--border);
+      background: white;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+      padding: 0;
+    }
+    .icon-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .icon-btn.del:hover { border-color: #dc2626; color: #dc2626; background: #fef2f2; }
+    .row-actions { display: flex; gap: 4px; white-space: nowrap; }
+
+    .empty-state { text-align: center; padding: 40px 20px; color: var(--muted); font-size: 0.9rem; }
+
+    /* ── YEAR BREAKDOWN ── */
+    .year-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+    .year-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+    }
+    .year-card .yr {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--accent);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .year-card .total {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--dark);
+      margin-bottom: 8px;
+    }
+    .year-card .breakdown {
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .year-card .b-inv { color: #92400e; font-weight: 600; }
+    .year-card .b-exp { color: #1e40af; font-weight: 600; }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(15,31,48,0.6);
+      z-index: 999;
+      display: none;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 40px 20px;
+      overflow-y: auto;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal-box {
+      background: white;
+      border-radius: 14px;
+      padding: 26px;
+      max-width: 600px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    .modal-box h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      margin-bottom: 16px;
+      color: var(--dark);
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px 14px;
+    }
+    @media (max-width: 600px){ .form-grid { grid-template-columns: 1fr; } }
+    .form-row.full { grid-column: 1 / -1; }
+    .form-row label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+    .form-row input, .form-row select {
+      width: 100%;
+      padding: 9px 11px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-family: inherit;
+      background: white;
+    }
+    .form-row input:focus, .form-row select:focus { outline: none; border-color: var(--accent); }
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 18px;
+    }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed; bottom: 24px; right: 24px;
+      background: var(--dark); color: white;
+      padding: 12px 18px; border-radius: 10px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      font-size: 0.88rem; font-weight: 500;
+      z-index: 1000; opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.25s, transform 0.25s;
+      pointer-events: none;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+  </style>
+</head>
+<body>
+
+<!-- PIN LOCK -->
+<div class="pin-overlay" id="pinOverlay">
+  <div class="pin-box">
+    <div class="lock-icon">🔒</div>
+    <h2>Beveiligde inhoud</h2>
+    <p>Deze pagina bevat bedrijfsgevoelige budgetinformatie. Voer de pincode in om verder te gaan.</p>
+    <input type="password" id="pinInput" placeholder="••••" autofocus inputmode="numeric" />
+    <button onclick="checkPin()">Ontgrendelen</button>
+    <div class="pin-error" id="pinError"></div>
+  </div>
+</div>
+
+<div class="topbar">
+  <a href="Digiplan.html">← Terug naar Dashboard</a>
+  <span>GBS De Krekel · Digiplan 2025–2028</span>
+</div>
+
+<div class="page-header">
+  <div class="page-header-inner">
+    <div class="page-header-label">Beveiligd · Bedrijfsgevoelig</div>
+    <h1>Budget &amp; meerjarenplanning</h1>
+    <p>Meerjarenplan 2025–2031 voor de digitale infrastructuur, software en leermiddelen van GBS De Krekel.</p>
+  </div>
+</div>
+
+<div class="layout">
+
+  <aside class="sidebar">
+    <div class="sidebar-card">
+      <div class="sidebar-title">Budget</div>
+      <nav>
+        <a href="#overzicht" class="active"><span class="nav-dot"></span> Overzicht</a>
+        <a href="#perjaar"><span class="nav-dot"></span> Per jaar</a>
+        <a href="#detail"><span class="nav-dot"></span> Detail</a>
+        <a href="#beheer"><span class="nav-dot"></span> Beheer</a>
+      </nav>
+      <div class="sidebar-back">
+        <a href="inventaris.html">→ Inventaris</a>
+      </div>
+      <div class="sidebar-back" style="margin-top:0;padding-top:8px;border:none;">
+        <a href="Digiplan.html">← Terug naar Dashboard</a>
+      </div>
+    </div>
+  </aside>
+
+  <main>
+
+    <!-- OVERZICHT -->
+    <section class="section" id="overzicht">
+      <div class="section-label">Budgetoverzicht 2025–2031</div>
+      <h2>Overzicht</h2>
+      <p>Totaaloverzicht van het ICT-budget over de looptijd van het meerjarenplan.</p>
+
+      <div class="budget-top">
+        <div class="budget-block inv">
+          <a class="edit-link" onclick="editPlafond('inv')">✎ Wijzig plafond</a>
+          <div class="bb-label">💰 Investeringsbudget</div>
+          <div class="bb-title">Eenmalige aankopen</div>
+          <div class="bb-line total">
+            <span>Budget plafond</span>
+            <span class="bb-amount big" id="invBudget">€ 150.000</span>
+          </div>
+          <div class="bb-line">
+            <span>Begroot</span>
+            <span class="bb-amount" id="invBegroot">€ 0</span>
+          </div>
+          <div class="bb-line rest">
+            <span>Resterend</span>
+            <span class="bb-amount" id="invResterend">€ 0</span>
+          </div>
+          <div class="bb-bar"><div class="bb-bar-fill" id="invBar" style="width:0%"></div></div>
+          <div class="bb-line" style="opacity:0.85;font-size:0.78rem;margin-top:6px;">
+            <span id="invPercent">0% verbruikt</span>
+            <span id="invItems">0 items</span>
+          </div>
+        </div>
+
+        <div class="budget-block exp">
+          <a class="edit-link" onclick="editPlafond('exp')">✎ Wijzig plafond</a>
+          <div class="bb-label">📅 Exploitatiebudget</div>
+          <div class="bb-title">Jaarlijks terugkerend</div>
+          <div class="bb-line total">
+            <span>Budget plafond</span>
+            <span class="bb-amount big" id="expBudget">€ 0</span>
+          </div>
+          <div class="bb-line">
+            <span>Begroot</span>
+            <span class="bb-amount" id="expBegroot">€ 0</span>
+          </div>
+          <div class="bb-line rest">
+            <span>Resterend</span>
+            <span class="bb-amount" id="expResterend">€ 0</span>
+          </div>
+          <div class="bb-bar"><div class="bb-bar-fill" id="expBar" style="width:0%"></div></div>
+          <div class="bb-line" style="opacity:0.85;font-size:0.78rem;margin-top:6px;">
+            <span id="expPercent">0% verbruikt</span>
+            <span id="expItems">0 items</span>
+          </div>
+        </div>
+      </div>
+
+      <h3 style="margin-top:8px;">Verloop per jaar (investering naast exploitatie)</h3>
+      <div class="chart-wrap">
+        <canvas id="yearChart"></canvas>
+      </div>
+    </section>
+
+    <!-- PER JAAR -->
+    <section class="section" id="perjaar">
+      <div class="section-label">Detailoverzicht</div>
+      <h2>Per jaar</h2>
+      <p>Klik op een jaar om enkel de aankopen van dat jaar te zien in de detailtabel hieronder.</p>
+      <div class="year-grid" id="yearGrid"></div>
+    </section>
+
+    <!-- DETAIL -->
+    <section class="section" id="detail">
+      <div class="section-label">Alle aankopen</div>
+      <h2>Detail</h2>
+      <p>Volledige lijst van geplande aankopen. Filter, zoek, bewerk of voeg artikelen toe.</p>
+
+      <div class="filter-row">
+        <select id="filterYear" onchange="renderTable()">
+          <option value="">Alle jaren</option>
+        </select>
+        <select id="filterType" onchange="renderTable()">
+          <option value="">Alle types</option>
+          <option value="Investering">Investering</option>
+          <option value="Exploitatie">Exploitatie</option>
+        </select>
+        <select id="filterCat" onchange="renderTable()">
+          <option value="">Alle categorieën</option>
+        </select>
+        <div class="filter-search">
+          <input type="text" id="searchInput" placeholder="🔍 Zoek artikel..." oninput="renderTable()" />
+        </div>
+        <button class="btn btn-primary" onclick="openAddModal()">＋ Toevoegen</button>
+      </div>
+
+      <div class="table-wrap">
+        <table class="b-table" id="bTable">
+          <thead>
+            <tr>
+              <th>Artikel</th>
+              <th>Jaar</th>
+              <th>Type</th>
+              <th>Categorie</th>
+              <th class="num">Aantal</th>
+              <th class="num">Per stuk</th>
+              <th class="num">Totaal</th>
+              <th style="width:80px;">Acties</th>
+            </tr>
+          </thead>
+          <tbody id="bTbody"></tbody>
+          <tfoot>
+            <tr>
+              <td colspan="6" style="text-align:right;">Totaal (gefilterd):</td>
+              <td class="num" id="filterTotal">€ 0,00</td>
+              <td></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </section>
+
+    <!-- BEHEER -->
+    <section class="section" id="beheer">
+      <div class="section-label">Bestandsbeheer</div>
+      <h2>Import &amp; export</h2>
+      <p>Upload een nieuwe Excel om de planning bij te werken, of download de huidige planning als Excel-bestand.</p>
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;">
+        <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">📤 Excel importeren</button>
+        <input type="file" id="fileInput" accept=".xlsx,.xls" style="display:none" onchange="importExcel(event)" />
+        <button class="btn" onclick="exportExcel()">📥 Excel downloaden</button>
+        <button class="btn btn-danger" onclick="resetData()">↺ Reset naar originele data</button>
+      </div>
+
+      <div class="card" style="margin-top:18px;">
+        <strong>Verschil tussen investering en exploitatie:</strong><br>
+        <em>Investering</em> = eenmalige aankopen van duurzame middelen (laptops, digiborden, netwerk).<br>
+        <em>Exploitatie</em> = jaarlijks terugkerende kosten (licenties, hosting, software-abonnementen).
+      </div>
+
+      <div class="card" style="margin-top:12px;">
+        <strong>⚠️ Belangrijk om te weten:</strong> wijzigingen worden opgeslagen in <em>deze browser op deze computer</em> — niet in het bestand zelf en niet in OneDrive. Gebruik daarom regelmatig <em>Excel downloaden</em> en bewaar dat bestand in OneDrive als definitieve versie.
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal-box">
+    <h3 id="modalTitle">Artikel toevoegen</h3>
+    <div class="form-grid">
+      <div class="form-row full">
+        <label>Artikel</label>
+        <input type="text" id="ff_artikel" />
+      </div>
+      <div class="form-row">
+        <label>Jaar</label>
+        <input type="number" id="ff_jaar" min="2025" max="2040" value="2025" />
+      </div>
+      <div class="form-row">
+        <label>Type</label>
+        <select id="ff_type">
+          <option value="Investering">Investering</option>
+          <option value="Exploitatie">Exploitatie</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label>Categorie</label>
+        <select id="ff_categorie">
+          <option>Devices</option>
+          <option>Schermen</option>
+          <option>Netwerk</option>
+          <option>PC-Accessoires</option>
+          <option>Kabels</option>
+          <option>Audio</option>
+          <option>Website</option>
+          <option>Software/Licenties</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label>Aantal</label>
+        <input type="number" id="ff_aantal" value="1" min="0" step="1" oninput="calcTotal()" />
+      </div>
+      <div class="form-row">
+        <label>Kosten per stuk (€)</label>
+        <input type="number" id="ff_kostenStuk" value="0" min="0" step="0.01" oninput="calcTotal()" />
+      </div>
+      <div class="form-row full">
+        <label>Totaal (€) — automatisch berekend</label>
+        <input type="number" id="ff_totaal" step="0.01" />
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal()">Annuleren</button>
+      <button class="btn btn-primary" onclick="saveItem()">Opslaan</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<footer>GBS De Krekel · Zelzate · ICT-beleidsplan 2025–2028 · <a href="Digiplan.html" style="color:inherit">← Dashboard</a></footer>
+
+<script>
+/* ════════════════════════════════════════════════════════════════
+   PIN LOCK
+   ════════════════════════════════════════════════════════════════ */
+const PIN_CODE = "2026"; // Pas hier de pincode aan
+function checkPin() {
+  const v = document.getElementById('pinInput').value;
+  if (v === PIN_CODE) {
+    sessionStorage.setItem('budget_unlock', '1');
+    document.getElementById('pinOverlay').style.display = 'none';
+    initApp();
+  } else {
+    document.getElementById('pinError').textContent = 'Onjuiste pincode.';
+    document.getElementById('pinInput').value = '';
+  }
+}
+document.getElementById('pinInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') checkPin();
+});
+if (sessionStorage.getItem('budget_unlock') === '1') {
+  document.getElementById('pinOverlay').style.display = 'none';
+}
+
+/* ════════════════════════════════════════════════════════════════
+   BUDGET PLAFONDS (apart voor investering en exploitatie)
+   ════════════════════════════════════════════════════════════════ */
+const DEFAULT_INV_BUDGET = 150000; // uit oorspronkelijk aankoopplan
+const DEFAULT_EXP_BUDGET = 60000;  // schatting — pas aan via "✎ Wijzig plafond"
+
+function loadPlafonds() {
+  const saved = localStorage.getItem('digiplan_budget_plafonds');
+  if (saved) { try { return JSON.parse(saved); } catch(e){} }
+  return { inv: DEFAULT_INV_BUDGET, exp: DEFAULT_EXP_BUDGET };
+}
+let plafonds = loadPlafonds();
+function persistPlafonds() { localStorage.setItem('digiplan_budget_plafonds', JSON.stringify(plafonds)); }
+function editPlafond(type) {
+  const huidig = type === 'inv' ? plafonds.inv : plafonds.exp;
+  const naam = type === 'inv' ? 'investeringsbudget' : 'exploitatiebudget';
+  const v = prompt(`Geef het nieuwe ${naam} in euro (zonder eurosymbool):`, huidig);
+  if (v === null) return;
+  const n = parseFloat(String(v).replace(/[^\d.,-]/g,'').replace(',','.'));
+  if (isNaN(n) || n < 0) { alert('Geen geldig bedrag.'); return; }
+  if (type === 'inv') plafonds.inv = n; else plafonds.exp = n;
+  persistPlafonds();
+  renderOverview();
+  toast('Budgetplafond bijgewerkt');
+}
+
+/* ════════════════════════════════════════════════════════════════
+   ORIGINELE DATA (uit aankoopbeleid Excel)
+   ════════════════════════════════════════════════════════════════ */
+
+function buildOriginalData() {
+  const items = [];
+  // Eenmalige investeringen
+  items.push({artikel:"Interactieve beamer",jaar:2030,type:"Investering",categorie:"Schermen",aantal:6,kostenStuk:1500,totaal:9000});
+  items.push({artikel:"Digitaal bord",jaar:2031,type:"Investering",categorie:"Schermen",aantal:6,kostenStuk:2550,totaal:15300});
+  items.push({artikel:"Beamer",jaar:2029,type:"Investering",categorie:"Schermen",aantal:1,kostenStuk:1500,totaal:1500});
+  items.push({artikel:"Laptops leerlingen",jaar:2027,type:"Investering",categorie:"Devices",aantal:32,kostenStuk:370,totaal:11840});
+  items.push({artikel:"Laptops leerkrachten",jaar:2028,type:"Investering",categorie:"Devices",aantal:30,kostenStuk:600,totaal:18000});
+  items.push({artikel:"Desktops computerklas",jaar:2029,type:"Investering",categorie:"Devices",aantal:16,kostenStuk:400,totaal:6400});
+  items.push({artikel:"Monitors computerklas",jaar:2026,type:"Investering",categorie:"Devices",aantal:16,kostenStuk:120,totaal:1920});
+  items.push({artikel:"Gemeenschappelijke laptops",jaar:2030,type:"Investering",categorie:"Devices",aantal:20,kostenStuk:350,totaal:7000});
+  items.push({artikel:"Materiaal computationeel denken",jaar:2025,type:"Investering",categorie:"PC-Accessoires",aantal:1,kostenStuk:1500,totaal:1500});
+  items.push({artikel:"Materiaal computationeel denken",jaar:2026,type:"Investering",categorie:"PC-Accessoires",aantal:1,kostenStuk:1500,totaal:1500});
+  items.push({artikel:"Laptopkar",jaar:2030,type:"Investering",categorie:"PC-Accessoires",aantal:1,kostenStuk:1900,totaal:1900});
+  items.push({artikel:"Ubiquiti Unifi 7 Pro U7-PRO Access Point Wi-Fi 7",jaar:2029,type:"Investering",categorie:"Netwerk",aantal:11,kostenStuk:197,totaal:2167});
+  items.push({artikel:"Netwerkswitch",jaar:2030,type:"Investering",categorie:"Netwerk",aantal:4,kostenStuk:600,totaal:2400});
+  items.push({artikel:"Firewall",jaar:2030,type:"Investering",categorie:"Netwerk",aantal:1,kostenStuk:500,totaal:500});
+  items.push({artikel:"USB-C kabels",jaar:2026,type:"Investering",categorie:"Kabels",aantal:10,kostenStuk:500,totaal:5000});
+  items.push({artikel:"HDMI-kabels",jaar:2026,type:"Investering",categorie:"Kabels",aantal:6,kostenStuk:25,totaal:150});
+  items.push({artikel:"UTP-kabels",jaar:2026,type:"Investering",categorie:"Kabels",aantal:10,kostenStuk:12,totaal:120});
+  items.push({artikel:"Upgrade website (mediabibliotheek)",jaar:2028,type:"Investering",categorie:"Website",aantal:1,kostenStuk:750,totaal:750});
+  items.push({artikel:"Speaker",jaar:2027,type:"Investering",categorie:"Audio",aantal:1,kostenStuk:350,totaal:350});
+
+  // iPads — investering, elk jaar
+  const ipadPlan = [[2025,20],[2026,20],[2027,15],[2028,15],[2029,15],[2030,15],[2031,15]];
+  ipadPlan.forEach(([y,n]) => items.push({artikel:"iPads 11th gen",jaar:y,type:"Investering",categorie:"Devices",aantal:n,kostenStuk:380,totaal:n*380}));
+
+  // Office A3 licentie — exploitatie 2025-2031
+  const officePlan = [[2025,6],[2026,12],[2027,12],[2028,12],[2029,12],[2030,12],[2031,12]];
+  officePlan.forEach(([y,n]) => items.push({artikel:"Office A3 licentie (x30)",jaar:y,type:"Exploitatie",categorie:"Software/Licenties",aantal:n,kostenStuk:119.70,totaal:n*119.70}));
+
+  // JAMF — exploitatie 2025-2031
+  for (let y=2025;y<=2031;y++) items.push({artikel:"JAMF",jaar:y,type:"Exploitatie",categorie:"Software/Licenties",aantal:105,kostenStuk:5,totaal:525});
+
+  // .be domein — exploitatie 2025-2031
+  for (let y=2025;y<=2031;y++) items.push({artikel:"Huur .be domeinnaam",jaar:y,type:"Exploitatie",categorie:"Website",aantal:1,kostenStuk:34.99,totaal:34.99});
+
+  // WP File Download Manager — 2025-2031
+  for (let y=2025;y<=2031;y++) items.push({artikel:"WP File Download Manager plug-in",jaar:y,type:"Exploitatie",categorie:"Website",aantal:1,kostenStuk:45,totaal:45});
+
+  // Hosting webruimte — 2025=6mnd, rest 12mnd
+  const hostPlan = [[2025,6],[2026,12],[2027,12],[2028,12],[2029,12],[2030,12],[2031,12]];
+  hostPlan.forEach(([y,m]) => items.push({artikel:"Maandelijkse hosting webruimte",jaar:y,type:"Exploitatie",categorie:"Website",aantal:m,kostenStuk:19.99,totaal:+(m*19.99).toFixed(2)}));
+
+  // WEBRAND WordPress ServicePack — 2025=6mnd, rest 12mnd
+  hostPlan.forEach(([y,m]) => items.push({artikel:"WEBRAND WordPress ServicePack",jaar:y,type:"Exploitatie",categorie:"Website",aantal:m,kostenStuk:24.99,totaal:+(m*24.99).toFixed(2)}));
+
+  // Licenties leermiddelen (uit inventaris)
+  const licPlan = [
+    ["Fluo (Die Keure)",122,2.60],
+    ["Bingel Max (Van In)",203,4.00],
+    ["Tuin van Heden.nu (Van In)",37,13.45],
+    ["PassePartout (Die Keure)",51,3.30],
+    ["Krullenbol (Die Keure)",2,39.90],
+    ["Xnapda",2,99.00],
+    ["Scoodle Track (Plantyn)",330,4.16],
+    ["Gimme",1,1000.00],
+    ["Leerkrachtassistent Ik pen! Kim",4,115.00],
+    ["Leerkrachtassistent Veilig Leren Lezen",2,400.00]
+  ];
+  for (let y=2025;y<=2031;y++) {
+    licPlan.forEach(([naam,a,p]) => {
+      items.push({artikel:naam,jaar:y,type:"Exploitatie",categorie:"Software/Licenties",aantal:a,kostenStuk:p,totaal:+(a*p).toFixed(2)});
+    });
+    // Typp (2-jaarlijks, dus elk jaar gewoon meenemen om eerlijk te zijn)
+    items.push({artikel:"Typp (2-jaarlijks)",jaar:y,type:"Exploitatie",categorie:"Software/Licenties",aantal:60,kostenStuk:11.99,totaal:719.40});
+  }
+
+  return items;
+}
+
+const ORIGINAL_DATA = buildOriginalData();
+
+/* ════════════════════════════════════════════════════════════════
+   STATE & STORAGE
+   ════════════════════════════════════════════════════════════════ */
+let data = loadData();
+let editingIndex = null;
+let chartInstance = null;
+
+function loadData() {
+  const saved = localStorage.getItem('digiplan_budget');
+  if (saved) {
+    try { return JSON.parse(saved); } catch(e){}
+  }
+  return JSON.parse(JSON.stringify(ORIGINAL_DATA));
+}
+function persistData() { localStorage.setItem('digiplan_budget', JSON.stringify(data)); }
+
+/* ════════════════════════════════════════════════════════════════
+   FORMAT HELPERS
+   ════════════════════════════════════════════════════════════════ */
+function eur(n) {
+  return '€ ' + (Number(n) || 0).toLocaleString('nl-BE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+function eurShort(n) {
+  return '€ ' + (Number(n) || 0).toLocaleString('nl-BE', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+}
+
+/* ════════════════════════════════════════════════════════════════
+   RENDER
+   ════════════════════════════════════════════════════════════════ */
+function initApp() {
+  populateFilters();
+  renderOverview();
+  renderYearGrid();
+  renderChart();
+  renderTable();
+}
+
+function uniqueYears() {
+  return [...new Set(data.map(i => i.jaar))].sort((a,b) => a-b);
+}
+function uniqueCats() {
+  return [...new Set(data.map(i => i.categorie))].sort();
+}
+
+function populateFilters() {
+  const yearSel = document.getElementById('filterYear');
+  const catSel = document.getElementById('filterCat');
+  yearSel.innerHTML = '<option value="">Alle jaren</option>' + uniqueYears().map(y => `<option value="${y}">${y}</option>`).join('');
+  catSel.innerHTML = '<option value="">Alle categorieën</option>' + uniqueCats().map(c => `<option value="${c}">${c}</option>`).join('');
+}
+
+function renderOverview() {
+  const invItems = data.filter(i => i.type === 'Investering');
+  const expItems = data.filter(i => i.type === 'Exploitatie');
+  const invTotal = invItems.reduce((s,i) => s + (Number(i.totaal)||0), 0);
+  const expTotal = expItems.reduce((s,i) => s + (Number(i.totaal)||0), 0);
+
+  // Investering
+  const invRest = plafonds.inv - invTotal;
+  const invPct = plafonds.inv > 0 ? Math.round((invTotal / plafonds.inv) * 100) : 0;
+  document.getElementById('invBudget').textContent = eurShort(plafonds.inv);
+  document.getElementById('invBegroot').textContent = eur(invTotal);
+  document.getElementById('invResterend').textContent = eur(invRest);
+  document.getElementById('invPercent').textContent = invPct + '% verbruikt';
+  document.getElementById('invItems').textContent = invItems.length + ' items';
+  const invBar = document.getElementById('invBar');
+  invBar.style.width = Math.min(invPct, 100) + '%';
+  invBar.classList.toggle('over', invPct > 100);
+
+  // Exploitatie
+  const expRest = plafonds.exp - expTotal;
+  const expPct = plafonds.exp > 0 ? Math.round((expTotal / plafonds.exp) * 100) : 0;
+  document.getElementById('expBudget').textContent = eurShort(plafonds.exp);
+  document.getElementById('expBegroot').textContent = eur(expTotal);
+  document.getElementById('expResterend').textContent = eur(expRest);
+  document.getElementById('expPercent').textContent = expPct + '% verbruikt';
+  document.getElementById('expItems').textContent = expItems.length + ' items';
+  const expBar = document.getElementById('expBar');
+  expBar.style.width = Math.min(expPct, 100) + '%';
+  expBar.classList.toggle('over', expPct > 100);
+}
+
+function renderYearGrid() {
+  const grid = document.getElementById('yearGrid');
+  const years = uniqueYears();
+  grid.innerHTML = years.map(y => {
+    const inv = data.filter(i => i.jaar === y && i.type === 'Investering').reduce((s,i) => s + Number(i.totaal||0), 0);
+    const exp = data.filter(i => i.jaar === y && i.type === 'Exploitatie').reduce((s,i) => s + Number(i.totaal||0), 0);
+    const tot = inv + exp;
+    return `<div class="year-card" onclick="filterByYear(${y})" style="cursor:pointer;">
+      <div class="yr">${y}</div>
+      <div class="total">${eur(tot)}</div>
+      <div class="breakdown">
+        <span class="b-inv">Investering ${eur(inv)}</span><br>
+        <span class="b-exp">Exploitatie ${eur(exp)}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function filterByYear(y) {
+  document.getElementById('filterYear').value = y;
+  renderTable();
+  document.getElementById('detail').scrollIntoView({behavior:'smooth'});
+}
+
+function renderChart() {
+  const years = uniqueYears();
+  const invData = years.map(y => data.filter(i => i.jaar === y && i.type === 'Investering').reduce((s,i) => s + Number(i.totaal||0), 0));
+  const expData = years.map(y => data.filter(i => i.jaar === y && i.type === 'Exploitatie').reduce((s,i) => s + Number(i.totaal||0), 0));
+
+  const ctx = document.getElementById('yearChart').getContext('2d');
+  if (chartInstance) chartInstance.destroy();
+  chartInstance = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: years,
+      datasets: [
+        { label: 'Investering', data: invData, backgroundColor: '#b45309', borderRadius: 6 },
+        { label: 'Exploitatie', data: expData, backgroundColor: '#1e40af', borderRadius: 6 }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'top', labels: { font: { family: "'DM Sans', sans-serif", size: 12 }, usePointStyle: true } },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => ctx.dataset.label + ': ' + eur(ctx.parsed.y)
+          }
+        }
+      },
+      scales: {
+        x: { grid: { display: false } },
+        y: {
+          beginAtZero: true,
+          ticks: { callback: v => eurShort(v), font: { family: "'DM Sans', sans-serif" } },
+          grid: { color: '#f1f5f9' }
+        }
+      }
+    }
+  });
+}
+
+function renderTable() {
+  const fy = document.getElementById('filterYear').value;
+  const ft = document.getElementById('filterType').value;
+  const fc = document.getElementById('filterCat').value;
+  const fs = document.getElementById('searchInput').value.toLowerCase();
+  const filtered = data.map((r,idx) => ({r,idx})).filter(({r}) => {
+    if (fy && String(r.jaar) !== fy) return false;
+    if (ft && r.type !== ft) return false;
+    if (fc && r.categorie !== fc) return false;
+    if (fs && !(r.artikel||'').toLowerCase().includes(fs)) return false;
+    return true;
+  });
+
+  const tbody = document.getElementById('bTbody');
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="8" class="empty-state">Geen artikels gevonden.</td></tr>`;
+  } else {
+    tbody.innerHTML = filtered.map(({r, idx}) => `<tr>
+      <td><strong>${escapeHtml(r.artikel)}</strong></td>
+      <td>${r.jaar}</td>
+      <td><span class="type-badge ${r.type==='Investering'?'t-inv':'t-exp'}">${r.type}</span></td>
+      <td><span class="cat-tag">${escapeHtml(r.categorie)}</span></td>
+      <td class="num">${r.aantal}</td>
+      <td class="num">${eur(r.kostenStuk)}</td>
+      <td class="num"><strong>${eur(r.totaal)}</strong></td>
+      <td>
+        <div class="row-actions">
+          <button class="icon-btn" onclick="openEditModal(${idx})" title="Bewerken" aria-label="Artikel bewerken">✏️</button>
+          <button class="icon-btn del" onclick="deleteItem(${idx})" title="Verwijderen" aria-label="Artikel verwijderen">🗑️</button>
+        </div>
+      </td>
+    </tr>`).join('');
+  }
+
+  const filterTotal = filtered.reduce((s,{r}) => s + Number(r.totaal||0), 0);
+  document.getElementById('filterTotal').textContent = eur(filterTotal);
+}
+
+function escapeHtml(s) {
+  if (typeof s !== 'string') s = String(s);
+  return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+/* ════════════════════════════════════════════════════════════════
+   MODAL
+   ════════════════════════════════════════════════════════════════ */
+function openAddModal() {
+  editingIndex = null;
+  document.getElementById('modalTitle').textContent = 'Artikel toevoegen';
+  document.getElementById('ff_artikel').value = '';
+  document.getElementById('ff_jaar').value = new Date().getFullYear();
+  document.getElementById('ff_type').value = 'Investering';
+  document.getElementById('ff_categorie').value = 'Devices';
+  document.getElementById('ff_aantal').value = 1;
+  document.getElementById('ff_kostenStuk').value = 0;
+  document.getElementById('ff_totaal').value = 0;
+  document.getElementById('modal').classList.add('show');
+}
+function openEditModal(idx) {
+  editingIndex = idx;
+  const r = data[idx];
+  document.getElementById('modalTitle').textContent = 'Artikel bewerken';
+  document.getElementById('ff_artikel').value = r.artikel || '';
+  document.getElementById('ff_jaar').value = r.jaar || '';
+  document.getElementById('ff_type').value = r.type || 'Investering';
+  // Add category if not in list
+  const catSel = document.getElementById('ff_categorie');
+  if (![...catSel.options].some(o => o.value === r.categorie)) {
+    catSel.insertAdjacentHTML('beforeend', `<option>${r.categorie}</option>`);
+  }
+  catSel.value = r.categorie || 'Devices';
+  document.getElementById('ff_aantal').value = r.aantal || 0;
+  document.getElementById('ff_kostenStuk').value = r.kostenStuk || 0;
+  document.getElementById('ff_totaal').value = r.totaal || 0;
+  document.getElementById('modal').classList.add('show');
+}
+function calcTotal() {
+  const a = parseFloat(document.getElementById('ff_aantal').value) || 0;
+  const p = parseFloat(document.getElementById('ff_kostenStuk').value) || 0;
+  document.getElementById('ff_totaal').value = +(a * p).toFixed(2);
+}
+function closeModal() { document.getElementById('modal').classList.remove('show'); }
+function saveItem() {
+  const obj = {
+    artikel: document.getElementById('ff_artikel').value.trim(),
+    jaar: parseInt(document.getElementById('ff_jaar').value) || new Date().getFullYear(),
+    type: document.getElementById('ff_type').value,
+    categorie: document.getElementById('ff_categorie').value,
+    aantal: parseFloat(document.getElementById('ff_aantal').value) || 0,
+    kostenStuk: parseFloat(document.getElementById('ff_kostenStuk').value) || 0,
+    totaal: parseFloat(document.getElementById('ff_totaal').value) || 0
+  };
+  if (!obj.artikel) { alert('Vul een artikelnaam in.'); return; }
+  if (editingIndex === null) { data.push(obj); toast('Toegevoegd'); }
+  else { data[editingIndex] = obj; toast('Bijgewerkt'); }
+  persistData();
+  closeModal();
+  populateFilters();
+  renderOverview(); renderYearGrid(); renderChart(); renderTable();
+}
+function deleteItem(idx) {
+  if (!confirm('Wil je dit artikel echt verwijderen?')) return;
+  data.splice(idx, 1);
+  persistData();
+  populateFilters();
+  renderOverview(); renderYearGrid(); renderChart(); renderTable();
+  toast('Verwijderd');
+}
+
+/* ════════════════════════════════════════════════════════════════
+   EXCEL IMPORT/EXPORT
+   ════════════════════════════════════════════════════════════════ */
+function exportExcel() {
+  const wb = XLSX.utils.book_new();
+  // Hoofdsheet: alle items
+  const headers = ['Artikel','Jaar','Type','Categorie','Aantal','Kosten per stuk','Totaal'];
+  const aoa = [headers];
+  data.forEach(r => aoa.push([r.artikel, r.jaar, r.type, r.categorie, r.aantal, r.kostenStuk, r.totaal]));
+  const ws = XLSX.utils.aoa_to_sheet(aoa);
+  XLSX.utils.book_append_sheet(wb, ws, 'Meerjarenplan');
+
+  // Samenvatting per jaar
+  const years = uniqueYears();
+  const sumAoa = [['Jaar','Investering','Exploitatie','Totaal']];
+  years.forEach(y => {
+    const inv = data.filter(i => i.jaar === y && i.type === 'Investering').reduce((s,i) => s + Number(i.totaal||0), 0);
+    const exp = data.filter(i => i.jaar === y && i.type === 'Exploitatie').reduce((s,i) => s + Number(i.totaal||0), 0);
+    sumAoa.push([y, inv, exp, inv + exp]);
+  });
+  const invTotal = data.filter(i => i.type === 'Investering').reduce((s,i) => s + Number(i.totaal||0), 0);
+  const expTotal = data.filter(i => i.type === 'Exploitatie').reduce((s,i) => s + Number(i.totaal||0), 0);
+  sumAoa.push(['Totaal', invTotal, expTotal, invTotal + expTotal]);
+  sumAoa.push([]);
+  sumAoa.push(['Plafond investering','','', plafonds.inv]);
+  sumAoa.push(['Resterend investering','','', plafonds.inv - invTotal]);
+  sumAoa.push(['Plafond exploitatie','','', plafonds.exp]);
+  sumAoa.push(['Resterend exploitatie','','', plafonds.exp - expTotal]);
+  const ws2 = XLSX.utils.aoa_to_sheet(sumAoa);
+  XLSX.utils.book_append_sheet(wb, ws2, 'Per jaar');
+
+  const date = new Date().toISOString().slice(0,10);
+  XLSX.writeFile(wb, `Meerjarenplan-Krekel-${date}.xlsx`);
+  toast('Excel gedownload');
+}
+function importExcel(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  if (!confirm('De huidige budgetplanning wordt vervangen. Doorgaan?')) { e.target.value = ''; return; }
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    try {
+      const wb = XLSX.read(ev.target.result, { type: 'array' });
+      const sheetName = wb.SheetNames.find(n => n.toLowerCase().includes('meerjarenplan') || n.toLowerCase().includes('artikel')) || wb.SheetNames[0];
+      const ws = wb.Sheets[sheetName];
+      const rows = XLSX.utils.sheet_to_json(ws, { header: 1 });
+      if (rows.length < 2) throw new Error('Geen data gevonden');
+      const headers = rows[0].map(h => String(h).toLowerCase());
+      const idx = {
+        artikel: headers.findIndex(h => h.includes('artikel')),
+        jaar: headers.findIndex(h => h.includes('jaar')),
+        type: headers.findIndex(h => h.includes('type') || h.includes('investering')),
+        categorie: headers.findIndex(h => h.includes('categori')),
+        aantal: headers.findIndex(h => h.includes('aantal')),
+        kostenStuk: headers.findIndex(h => h.includes('stuk') || h.includes('per stuk')),
+        totaal: headers.findIndex(h => h.includes('totaal') || h.includes('totale'))
+      };
+      const newData = [];
+      for (let i = 1; i < rows.length; i++) {
+        const r = rows[i];
+        if (!r || !r[idx.artikel]) continue;
+        newData.push({
+          artikel: String(r[idx.artikel]||'').trim(),
+          jaar: parseInt(r[idx.jaar]) || 2025,
+          type: String(r[idx.type]||'Investering').trim().toLowerCase().includes('expl') ? 'Exploitatie' : 'Investering',
+          categorie: String(r[idx.categorie]||'Devices').trim(),
+          aantal: parseFloat(r[idx.aantal]) || 0,
+          kostenStuk: parseFloat(r[idx.kostenStuk]) || 0,
+          totaal: parseFloat(r[idx.totaal]) || 0
+        });
+      }
+      data = newData;
+      persistData();
+      populateFilters();
+      renderOverview(); renderYearGrid(); renderChart(); renderTable();
+      toast(`${newData.length} items geïmporteerd`);
+    } catch (err) {
+      alert('Fout bij importeren: ' + err.message);
+    }
+    e.target.value = '';
+  };
+  reader.readAsArrayBuffer(file);
+}
+function resetData() {
+  if (!confirm('Alle wijzigingen verwijderen en terugkeren naar de originele data?')) return;
+  localStorage.removeItem('digiplan_budget');
+  localStorage.removeItem('digiplan_budget_plafonds');
+  data = JSON.parse(JSON.stringify(ORIGINAL_DATA));
+  plafonds = { inv: DEFAULT_INV_BUDGET, exp: DEFAULT_EXP_BUDGET };
+  populateFilters();
+  renderOverview(); renderYearGrid(); renderChart(); renderTable();
+  toast('Gereset naar origineel');
+}
+
+/* ── TOAST ── */
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timeout);
+  t._timeout = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+/* ── SIDEBAR ACTIVE LINK ── */
+const sections = document.querySelectorAll('section[id]');
+const links = document.querySelectorAll('.sidebar nav a');
+if (sections.length && links.length) {
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        links.forEach(l => l.classList.remove('active'));
+        const match = document.querySelector(`.sidebar nav a[href="#${e.target.id}"]`);
+        if (match) match.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-30% 0px -60% 0px' });
+  sections.forEach(s => observer.observe(s));
+}
+
+if (sessionStorage.getItem('budget_unlock') === '1') {
+  initApp();
+}
+</script>
+</body>
+</html>

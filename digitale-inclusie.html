@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <title>Digitale Inclusie – Digiplan GBS De Krekel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shared.css">
+  <style>
+    :root { --accent: #16a34a; --accent-light: #dcfce7; }
+
+    /* Sectie-accenten per thema */
+    .section { border-top: 4px solid var(--sc, var(--accent)); }
+    .section[data-c="green"]  { --sc: #16a34a; }
+    .section[data-c="red"]    { --sc: #dc2626; }
+    .section[data-c="teal"]   { --sc: #0d9488; }
+    .section[data-c="purple"] { --sc: #7c3aed; }
+    .section .section-label { color: var(--sc, var(--accent)); }
+
+    .section-sub { font-size: 0.9rem; color: var(--muted); margin-bottom: 16px; }
+    .click-hint { font-size: 0.78rem; color: var(--muted); opacity: 0.75; margin-bottom: 10px; font-style: italic; }
+
+    /* ── PROBLEM CARDS met uitklap ── */
+    .problem-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap: 12px; margin-top: 14px; }
+    .problem-card {
+      background: #fef7f7;
+      border: 1px solid #fecaca;
+      border-radius: 12px; padding: 16px;
+      cursor: pointer;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .problem-card:hover { border-color: #f87171; box-shadow: 0 4px 14px rgba(220,38,38,0.08); }
+    .problem-icon { font-size: 1.6rem; margin-bottom: 8px; }
+    .problem-title { font-size: 0.92rem; font-weight: 600; margin-bottom: 4px; display: flex; justify-content: space-between; align-items: center; color: var(--dark); }
+    .problem-title .toggle-arrow { font-size: 0.75rem; color: var(--muted); transition: transform 0.25s; }
+    .problem-card.open .toggle-arrow { transform: rotate(90deg); }
+    .problem-short { font-size: 0.84rem; color: #57534e; line-height: 1.55; }
+    .problem-full {
+      font-size: 0.84rem; color: #57534e; line-height: 1.6;
+      max-height: 0; overflow: hidden;
+      transition: max-height 0.35s ease, margin-top 0.2s ease;
+      margin-top: 0;
+    }
+    .problem-card.open .problem-full { max-height: 220px; margin-top: 8px; }
+    .problem-card.open .problem-short { display: none; }
+
+    /* ── BELEID met uitklap ── */
+    .beleid-item {
+      display: flex; gap: 14px; align-items: flex-start;
+      padding: 14px 0; border-bottom: 1px solid var(--border);
+    }
+    .beleid-item:last-child { border-bottom: none; }
+    .beleid-icon { font-size: 1.4rem; flex-shrink: 0; margin-top: 2px; }
+    .beleid-body { flex: 1; }
+    .beleid-header {
+      display: flex; justify-content: space-between; align-items: center;
+      cursor: pointer; gap: 8px;
+    }
+    .beleid-title { font-size: 0.97rem; font-weight: 600; color: var(--dark); }
+    .beleid-arrow { font-size: 0.75rem; color: var(--muted); flex-shrink: 0; transition: transform 0.25s; }
+    .beleid-item.open .beleid-arrow { transform: rotate(90deg); }
+    .beleid-desc { font-size: 0.87rem; color: var(--muted); line-height: 1.6; margin-top: 6px; }
+    .beleid-extra {
+      max-height: 0; overflow: hidden;
+      transition: max-height 0.4s ease;
+    }
+    .beleid-item.open .beleid-extra { max-height: 600px; }
+    .beleid-sub-title {
+      font-size: 0.84rem; font-weight: 600; color: var(--dark);
+      margin-top: 12px; margin-bottom: 4px;
+    }
+    .beleid-bullets { padding-left: 0; list-style: none; margin: 0; }
+    .beleid-bullets li { font-size: 0.84rem; color: #475569; padding: 3px 0 3px 0 !important; display: flex; gap: 7px; line-height: 1.6; }
+    .beleid-bullets li::before { display: none; }
+    .li-dot { color: var(--accent); font-size: 10px; margin-top: 6px; flex-shrink: 0; }
+
+    /* ── KANSEN & GEVAREN ── */
+    .kansen-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
+    @media(max-width: 600px) { .kansen-grid { grid-template-columns: 1fr; } }
+    .kans-card {
+      border-radius: 12px; padding: 16px;
+      border: 1px solid #bbf7d0;
+      background: #f0fdf4;
+      cursor: pointer;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .kans-card:hover { border-color: #4ade80; box-shadow: 0 4px 14px rgba(22,163,74,0.1); }
+    .gevaar-card {
+      border-radius: 12px; padding: 16px;
+      border: 1px solid #fecaca;
+      background: #fef2f2;
+      cursor: pointer;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .gevaar-card:hover { border-color: #f87171; box-shadow: 0 4px 14px rgba(220,38,38,0.08); }
+    .kg-icon { font-size: 1.3rem; margin-bottom: 6px; }
+    .kg-title { font-size: 0.92rem; font-weight: 600; margin-bottom: 4px; display: flex; justify-content: space-between; color: var(--dark); }
+    .kg-title .toggle-arrow { font-size: 0.75rem; color: var(--muted); transition: transform 0.25s; }
+    .kg-card.open .toggle-arrow { transform: rotate(90deg); }
+    .kg-short { font-size: 0.84rem; color: #57534e; line-height: 1.55; }
+    .kg-full {
+      font-size: 0.84rem; color: #57534e; line-height: 1.6;
+      max-height: 0; overflow: hidden;
+      transition: max-height 0.35s ease;
+      margin-top: 0;
+    }
+    .kg-card.open .kg-full { max-height: 220px; margin-top: 8px; }
+    .kg-card.open .kg-short { display: none; }
+
+    /* ── CONCLUSIE ── */
+    .conclusie-block {
+      background: var(--accent-light);
+      border-left: 4px solid var(--accent);
+      border-radius: 10px;
+      padding: 16px 18px;
+      font-size: 0.92rem;
+      line-height: 1.7;
+      margin-top: 12px;
+      color: #374151;
+    }
+    .conclusie-block strong { color: #15803d; }
+
+    /* Fade-in */
+    .fade-in { opacity: 0; transform: translateY(18px); transition: opacity 0.5s ease, transform 0.5s ease; }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="Digiplan.html">← Terug naar Dashboard</a>
+  <span>GBS De Krekel · Digiplan 2025–2028</span>
+</div>
+
+<div class="page-header">
+  <div class="page-header-inner">
+    <div class="page-header-label">Kernpijler · ICT-beleidsplan</div>
+    <h1>🌐 Digitale Inclusie</h1>
+    <p>Niemand wordt digitaal uitgesloten — toegang, vaardigheden en mediawijsheid voor iedereen.</p>
+  </div>
+</div>
+
+<div class="layout">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-card">
+      <div class="sidebar-title">Inhoud</div>
+      <nav>
+        <a href="#waarom"><span class="nav-dot"></span> Waarom inclusie?</a>
+        <a href="#problemen"><span class="nav-dot"></span> Problemen &amp; gevaren</a>
+        <a href="#beleid"><span class="nav-dot"></span> Ons beleid</a>
+        <a href="#kansen-gevaren"><span class="nav-dot"></span> Kansen &amp; gevaren</a>
+        <a href="#conclusie"><span class="nav-dot"></span> Conclusie</a>
+      </nav>
+      <div class="sidebar-back">
+        <a href="Digiplan.html">← Terug naar Dashboard</a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Hoofdinhoud -->
+  <main>
+
+    <!-- 1. Waarom -->
+    <section id="waarom" class="section fade-in" data-c="green">
+      <div class="section-label">Kernpijler</div>
+      <h2>💡 Waarom digitale inclusie cruciaal is</h2>
+      <p class="section-sub">Digitale inclusie is een van de kernpijlers van ons ICT-beleid</p>
+      <p>
+        Onze school wil een school zijn waar <strong>iedereen digitaal mee is</strong>. We willen onze leerlingen voorbereiden op de digitale samenleving, waar steeds meer diensten online verlopen. We willen ook voorkomen dat onze leerlingen digitaal uitgesloten worden en kansen missen op de arbeidsmarkt, door een gebrek aan toegang, vaardigheden, motivatie of ondersteuning.
+      </p>
+      <p>
+        Digitale toepassingen zijn noodzakelijk om goed te functioneren in de samenleving. Ze helpen je om de weg te vinden, op te zoeken wanneer de bus komt en te solliciteren voor je droomjob. Voor sommige kinderen en gezinnen is dit echter <strong>niet vanzelfsprekend</strong>. Daarom zetten we in op een sterk ICT-beleid dat gericht is op digitale inclusie.
+      </p>
+    </section>
+
+    <!-- 2. Problemen -->
+    <section id="problemen" class="section fade-in" data-c="red">
+      <div class="section-label">Digitale uitsluiting</div>
+      <h2>⚠️ Problemen &amp; gevaren van digitale uitsluiting</h2>
+      <p class="section-sub">Digitale uitsluiting is een vorm van sociale uitsluiting</p>
+      <p class="click-hint">Klik op een kaart voor de volledige toelichting</p>
+      <div class="problem-grid">
+
+        <div class="problem-card" onclick="toggleCard(this)">
+          <div class="problem-icon">📡</div>
+          <div class="problem-title">Toegangsproblemen <span class="toggle-arrow">›</span></div>
+          <div class="problem-short">Sommige leerlingen hebben thuis geen internetverbinding of geen toestel.</div>
+          <div class="problem-full">Sommige leerlingen hebben thuis geen internetverbinding of geen laptop, tablet of desktop. Dit belemmert hun leerproces en sociale participatie. Niet alle kinderen beschikken over dezelfde middelen thuis om digitale leertaken uit te voeren of online te oefenen.</div>
+        </div>
+
+        <div class="problem-card" onclick="toggleCard(this)">
+          <div class="problem-icon">🖥️</div>
+          <div class="problem-title">Digitale vaardigheden <span class="toggle-arrow">›</span></div>
+          <div class="problem-short">Niet alle leerlingen hebben dezelfde basisvaardigheden om veilig met digitale technologieën om te gaan.</div>
+          <div class="problem-full">Niet alle leerlingen hebben dezelfde digitale vaardigheden. Sommigen missen essentiële kennis om veilig en effectief met digitale technologieën om te gaan. Ze hebben thuis mogelijk minder kansen gehad om met computers, tablets of specifieke software te werken.</div>
+        </div>
+
+        <div class="problem-card" onclick="toggleCard(this)">
+          <div class="problem-icon">📰</div>
+          <div class="problem-title">Mediawijsheid <span class="toggle-arrow">›</span></div>
+          <div class="problem-short">Niet alle leerlingen kunnen kritisch omgaan met online informatie of nepnieuws herkennen.</div>
+          <div class="problem-full">Niet alle leerlingen zijn mediawijs. Ze kunnen niet altijd kritisch omgaan met online informatie, nepnieuws herkennen of respectvol online communiceren. Het gebrek aan begeleiding thuis kan maken dat kinderen kwetsbaar zijn voor digitale manipulatie of misinformatie.</div>
+        </div>
+
+        <div class="problem-card" onclick="toggleCard(this)">
+          <div class="problem-icon">🛡️</div>
+          <div class="problem-title">Digitale kwetsbaarheid <span class="toggle-arrow">›</span></div>
+          <div class="problem-short">Sommige leerlingen lopen meer risico op cyberpesten, online misbruik of privacy-inbreuken.</div>
+          <div class="problem-full">Sommige leerlingen zijn digitaal kwetsbaar. Ze lopen meer risico om slachtoffer te worden van cyberpesten, online misbruik of privacy-inbreuken. Zonder adequate begeleiding en bewustwording kunnen kinderen gemakkelijk in problemen komen.</div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 3. Beleid -->
+    <section id="beleid" class="section fade-in" data-c="teal">
+      <div class="section-label">Maatregelen</div>
+      <h2>🏛️ Ons ICT-beleid voor digitale inclusie</h2>
+      <p class="section-sub">We zetten in op vier pijlers — klik voor de volledige uitwerking</p>
+
+      <!-- Pijler 1 -->
+      <div class="beleid-item" onclick="toggleBeleid(this)">
+        <div class="beleid-icon">💻</div>
+        <div class="beleid-body">
+          <div class="beleid-header">
+            <div class="beleid-title">1. Toegankelijkheid en ICT-infrastructuur</div>
+            <span class="beleid-arrow">›</span>
+          </div>
+          <div class="beleid-desc">Via de middelen van Digisprong investeerde de school in toestellen voor elke leerling en een up-to-date netwerkinfrastructuur.</div>
+          <div class="beleid-extra">
+            <div class="beleid-sub-title">Geschikte devices en connectiviteit:</div>
+            <ul class="beleid-bullets">
+              <li><span class="li-dot">●</span>De school heeft met behulp van de middelen van Digisprong geïnvesteerd in toestellen voor elke leerling, en in een up-to-date netwerkinfrastructuur.</li>
+              <li><span class="li-dot">●</span>Elk kind heeft op school toegang tot kwalitatieve devices (tablets, laptops, computers) en een betrouwbare internetverbinding.</li>
+              <li><span class="li-dot">●</span>We voorzien indien nodig ontleensystemen voor thuisgebruik, zodat de digitale kloof tussen school en thuis overbrugd kan worden.</li>
+              <li><span class="li-dot">●</span>Alle digitale leermiddelen zijn toegankelijk voor alle leerlingen, ongeacht hun achtergrond of vaardigheden.</li>
+            </ul>
+            <div class="beleid-sub-title">Gratis materiaal en gelijke kansen:</div>
+            <ul class="beleid-bullets">
+              <li><span class="li-dot">●</span>Zoals in ons pedagogisch project staat vermeld, voorziet de school al het materiaal gratis voor alle kinderen, ook digitaal leermateriaal.</li>
+              <li><span class="li-dot">●</span>We houden ons aan de vastgelegde maximumfactuur en streven ernaar schoolkosten zoveel mogelijk te drukken.</li>
+              <li><span class="li-dot">●</span>Niemand wordt uitgesloten van digitale leeractiviteiten door een gebrek aan middelen.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pijler 2 -->
+      <div class="beleid-item" onclick="toggleBeleid(this)">
+        <div class="beleid-icon">📈</div>
+        <div class="beleid-body">
+          <div class="beleid-header">
+            <div class="beleid-title">2. Digitale vaardigheden ontwikkelen</div>
+            <span class="beleid-arrow">›</span>
+          </div>
+          <div class="beleid-desc">ICT-basisvaardigheden zijn geïntegreerd in ons curriculum via onze verticale leerlijnen digitale competenties.</div>
+          <div class="beleid-extra">
+            <ul class="beleid-bullets">
+              <li><span class="li-dot">●</span>Leerlingen leren niet alleen technische handelingen, maar ook kritisch denken, informatie zoeken en privacy bewaken.</li>
+              <li><span class="li-dot">●</span>Vanaf de kleuterklas starten we met spelenderwijs leren omgaan met digitale infrastructuur.</li>
+              <li><span class="li-dot">●</span>Elk leerjaar bouwt verder op de vaardigheden van het vorige jaar, met duidelijke leerdoelen en verwachtingen.</li>
+              <li><span class="li-dot">●</span>We differentiëren binnen de klas zodat elk kind op zijn niveau kan leren en groeien.</li>
+              <li><span class="li-dot">●</span>Via peertutoring, coöperatief leren en buddy-werking leren kinderen ook van en met elkaar.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pijler 3 -->
+      <div class="beleid-item" onclick="toggleBeleid(this)">
+        <div class="beleid-icon">🧠</div>
+        <div class="beleid-body">
+          <div class="beleid-header">
+            <div class="beleid-title">3. Mediawijsheid</div>
+            <span class="beleid-arrow">›</span>
+          </div>
+          <div class="beleid-desc">Expliciete aandacht voor mediawijsheid doorheen alle leerjaren, met concrete en actuele voorbeelden.</div>
+          <div class="beleid-extra">
+            <ul class="beleid-bullets">
+              <li><span class="li-dot">●</span>Leerlingen leren hoe ze media verstandig kunnen gebruiken, nepnieuws kunnen herkennen en respectvol online kunnen communiceren.</li>
+              <li><span class="li-dot">●</span>We gebruiken concrete, actuele voorbeelden en mediawijs materiaal (zoals verhalen en lessen uit 'De Superwereldmol').</li>
+              <li><span class="li-dot">●</span>Thema's zoals online identiteit, cyberpesten, privacy, phishing, filterbubbels, influencers en digitale voetafdruk komen systematisch aan bod.</li>
+              <li><span class="li-dot">●</span>We leggen de link met levensbeschouwelijke vakken en projecten waarbij kinderen leren omgaan met diversiteit en verschillende perspectieven.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pijler 4 -->
+      <div class="beleid-item" onclick="toggleBeleid(this)">
+        <div class="beleid-icon">🌍</div>
+        <div class="beleid-body">
+          <div class="beleid-header">
+            <div class="beleid-title">4. Digitale omgeving voor iedereen</div>
+            <span class="beleid-arrow">›</span>
+          </div>
+          <div class="beleid-desc">Transparante communicatie naar ouders en specifieke aandacht voor anderstalige nieuwkomers.</div>
+          <div class="beleid-extra">
+            <div class="beleid-sub-title">Transparante communicatie:</div>
+            <ul class="beleid-bullets">
+              <li><span class="li-dot">●</span>We informeren ouders over digitale inclusie en betrekken hen bij het leerproces van hun kinderen.</li>
+              <li><span class="li-dot">●</span>Via pictogrammen op brieven, inschrijvingsformulieren e.d. verduidelijken we onze boodschap naar anderstalige ouders.</li>
+              <li><span class="li-dot">●</span>Via verschillende kanalen (agenda, heen-en-weerschriftje, rapport, e-mail, website) zijn we transparant naar onze ouders.</li>
+            </ul>
+            <div class="beleid-sub-title">Specifieke aandacht voor anderstalige nieuwkomers:</div>
+            <ul class="beleid-bullets">
+              <li><span class="li-dot">●</span>We brengen digitale competenties in kaart door te vragen of ze een smartphone, tablet of computer hebben en welke apps ze gebruiken.</li>
+              <li><span class="li-dot">●</span>We laten hen apps tonen en uitleggen hoe ze die gebruiken, ook in hun eigen taal of in het Engels.</li>
+              <li><span class="li-dot">●</span>Zo kunnen we mediawijsheidscompetenties vroeg in het leertraject testen zonder dat de Nederlandse taal een belemmering vormt.</li>
+              <li><span class="li-dot">●</span>We krijgen inzicht in hun media-ideologie: hoe vinden zij dat media gebruikt moeten worden? Deze inzichten gebruiken we bij het verder integreren van ICT in de taalcursus.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- 4. Kansen & gevaren -->
+    <section id="kansen-gevaren" class="section fade-in" data-c="purple">
+      <div class="section-label">Digitale wereld</div>
+      <h2>⚖️ Mogelijkheden en gevaren in de digitale wereld</h2>
+      <p class="section-sub">We willen onze leerlingen bewust maken van beide aspecten</p>
+      <p class="click-hint">Klik op een kaart voor de volledige toelichting</p>
+      <div class="kansen-grid">
+
+        <div class="kans-card kg-card" onclick="toggleKG(this)">
+          <div class="kg-icon">🎓</div>
+          <div class="kg-title">Online leren <span class="toggle-arrow">›</span></div>
+          <div class="kg-short">Gepersonaliseerd leren, interactieve lesmaterialen en virtuele excursies.</div>
+          <div class="kg-full">Digitale technologieën bieden kansen voor gepersonaliseerd leren, interactieve lesmaterialen en virtuele excursies. Leerlingen kunnen op hun eigen tempo oefenen en herhalen waar nodig.</div>
+        </div>
+
+        <div class="gevaar-card kg-card" onclick="toggleKG(this)">
+          <div class="kg-icon">😢</div>
+          <div class="kg-title">Cyberpesten <span class="toggle-arrow">›</span></div>
+          <div class="kg-short">Leerlingen kunnen slachtoffer worden van online intimidatie of misbruik.</div>
+          <div class="kg-full">Leerlingen kunnen slachtoffer worden van cyberpesten, online intimidatie of misbruik. We nemen dit zeer serieus en hanteren de no-blame-methode. Pesten kan niet op onze school.</div>
+        </div>
+
+        <div class="kans-card kg-card" onclick="toggleKG(this)">
+          <div class="kg-icon">🎨</div>
+          <div class="kg-title">Creativiteit <span class="toggle-arrow">›</span></div>
+          <div class="kg-short">Video's, animaties, stopmotionfilmpjes, digitale kunst of muziek.</div>
+          <div class="kg-full">Leerlingen kunnen digitale tools gebruiken om hun creativiteit te uiten, zoals het maken van video's, animaties, stopmotionfilmpjes, digitale kunst of muziek. Ze leren programmeren via Scratch en kunnen hun eigen interactieve projecten creëren.</div>
+        </div>
+
+        <div class="gevaar-card kg-card" onclick="toggleKG(this)">
+          <div class="kg-icon">🔒</div>
+          <div class="kg-title">Privacy <span class="toggle-arrow">›</span></div>
+          <div class="kg-short">Onvoldoende begrip van privacy-instellingen kan leiden tot het delen van persoonlijke informatie.</div>
+          <div class="kg-full">Onvoldoende begrip van privacy-instellingen kan leiden tot het delen van persoonlijke informatie. Leerlingen moeten leren waakzaam te zijn bij het doorgeven van persoonlijke gegevens en begrijpen dat alles wat ze online delen, online blijft staan.</div>
+        </div>
+
+        <div class="kans-card kg-card" onclick="toggleKG(this)">
+          <div class="kg-icon">🤝</div>
+          <div class="kg-title">Samenwerking <span class="toggle-arrow">›</span></div>
+          <div class="kg-short">Online platforms vergemakkelijken samenwerking tussen leerlingen, leerkrachten en ouders.</div>
+          <div class="kg-full">Online platforms zoals Microsoft Teams vergemakkelijken samenwerking tussen leerlingen, leerkrachten en ouders. Kinderen kunnen documenten delen, samen aan projecten werken en van elkaar leren, ook buiten de klasmuren.</div>
+        </div>
+
+        <div class="gevaar-card kg-card" onclick="toggleKG(this)">
+          <div class="kg-icon">📢</div>
+          <div class="kg-title">Nepnieuws &amp; desinformatie <span class="toggle-arrow">›</span></div>
+          <div class="kg-short">Deepfakes, filterbubbels en manipulatie door influencers zijn reële gevaren.</div>
+          <div class="kg-full">Leerlingen moeten leren kritisch te zijn bij het evalueren van online informatie. We leren hen dat niet alles wat online staat waar is, en dat er tegenwoordig heel snel en eenvoudig valse informatie verspreid kan worden. Deepfakes, filterbubbels en manipulatie door influencers zijn reële gevaren.</div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 5. Conclusie -->
+    <section id="conclusie" class="section fade-in" data-c="green">
+      <div class="section-label">Samenvatting</div>
+      <h2>✅ Conclusie</h2>
+      <div class="conclusie-block">
+        Digitale inclusie is een <strong>gedeelde verantwoordelijkheid</strong> van school, ouders en de bredere gemeenschap. Samen zorgen we ervoor dat al onze leerlingen digitaal geletterd zijn en vol vertrouwen de digitale wereld kunnen betreden.
+        <br><br>
+        Door te investeren in toegankelijke infrastructuur, het systematisch ontwikkelen van digitale vaardigheden en mediawijsheid, specifieke aandacht voor kwetsbare groepen zoals anderstalige nieuwkomers, en het bewust maken van zowel de mogelijkheden als de gevaren van de digitale wereld, bouwen we aan een toekomst waarin <strong>geen enkel kind digitaal wordt uitgesloten</strong>.
+        <br><br>
+        Dit past volledig binnen onze missie als warme, zorgzame buurtschool waar gelijke kansen voor iedereen centraal staan en waar elk kind zijn talenten kan ontplooien.
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>GBS De Krekel · Zelzate · ICT-beleidsplan 2025–2028 · <a href="Digiplan.html" style="color:inherit">← Dashboard</a></footer>
+
+<script>
+  /* Fade-in observer */
+  const fadeObserver = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.fade-in').forEach(el => fadeObserver.observe(el));
+
+  /* Probleem-kaarten */
+  function toggleCard(card) { card.classList.toggle('open'); }
+
+  /* Beleid uitklap */
+  function toggleBeleid(item) { item.classList.toggle('open'); }
+
+  /* Kansen & gevaren */
+  function toggleKG(card) { card.classList.toggle('open'); }
+
+  /* Actieve sidebar-link bij scrollen */
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.sidebar nav a');
+  const navObserver = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        navLinks.forEach(l => l.classList.remove('active'));
+        const match = document.querySelector(`.sidebar nav a[href="#${e.target.id}"]`);
+        if (match) match.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-30% 0px -60% 0px' });
+  sections.forEach(s => navObserver.observe(s));
+</script>
+</body>
+</html>

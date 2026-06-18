@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Woordenlijst – Digiplan GBS De Krekel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700;800&family=Outfit:wght@300;400;600;700&family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shared.css">
+  <style>
+    :root {
+      --accent: #2563a8;
+      --accent-light: #dbeafe;
+      --cyan: #22d3ee;
+      --cream: #fafaf8;
+      --border: #e2e8f0;
+      --radius: 14px;
+      --dark: #0f1f30;
+      --muted: #64748b;
+    }
+
+
+    /* ─── CONTROLS BAR ─── */
+    .controls-bar {
+      background: white; border-bottom: 1px solid var(--border);
+      padding: 10px 5%; position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 2px 12px rgba(15,31,48,0.06);
+    }
+    .controls-inner {
+      max-width: 1400px; margin: 0 auto;
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    }
+
+    .toggle-group { display: flex; border: 1px solid var(--border); border-radius: 30px; overflow: hidden; flex-shrink: 0; }
+    .toggle-btn {
+      padding: 7px 15px; font-size: 0.79rem; font-weight: 600;
+      font-family: 'DM Sans', sans-serif; cursor: pointer; border: none;
+      background: white; color: var(--muted); transition: all 0.2s;
+    }
+    .toggle-btn.active { background: var(--dark); color: white; }
+
+    .cat-filter-btn {
+      display: flex; align-items: center; gap: 5px;
+      padding: 5px 11px; border-radius: 20px; border: 1px solid var(--border);
+      background: white; color: var(--muted); cursor: pointer;
+      font-family: 'DM Sans', sans-serif; font-size: 0.75rem; font-weight: 500;
+      transition: all 0.15s; white-space: nowrap;
+    }
+    .cat-filter-btn .cat-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .cat-filter-btn:hover { border-color: #94a3b8; color: var(--dark); }
+    .cat-filter-btn.active { background: var(--dark); color: white; border-color: var(--dark); }
+
+    .search-wrap { flex: 1; min-width: 160px; position: relative; }
+    .search-icon { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 0.88rem; pointer-events: none; }
+    .search-clear {
+      position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+      background: #e2e8f0; border: none; border-radius: 50%;
+      width: 17px; height: 17px; cursor: pointer; font-size: 9px; color: var(--muted);
+      display: none; align-items: center; justify-content: center; transition: background 0.15s;
+    }
+    .search-clear.visible { display: flex; }
+    .search-clear:hover { background: #cbd5e1; color: var(--dark); }
+    .search-input {
+      width: 100%; padding: 7px 32px 7px 32px; border: 1px solid var(--border); border-radius: 30px;
+      font-family: 'DM Sans', sans-serif; font-size: 0.84rem; background: #f8fafc;
+      color: var(--dark); outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .search-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,168,0.1); }
+
+    .result-count { font-family: 'DM Sans', sans-serif; font-size: 0.74rem; color: var(--muted); white-space: nowrap; }
+    .result-count strong { color: var(--dark); }
+
+    .btn-row { display: flex; gap: 7px; flex-shrink: 0; }
+    .action-btn {
+      display: flex; align-items: center; gap: 5px; padding: 7px 14px;
+      border-radius: 30px; border: 1px solid var(--border); background: white;
+      color: var(--dark); font-family: 'DM Sans', sans-serif; font-size: 0.78rem;
+      font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.15s;
+    }
+    .action-btn:hover { background: #f1f5f9; border-color: #94a3b8; }
+    .action-btn.primary { background: var(--dark); color: white; border-color: var(--dark); }
+    .action-btn.primary:hover { background: #1e3a5f; }
+
+    /* ─── PAGE BODY ─── */
+    .page-body {
+      max-width: 1400px; margin: 24px auto; padding: 0 5% 80px;
+      display: grid; grid-template-columns: 50px 1fr; gap: 18px;
+    }
+
+    /* ─── ALPHABET SIDEBAR ─── */
+    .alpha-sidebar {
+      position: sticky; top: 66px; align-self: flex-start;
+      display: flex; flex-direction: column; gap: 2px;
+      max-height: calc(100vh - 88px); overflow-y: auto; scrollbar-width: none;
+    }
+    .alpha-sidebar::-webkit-scrollbar { display: none; }
+    .alpha-btn {
+      width: 38px; height: 33px; display: flex; align-items: center; justify-content: center;
+      border-radius: 8px; font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.8rem; font-weight: 700; cursor: pointer; border: 1px solid var(--border);
+      background: white; color: var(--muted); text-decoration: none;
+      transition: all 0.18s ease;
+    }
+    .alpha-btn:hover { background: var(--accent-light); color: var(--accent); border-color: var(--accent); transform: scale(1.1); }
+    .alpha-btn.active { background: var(--dark); color: white; border-color: var(--dark); transform: scale(1.12); }
+    .alpha-btn.empty { opacity: 0.2; cursor: default; pointer-events: none; }
+
+    /* ─── CONTENT ─── */
+    .content { min-width: 0; }
+
+    /* Favorieten panel */
+    .fav-panel {
+      background: white; border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 18px; margin-bottom: 20px; display: none;
+      box-shadow: 0 2px 8px rgba(15,31,48,0.05);
+    }
+    .fav-panel.visible { display: block; animation: fadeSlideIn 0.22s ease; }
+    .fav-panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .fav-panel-title { font-family: 'Space Grotesk', sans-serif; font-size: 0.95rem; font-weight: 700; color: var(--dark); }
+    .fav-clear { font-family: 'DM Sans', sans-serif; font-size: 0.74rem; color: var(--muted); background: none; border: none; cursor: pointer; }
+    .fav-clear:hover { color: #e11d48; }
+    .fav-chips { display: flex; flex-wrap: wrap; gap: 7px; }
+    .fav-chip {
+      display: flex; align-items: center; gap: 6px; padding: 4px 11px;
+      border-radius: 20px; background: #f1f5f9; border: 1px solid var(--border);
+      font-family: 'DM Sans', sans-serif; font-size: 0.78rem; color: var(--dark);
+    }
+    .fav-chip .chip-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .fav-empty { font-family: 'DM Sans', sans-serif; font-size: 0.84rem; color: var(--muted); }
+
+    /* No results */
+    .no-results { text-align: center; padding: 56px 20px; color: var(--muted); font-family: 'DM Sans', sans-serif; display: none; }
+    .no-results .nr-icon { font-size: 2.6rem; margin-bottom: 12px; }
+    .no-results p { font-size: 0.93rem; margin-bottom: 16px; }
+    .suggest-btn {
+      display: inline-flex; align-items: center; gap: 6px; padding: 9px 22px;
+      border-radius: 30px; background: var(--dark); color: white; border: none;
+      font-family: 'DM Sans', sans-serif; font-size: 0.84rem; font-weight: 600;
+      cursor: pointer; transition: background 0.15s;
+    }
+    .suggest-btn:hover { background: #1e3a5f; }
+
+    /* Letter section */
+    .letter-section { margin-bottom: 28px; scroll-margin-top: 74px; animation: fadeSlideIn 0.22s ease both; }
+    .letter-header { display: flex; align-items: center; gap: 12px; margin-bottom: 11px; }
+    .letter-badge {
+      width: 44px; height: 44px; border-radius: 10px; flex-shrink: 0;
+      background: var(--dark); color: white;
+      font-family: 'Space Grotesk', sans-serif; font-size: 1.4rem; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .letter-rule { flex: 1; height: 1px; background: var(--border); }
+    .letter-meta { display: flex; align-items: center; gap: 10px; }
+    .letter-count { font-family: 'DM Sans', sans-serif; font-size: 0.73rem; color: var(--muted); font-weight: 500; white-space: nowrap; }
+    .expand-all-btn {
+      font-family: 'DM Sans', sans-serif; font-size: 0.71rem; font-weight: 600;
+      color: var(--accent); background: none; border: none; cursor: pointer;
+      padding: 2px 7px; border-radius: 6px; transition: background 0.15s; white-space: nowrap;
+    }
+    .expand-all-btn:hover { background: var(--accent-light); }
+
+    /* Term card */
+    .term-card {
+      background: white; border: 1px solid var(--border); border-radius: var(--radius);
+      margin-bottom: 8px; overflow: hidden;
+      box-shadow: 0 1px 4px rgba(15,31,48,0.04);
+      transition: box-shadow 0.22s, transform 0.22s;
+    }
+    .term-card:hover { box-shadow: 0 6px 20px rgba(15,31,48,0.09); transform: translateY(-1px); }
+    .term-card.new-highlight { animation: highlightNew 2s ease forwards; }
+    @keyframes highlightNew {
+      0%   { box-shadow: 0 0 0 3px rgba(37,99,168,0.45); background: #eef4ff; }
+      100% { box-shadow: 0 1px 4px rgba(15,31,48,0.04); background: white; }
+    }
+
+    .term-header { display: flex; align-items: center; gap: 10px; padding: 13px 15px; cursor: pointer; user-select: none; }
+
+    .cat-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+    .cat-maatschappij { background: #7F77DD; }
+    .cat-veiligheid   { background: #D85A30; }
+    .cat-technologie  { background: #1D9E75; }
+    .cat-programmeren { background: #BA7517; }
+    .cat-media        { background: #D4537E; }
+
+    .term-name { font-family: 'DM Sans', sans-serif; font-size: 0.94rem; font-weight: 600; color: var(--dark); flex: 1; }
+    .term-actions { display: flex; align-items: center; gap: 7px; }
+    .fav-btn {
+      background: none; border: none; cursor: pointer; font-size: 1rem;
+      opacity: 0.28; transition: opacity 0.2s, transform 0.25s cubic-bezier(0.175,0.885,0.32,1.275);
+      padding: 2px 4px; line-height: 1;
+    }
+    .fav-btn:hover { opacity: 0.7; transform: scale(1.25); }
+    .fav-btn.active { opacity: 1; animation: starPop 0.35s cubic-bezier(0.175,0.885,0.32,1.275); }
+    @keyframes starPop { 0%{transform:scale(1)} 50%{transform:scale(1.5)} 100%{transform:scale(1)} }
+
+    .cat-pill {
+      font-size: 0.67rem; font-weight: 600; padding: 3px 9px;
+      border-radius: 20px; white-space: nowrap; font-family: 'DM Sans', sans-serif;
+    }
+    .pill-maatschappij { background: #EEEDFE; color: #3C3489; }
+    .pill-veiligheid   { background: #FAECE7; color: #712B13; }
+    .pill-technologie  { background: #E1F5EE; color: #085041; }
+    .pill-programmeren { background: #FAEEDA; color: #633806; }
+    .pill-media        { background: #FBEAF0; color: #72243E; }
+
+    .chevron { font-size: 0.74rem; color: var(--muted); transition: transform 0.3s cubic-bezier(0.4,0,0.2,1); flex-shrink: 0; }
+    .term-card.open .chevron { transform: rotate(180deg); }
+
+    /* Animated expand */
+    .term-body-wrap { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.34s cubic-bezier(0.4,0,0.2,1); }
+    .term-card.open .term-body-wrap { grid-template-rows: 1fr; }
+    .term-body-inner { overflow: hidden; }
+    .term-body { border-top: 1px solid var(--border); padding: 18px; display: flex; gap: 18px; }
+    .term-body-text { flex: 1; min-width: 0; }
+    .term-body-img {
+      width: 168px; flex-shrink: 0; border-radius: 10px; overflow: hidden;
+      background: #f1f5f9; display: flex; align-items: center; justify-content: center; min-height: 108px;
+    }
+    .term-body-img img { width: 100%; height: 100%; object-fit: cover; }
+    .img-placeholder { font-size: 2.2rem; opacity: 0.22; }
+
+    .level-label {
+      font-size: 0.63rem; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; margin-bottom: 5px; font-family: 'DM Sans', sans-serif;
+    }
+    .level-label.lk { color: var(--accent); }
+    .level-label.kind-lbl { color: #0d9488; }
+    .term-uitleg { font-family: 'DM Sans', sans-serif; font-size: 0.86rem; line-height: 1.76; color: #374151; }
+    .term-uitleg.kind-uitleg {
+      background: #f0fdf4; border-left: 3px solid #0d9488;
+      border-radius: 0 8px 8px 0; padding: 10px 13px;
+    }
+    .both-divider { height: 13px; }
+
+    /* ─── MODAL ─── */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(2,6,23,0.5);
+      display: none; align-items: center; justify-content: center; z-index: 500; padding: 20px;
+    }
+    .modal-overlay.open { display: flex; animation: fadeIn 0.18s ease; }
+    @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+    .modal {
+      background: white; border-radius: 20px; padding: 30px;
+      width: 100%; max-width: 540px; box-shadow: 0 24px 60px rgba(2,6,23,0.22);
+      animation: slideUp 0.22s cubic-bezier(0.4,0,0.2,1);
+      max-height: 90vh; overflow-y: auto;
+    }
+    @keyframes slideUp { from{transform:translateY(18px);opacity:0} to{transform:none;opacity:1} }
+    .modal-title { font-family: 'Playfair Display', serif; font-size: 1.45rem; margin-bottom: 20px; color: var(--dark); }
+    .form-group { margin-bottom: 13px; }
+    .form-label { display: block; font-family: 'DM Sans', sans-serif; font-size: 0.72rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 5px; }
+    .form-input, .form-select, .form-textarea {
+      width: 100%; padding: 9px 13px; border: 1px solid var(--border); border-radius: 10px;
+      font-family: 'DM Sans', sans-serif; font-size: 0.87rem; color: var(--dark);
+      background: #f8fafc; outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,168,0.1); }
+    .form-textarea { resize: vertical; min-height: 76px; line-height: 1.65; }
+    .modal-hint { font-family: 'DM Sans', sans-serif; font-size: 0.73rem; color: var(--muted); margin-top: 4px; }
+    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 18px; }
+    .btn-cancel { padding: 9px 20px; border-radius: 30px; border: 1px solid var(--border); background: white; color: var(--muted); font-family: 'DM Sans', sans-serif; font-size: 0.83rem; cursor: pointer; transition: background 0.15s; }
+    .btn-cancel:hover { background: #f8fafc; }
+    .btn-save { padding: 9px 24px; border-radius: 30px; border: none; background: var(--dark); color: white; font-family: 'DM Sans', sans-serif; font-size: 0.83rem; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+    .btn-save:hover { background: #1e3a5f; }
+
+    /* AI Suggestion buttons */
+    .btn-suggest {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 5px 12px; border-radius: 20px;
+      border: 1px solid #c7d2fe; background: #eef2ff; color: #4338ca;
+      font-family: 'DM Sans', sans-serif; font-size: 0.74rem; font-weight: 600;
+      cursor: pointer; transition: all 0.15s; white-space: nowrap; flex-shrink: 0;
+    }
+    .btn-suggest:hover { background: #e0e7ff; border-color: #a5b4fc; }
+    .btn-suggest:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-suggest .spin { display: inline-block; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Suggest label row */
+    .suggest-label-row {
+      display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+      margin-bottom: 5px;
+    }
+    .suggest-label-row .form-label { margin-bottom: 0; }
+
+    /* Image upload area */
+    .img-upload-area {
+      border: 2px dashed var(--border); border-radius: 10px;
+      padding: 16px; text-align: center; cursor: pointer;
+      transition: all 0.2s; background: #f8fafc; position: relative;
+    }
+    .img-upload-area:hover { border-color: var(--accent); background: #eff6ff; }
+    .img-upload-area input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+    .img-upload-preview { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .img-upload-thumb { width: 64px; height: 64px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border); }
+    .img-upload-placeholder { font-size: 0.82rem; color: var(--muted); }
+
+    /* AI image suggestions */
+    .img-suggestions {
+      display: none; gap: 10px; flex-wrap: wrap; margin-top: 10px;
+    }
+    .img-suggestions.visible { display: flex; }
+    .img-sug-item {
+      position: relative; cursor: pointer; border-radius: 10px; overflow: hidden;
+      border: 2px solid transparent; transition: border-color 0.15s;
+      flex: 1; min-width: 100px; max-width: 140px;
+    }
+    .img-sug-item:hover { border-color: var(--accent); }
+    .img-sug-item.selected { border-color: var(--accent); }
+    .img-sug-item img { width: 100%; height: 90px; object-fit: cover; display: block; }
+    .img-sug-label {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      background: rgba(15,31,48,0.65); color: white;
+      font-size: 0.65rem; padding: 3px 6px; text-align: center;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .img-sug-check {
+      position: absolute; top: 5px; right: 5px;
+      background: var(--accent); color: white; border-radius: 50%;
+      width: 18px; height: 18px; display: none;
+      align-items: center; justify-content: center; font-size: 10px;
+    }
+    .img-sug-item.selected .img-sug-check { display: flex; }
+
+    /* Toast */
+    .toast {
+      position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(14px);
+      background: var(--dark); color: white; padding: 10px 22px; border-radius: 30px;
+      font-family: 'DM Sans', sans-serif; font-size: 0.83rem; opacity: 0;
+      transition: all 0.28s; z-index: 600; white-space: nowrap;
+      box-shadow: 0 8px 24px rgba(2,6,23,0.22);
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    @keyframes fadeSlideIn { from{opacity:0;transform:translateY(7px)} to{opacity:1;transform:none} }
+
+    /* ─── PRINT ─── */
+    @media print {
+      .topbar, .page-header, .controls-bar, .alpha-sidebar, .fav-btn, .chevron, .term-actions, .fav-panel, footer { display: none !important; }
+      .page-body { grid-template-columns: 1fr; }
+      .term-body-wrap { grid-template-rows: 1fr !important; }
+      .term-card { break-inside: avoid; box-shadow: none; border: 1px solid #ccc; margin-bottom: 12px; }
+      .term-body-img { display: none; }
+      .letter-section { break-inside: avoid; }
+    }
+
+    @media (max-width: 820px) {
+      .page-body { grid-template-columns: 1fr; }
+      .alpha-sidebar { flex-direction: row; flex-wrap: wrap; max-height: none; position: static; margin-bottom: 12px; }
+      .alpha-btn { width: 31px; height: 29px; font-size: 0.74rem; }
+      .term-body { flex-direction: column; }
+      .term-body-img { width: 100%; height: 145px; }
+      .cat-pill { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <div style="display:flex;gap:8px;flex-wrap:wrap;">
+    <a href="Digiplan.html">← Terug naar Dashboard</a>
+    <a href="LeerLokaal.html">← Verticale leerlijnen</a>
+  </div>
+  <span>GBS De Krekel · Digiplan 2025–2028</span>
+</div>
+
+<div class="page-header">
+  <div class="page-header-inner">
+    <div class="page-header-label">Woordenlijst · Digitale competenties</div>
+    <h1>📖 Woordenlijst</h1>
+    <p>Begrippen uit het vernieuwde leerplan digitale competenties — helder uitgelegd voor leerkracht én kind.</p>
+  </div>
+</div>
+
+<div class="controls-bar">
+  <div class="controls-inner">
+    <div class="toggle-group">
+      <button class="toggle-btn active" id="btn-lk"   onclick="setLevel('lk')">👩‍🏫 Leerkracht</button>
+      <button class="toggle-btn"        id="btn-kind"  onclick="setLevel('kind')">👧 Kind</button>
+      <button class="toggle-btn"        id="btn-both"  onclick="setLevel('both')">Beide</button>
+    </div>
+    <div style="display:flex;gap:5px;flex-wrap:wrap;">
+      <button class="cat-filter-btn active" data-cat="alle"         onclick="setCat(this,'alle')">Alle</button>
+      <button class="cat-filter-btn"        data-cat="maatschappij" onclick="setCat(this,'maatschappij')"><span class="cat-dot cat-maatschappij"></span>🏛️ Maatschappij</button>
+      <button class="cat-filter-btn"        data-cat="veiligheid"   onclick="setCat(this,'veiligheid')"><span class="cat-dot cat-veiligheid"></span>🔒 Veiligheid</button>
+      <button class="cat-filter-btn"        data-cat="technologie"  onclick="setCat(this,'technologie')"><span class="cat-dot cat-technologie"></span>💻 Technologie</button>
+      <button class="cat-filter-btn"        data-cat="programmeren" onclick="setCat(this,'programmeren')"><span class="cat-dot cat-programmeren"></span>⚙️ Programmeren</button>
+      <button class="cat-filter-btn"        data-cat="media"        onclick="setCat(this,'media')"><span class="cat-dot cat-media"></span>📺 Media</button>
+    </div>
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" class="search-input" id="searchInput" placeholder="Zoek een begrip…"
+             oninput="onSearch(this.value)" onkeydown="handleSearchKey(event)">
+      <button class="search-clear" id="searchClear" onclick="clearSearch()" title="Leegmaken">✕</button>
+    </div>
+    <span class="result-count" id="resultCount"></span>
+    <div class="btn-row">
+      <button class="action-btn" id="favToggleBtn" onclick="toggleFavPanel()">⭐ Favorieten</button>
+      <button class="action-btn" onclick="window.print()">🖨️ Afdrukken</button>
+      <button class="action-btn primary" onclick="openModal()">＋ Voeg toe</button>
+    </div>
+  </div>
+</div>
+
+<div class="page-body">
+  <div class="alpha-sidebar" id="alphaSidebar"></div>
+  <div class="content" id="mainContent">
+    <div class="fav-panel" id="favPanel">
+      <div class="fav-panel-header">
+        <span class="fav-panel-title">⭐ Mijn favorieten</span>
+        <button class="fav-clear" onclick="clearAllFavs()">Alles wissen</button>
+      </div>
+      <div class="fav-chips" id="favChips"></div>
+    </div>
+    <div id="termList"></div>
+    <div class="no-results" id="noResults">
+      <div class="nr-icon">🔍</div>
+      <p>Geen begrippen gevonden voor "<strong id="noResultsTerm"></strong>".</p>
+      <button class="suggest-btn" onclick="openModalPrefilled()">＋ Dit begrip toevoegen</button>
+    </div>
+  </div>
+</div>
+
+<footer>GBS De Krekel · Zelzate · ICT-beleidsplan 2025–2028 · <a href="Digiplan.html" style="color:inherit">← Dashboard</a></footer>
+
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <h2 class="modal-title">Nieuw begrip toevoegen</h2>
+    <div class="form-group">
+      <label class="form-label">Term</label>
+      <input type="text" class="form-input" id="inp-term" placeholder="bv. Blockchain">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Categorie</label>
+      <select class="form-select" id="inp-cat">
+        <option value="maatschappij">🏛️ Maatschappij & burgerschap</option>
+        <option value="veiligheid">🔒 Veiligheid & privacy</option>
+        <option value="technologie">💻 Technologie & hardware</option>
+        <option value="programmeren">⚙️ Programmeren & logica</option>
+        <option value="media">📺 Media & communicatie</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <div class="suggest-label-row">
+        <label class="form-label">Uitleg voor leerkrachten</label>
+        <button class="btn-suggest" id="btn-sug-teacher" onclick="generateSuggestion('teacher')">✨ Suggestie</button>
+      </div>
+      <textarea class="form-textarea" id="inp-teacher" placeholder="Professionele uitleg voor leerkrachten…"></textarea>
+    </div>
+    <div class="form-group">
+      <div class="suggest-label-row">
+        <label class="form-label">Uitleg voor kinderen</label>
+        <button class="btn-suggest" id="btn-sug-child" onclick="generateSuggestion('child')">✨ Suggestie</button>
+      </div>
+      <textarea class="form-textarea" id="inp-child" placeholder="Eenvoudige uitleg voor leerlingen…"></textarea>
+      <p class="modal-hint">Tip: druk Ctrl+Enter om op te slaan.</p>
+    </div>
+    <div class="form-group">
+      <div class="suggest-label-row">
+        <label class="form-label">Afbeelding</label>
+        <button class="btn-suggest" id="btn-sug-img" onclick="suggestImages()">✨ Suggestie</button>
+      </div>
+      <div class="img-upload-area" id="imgUploadArea">
+        <input type="file" accept="image/*" id="inp-img-file" onchange="handleImgUpload(this)">
+        <div id="imgPreviewWrap">
+          <div class="img-upload-placeholder">📁 Klik of sleep een afbeelding hier</div>
+        </div>
+      </div>
+      <div class="img-suggestions" id="imgSuggestions"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Annuleren</button>
+      <button class="btn-save"   onclick="saveTerm()">Opslaan</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const catLabels = {
+  maatschappij: 'Maatschappij & burgerschap',
+  veiligheid:   'Veiligheid & privacy',
+  technologie:  'Technologie & hardware',
+  programmeren: 'Programmeren & logica',
+  media:        'Media & communicatie'
+};
+
+const imgMap = {
+  'De technologie / technologische ontwikkeling':'https://images.unsplash.com/photo-1518770660439-4636190af475?w=300&q=70',
+  'Sociale digitale samenleving':'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=300&q=70',
+  'Digitaal burgerschap':'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=300&q=70',
+  'Opslagmedia (bijv. OneDrive)':'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=300&q=70',
+  'Digitale tool':'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=300&q=70',
+  'Mediawijsheid':'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=300&q=70',
+  'Artificiële intelligentie (AI)':'https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=300&q=70',
+  'Computationeel denken':'https://images.unsplash.com/photo-1580894732444-8ecded7900cd?w=300&q=70',
+  'Computercode':'https://images.unsplash.com/photo-1515879218367-8466d910aaa4?w=300&q=70',
+  'Het algoritme':'https://images.unsplash.com/photo-1507721999472-8ed4421c4af2?w=300&q=70',
+  "'Als-dan'-constructie":'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=300&q=70',
+  'Patronen':'https://images.unsplash.com/photo-1553949285-1bdc61be3f66?w=300&q=70',
+  'Computerprogramma':'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=300&q=70',
+  'Proces':'https://images.unsplash.com/photo-1518186285589-2f7649de83e0?w=300&q=70',
+  'Automatisatie':'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=300&q=70',
+  'Logische ordening':'https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?w=300&q=70',
+  'Auteursrecht & portretrecht':'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=300&q=70',
+  'Online privacy & persoonlijke gegevens':'https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=300&q=70',
+  'Het account':'https://images.unsplash.com/photo-1633265486064-086b219458ec?w=300&q=70',
+  'Sexting':'https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=300&q=70',
+  'Online delen':'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=300&q=70',
+  'Sociale media':'https://images.unsplash.com/photo-1611162616305-c69b3fa7fbe0?w=300&q=70',
+  'Cyberpesten':'https://images.unsplash.com/photo-1614680376739-414d95ff43df?w=300&q=70',
+  'Netiquette':'https://images.unsplash.com/photo-1516321497487-e288fb19713f?w=300&q=70',
+  'Audiovisuele mediaboodschap':'https://images.unsplash.com/photo-1478720568477-152d9b164e26?w=300&q=70',
+  'Login / wachtwoord':'https://images.unsplash.com/photo-1614064641938-3bbee52942c7?w=300&q=70',
+  'Digitaal':'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=300&q=70',
+  'Het internet':'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=300&q=70',
+  'De hardware':'https://images.unsplash.com/photo-1518770660439-4636190af475?w=300&q=70',
+  'De software':'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=300&q=70',
+  'Het bestand':'https://images.unsplash.com/photo-1544396821-4dd40b938ad3?w=300&q=70',
+  'De invoer':'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=300&q=70',
+  'De verwerking':'https://images.unsplash.com/photo-1601933973783-43cf8a7d4c5f?w=300&q=70',
+  'De uitvoer':'https://images.unsplash.com/photo-1612832021026-c94e7e38dc1f?w=300&q=70',
+  'De opslag':'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=300&q=70',
+  'Verzenden':'https://images.unsplash.com/photo-1596526131083-e8c633c948d2?w=300&q=70',
+  'Ontvangen':'https://images.unsplash.com/photo-1523966211575-eb4a01e7dd51?w=300&q=70',
+  'Offline':'https://images.unsplash.com/photo-1586208958839-06c5c4f56624?w=300&q=70',
+  'Online':'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=300&q=70',
+  'Het netwerk':'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=300&q=70',
+  'De verbinding':'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=300&q=70',
+  'Online veiligheid':'https://images.unsplash.com/photo-1614064641938-3bbee52942c7?w=300&q=70',
+  'Nepnieuws':'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=300&q=70',
+  'Decompositie':'https://images.unsplash.com/photo-1580894732444-8ecded7900cd?w=300&q=70',
+  'Abstractie':'https://images.unsplash.com/photo-1553949285-1bdc61be3f66?w=300&q=70',
+  'Sequentie':'https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?w=300&q=70',
+  'Deepfake':'https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=300&q=70',
+  'Phishing':'https://images.unsplash.com/photo-1633265486064-086b219458ec?w=300&q=70',
+  'Filterbubbel':'https://images.unsplash.com/photo-1611162616305-c69b3fa7fbe0?w=300&q=70'
+};
+
+let terms = [
+  {name:"De technologie / technologische ontwikkeling",cat:"maatschappij",teacher:"Technologie verwijst naar alle gereedschappen, systemen en methoden die door mensen worden ontwikkeld om taken efficiënter of effectiever uit te voeren. Technologische ontwikkeling is het voortdurende proces waarbij nieuwe technologieën ontstaan en bestaande technologieën verbeteren.",child:"Technologie zijn alle slimme dingen die mensen hebben uitgevonden om ons leven makkelijker te maken — denk aan computers, smartphones en robots. Het verandert steeds."},
+  {name:"Sociale digitale samenleving",cat:"maatschappij",teacher:"De sociale digitale samenleving beschrijft hoe mensen via digitale middelen met elkaar omgaan, informatie delen en samenwerken. Digitale technologie beïnvloedt relaties, communicatie en sociale structuren.",child:"Dit gaat over hoe mensen met elkaar praten en dingen delen via computers en telefoons. Ook jij maakt er deel van uit als je iets online doet."},
+  {name:"Digitaal burgerschap",cat:"maatschappij",teacher:"Digitaal burgerschap omvat de rechten en plichten van mensen in de digitale wereld. Het gaat over verantwoord, respectvol en veilig gebruik van digitale technologie en het internet.",child:"Net zoals je je in het echt goed moet gedragen, moet je dat ook online doen. Vriendelijk zijn, eerlijk zijn en anderen respecteren — ook op het internet."},
+  {name:"Opslagmedia (bijv. OneDrive)",cat:"technologie",teacher:"Opslagmedia zijn de fysieke of digitale dragers waarop gegevens worden bewaard. Naast klassieke dragers zoals usb-sticks en harde schijven bestaan er cloudopslagdiensten zoals OneDrive, waarbij bestanden op externe servers worden opgeslagen en via het internet toegankelijk zijn.",child:"Een opslagmedium is een plek waar je bestanden bewaart. OneDrive is als een heel grote virtuele doos in de lucht waar je tekeningen of werkjes in kunt stoppen en ze later terugvindt."},
+  {name:"Digitale tool",cat:"technologie",teacher:"Een digitale tool is een softwareprogramma of een online toepassing die een specifieke taak ondersteunt, zoals een teksteditor, een rekenmachine of een presentatieprogramma.",child:"Een digitale tool is een programma of app die je helpt iets te doen op de computer of tablet — zoals een programma om te tekenen of een rekenmachine."},
+  {name:"Mediawijsheid",cat:"media",teacher:"Mediawijsheid is het vermogen om mediaboodschappen kritisch te begrijpen, te evalueren en te gebruiken. Het omvat inzicht in hoe media werken, wie ze maakt, welke doelen ze dienen en hoe ze ons beïnvloeden.",child:"Mediawijsheid betekent slim omgaan met alles wat je ziet, hoort of leest op tv, internet of sociale media. Je leert nadenken: klopt dit wel? Wie heeft dit gemaakt en waarom?"},
+  {name:"Artificiële intelligentie (AI)",cat:"technologie",teacher:"Artificiële intelligentie is een tak van informatica waarbij computers worden geprogrammeerd om taken uit te voeren die normaal menselijke intelligentie vereisen, zoals taalverwerking, beeldherkenning of het nemen van beslissingen op basis van data.",child:"AI is een soort 'slim computerprogramma' dat kan leren en zelf dingen uitzoeken — zoals een vertaalprogramma dat steeds beter wordt."},
+  {name:"Computationeel denken",cat:"programmeren",teacher:"Computationeel denken is een probleemoplossende methode waarbij problemen worden opgedeeld in kleinere stappen, patronen worden herkend en oplossingen worden beschreven als een reeks instructies.",child:"Computationeel denken is een manier van nadenken waarbij je een groot probleem in kleine stukjes opdeelt en stap voor stap oplost — net zoals een computer dat zou doen."},
+  {name:"Computercode",cat:"programmeren",teacher:"Computercode bestaat uit instructies geschreven in een programmeertaal die een computer begrijpt en kan uitvoeren. Via code wordt softwaregedrag bepaald.",child:"Computercode zijn geheime instructies die je aan een computer geeft. De computer volgt die instructies precies op om iets te doen, zoals een spel laten werken."},
+  {name:"Het algoritme",cat:"programmeren",teacher:"Een algoritme is een eindige, stapsgewijze beschrijving van een procedure om een probleem op te lossen of een taak uit te voeren. Algoritmen vormen de basis van elk computerprogramma.",child:"Een algoritme is een stappenplan. Net zoals een recept je vertelt hoe je een cake bakt, vertelt een algoritme aan de computer wat het stap voor stap moet doen."},
+  {name:"'Als-dan'-constructie",cat:"programmeren",teacher:"De als-dan-constructie (if-then) is een basisstructuur in programmeren waarbij een actie alleen uitgevoerd wordt als aan een bepaalde voorwaarde is voldaan.",child:"'Als het regent, dan pak ik mijn paraplu.' In een computerprogramma werkt het net zo: als iets waar is, doet de computer iets speciaals."},
+  {name:"Patronen",cat:"programmeren",teacher:"In de context van computationeel denken zijn patronen herhalende structuren of overeenkomsten die herkend kunnen worden in data of problemen.",child:"Een patroon is iets wat steeds terugkomt. Als je ziet dat iets zich herhaalt, kun je daar slim gebruik van maken — in de wiskunde, in de natuur én in computerprogramma's."},
+  {name:"Computerprogramma",cat:"technologie",teacher:"Een computerprogramma is een reeks instructies in een programmeertaal die een computer uitvoert om een specifieke taak of functie te vervullen.",child:"Een computerprogramma is als een heel lang stappenplan dat een computer volgt. Spelletjes, apps en websites zijn allemaal computerprogramma's."},
+  {name:"Proces",cat:"programmeren",teacher:"Een proces is een reeks stappen of handelingen die leiden tot een bepaald resultaat. In informatica verwijst het ook naar een taak die actief door de processor wordt uitgevoerd.",child:"Een proces is een reeks stappen die je doorloopt om iets gedaan te krijgen. Als de computer iets uitrekent of een foto opslaat, voert hij een proces uit."},
+  {name:"Automatisatie",cat:"technologie",teacher:"Automatisatie is het gebruik van technologie om taken uit te voeren zonder dat een mens daarvoor constant ingrijpt. Het verhoogt de efficiëntie en vermindert menselijke fouten.",child:"Automatisatie betekent dat een machine of computer een taak zelf doet zonder dat jij het telkens opnieuw hoeft te doen — zoals een alarm dat vanzelf afgaat."},
+  {name:"Logische ordening",cat:"programmeren",teacher:"Logische ordening verwijst naar het correct rangschikken van stappen, instructies of gegevens zodat een proces de juiste volgorde volgt en een verwacht resultaat oplevert.",child:"Logische ordening is dingen in de juiste volgorde zetten. Je kunt geen brood smeren als je het brood nog niet uit de verpakking hebt gehaald — de volgorde telt!"},
+  {name:"Auteursrecht & portretrecht",cat:"veiligheid",teacher:"Auteursrecht beschermt creatieve werken (teksten, afbeeldingen, muziek) van de maker. Portretrecht beschermt personen tegen publicatie van hun afbeelding zonder toestemming. Beide rechten gelden ook in digitale omgevingen.",child:"Als iemand iets maakt — een tekening, een lied, een foto — dan is dat van hem of haar. Je mag het niet zomaar kopiëren of gebruiken zonder te vragen."},
+  {name:"Online privacy & persoonlijke gegevens",cat:"veiligheid",teacher:"Online privacy verwijst naar het recht van personen om controle te hebben over hun persoonlijke informatie op het internet. Persoonlijke gegevens zijn alle gegevens die een persoon identificeerbaar maken.",child:"Privacy betekent dat je zelf kiest wat je met anderen deelt. Je naam, je adres, je foto — die geef je niet zomaar aan vreemden online."},
+  {name:"Het account",cat:"veiligheid",teacher:"Een account is een persoonlijk profiel bij een digitale dienst of platform, waarmee een gebruiker zich authenticeert en toegang krijgt tot specifieke functies of inhoud.",child:"Een account is jouw eigen plek op een website of app. Je hebt een gebruikersnaam en een wachtwoord om in te loggen — zodat alleen jij er aan kunt."},
+  {name:"Sexting",cat:"veiligheid",teacher:"Sexting is het via digitale kanalen verzenden van seksueel getinte berichten, afbeeldingen of video's. Het brengt grote risico's met zich mee voor minderjarigen, waaronder juridische gevolgen en psychische schade.",child:"Sexting betekent dat iemand ongepaste foto's of berichten verstuurt via de telefoon of computer. Dit is gevaarlijk en mag niet. Vertel het altijd aan een volwassene als dit gebeurt."},
+  {name:"Online delen",cat:"veiligheid",teacher:"Online delen verwijst naar het publiek of privé beschikbaar stellen van informatie, foto's of content via het internet. Gedeelde content kan breed verspreid worden en is soms moeilijk te verwijderen.",child:"Online delen betekent dat je iets op het internet zet zodat anderen het kunnen zien. Denk goed na voordat je iets deelt — want wat eenmaal online staat, is moeilijk weg te halen."},
+  {name:"Sociale media",cat:"maatschappij",teacher:"Sociale media zijn online platforms waarop gebruikers content creëren, delen en interageren met anderen. Voorbeelden zijn Instagram, TikTok en Facebook.",child:"Sociale media zijn apps of websites waar mensen dingen delen met anderen — foto's, filmpjes of berichtjes. Instagram en TikTok zijn voorbeelden van sociale media."},
+  {name:"Cyberpesten",cat:"veiligheid",teacher:"Cyberpesten is pesterij via digitale kanalen, zoals berichten, sociale media of online games. Het verschilt van klassiek pesten doordat het 24/7 kan plaatsvinden en een groot publiek kan bereiken.",child:"Cyberpesten is iemand pesten via het internet of de telefoon. Dit is nooit oké. Zeg het altijd aan een volwassene als het gebeurt."},
+  {name:"Netiquette",cat:"maatschappij",teacher:"Netiquette zijn de ongeschreven gedragsregels voor respectvolle en correcte communicatie op het internet en via digitale kanalen.",child:"Netiquette is de manier waarop je je online moet gedragen. Net zoals je in de klas vriendelijk en beleefd bent, doe je dat ook online."},
+  {name:"Audiovisuele mediaboodschap",cat:"media",teacher:"Een audiovisuele mediaboodschap is een bericht dat via zowel beeld als geluid wordt overgebracht, zoals een reclamespot, een nieuwsvideo of een YouTube-video.",child:"Een audiovisuele boodschap is een bericht met zowel beeld als geluid — zoals een reclamespotje op tv of een filmpje op YouTube. Er zit altijd een bedoeling achter."},
+  {name:"Login / wachtwoord",cat:"veiligheid",teacher:"Een login is de combinatie van een gebruikersnaam en wachtwoord waarmee een gebruiker toegang krijgt tot een digitale dienst. Een sterk wachtwoord is essentieel voor de beveiliging van accounts.",child:"Je login is je gebruikersnaam en je wachtwoord. Kies een geheim wachtwoord en geef het nooit door aan anderen."},
+  {name:"Digitaal",cat:"technologie",teacher:"Digitaal verwijst naar informatie die wordt voorgesteld en verwerkt in de vorm van binaire code (nullen en enen). In bredere zin duidt het op alles wat via computers of elektronische apparaten werkt.",child:"Digitaal betekent dat iets met een computer of scherm werkt en gebruik maakt van nullen en enen. Een digitale foto bestaat niet op papier — je ziet hem op een scherm."},
+  {name:"Het internet",cat:"technologie",teacher:"Het internet is een wereldwijd netwerk van onderling verbonden computers en servers dat informatie-uitwisseling mogelijk maakt via gestandaardiseerde protocollen.",child:"Het internet is een gigantisch netwerk waarmee computers overal ter wereld met elkaar verbonden zijn. Daardoor kun je websites bezoeken, e-mailen en filmpjes bekijken."},
+  {name:"De hardware",cat:"technologie",teacher:"Hardware omvat alle fysieke, aanraakbare onderdelen van een computersysteem, zoals de processor, het geheugen, het toetsenbord en het scherm.",child:"Hardware zijn alle dingen van een computer die je kunt aanraken — het scherm, het toetsenbord, de muis. Alles wat je kunt vasthouden is hardware."},
+  {name:"De software",cat:"technologie",teacher:"Software zijn alle programma's, toepassingen en besturingssystemen die op hardware draaien en de functionaliteit van een computersysteem bepalen.",child:"Software zijn de programma's op je computer of tablet — dingen die je niet kunt aanraken. Games, apps en het besturingssysteem zijn software."},
+  {name:"Het bestand",cat:"technologie",teacher:"Een bestand is een digitale verzameling van gegevens die onder een naam op een opslagmedium is opgeslagen. Bestanden kunnen tekst, afbeeldingen, audio, video of programmacode bevatten.",child:"Een bestand is iets wat je opslaat op de computer — een tekst, een tekening, een foto of een filmpje. Elk bestand heeft een naam, zoals 'mijn_tekening.png'."},
+  {name:"De invoer",cat:"technologie",teacher:"Invoer (input) verwijst naar alle gegevens of signalen die een computersysteem binnenkomen via invoerapparaten zoals een toetsenbord, muis, microfoon of camera.",child:"Invoer is wat je aan de computer geeft — de letters die je typt op het toetsenbord of de klik van de muis. De computer ontvangt jouw invoer en doet er iets mee."},
+  {name:"De verwerking",cat:"technologie",teacher:"Verwerking (processing) is de fase waarbij een computersysteem de ontvangen invoer omzet in een resultaat door berekeningen en operaties uit te voeren via de processor.",child:"Verwerking is wat de computer doet met jouw invoer — hij rekent en denkt na. Als je op 'bewaren' klikt, verwerkt de computer dat en slaat het bestand op."},
+  {name:"De uitvoer",cat:"technologie",teacher:"Uitvoer (output) is het resultaat dat een computersysteem produceert na verwerking van de invoer. Dit kan zichtbaar zijn op het scherm, hoorbaar via luidsprekers of opgeslagen in een bestand.",child:"Uitvoer is wat de computer teruggeeft nadat hij iets heeft verwerkt — het antwoord op je scherm, het geluid uit de luidspreker of een document dat afgedrukt wordt."},
+  {name:"De opslag",cat:"technologie",teacher:"Opslag verwijst naar het bewaren van digitale gegevens op een medium zodat ze later opnieuw opgeroepen kunnen worden. Opslag maakt het mogelijk om informatie te behouden na het uitschakelen van een apparaat.",child:"Opslag is de plek waar de computer alles bewaart. Als je je werk opslaat, verdwijnt het niet als de computer uitgeschakeld wordt."},
+  {name:"Verzenden",cat:"technologie",teacher:"Verzenden is het actief doorsturen van digitale gegevens of berichten van één apparaat of gebruiker naar een ander via een netwerk zoals het internet.",child:"Verzenden betekent dat je iets opstuurt via de computer of telefoon — een bericht, een foto of een e-mail."},
+  {name:"Ontvangen",cat:"technologie",teacher:"Ontvangen is het binnenkrijgen van digitale gegevens of berichten die door een ander apparaat of gebruiker zijn verstuurd.",child:"Ontvangen is het tegenovergestelde van verzenden. Als iemand jou een bericht stuurt, ontvang jij dat bericht."},
+  {name:"Offline",cat:"technologie",teacher:"Offline verwijst naar een toestand waarbij een apparaat of gebruiker niet verbonden is met het internet of een netwerk.",child:"Offline betekent dat je niet verbonden bent met het internet. Als je geen wifi hebt, ben je offline — dan kun je geen websites bezoeken."},
+  {name:"Online",cat:"technologie",teacher:"Online verwijst naar een toestand waarbij een apparaat of gebruiker verbonden is met het internet of een netwerk, waardoor communicatie en informatie-uitwisseling mogelijk zijn.",child:"Online betekent dat je verbonden bent met het internet. Als je op YouTube kijkt of iemand een bericht stuurt, ben je online."},
+  {name:"Het netwerk",cat:"technologie",teacher:"Een netwerk is een verzameling computers en apparaten die met elkaar verbonden zijn om gegevens uit te wisselen. Verbindingen kunnen bedraad (kabel) of draadloos (wifi, mobiel netwerk) zijn; het internet is het grootste netwerk ter wereld.",child:"Een netwerk is een groep computers en toestellen die met elkaar 'praten'. Dankzij het netwerk kun je bijvoorbeeld een bericht van de ene computer naar de andere sturen."},
+  {name:"De verbinding",cat:"technologie",teacher:"Een verbinding is de link tussen twee of meer digitale apparaten waarlangs gegevens worden uitgewisseld, bijvoorbeeld via wifi, een kabel of een mobiel netwerk. Zonder verbinding kunnen toestellen geen informatie delen.",child:"Een verbinding is nodig om toestellen met elkaar te laten praten. Met wifi maak je verbinding met het internet; zonder verbinding kun je niets versturen of opzoeken."},
+  {name:"Online veiligheid",cat:"veiligheid",teacher:"Online veiligheid omvat alles wat je doet om jezelf en je gegevens te beschermen op het internet: sterke wachtwoorden gebruiken, voorzichtig omgaan met persoonlijke gegevens, verdachte berichten herkennen en gepast reageren op risico's zoals phishing of grooming.",child:"Online veiligheid betekent dat je goed voor jezelf zorgt op het internet. Je deelt geen geheime dingen, kiest een sterk wachtwoord en vertelt het aan een volwassene als iets niet pluis is."},
+  {name:"Nepnieuws",cat:"media",teacher:"Nepnieuws (fake news) is onjuiste of misleidende informatie die als echt nieuws wordt gepresenteerd, vaak om aandacht te trekken, te misleiden of mensen te beïnvloeden. Kritisch bronnen beoordelen en factchecken helpt om het te herkennen.",child:"Nepnieuws is nieuws dat niet waar is, maar er wel echt uitziet. Niet alles wat je online leest klopt — denk goed na en check of het echt waar is."},
+  {name:"Decompositie",cat:"programmeren",teacher:"Decompositie is het opdelen van een groot of complex probleem in kleinere, beheersbare deelproblemen. Het is een van de kernprincipes van computationeel denken.",child:"Decompositie betekent een groot probleem in kleine stukjes hakken. Zo wordt iets moeilijks ineens veel makkelijker, want je lost het stap voor stap op."},
+  {name:"Abstractie",cat:"programmeren",teacher:"Abstractie is het weglaten van onbelangrijke details om je te concentreren op wat echt belangrijk is om een probleem op te lossen. Het is een kernprincipe van computationeel denken.",child:"Abstractie betekent dat je enkel kijkt naar wat écht belangrijk is en de rest even weglaat. Net zoals een plattegrond niet elk steentje toont, maar wel de weg die je moet volgen."},
+  {name:"Sequentie",cat:"programmeren",teacher:"Een sequentie is de vaste volgorde waarin de stappen of instructies van een algoritme worden uitgevoerd. De juiste volgorde is bepalend voor het resultaat.",child:"Een sequentie is de juiste volgorde van stappen. Net zoals je eerst je sokken aandoet en dan pas je schoenen — de volgorde is belangrijk!"},
+  {name:"Deepfake",cat:"media",teacher:"Een deepfake is een met artificiële intelligentie gemanipuleerde foto, video of audio waarin iemand iets lijkt te zeggen of te doen dat in werkelijkheid niet gebeurd is. Deepfakes zijn vaak moeilijk te onderscheiden van echt materiaal.",child:"Een deepfake is een nepfilmpje of nepfoto die door de computer is gemaakt. Het lijkt echt, maar het is het niet — daarom moet je altijd goed opletten wat je online ziet."},
+  {name:"Phishing",cat:"veiligheid",teacher:"Phishing is een vorm van oplichting waarbij criminelen via valse berichten (e-mail, sms, chat) proberen om persoonlijke gegevens zoals wachtwoorden of bankgegevens te ontfutselen, vaak via een misleidende link.",child:"Phishing is een truc van oplichters: ze sturen een nep-bericht om je geheime gegevens te stelen. Klik nooit zomaar op vreemde links en vertel het aan een volwassene."},
+  {name:"Filterbubbel",cat:"media",teacher:"Een filterbubbel ontstaat doordat algoritmes vooral inhoud tonen die aansluit bij je eerdere voorkeuren. Daardoor krijg je een eenzijdig beeld en zie je weinig andere meningen of informatie.",child:"Een filterbubbel betekent dat je online vooral dingen ziet die je al leuk vindt. Daardoor mis je soms andere ideeën. Kijk dus ook eens bewust naar iets anders!"}
+];
+
+let level = 'lk', activeCatFilter = 'alle', favs = new Set(), newTermName = null;
+
+function sortKey(n){ return n.replace(/^(De |Het |de |het |')/i,'').toLowerCase(); }
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function render(filter=''){
+  const list=document.getElementById('termList'), noRes=document.getElementById('noResults'),
+        sidebar=document.getElementById('alphaSidebar'), countEl=document.getElementById('resultCount');
+  const q=filter.toLowerCase();
+  let filtered=terms.filter(t=>{
+    const mc=activeCatFilter==='alle'||t.cat===activeCatFilter;
+    const ms=!q||t.name.toLowerCase().includes(q)||t.teacher.toLowerCase().includes(q)||t.child.toLowerCase().includes(q);
+    return mc&&ms;
+  });
+  countEl.innerHTML=`<strong>${filtered.length}</strong> van ${terms.length} begrippen`;
+  if(!filtered.length){
+    noRes.style.display='block'; list.innerHTML=''; sidebar.innerHTML='';
+    document.getElementById('noResultsTerm').textContent=filter; return;
+  }
+  noRes.style.display='none';
+  filtered.sort((a,b)=>sortKey(a.name).localeCompare(sortKey(b.name),'nl'));
+  const groups={};
+  filtered.forEach(t=>{ const l=sortKey(t.name)[0].toUpperCase(); if(!groups[l])groups[l]=[]; groups[l].push(t); });
+  const letters=Object.keys(groups).sort();
+  const ALL='ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+  sidebar.innerHTML=ALL.map(l=>{
+    const has=letters.includes(l);
+    return `<a class="alpha-btn ${has?'':'empty'}" id="alpha-${l}" href="${has?'#section-'+l:'javascript:void(0)'}" onclick="${has?'setActiveAlpha(\''+l+'\')':''}">${l}</a>`;
+  }).join('');
+  if(letters.length) setActiveAlpha(letters[0]);
+  list.innerHTML=letters.map(letter=>{
+    const sg=groups[letter];
+    return `<div class="letter-section" id="section-${letter}">
+      <div class="letter-header">
+        <div class="letter-badge">${letter}</div>
+        <div class="letter-rule"></div>
+        <div class="letter-meta">
+          <span class="letter-count">${sg.length} begrip${sg.length>1?'pen':''}</span>
+          <button class="expand-all-btn" onclick="expandSection('section-${letter}',this)">Alles tonen</button>
+        </div>
+      </div>
+      ${sg.map(t=>cardHTML(t)).join('')}
+    </div>`;
+  }).join('');
+  if(newTermName){
+    requestAnimationFrame(()=>{
+      document.querySelectorAll('.term-card').forEach(c=>{ if(c.dataset.name===newTermName){ c.classList.add('new-highlight'); c.scrollIntoView({behavior:'smooth',block:'center'}); } });
+      newTermName=null;
+    });
+  }
+  renderFavPanel();
+}
+
+function cardHTML(t){
+  const img=imgMap[t.name]||'';
+  const imgH=img
+    ?`<div class="term-body-img"><img src="${esc(img)}" alt="${esc(t.name)}" loading="lazy" onerror="this.parentElement.innerHTML='<span class=\'img-placeholder\'>🖼️</span>'"/></div>`
+    :`<div class="term-body-img"><span class="img-placeholder">🖼️</span></div>`;
+  let body='';
+  if(level==='lk') body=`<div class="level-label lk">Uitleg voor leerkrachten</div><p class="term-uitleg">${esc(t.teacher)}</p>`;
+  else if(level==='kind') body=`<div class="level-label kind-lbl">Uitleg voor kinderen</div><p class="term-uitleg kind-uitleg">${esc(t.child)}</p>`;
+  else body=`<div class="level-label lk">Uitleg voor leerkrachten</div><p class="term-uitleg">${esc(t.teacher)}</p><div class="both-divider"></div><div class="level-label kind-lbl">Uitleg voor kinderen</div><p class="term-uitleg kind-uitleg">${esc(t.child)}</p>`;
+  const isFav=favs.has(t.name);
+  const safen=t.name.replace(/'/g,"\\'");
+  return `<div class="term-card" data-name="${esc(t.name)}" onclick="toggleCard(this)">
+    <div class="term-header">
+      <span class="cat-dot cat-${t.cat}"></span>
+      <span class="term-name">${esc(t.name)}</span>
+      <div class="term-actions" onclick="event.stopPropagation()">
+        <button class="fav-btn ${isFav?'active':''}" onclick="toggleFav('${safen}',this)" title="${isFav?'Verwijder uit favorieten':'Voeg toe aan favorieten'}">${isFav?'⭐':'☆'}</button>
+        <span class="cat-pill pill-${t.cat}">${catLabels[t.cat]}</span>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="term-body-wrap"><div class="term-body-inner"><div class="term-body">
+      <div class="term-body-text">${body}</div>${imgH}
+    </div></div></div>
+  </div>`;
+}
+
+function toggleCard(el){ el.classList.toggle('open'); }
+function expandSection(id,btn){
+  const cards=document.getElementById(id).querySelectorAll('.term-card');
+  const allOpen=[...cards].every(c=>c.classList.contains('open'));
+  cards.forEach(c=>c.classList.toggle('open',!allOpen));
+  btn.textContent=allOpen?'Alles tonen':'Alles sluiten';
+}
+function setActiveAlpha(l){
+  document.querySelectorAll('.alpha-btn').forEach(b=>b.classList.remove('active'));
+  const btn=document.getElementById('alpha-'+l); if(btn) btn.classList.add('active');
+}
+function setLevel(l){
+  level=l;
+  ['lk','kind','both'].forEach(id=>document.getElementById('btn-'+id).classList.remove('active'));
+  document.getElementById('btn-'+l).classList.add('active');
+  render(document.getElementById('searchInput').value.toLowerCase());
+}
+function setCat(btn,cat){
+  activeCatFilter=cat;
+  document.querySelectorAll('.cat-filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  render(document.getElementById('searchInput').value.toLowerCase());
+}
+let st;
+function onSearch(val){
+  document.getElementById('searchClear').classList.toggle('visible',val.length>0);
+  clearTimeout(st); st=setTimeout(()=>render(val.toLowerCase()),110);
+}
+function clearSearch(){
+  const inp=document.getElementById('searchInput'); inp.value='';
+  document.getElementById('searchClear').classList.remove('visible'); inp.focus(); render('');
+}
+function handleSearchKey(e){ if(e.key==='Escape') clearSearch(); }
+
+function toggleFav(name,btn){
+  if(favs.has(name)){ favs.delete(name); btn.textContent='☆'; btn.classList.remove('active'); btn.title='Voeg toe aan favorieten'; }
+  else { favs.add(name); btn.textContent='⭐'; btn.classList.add('active'); btn.title='Verwijder uit favorieten'; }
+  renderFavPanel(); updateFavBtn();
+}
+function renderFavPanel(){
+  const chips=document.getElementById('favChips');
+  if(!favs.size){ chips.innerHTML='<span class="fav-empty">Nog geen favorieten. Klik op ☆ bij een begrip.</span>'; return; }
+  chips.innerHTML=[...favs].sort().map(name=>{
+    const t=terms.find(t=>t.name===name), cat=t?t.cat:'technologie';
+    return `<div class="fav-chip"><span class="chip-dot cat-${cat}"></span>${esc(name)}</div>`;
+  }).join('');
+}
+function toggleFavPanel(){ document.getElementById('favPanel').classList.toggle('visible'); }
+function clearAllFavs(){ favs.clear(); renderFavPanel(); updateFavBtn(); render(document.getElementById('searchInput').value.toLowerCase()); }
+function updateFavBtn(){ document.getElementById('favToggleBtn').textContent=favs.size?`⭐ Favorieten (${favs.size})`:'⭐ Favorieten'; }
+
+function openModal(pre=''){
+  document.getElementById('inp-term').value=pre;
+  document.getElementById('inp-teacher').value='';
+  document.getElementById('inp-child').value='';
+  document.getElementById('imgPreviewWrap').innerHTML='<div class="img-upload-placeholder">📁 Klik of sleep een afbeelding hier</div>';
+  document.getElementById('imgSuggestions').innerHTML='';
+  document.getElementById('imgSuggestions').classList.remove('visible');
+  currentImgUrl='';
+  document.getElementById('modal').classList.add('open');
+  setTimeout(()=>document.getElementById('inp-term').focus(),80);
+}
+function openModalPrefilled(){ openModal(document.getElementById('searchInput').value); }
+function closeModal(){ document.getElementById('modal').classList.remove('open'); }
+
+document.getElementById('inp-child').addEventListener('keydown',e=>{ if(e.key==='Enter'&&e.ctrlKey) saveTerm(); });
+document.getElementById('inp-term').addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
+
+function saveTerm(){
+  const name=document.getElementById('inp-term').value.trim();
+  const cat=document.getElementById('inp-cat').value;
+  const teacher=document.getElementById('inp-teacher').value.trim();
+  const child=document.getElementById('inp-child').value.trim();
+  if(!name||!teacher||!child){ showToast('⚠️ Vul alle velden in.'); return; }
+  terms.push({name,cat,teacher,child}); newTermName=name;
+  if(currentImgUrl) imgMap[name]=currentImgUrl;
+  closeModal();
+  activeCatFilter='alle';
+  document.getElementById('searchInput').value='';
+  document.getElementById('searchClear').classList.remove('visible');
+  document.querySelectorAll('.cat-filter-btn').forEach(b=>b.classList.toggle('active',b.dataset.cat==='alle'));
+  render(''); showToast('✓ Begrip "'+name+'" toegevoegd');
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+window.addEventListener('scroll',()=>{
+  let cur='';
+  document.querySelectorAll('.letter-section').forEach(s=>{ if(window.scrollY+108>=s.offsetTop) cur=s.id.replace('section-',''); });
+  if(cur) setActiveAlpha(cur);
+},{passive:true});
+
+// ─── AI SUGGESTION FUNCTIONS ───
+let currentImgUrl = '';
+
+async function claudeAPI(prompt) {
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': 'PLACEHOLDER',
+      'anthropic-version': '2023-06-01'
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1000,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  });
+  if (!res.ok) throw new Error('API error ' + res.status);
+  const data = await res.json();
+  return data.content?.map(b => b.text || '').join('').trim() || '';
+}
+
+async function generateSuggestion(type){
+  const term = document.getElementById('inp-term').value.trim();
+  if(!term){ showToast('⚠️ Voer eerst een term in.'); return; }
+  const btnId = type==='teacher' ? 'btn-sug-teacher' : 'btn-sug-child';
+  const textareaId = type==='teacher' ? 'inp-teacher' : 'inp-child';
+  const btn = document.getElementById(btnId);
+  btn.innerHTML = '<span class="spin">⟳</span> Bezig…';
+  btn.disabled = true;
+  const prompt = type==='teacher'
+    ? `Schrijf een professionele, objectieve uitleg van het begrip "${term}" voor leerkrachten in het basisonderwijs in het kader van digitale geletterdheid. Maximaal 2-3 zinnen, zakelijk en helder. Geen bulletpoints, gewone alineatekst. Geef enkel de uitleg, geen inleiding of afsluiting.`
+    : `Schrijf een kindvriendelijke, eenvoudige uitleg van het begrip "${term}" voor leerlingen van het basisonderwijs (6-12 jaar). Gebruik een vergelijking of voorbeeld. Maximaal 2 zinnen. Geen bulletpoints. Geef enkel de uitleg, geen inleiding of afsluiting.`;
+  try {
+    const text = await claudeAPI(prompt);
+    if(text){ document.getElementById(textareaId).value = text; showToast('✓ Suggestie gegenereerd — pas gerust aan!'); }
+    else { showToast('⚠️ Geen suggestie ontvangen.'); }
+  } catch(e){ showToast('⚠️ Fout: ' + e.message); }
+  btn.innerHTML = '✨ Suggestie';
+  btn.disabled = false;
+}
+
+async function suggestImages(){
+  const term = document.getElementById('inp-term').value.trim();
+  if(!term){ showToast('⚠️ Voer eerst een term in.'); return; }
+  const btn = document.getElementById('btn-sug-img');
+  btn.innerHTML = '<span class="spin">⟳</span> Bezig…';
+  btn.disabled = true;
+  const sugBox = document.getElementById('imgSuggestions');
+  sugBox.innerHTML = '<span style="font-size:0.8rem;color:var(--muted);font-family:DM Sans,sans-serif;">Afbeeldingen zoeken…</span>';
+  sugBox.classList.add('visible');
+  try {
+    const raw = await claudeAPI(
+      `Geef 3 korte Engelstalige zoektermen (elk 1-3 woorden) die passen bij het begrip "${term}" in de context van digitale geletterdheid voor basisonderwijs. Stuur ALLEEN een JSON array zonder uitleg of markdown, bijv: ["digital learning","classroom technology","kids coding"]`
+    );
+    const cleaned = raw.replace(/```json|```/g,'').trim();
+    const queries = JSON.parse(cleaned);
+    // Use Unsplash with a cache-busting random seed per term so each shows a different image
+    const imgs = queries.map((q, i) => ({
+      q,
+      url: `https://source.unsplash.com/300x200/?${encodeURIComponent(q)}&sig=${Date.now()+i}`
+    }));
+    sugBox.innerHTML = imgs.map(img => `
+      <div class="img-sug-item" onclick="selectSugImg(this,'${img.url}','${esc(img.q)}')">
+        <img src="${img.url}" alt="${esc(img.q)}" onerror="this.src='https://images.unsplash.com/photo-1518770660439-4636190af475?w=300&q=70'">
+        <div class="img-sug-label">${esc(img.q)}</div>
+        <div class="img-sug-check">✓</div>
+      </div>`).join('');
+  } catch(e){
+    sugBox.innerHTML = `<span style="font-size:0.8rem;color:#e11d48;font-family:DM Sans,sans-serif;">Fout: ${e.message}</span>`;
+  }
+  btn.innerHTML = '✨ Suggestie';
+  btn.disabled = false;
+}
+
+function selectSugImg(el, url, label){
+  document.querySelectorAll('.img-sug-item').forEach(i=>i.classList.remove('selected'));
+  el.classList.add('selected');
+  currentImgUrl = url;
+  document.getElementById('imgPreviewWrap').innerHTML = `<div class="img-upload-preview"><img class="img-upload-thumb" src="${url}" alt="${label}"><span class="img-upload-placeholder">Geselecteerd: ${label}</span></div>`;
+}
+
+function handleImgUpload(input){
+  const file = input.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    currentImgUrl = e.target.result;
+    document.getElementById('imgPreviewWrap').innerHTML = `<div class="img-upload-preview"><img class="img-upload-thumb" src="${currentImgUrl}" alt="upload"><span class="img-upload-placeholder">${file.name}</span></div>`;
+    document.getElementById('imgSuggestions').classList.remove('visible');
+  };
+  reader.readAsDataURL(file);
+}
+
+renderFavPanel();
+render();
+</script>
+</body>
+</html>

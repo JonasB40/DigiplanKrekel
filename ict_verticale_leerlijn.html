@@ -1,0 +1,321 @@
+
+<style>
+  body { margin: 0; }
+  .ll-wrap { padding: 8px 0 24px; font-family: var(--font-sans); }
+  .ll-grid { display: grid; grid-template-columns: 110px 1fr; gap: 0; }
+  .ll-year-col { display: flex; flex-direction: column; }
+  .ll-year { display: flex; align-items: flex-start; justify-content: flex-end; padding-right: 14px; padding-top: 14px; }
+  .ll-year-badge { font-size: 11px; font-weight: 500; text-align: right; line-height: 1.3; color: var(--color-text-secondary); }
+  .ll-year-badge strong { display: block; font-size: 13px; color: var(--color-text-primary); }
+  .ll-cards-col { border-left: 2px solid var(--color-border-tertiary); padding-left: 16px; display: flex; flex-direction: column; gap: 0; }
+  .ll-card { margin-bottom: 16px; border-radius: 10px; border: 1px solid var(--color-border-tertiary); overflow: hidden; }
+  .ll-card-header { padding: 9px 14px 8px; font-size: 12px; font-weight: 500; display: flex; align-items: center; gap: 8px; }
+  .ll-card-header .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .ll-domains { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 14px 11px; }
+  .ll-domain { border-radius: 6px; padding: 5px 10px; font-size: 11px; line-height: 1.4; max-width: 100%; }
+  .ll-domain strong { display: block; font-size: 11px; font-weight: 500; margin-bottom: 1px; }
+  .ll-domain ul { margin: 2px 0 0; padding-left: 12px; font-size: 10.5px; line-height: 1.5; }
+  .ll-domain ul li { margin-bottom: 1px; }
+  .ll-md { font-size: 9.5px; opacity: 0.7; font-style: italic; margin-top: 2px; display: block; }
+  .ll-connector { width: 2px; background: var(--color-border-tertiary); height: 4px; margin-left: -1px; }
+  .phase-kleuter .ll-card-header { background: #EAF3DE; color: #3B6D11; }
+  .phase-kleuter .dot { background: #639922; }
+  .phase-kleuter .ll-domain { background: #EAF3DE; }
+  .phase-kleuter .ll-domain strong { color: #3B6D11; }
+  .phase-kleuter .ll-domain ul { color: #3B6D11; }
+  @media (prefers-color-scheme: dark) {
+    .phase-kleuter .ll-card-header { background: #173404; color: #C0DD97; }
+    .phase-kleuter .dot { background: #639922; }
+    .phase-kleuter .ll-domain { background: #173404; }
+    .phase-kleuter .ll-domain strong { color: #C0DD97; }
+    .phase-kleuter .ll-domain ul { color: #97C459; }
+  }
+  .phase-lo .ll-card-header { background: #E6F1FB; color: #185FA5; }
+  .phase-lo .dot { background: #378ADD; }
+  .phase-lo .ll-domain { background: #E6F1FB; }
+  .phase-lo .ll-domain strong { color: #185FA5; }
+  .phase-lo .ll-domain ul { color: #185FA5; }
+  @media (prefers-color-scheme: dark) {
+    .phase-lo .ll-card-header { background: #042C53; color: #B5D4F4; }
+    .phase-lo .dot { background: #378ADD; }
+    .phase-lo .ll-domain { background: #042C53; }
+    .phase-lo .ll-domain strong { color: #B5D4F4; }
+    .phase-lo .ll-domain ul { color: #85B7EB; }
+  }
+  .phase-l4 .ll-card-header { background: #EEEDFE; color: #3C3489; }
+  .phase-l4 .dot { background: #7F77DD; }
+  .phase-l4 .ll-domain { background: #EEEDFE; }
+  .phase-l4 .ll-domain strong { color: #3C3489; }
+  .phase-l4 .ll-domain ul { color: #534AB7; }
+  @media (prefers-color-scheme: dark) {
+    .phase-l4 .ll-card-header { background: #26215C; color: #CECBF6; }
+    .phase-l4 .dot { background: #7F77DD; }
+    .phase-l4 .ll-domain { background: #26215C; }
+    .phase-l4 .ll-domain strong { color: #CECBF6; }
+    .phase-l4 .ll-domain ul { color: #AFA9EC; }
+  }
+  .phase-l6 .ll-card-header { background: #FAECE7; color: #712B13; }
+  .phase-l6 .dot { background: #D85A30; }
+  .phase-l6 .ll-domain { background: #FAECE7; }
+  .phase-l6 .ll-domain strong { color: #712B13; }
+  .phase-l6 .ll-domain ul { color: #993C1D; }
+  @media (prefers-color-scheme: dark) {
+    .phase-l6 .ll-card-header { background: #4A1B0C; color: #F5C4B3; }
+    .phase-l6 .dot { background: #D85A30; }
+    .phase-l6 .ll-domain { background: #4A1B0C; }
+    .phase-l6 .ll-domain strong { color: #F5C4B3; }
+    .phase-l6 .ll-domain ul { color: #F0997B; }
+  }
+  .ll-card-header span { font-size: 10px; font-weight: 400; opacity: 0.75; margin-left: auto; }
+</style>
+
+<div class="ll-wrap">
+<div class="ll-grid">
+
+  <div class="ll-year-col">
+    <div class="ll-year" style="height:auto;min-height:80px;"><div class="ll-year-badge"><strong>Kleuter</strong>K1–K2</div></div>
+    <div class="ll-year" style="height:auto;min-height:96px;"><div class="ll-year-badge"><strong>Kleuter</strong>K3</div></div>
+    <div class="ll-year" style="height:auto;min-height:96px;"><div class="ll-year-badge"><strong>L1</strong>6–7 jaar</div></div>
+    <div class="ll-year" style="height:auto;min-height:96px;"><div class="ll-year-badge"><strong>L2</strong>7–8 jaar</div></div>
+    <div class="ll-year" style="height:auto;min-height:108px;"><div class="ll-year-badge"><strong>L3</strong>8–9 jaar</div></div>
+    <div class="ll-year" style="height:auto;min-height:120px;"><div class="ll-year-badge"><strong>L4</strong>9–10 jaar<br><span style="font-size:9px;color:#7F77DD">minimumdoelen</span></div></div>
+    <div class="ll-year" style="height:auto;min-height:108px;"><div class="ll-year-badge"><strong>L5</strong>10–11 jaar</div></div>
+    <div class="ll-year" style="height:auto;min-height:120px;"><div class="ll-year-badge"><strong>L6</strong>11–12 jaar<br><span style="font-size:9px;color:#D85A30">minimumdoelen</span></div></div>
+  </div>
+
+  <div class="ll-cards-col">
+
+    <!-- K1-K2 -->
+    <div class="ll-card phase-kleuter">
+      <div class="ll-card-header"><div class="dot"></div>ICT als ondersteuning — nog geen aparte ICT-doelen <span>Geïntegreerd in andere vakken</span></div>
+      <div class="ll-domains">
+        <div class="ll-domain" style="flex:1;min-width:180px;">
+          <strong>Basisomgang met digitale middelen</strong>
+          <ul>
+            <li>Aanraken, slepen, tikken op touchscreen</li>
+            <li>Herkennen van tablet, computer, muis</li>
+            <li>Luisterverhalen, kleuterapps gebruiken onder begeleiding</li>
+            <li>Digitale middelen als hulp bij woordenschat & getalbegrip</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- K3 -->
+    <div class="ll-card phase-kleuter">
+      <div class="ll-card-header"><div class="dot"></div>Verkennen & gebruiken — ICT geïntegreerd in brede doelen <span>Geïntegreerd</span></div>
+      <div class="ll-domains">
+        <div class="ll-domain" style="flex:1;min-width:180px;">
+          <strong>Digitaal verkennen</strong>
+          <ul>
+            <li>Bewust omgaan met digitale toestellen (aan/uit, icoontjes)</li>
+            <li>Eenvoudige digitale taken uitvoeren (foto bekijken, filmpje starten)</li>
+            <li>Regelmatig en veilig gebruik van digitale middelen in klaskring</li>
+            <li>Eerste gesprekjes over "wat is een computer" / "wat doet internet?"</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- L1 -->
+    <div class="ll-card phase-lo">
+      <div class="ll-card-header"><div class="dot"></div>Intuïtief gebruiker worden <span>1ste leerjaar</span></div>
+      <div class="ll-domains">
+        <div class="ll-domain" style="flex:1;min-width:160px;">
+          <strong>Digitale systemen</strong>
+          <ul><li>Onderscheid toestel / scherm / toetsenbord</li><li>Aan- en uitzetten, apps openen/sluiten</li></ul>
+        </div>
+        <div class="ll-domain" style="flex:1;min-width:160px;">
+          <strong>Computationeel denken</strong>
+          <ul><li>Stappen in volgorde leggen (sequentie) — unplugged</li><li>Begrip: instructie, volgorde</li></ul>
+        </div>
+        <div class="ll-domain" style="flex:1;min-width:160px;">
+          <strong>Digitale geletterdheid</strong>
+          <ul><li>Icoontjes herkennen</li><li>Basisgebruik muis/touchscreen</li></ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- L2 -->
+    <div class="ll-card phase-lo">
+      <div class="ll-card-header"><div class="dot"></div>Bewust gebruiker worden <span>2de leerjaar</span></div>
+      <div class="ll-domains">
+        <div class="ll-domain" style="flex:1;min-width:160px;">
+          <strong>Digitale systemen</strong>
+          <ul><li>Invoer → verwerking → uitvoer herkennen in concrete situaties</li><li>Begrippen: hardware, software (eerste verkenning)</li></ul>
+        </div>
+        <div class="ll-domain" style="flex:1;min-width:160px;">
+          <strong>Computationeel denken</strong>
+          <ul><li>Sequentie programmeren via Bee-Bot of Scratch Jr.</li><li>Fouten herkennen en verbeteren (debuggen)</li></ul>
+        </div>
+        <div class="ll-domain" style="flex:1;min-width:160px;">
+          <strong>Mediawijsheid</strong>
+          <ul><li>Verschil echte/nep info — eerste verkenning</li><li>Veilig gedrag online: niets delen zonder toestemming volwassene</li></ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- L3 -->
+    <div class="ll-card phase-lo">
+      <div class="ll-card-header"><div class="dot"></div>Kritisch gebruiker worden <span>3de leerjaar</span></div>
+      <div class="ll-domains">
+        <div class="ll-domain" style="flex:1;min-width:160px;">
+          <strong>Digitale systemen</strong>
+          <ul><li>Offline vs. online, begrip internet</li><li>Opslag: verschil tijdelijk/blijvend werkgeheugen</li></ul>
+        </div>
+        <div class="ll-domain" style="flex:1;min-width:160px;">
+          <strong>Computationeel denken</strong>
+          <ul><li>Abstractie & decompositie — unplugged oefeningen</li><li>Herhaling in algoritme (loop)</li><li>Patroonherkenning</li></ul>
+        </div>
+        <div class="ll-domain" style="flex:1;min-width:160px;">
+          <strong>Digitale geletterdheid</strong>
+          <ul><li>Basisgebruik toetsenbord (thuisrij)</li><li>Bestanden openen en opslaan</li></ul>
+        </div>
+        <div class="ll-domain" style="flex:1;min-width:160px;">
+          <strong>Informatiegeletterdheid</strong>
+          <ul><li>Zoekvraag formuleren</li><li>Zoektool kiezen (Google, YouTube...)</li></ul>
+        </div>
+        <div class="ll-domain" style="flex:1;min-width:160px;">
+          <strong>Mediawijsheid</strong>
+          <ul><li>Persoonlijke gegevens beschermen</li><li>Account & wachtwoord begrip</li></ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- L4 -->
+    <div class="ll-card phase-l4">
+      <div class="ll-card-header"><div class="dot"></div>Minimumdoelen 4de leerjaar — te bereiken op populatieniveau <span>MD 8.x</span></div>
+      <div class="ll-domains">
+        <div class="ll-domain" style="flex:1;min-width:160px;">
+          <strong>Computationeel denken — digitale systemen</strong>
+          <ul>
+            <li>Begrippen: digitaal, internet, hardware, software, invoer, verwerking, uitvoer, opslag, verzenden, ontvangen, offline, online</li>
+          </ul>
+          <span class="ll-md">MD 8.1.1 (L4)</span>
+        </div>
+        <div class="ll-domain" style="flex:1;min-width:160px;">
+          <strong>Computationeel denken — principes</strong>
+          <ul>
+            <li>Begrip: algoritme</li>
+            <li>Principes: abstractie, decompositie, patroonherkenning</li>
+            <li>Lineair algoritme ontwerpen, testen en debuggen (sequentie)</li>
+          </ul>
+          <span class="ll-md">MD 8.1.2 – 8.1.3 (L4)</span>
+        </div>
+        <div class="ll-domain" style="flex:1;min-width:160px;">
+          <strong>Digitale geletterdheid</strong>
+          <ul>
+            <li>Begrip: bestand (tekst, beeld, geluid, video, programma)</li>
+            <li>Aangereikte invoer-/uitvoerapparaten gebruiken, basistoetsenbord</li>
+            <li>Bestanden gebruiken via bestaande mappenstructuur</li>
+          </ul>
+          <span class="ll-md">MD 8.2.1 – 8.2.3 (L4)</span>
+        </div>
+        <div class="ll-domain" style="flex:1;min-width:160px;">
+          <strong>Informatiegeletterdheid</strong>
+          <ul>
+            <li>Zoekstrategie: zoekvraag, zoektool, zoekopdracht, beoordelen van resultaten</li>
+            <li>Zoekstrategie uitwerken en toepassen vanuit CT-principes</li>
+          </ul>
+          <span class="ll-md">MD 8.2.4 – 8.2.5 (L4)</span>
+        </div>
+        <div class="ll-domain" style="flex:1;min-width:160px;">
+          <strong>Mediawijsheid</strong>
+          <ul>
+            <li>Begrippen: online privacy, persoonlijke gegevens, account</li>
+          </ul>
+          <span class="ll-md">MD 8.3.1 (L4)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- L5 -->
+    <div class="ll-card phase-l6" style="opacity:0.85;">
+      <div class="ll-card-header"><div class="dot"></div>Verdiepen & uitbreiden richting L6 <span>5de leerjaar</span></div>
+      <div class="ll-domains">
+        <div class="ll-domain" style="flex:1;min-width:160px;">
+          <strong>Computationeel denken</strong>
+          <ul><li>Algoritme met herhaling (lus) en keuze (conditie) — plugged & unplugged</li><li>Netwerk, verbinding, communicatie tussen systemen verkennen</li></ul>
+        </div>
+        <div class="ll-domain" style="flex:1;min-width:160px;">
+          <strong>Digitale geletterdheid</strong>
+          <ul><li>Vlot gebruik toetsenbord</li><li>Bestanden beheren: hernoemen, map aanmaken, verwijderen</li><li>Eenvoudige systeeminstellingen (wifi, taal)</li></ul>
+        </div>
+        <div class="ll-domain" style="flex:1;min-width:160px;">
+          <strong>Informatiegeletterdheid & AI</strong>
+          <ul><li>Bronnen kritisch beoordelen (bruikbaar, betrouwbaar, correct)</li><li>Eerste verkenning van AI-toepassingen in dagelijkse context</li></ul>
+        </div>
+        <div class="ll-domain" style="flex:1;min-width:160px;">
+          <strong>Mediawijsheid</strong>
+          <ul><li>Auteursrecht & portretrecht verkennen</li><li>Online veiligheid verdiepen: sterke wachtwoorden, phishing herkennen</li></ul>
+        </div>
+        <div class="ll-domain" style="flex:1;min-width:160px;">
+          <strong>Digitale creatie</strong>
+          <ul><li>Synchroon vs. asynchroon communiceren verkennen</li><li>Digitale inhoud maken en delen met geschikte tools</li></ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- L6 -->
+    <div class="ll-card phase-l6">
+      <div class="ll-card-header"><div class="dot"></div>Minimumdoelen 6de leerjaar — te bereiken op populatieniveau <span>MD 8.x</span></div>
+      <div class="ll-domains">
+        <div class="ll-domain" style="flex:1;min-width:160px;">
+          <strong>Computationeel denken — systemen</strong>
+          <ul>
+            <li>Proces van digitale informatieverwerking kennen</li>
+            <li>Begrijpen hoe digitale systemen met elkaar verbonden worden om te communiceren</li>
+            <li>Begrippen: invoer, uitvoer, opslag, informatieverwerking, netwerk, verbinding</li>
+          </ul>
+          <span class="ll-md">MD 8.1.1 – 8.1.2 (L6)</span>
+        </div>
+        <div class="ll-domain" style="flex:1;min-width:160px;">
+          <strong>Computationeel denken — principes</strong>
+          <ul>
+            <li>CT-principes toepassen: algoritme met sequentie, herhaling en keuze ontwerpen, testen en debuggen</li>
+          </ul>
+          <span class="ll-md">MD 8.1.3 (L6)</span>
+        </div>
+        <div class="ll-domain" style="flex:1;min-width:160px;">
+          <strong>Digitale geletterdheid</strong>
+          <ul>
+            <li>Doelgericht invoer-/uitvoerapparaten gebruiken en instellen, incl. vlot toetsenbordgebruik</li>
+            <li>Bestanden openen, downloaden, opslaan, uploaden en sluiten</li>
+            <li>Bestanden beheren via aangereikte structuur</li>
+            <li>Eenvoudige systeeminstellingen aanpassen</li>
+          </ul>
+          <span class="ll-md">MD 8.2.1 – 8.2.4 (L6)</span>
+        </div>
+        <div class="ll-domain" style="flex:1;min-width:160px;">
+          <strong>Informatiegeletterdheid & AI</strong>
+          <ul>
+            <li>Begrip: artificiële intelligentie</li>
+            <li>Zoekstrategie uitwerken, toepassen en bijsturen vanuit CT</li>
+            <li>Digitale bronnen beoordelen op bruikbaarheid, betrouwbaarheid en correctheid</li>
+            <li>Voorbeelden geven van AI-toepassingen</li>
+          </ul>
+          <span class="ll-md">MD 8.2.5 – 8.2.8 (L6)</span>
+        </div>
+        <div class="ll-domain" style="flex:1;min-width:160px;">
+          <strong>Mediawijsheid</strong>
+          <ul>
+            <li>Begrippen: auteursrecht, portretrecht, online veiligheid, nepnieuws</li>
+            <li>Basisprincipes auteursrecht en portretrecht kennen</li>
+            <li>Mogelijkheden om zichzelf en anderen online te beschermen</li>
+            <li>Impact van digitale media op eigen leefwereld en integriteit illustreren</li>
+          </ul>
+          <span class="ll-md">MD 8.3.1 – 8.3.4 (L6)</span>
+        </div>
+        <div class="ll-domain" style="flex:1;min-width:160px;">
+          <strong>Digitale creatie — communiceren</strong>
+          <ul>
+            <li>Mogelijkheden van digitale tools om te communiceren kennen (realtime, synchroon, asynchroon)</li>
+          </ul>
+          <span class="ll-md">MD 8.4.1 (L6)</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div>

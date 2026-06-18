@@ -1,0 +1,9 @@
+# Grote bestanden die niet in git thuishoren
+*.pdf
+
+# Claude Code interne bestanden
+.claude/
+
+# Windows systeembestanden
+Thumbs.db
+desktop.ini

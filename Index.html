@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Digiplan – GBS De Krekel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700;800&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --blue-dark: #020617;
+      --cyan: #22d3ee;
+      --cream: #fafaf8;
+      --border: #e2e8f0;
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--cream);
+      color: #1e293b;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden; /* Zorgt dat alles op 1 scherm past */
+    }
+
+    /* ── HERO SECTIE ── */
+    .hero {
+      background: linear-gradient(135deg, #020617 0%, #0f172a 100%);
+      color: white;
+      height: 28vh;
+      display: flex;
+      align-items: center;
+      position: relative;
+      padding: 0 5%;
+    }
+
+    .hero-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 2fr 1fr;
+      align-items: center;
+    }
+
+    .title-group {
+      grid-column: 2;
+      text-align: center;
+    }
+
+    .hero-subtitle {
+      font-size: 0.85rem;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+
+    .hero-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(2.5rem, 5vw, 4.5rem);
+      font-weight: 800;
+      display: flex;
+      justify-content: center;
+      gap: 3px;
+      line-height: 1.1;
+      padding-bottom: 15px; /* CRUCIAAL: Ruimte voor de G en P */
+    }
+
+    .hero-title span {
+      display: inline-block;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: techReveal 0.6s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+      background: linear-gradient(to bottom, #ffffff 50%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    @keyframes techReveal {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-title span:nth-child(1) { animation-delay: 0.1s; }
+    .hero-title span:nth-child(2) { animation-delay: 0.15s; }
+    .hero-title span:nth-child(3) { animation-delay: 0.2s; }
+    .hero-title span:nth-child(4) { animation-delay: 0.25s; }
+    .hero-title span:nth-child(5) { animation-delay: 0.3s; }
+    .hero-title span:nth-child(6) { animation-delay: 0.35s; }
+    .hero-title span:nth-child(7) { animation-delay: 0.4s; }
+    .hero-title span:nth-child(8) { animation-delay: 0.45s; }
+
+    .hero-symbol {
+      font-size: 2.5rem;
+      margin-right: 15px;
+      filter: drop-shadow(0 0 10px var(--cyan));
+      display: inline-block;
+    }
+
+    .hero-logo {
+      grid-column: 3;
+      justify-self: end;
+    }
+    .hero-logo img {
+      height: 16vh;
+      filter: drop-shadow(0 10px 20px rgba(0,0,0,0.4));
+    }
+
+    /* ── NAVIGATIE GRID 1-6-1 ── */
+    .nav-section {
+      max-width: 1500px;
+      width: 100%;
+      margin: -40px auto 0;
+      padding: 0 30px;
+      flex: 1;
+      display: flex;
+      align-items: center;
+    }
+
+    .nav-grid {
+      display: grid;
+      /* 1 tall - 3 midden - 1 midden - 1 tall */
+      grid-template-columns: 1.2fr 1fr 1fr 1fr 1.2fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 15px;
+      width: 100%;
+      height: 60vh;
+    }
+
+    .nav-card {
+      background: white;
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+      border: 1px solid var(--border);
+      text-decoration: none;
+      color: #1e293b;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Specifieke randen per type */
+    .card-mid { border-left: 6px solid var(--card-accent); }
+    .card-tall { border-top: 6px solid var(--card-accent); grid-row: span 2; text-align: center; }
+
+    /* Top Sweep Animatie (Hover) */
+    .nav-card::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 5px;
+      background: var(--card-accent);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.4s ease;
+      z-index: 5;
+    }
+    .nav-card:hover::before { transform: scaleX(1); }
+
+    /* Shimmer Effect (Hover) */
+    .nav-card::after {
+      content: "";
+      position: absolute;
+      top: 0; left: -100%; width: 50%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+      transition: none;
+      pointer-events: none;
+    }
+    .nav-card:hover::after {
+      left: 150%;
+      transition: all 0.8s ease;
+    }
+
+    .nav-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 40px rgba(15,31,48,0.12);
+      background: #fdfeff;
+    }
+
+    .nav-card-label {
+      font-size: 0.65rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--card-accent);
+      margin-bottom: 6px;
+    }
+
+    .nav-card-icon {
+      font-size: 2.2rem;
+      margin-bottom: 12px;
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      display: inline-block;
+    }
+    .nav-card:hover .nav-card-icon { transform: scale(1.3); }
+
+    .nav-card h2 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: #0f172a;
+    }
+    .nav-card p {
+      font-size: 0.82rem;
+      color: #64748b;
+      line-height: 1.4;
+    }
+
+    footer {
+      text-align: center;
+      padding: 10px;
+      font-size: 0.75rem;
+      color: #94a3b8;
+      border-top: 1px solid var(--border);
+      background: white;
+    }
+
+    @media (max-width: 1200px) {
+      body { overflow-y: auto; height: auto; }
+      .nav-grid { grid-template-columns: 1fr 1fr; grid-template-rows: auto; height: auto; margin-top: 20px;}
+      .card-tall { grid-row: span 1; }
+      .hero { height: auto; padding: 40px 5%; }
+      .hero-inner { grid-template-columns: 1fr; }
+      .hero-logo { grid-column: 1; justify-self: center; margin-top: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="title-group">
+      <span class="hero-subtitle">GBS De Krekel</span>
+      <div style="display: flex; align-items: center; justify-content: center;">
+        <span class="hero-symbol">🌐</span>
+        <h1 class="hero-title">
+          <span>D</span><span>i</span><span>g</span><span>i</span><span>p</span><span>l</span><span>a</span><span>n</span>
+        </h1>
+      </div>
+    </div>
+
+    <div class="hero-logo">
+      <img src="https://dekrekel.net/wp-content/uploads/2022/04/Afbeelding1.png" alt="Logo GBS De Krekel">
+    </div>
+  </div>
+</div>
+
+<div class="nav-section">
+  <div class="nav-grid">
+
+    <!-- LINKS (Tall) -->
+    <a class="nav-card card-tall" href="Verticale leerlijnen.html" style="--card-accent: #2563a8;">
+      <div class="nav-card-label">LeerLokaal</div>
+      <div class="nav-card-icon">📚</div>
+      <h2>Verticale leerlijnen</h2>
+      <p>Digitale geletterdheid in de klas</p>
+    </a>
+
+    <!-- MIDDEN RIJ 1 -->
+    <a class="nav-card card-mid" href="visie.html" style="--card-accent: #3b82f6;">
+      <div class="nav-card-label">Fase 1</div>
+      <div class="nav-card-icon">🔭</div>
+      <h2>Visie</h2>
+      <p>ICT en onderwijsbeleid</p>
+    </a>
+
+    <a class="nav-card card-mid" href="context.html" style="--card-accent: #0d9488;">
+      <div class="nav-card-label">Fase 2</div>
+      <div class="nav-card-icon">🏫</div>
+      <h2>Context</h2>
+      <p>Omgevingsanalyse</p>
+    </a>
+
+    <a class="nav-card card-mid" href="analyse.html" style="--card-accent: #8b5cf6;">
+      <div class="nav-card-label">Fase 3</div>
+      <div class="nav-card-icon">🔍</div>
+      <h2>Analyse</h2>
+      <p>Middelen en teammeting</p>
+    </a>
+
+    <!-- MIDDEN RIJ 2 -->
+    <a class="nav-card card-mid" href="actieplan.html" style="--card-accent: #f59e0b;">
+      <div class="nav-card-label">Fase 4</div>
+      <div class="nav-card-icon">🚀</div>
+      <h2>Actieplan</h2>
+      <p>Doelen en deadlines</p>
+    </a>
+
+    <a class="nav-card card-mid" href="digitale-inclusie.html" style="--card-accent: #22c55e;">
+      <div class="nav-card-label">Inclusie</div>
+      <div class="nav-card-icon">🤝</div>
+      <h2>Digitale inclusie</h2>
+      <p>Gelijke kansen voor elk kind</p>
+    </a>
+
+    <a class="nav-card card-mid" href="AI-good_practices.html" style="--card-accent: #06b6d4;">
+      <div class="nav-card-label">AI</div>
+      <div class="nav-card-icon">🤖</div>
+      <h2>AI Good Practices</h2>
+      <p>Richtlijnen voor het team</p>
+    </a>
+
+    <!-- RECHTS (Tall) -->
+    <a class="nav-card card-tall" href="Pedagogisch project.html" style="--card-accent: #1e293b;">
+      <div class="nav-card-label">Fundament</div>
+      <div class="nav-card-icon">🌱</div>
+      <h2>Pedagogisch project</h2>
+      <p>Kernwaarden en missie</p>
+    </a>
+
+  </div>
+</div>
+
+<footer>&copy; 2025 GBS De Krekel · Zelzate · ICT Beleidsplatform</footer>
+
+</body>
+</html>

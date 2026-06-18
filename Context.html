@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Context – Digiplan GBS De Krekel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shared.css">
+  <style>
+    :root { --accent: #0d9488; --accent-light: #ccfbf1; }
+
+    /* --- STAT GRID --- */
+    .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 20px 0; }
+    @media(max-width:600px){ .stat-grid { grid-template-columns: 1fr; } }
+    .stat-card { background: #f0fdfa; border: 1px solid #99f6e4; border-radius: 12px; padding: 15px; text-align: center; }
+    .stat-card .stat-icon { font-size: 1.8rem; margin-bottom: 5px; }
+    .stat-card .stat-label { font-size: 0.85rem; font-weight: 600; color: var(--dark); }
+
+    /* --- FLIPCARDS --- */
+    .flip-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-top: 25px; }
+    .flip-card { perspective: 1000px; height: 200px; cursor: pointer; }
+    .flip-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s; transform-style: preserve-3d; }
+    .flip-card:hover .flip-card-inner { transform: rotateY(180deg); }
+    .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 15px; display: flex; align-items: center; justify-content: center; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid var(--border); }
+    .flip-card-front { background-color: white; color: var(--accent); font-weight: 700; font-size: 1.1rem; }
+    .flip-card-back { background-color: var(--accent); color: white; transform: rotateY(180deg); font-size: 0.9rem; line-height: 1.4; text-align: left; }
+
+    /* Leerlijn-kleuren (gebruikt in de verticale opbouw) */
+    .lz-ict   { background: #dbeafe; color: #1e4f86; }
+    .lz-comp  { background: #f5f3ff; color: #6d28d9; }
+    .lz-media { background: #ecfdf5; color: #047857; }
+
+    /* --- VERTICALE LEERLIJN PER LEERJAAR --- */
+    .lj-nav { display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin:14px 0 4px; }
+    .lj-chip { font-size:0.82rem; padding:6px 11px; border-radius:8px; border:1px solid var(--border); background:white; color:var(--muted); cursor:pointer; font-family:inherit; font-weight:600; transition:all .15s; }
+    .lj-chip:hover { border-color:var(--accent); color:var(--accent); }
+    .lj-chip.active { background:var(--dark); color:white; border-color:var(--dark); }
+    .lj-sep { color:#cbd5e1; font-size:0.8rem; }
+    .lj-year-title { font-size:1.05rem; font-weight:700; color:var(--dark); margin:18px 0 6px; }
+    .lj-year-age { font-weight:400; color:var(--muted); font-size:0.85rem; }
+    .lj-spiral { background:var(--accent-light); border-left:3px solid var(--accent); border-radius:8px; padding:8px 12px; font-size:0.82rem; color:#134e4a; line-height:1.5; margin-bottom:14px; }
+    .lj-cols { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+    @media(max-width:720px){ .lj-cols { grid-template-columns:1fr; } }
+    .lj-col { background:white; border:1px solid var(--border); border-radius:12px; padding:12px 14px; }
+    .lj-col-head { display:inline-flex; align-items:center; gap:6px; font-weight:700; font-size:0.82rem; padding:5px 10px; border-radius:7px; margin-bottom:8px; }
+    .lj-item { padding:7px 0; border-top:1px solid #f1f5f9; font-size:0.85rem; line-height:1.45; color:#374151; }
+    .lj-item:first-of-type { border-top:none; }
+    .lj-code { font-size:0.72rem; color:var(--muted); margin-top:2px; }
+    .lj-badge-new { font-size:0.66rem; font-weight:700; text-transform:uppercase; letter-spacing:0.03em; color:var(--accent); border:1px solid var(--accent); border-radius:5px; padding:0 5px; margin-left:5px; }
+    .lj-badge-v { font-size:0.74rem; color:var(--muted); margin-left:5px; }
+    .lj-empty { color:var(--muted); font-size:0.85rem; padding:6px 0; }
+    .lj-note { background:#f8fafc; border:1px solid var(--border); border-radius:10px; padding:12px 14px; font-size:0.88rem; color:var(--muted); line-height:1.6; }
+
+    /* --- VIER IN BALANS VISUAL --- */
+    .vib-visual { margin: 40px 0; max-width: 800px; margin-left: auto; margin-right: auto; }
+    .vib-row-top { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+    .vib-category { background: #00aeef; padding: 10px; border-radius: 8px; text-align: center; color: white; }
+    .vib-cat-label { font-size: 0.7rem; font-weight: bold; text-transform: uppercase; margin-bottom: 10px; opacity: 0.9; }
+    .vib-inner-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .vib-box { background: #1a4f7a; padding: 25px 10px; border-radius: 6px; font-weight: bold; font-size: 0.85rem; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 80px; }
+    .vib-full-row { padding: 15px; text-align: center; color: white; font-weight: bold; border-radius: 8px; margin-bottom: 15px; position: relative; font-size: 0.9rem; }
+    .vib-full-row::before { content: '▼'; position: absolute; top: -18px; left: 50%; transform: translateX(-50%); color: #00aeef; }
+    .vib-green { background: #8dc63f; }
+    .vib-orange { background: #f39200; }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="Digiplan.html">← Terug naar Dashboard</a>
+  <span>GBS De Krekel · Digiplan 2025–2028</span>
+</div>
+
+<div class="page-header">
+  <div class="page-header-inner">
+    <div class="page-header-label">Fase 2 · Pictos</div>
+    <h1>Context &amp; Huidige situatie</h1>
+    <p>Een analyse van onze schoolomgeving in Zelzate en de balans tussen onze middelen en doelen.</p>
+  </div>
+</div>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar-card">
+      <div class="sidebar-title">Secties</div>
+      <nav>
+        <a href="#context" class="active"><span class="nav-dot"></span> Context</a>
+        <a href="#regionaal"><span class="nav-dot"></span> Regionale Partners</a>
+        <a href="#leerlijnen"><span class="nav-dot"></span> Leerlijnen (Zones)</a>
+        <a href="#vib"><span class="nav-dot"></span> Vier in Balans</a>
+      </nav>
+     
+    </div>
+  </aside>
+
+  <main>
+    <!-- CONTEXT -->
+    <section class="section" id="context">
+      <div class="section-label">B4 · Schoolcontext</div>
+      <h2>1. Context</h2>
+      <p>GBS De Krekel ligt in Zelzate, een grensgemeente in het noorden van Oost-Vlaanderen met een uitgesproken sociaal profiel. De hoofdvestiging bevindt zich vlak bij de wijk <strong>Klein Rusland</strong>, een buurt met veel sociale woningen en een kwetsbare sociaaleconomische achtergrond. Deze context vraagt om een onderwijsaanpak die inzet op gelijke kansen, brede basiszorg en digitale inclusie.</p>
+
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-icon">📊</div>
+          <div class="stat-label">Sociaal diverse populatie</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🌍</div>
+          <div class="stat-label">Toename anderstaligheid</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🏫</div>
+          <div class="stat-label">2 Vestigingen</div>
+        </div>
+      </div>
+
+      <h3>🏘️ Maatschappelijke & Digitale Context</h3>
+      <p>Zelzate kent een relatief hoog aantal leefloners. De school speelt hierop in via een <strong>brugfiguur</strong> en extra-muros activiteiten zoals Sportsnack en huiswerkbegeleiding. Sinds de Digisprong is er fors geïnvesteerd in moderne toestellen en stabiele netwerken.</p>
+      <div class="card">
+        <strong>De Uitdaging:</strong> Veel ouders zijn niet opgegroeid met AI of sociale media. Leerlingen hebben vaak al vanaf het 3de leerjaar een smartphone, wat risico's op vlak van privacy en schermtijd met zich meebrengt.
+      </div>
+    </section>
+
+    <!-- REGIONALE FACTOREN -->
+    <section class="section" id="regionaal">
+      <div class="section-label">B4 · Partners</div>
+      <h2>Regionale factoren</h2>
+      <p style="font-weight: 500; color: var(--muted); margin-bottom: 20px;">
+        GBS De Krekel maakt deel uit van de Scholengemeenschap Meetjesland en werkt samen met het Interstedelijk CLB Gent. Daarnaast onderhouden we actieve samenwerkingen met lokale partners:
+      </p>
+
+      <div class="flip-grid">
+        <!-- Card 1 -->
+        <div class="flip-card">
+          <div class="flip-card-inner">
+            <div class="flip-card-front">Gemeentelijke initiatieven</div>
+            <div class="flip-card-back">De jeugddienst organiseert activiteiten voor alle leeftijden. Tijdens de zomer biedt speelpleinwerking D’Maxz toegankelijke opvangmogelijkheid.</div>
+          </div>
+        </div>
+        <!-- Card 2 -->
+        <div class="flip-card">
+          <div class="flip-card-inner">
+            <div class="flip-card-front">Sport en sociale cohesie</div>
+            <div class="flip-card-back">Voetbalclub KVV Zelzate zet sterk in op sociale structuur en betrekt veel van onze leerlingen bij sportactiviteiten.</div>
+          </div>
+        </div>
+        <!-- Card 3 -->
+        <div class="flip-card">
+          <div class="flip-card-inner">
+            <div class="flip-card-front">Jeugd- en welzijn</div>
+            <div class="flip-card-back">Organisaties zoals Saamo en Uit De Marge bieden ondersteuning voor jongeren in kwetsbare situaties.</div>
+          </div>
+        </div>
+        <!-- Card 4 -->
+        <div class="flip-card">
+          <div class="flip-card-inner">
+            <div class="flip-card-front">Cultuur en educatie</div>
+            <div class="flip-card-back">De Bibliotheek organiseert workshops rond digitale basisvaardigheden voor inwoners die extra ondersteuning nodig hebben.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LEERLIJNEN ACCORDION -->
+    <section class="section" id="leerlijnen">
+      <div class="section-label">B4 · Onderwijsaanpak</div>
+      <h2>Onze verticale opbouw</h2>
+      <p>Kies een leerjaar op de tijdlijn. Je ziet meteen wat de leerlingen dat jaar leren voor elk van de 3 leerlijnen — met de opbouw doorheen de jaren (het spiraalcurriculum).</p>
+
+      <div class="lj-nav" id="ljNav"></div>
+      <div class="lj-year-title" id="ljTitle"></div>
+      <div class="lj-spiral" id="ljSpiral"></div>
+      <div class="lj-cols" id="ljCols"></div>
+
+
+      <div class="card" style="margin-top:16px;">
+        <strong>📚 Volledige leerlijn raadplegen?</strong> Alle 93 doelen van de vernieuwde leerlijn — met leeftijden, minimumdoelen-concordantie, differentiatie en lesfiches — vind je interactief terug in <a href="LeerLokaal.html" style="color:var(--accent);font-weight:600;">LeerLokaal · Verticale leerlijnen</a>.
+      </div>
+    </section>
+
+    <!-- VIER IN BALANS -->
+    <section class="section" id="vib">
+      <div class="section-label">B4 · Analysekader</div>
+      <h2>Vier-in-balans-model</h2>
+      <p>Dit model bewaakt of onze investeringen in balans zijn met onze deskundigheid en visie. We gebruiken het als rode draad: hieronder stellen we het kader voor, de <a href="analyse.html#overzicht" style="color:var(--accent);font-weight:600;">uitgewerkte analyse per pijler</a> volgt in fase 3.</p>
+
+      <div class="vib-visual">
+        <div class="vib-row-top">
+          <!-- Menselijk -->
+          <div class="vib-category">
+            <div class="vib-cat-label">Menselijke randvoorwaarden</div>
+            <div class="vib-inner-grid">
+              <div class="vib-box">👁️<br><span>Visie</span></div>
+              <div class="vib-box">🧘<br><span>Deskundigheid</span></div>
+            </div>
+          </div>
+          <!-- Materieel -->
+          <div class="vib-category">
+            <div class="vib-cat-label">Materiële randvoorwaarden</div>
+            <div class="vib-inner-grid">
+              <div class="vib-box">📂<br><span>Inhoud & Toepassingen</span></div>
+              <div class="vib-box">💻<br><span>Infrastructuur</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="vib-full-row vib-green">ICT-GEBRUIK</div>
+        <div class="vib-full-row vib-orange">OPBRENGSTEN</div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<footer>GBS De Krekel · Zelzate · ICT-beleidsplan 2025–2028 · <a href="Digiplan.html" style="color:inherit">← Dashboard</a></footer>
+
+<script>
+  /* ── VERTICALE LEERLIJN PER LEERJAAR ── */
+  const LJC = {
+    ict:  { l:"💻 ICT-basisvaardigheden", c:"lz-ict" },
+    comp: { l:"🧩 Computationeel denken", c:"lz-comp" },
+    media:{ l:"📱 Mediawijsheid", c:"lz-media" }
+  };
+  const LJ_YEARS = [
+    {k:"pk",l:"Peuter",a:"2,5 jaar"},{k:"k1",l:"1e kleuter",a:"3 jaar"},{k:"k2",l:"2e kleuter",a:"4 jaar"},{k:"k3",l:"3e kleuter",a:"5 jaar"},
+    {k:"l1",l:"L1",a:"6 jaar"},{k:"l2",l:"L2",a:"7 jaar"},{k:"l3",l:"L3",a:"8 jaar"},{k:"l4",l:"L4",a:"9 jaar"},{k:"l5",l:"L5",a:"10 jaar"},{k:"l6",l:"L6",a:"11 jaar"}
+  ];
+  const LJ_SPIRAL = {
+    pk:"Het allereerste contact met digitale toestellen. → Leidt naar het 1e kleuter (bewegen op het scherm).",
+    k1:"Bouwt voort op de peuters (toestellen verkennen). → Leidt naar het 3e kleuter (toetsen &amp; patronen).",
+    k2:"Een jaar van inoefenen en herhalen. → Leidt naar het 3e kleuter.",
+    k3:"Bouwt voort op het 1e kleuter (volgorde &amp; patronen). → Leidt naar L1 (eerste handelingen &amp; Scratch Jr).",
+    l1:"Bouwt voort op de kleuterklas (scherm, unplugged). → Leidt naar L2 (typen, bestanden, opzoeken).",
+    l2:"Bouwt voort op L1 (inloggen, handelingen). → Leidt naar L3 (tekst, e-mail, zoekstrategie).",
+    l3:"Bouwt voort op L2 (typen &amp; opzoeken). → Leidt naar L4 (presenteren, mail met bijlage, debuggen).",
+    l4:"Bouwt voort op L3 (tekst &amp; e-mail). → Leidt naar L5 (bestanden bewerken, mediawijsheid verdiepen).",
+    l5:"Bouwt voort op L4 (programmeren, presenteren). → Leidt naar L6 (Teams, AI, netwerken, auteursrecht).",
+    l6:"Bouwt voort op L5. → Sluit de basisschool af: klaar voor het secundair."
+  };
+  const LJ_DATA = {
+    pk:{ict:[{s:"Spelenderwijs omgaan met digitale toestellen",c:"1.1"}],comp:[],media:[]},
+    k1:{ict:[{s:"Vlot bewegen op een scherm (tikken, slepen)",c:"1.2"},{s:"Oefenen met vertrouwde tools",c:"1.3"}],
+        comp:[{s:"Computers in de leefwereld herkennen",c:"2.1"},{s:"Beseffen dat een computer eindeloos herhaalt",c:"2.2"},{s:"Prenten in logische volgorde leggen",c:"2.3"},{s:"Onderdelen van een geheel benoemen",c:"2.4"}],
+        media:[{s:"Kennismaken met soorten mediaboodschappen",c:"3.1"}]},
+    k2:{note:"Een jaar van inoefenen en herhalen — geen nieuwe minimumdoelen. De vaardigheden uit het 1e kleuter worden verder ingeoefend."},
+    k3:{ict:[{s:"Toetsen gericht aantikken (naam, symbolen)",c:"1.4"}],
+        comp:[{s:"Een patroon verderzetten",c:"2.5"},{s:"Een opdracht in deelopdrachten opdelen",c:"2.6"},{s:"Herhaling herkennen",c:"2.7"},{s:"Stap voor stap een opdracht uitvoeren",c:"2.8"}],
+        media:[{s:"Reflecteren over eigen mediagebruik",c:"3.2"}]},
+    l1:{ict:[{s:"Foto's en video's maken",c:"1.5"},{s:"Eenvoudige handelingen + inloggen (visuele code)",c:"1.6"}],
+        comp:[{s:"Stap-voor-stap instructies geven aan een klasgenoot",c:"2.9"},{s:"Vertellen welke machines automatisch werken (bv. stoplicht, kassa)",c:"2.10"}],
+        media:[]},
+    l2:{ict:[{s:"Het begrip 'bestand' kennen",c:"1.7",t:"n"},{s:"Cijfers, letters &amp; symbolen typen",c:"1.8"},{s:"Creatief vormgeven met een tool",c:"1.9"},{s:"Info opzoeken — browser verkennen",c:"1.10"},{s:"Geluid opnemen",c:"1.11"}],
+        comp:[{s:"Een taak opdelen in kleine stapjes (bv. een boterham smeren)",c:"2.11"},{s:"De woorden 'digitaal' en 'internet' leren kennen",c:"2.12",t:"n"},{s:"Hardware, software, invoer en uitvoer leren kennen (muis = invoer, scherm = uitvoer)",c:"2.13",t:"n"}],
+        media:[{s:"Login &amp; wachtwoord veilig gebruiken",c:"3.3"},{s:"Weten dat online niet altijd waar is",c:"3.4"}]},
+    l3:{ict:[{s:"Apparaten + toetsenbord functioneel gebruiken",c:"1.12",t:"n"},{s:"Zoekstrategie: zoekvraag &amp; zoektool",c:"1.13–1.15",t:"n"},{s:"Foto's bewerken",c:"1.16"},{s:"Tekst typen &amp; opmaken (vet, cursief)",c:"1.17"},{s:"E-mail versturen",c:"1.18"}],
+        comp:[{s:"Weten wat een algoritme is: een stappenplan (bv. een recept)",c:"2.14"},{s:"Voor- en nadelen bespreken als een machine iets automatisch doet",c:"2.15"}],
+        media:[{s:"Alert zijn voor catfish",c:"3.5"},{s:"Waakzaam met persoonlijke gegevens",c:"3.6"},{s:"Nettiquette respecteren",c:"3.7"},{s:"Een volwassene verwittigen bij nare berichten",c:"3.8"},{s:"Cyberpesten herkennen en vermijden",c:"3.9"}]},
+    l4:{ict:[{s:"Informatie presenteren",c:"1.19"},{s:"Eenvoudige teksten digitaal schrijven",c:"1.20"},{s:"Tekst verder opmaken: lijsten, afbeeldingen",c:"1.17",t:"v"},{s:"E-mail met bijlage, e-mails ordenen",c:"1.18",t:"v"},{s:"Bestanden in een mappenstructuur",c:"1.22",t:"n"}],
+        comp:[{s:"Een probleem aanpakken: opdelen in stappen, patronen zien, hoofdzaken kiezen (de basis van programmeren)",c:"2.16–2.20",t:"n"},{s:"Fouten in een stappenplan opsporen en verbeteren (debuggen)",c:"2.21"},{s:"Een eenvoudig stappenplan (algoritme) maken, testen en verbeteren — bv. in Scratch",c:"2.22",t:"n"},{s:"Weten wat online en offline betekent, en hoe je iets verzendt en ontvangt",c:"2.24",t:"n"}],
+        media:[{s:"Begrippen privacy, gegevens, account",c:"3.10",t:"n"},{s:"Invloed van sociale media en influencers op je mening",c:"3.11"}]},
+    l5:{ict:[{s:"Bestanden openen, bewerken &amp; bewaren",c:"1.23"},{s:"Systeeminstellingen aanpassen",c:"1.24",t:"n"},{s:"Zoekresultaten verwerken &amp; bewaren",c:"1.25"}],
+        comp:[{s:"Programmeren &amp; algoritmes verder inoefenen",t:"v"}],
+        media:[{s:"Kritisch tegenover reclame &amp; media",c:"3.12–3.14"},{s:"Begrippen online veiligheid &amp; nepnieuws",c:"3.15",t:"n"},{s:"Gepast reageren op phishing",c:"3.16–3.17"},{s:"Digitale voetafdruk — alles blijft online",c:"3.18–3.19"},{s:"Regels &amp; impact op gezondheid",c:"3.20–3.21",t:"n"}]},
+    l6:{ict:[{s:"Bestanden beheren, opslaan &amp; delen in Teams",c:"1.26–1.28",t:"n"},{s:"Apparaten instellen + vlot typen",c:"1.29",t:"n"},{s:"Communicatietools kennen",c:"1.30",t:"n"},{s:"Begrip AI + voorbeelden",c:"1.31–1.32",t:"n"},{s:"Bronnen beoordelen (betrouwbaar?)",c:"1.33",t:"n"},{s:"Reflecteren op meerwaarde",c:"1.34"}],
+        comp:[{s:"Begrijpen hoe een computer werkt: invoer → verwerking → uitvoer → opslag (toetsenbord → typen → scherm → bestand)",c:"2.25–2.26",t:"n"},{s:"Begrijpen hoe toestellen via wifi/internet verbonden zijn en bestanden in de cloud bewaard worden",c:"2.27–2.30",t:"n"},{s:"Een probleem omzetten in een visueel stappenplan",c:"2.31–2.32"},{s:"Een programma maken met herhaling en keuzes (als…dan) — bv. een spel in Scratch",c:"2.33",t:"n"},{s:"Een effectieve AI-prompt formuleren",c:"2.34",t:"n"}],
+        media:[{s:"Auteursrecht &amp; portretrecht toepassen",c:"3.22–3.25",t:"n"}]}
+  };
+  let ljActive = "l3";
+  function ljBadge(t){
+    if(t==="n") return '<span class="lj-badge-new">nieuw</span>';
+    if(t==="v") return '<span class="lj-badge-v">↗ verdieping</span>';
+    return "";
+  }
+  function ljRenderNav(){
+    const nav = document.getElementById("ljNav");
+    if(!nav) return;
+    nav.innerHTML = LJ_YEARS.map((y,i)=>
+      `${i>0?'<span class="lj-sep">›</span>':''}<button class="lj-chip${y.k===ljActive?' active':''}" onclick="ljSelect('${y.k}')">${y.l}</button>`
+    ).join("");
+  }
+  function ljRender(){
+    ljRenderNav();
+    const y = LJ_YEARS.find(x=>x.k===ljActive), d = LJ_DATA[ljActive];
+    document.getElementById("ljTitle").innerHTML = `${y.l} <span class="lj-year-age">· ${y.a}</span>`;
+    document.getElementById("ljSpiral").innerHTML = LJ_SPIRAL[ljActive] || "";
+    const cols = document.getElementById("ljCols");
+    if(d.note){
+      cols.style.gridTemplateColumns = "1fr";
+      cols.innerHTML = `<div class="lj-note">🔄 ${d.note}</div>`;
+      return;
+    }
+    cols.style.gridTemplateColumns = "";
+    cols.innerHTML = ["ict","comp","media"].map(key=>{
+      const col = LJC[key], items = d[key]||[];
+      const body = items.length
+        ? items.map(it=>`<div class="lj-item">${it.s}${ljBadge(it.t)}${it.c?`<div class="lj-code">DIG ${it.c}</div>`:''}</div>`).join("")
+        : `<div class="lj-empty">—</div>`;
+      return `<div class="lj-col"><div class="lj-col-head ${col.c}">${col.l}</div>${body}</div>`;
+    }).join("");
+  }
+  function ljSelect(k){ ljActive = k; ljRender(); }
+  ljRender();
+
+  // Sidebar highlight logic
+  const sections = document.querySelectorAll('section[id]');
+  const links = document.querySelectorAll('.sidebar nav a');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        links.forEach(l => l.classList.remove('active'));
+        const match = document.querySelector(`.sidebar nav a[href="#${e.target.id}"]`);
+        if (match) match.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-30% 0px -60% 0px' });
+  sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>

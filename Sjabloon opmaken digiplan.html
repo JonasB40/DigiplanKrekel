@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ICT-Beleidsplan | Gebaseerd op Pictos.be</title>
+    <style>
+        :root {
+            --pictos-blue: #005691;
+            --pictos-light-blue: #e6f0f7;
+            --pictos-grey: #f4f4f4;
+            --accent-color: #ff9900;
+            --text-color: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            background-color: #fff;
+        }
+
+        header {
+            background-color: var(--pictos-blue);
+            color: white;
+            padding: 2rem 10%;
+            text-align: center;
+        }
+
+        nav {
+            background: var(--pictos-grey);
+            padding: 1rem 10%;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 2px solid #ddd;
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--pictos-blue);
+            font-weight: bold;
+            padding: 5px 10px;
+        }
+
+        nav a:hover {
+            background-color: var(--pictos-blue);
+            color: white;
+            border-radius: 4px;
+        }
+
+        .container {
+            width: 80%;
+            margin: 2rem auto;
+            padding-bottom: 100px;
+        }
+
+        section {
+            margin-bottom: 4rem;
+            scroll-margin-top: 80px;
+        }
+
+        h1, h2, h3 {
+            color: var(--pictos-blue);
+        }
+
+        .card {
+            background: var(--pictos-light-blue);
+            border-left: 5px solid var(--pictos-blue);
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--pictos-blue);
+            color: white;
+        }
+
+        /* SWOT Grid */
+        .swot-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 1rem;
+        }
+
+        .swot-item {
+            padding: 1.5rem;
+            border-radius: 8px;
+            color: white;
+        }
+
+        .strengths { background-color: #2e7d32; }
+        .weaknesses { background-color: #d32f2f; }
+        .opportunities { background-color: #f9a825; }
+        .threats { background-color: #ef6c00; }
+
+        /* MoSCoW styles */
+        .moscow-table tr.must { border-left: 10px solid #d32f2f; }
+        .moscow-table tr.should { border-left: 10px solid #ff9900; }
+
+        .btn-print {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--pictos-blue);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.2);
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 80px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>ICT-Beleidsplan Platform</h1>
+    <p>Gebaseerd op het Basissjabloon van Kenniscentrum Digisprong & Pictos.be</p>
+</header>
+
+<nav>
+    <ul>
+        <li><a href="#visie">1. Visie</a></li>
+        <li><a href="#huidige-situatie">2. Huidige Situatie</a></li>
+        <li><a href="#analyse">3. Analyse</a></li>
+        <li><a href="#actieplan">4. Actieplan</a></li>
+    </ul>
+</nav>
+
+<div class="container">
+
+    <!-- FASE 1: VISIE -->
+    <section id="visie">
+        <h2>Fase 1: Visie op ICT én onderwijs</h2>
+        <div class="card">
+            <h3>B1: Het Visiecanvas</h3>
+            <p><em>Richtvragen voor het team:</em></p>
+            <ul>
+                <li><strong>Het Waarom:</strong> Welke kernwaarden uit ons pedagogisch project versterken we met ICT?</li>
+                <li><strong>Het Wat:</strong> Welke concrete digitale vaardigheden (mediawijsheid, kritisch denken) willen we bereiken?</li>
+                <li><strong>Het Hoe:</strong> Welke principes sturen onze keuzes voor hard- en software? Hoe garanderen we dat iedereen mee is?</li>
+            </ul>
+            <textarea placeholder="Typ hier de overkoepelende visie van de school..."></textarea>
+        </div>
+
+        <h3>B2: Orden je ideeën (MoSCoW-analyse)</h3>
+        <table class="moscow-table">
+            <tr class="must">
+                <th>Must Have</th>
+                <td>Niet-onderhandelbare kernprincipes. Moeten absoluut in de visie.</td>
+                <td><textarea></textarea></td>
+            </tr>
+            <tr class="should">
+                <th>Should Have</th>
+                <td>Wenselijk en belangrijk, maar geen ramp als het niet onmiddellijk lukt.</td>
+                <td><textarea></textarea></td>
+            </tr>
+            <tr>
+                <th>Could Have</th>
+                <td>'Leuk om te hebben', maar geen prioriteit.</td>
+                <td><textarea></textarea></td>
+            </tr>
+            <tr>
+                <th>Won't Have</th>
+                <td>Dit doen we bewust NIET in deze periode.</td>
+                <td><textarea></textarea></td>
+            </tr>
+        </table>
+    </section>
+
+    <!-- FASE 2: HUIDIGE SITUATIE -->
+    <section id="huidige-situatie">
+        <h2>Fase 2: Huidige situatie & Context</h2>
+        <div class="card">
+            <h3>B4: Inventaris (Vier in balans-model)</h3>
+            <p>Maak een objectieve analyse van waar de school nu staat.</p>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Bouwsteen</th>
+                    <th>Wat loopt al goed?</th>
+                    <th>Wat kan beter / groeikansen?</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>1. Visie</strong></td>
+                    <td><textarea></textarea></td>
+                    <td><textarea></textarea></td>
+                </tr>
+                <tr>
+                    <td><strong>2. Deskundigheid</strong></td>
+                    <td><textarea></textarea></td>
+                    <td><textarea></textarea></td>
+                </tr>
+                <tr>
+                    <td><strong>3. Digitaal Leermateriaal</strong></td>
+                    <td><textarea></textarea></td>
+                    <td><textarea></textarea></td>
+                </tr>
+                <tr>
+                    <td><strong>4. ICT-Infrastructuur</strong></td>
+                    <td><textarea></textarea></td>
+                    <td><textarea></textarea></td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- FASE 3: ANALYSE -->
+    <section id="analyse">
+        <h2>Fase 3: Analyse</h2>
+        <h3>B5: De SWOT-analyse</h3>
+        <div class="swot-grid">
+            <div class="swot-item strengths">
+                <h4>STERKTES (Strengths)</h4>
+                <p><small>Interne troeven (bijv. gemotiveerd team)</small></p>
+                <textarea></textarea>
+            </div>
+            <div class="swot-item opportunities">
+                <h4>KANSEN (Opportunities)</h4>
+                <p><small>Externe hefbomen (bijv. nascholingsaanbod)</small></p>
+                <textarea></textarea>
+            </div>
+            <div class="swot-item weaknesses">
+                <h4>ZWAKTES (Weaknesses)</h4>
+                <p><small>Interne werkpunten (bijv. verouderde toestellen)</small></p>
+                <textarea></textarea>
+            </div>
+            <div class="swot-item threats">
+                <h4>BEDREIGINGEN (Threats)</h4>
+                <p><small>Externe risico's (bijv. privacy/GDPR)</small></p>
+                <textarea></textarea>
+            </div>
+        </div>
+
+        <h3>B6: Verbandenmatrix</h3>
+        <p>Ontdek de wisselwerking tussen de bouwstenen. Hoe beïnvloedt bijvoorbeeld de infrastructuur onze visie?</p>
+        <textarea placeholder="Noteer hier de belangrijkste kruisverbanden..."></textarea>
+    </section>
+
+    <!-- FASE 4: ACTIEPLAN -->
+    <section id="actieplan">
+        <h2>Fase 4: Actieplan</h2>
+        <div class="card">
+            <h3>B8: Stel je actieplan op</h3>
+            <p>Maak doelen SMART (Specifiek, Meetbaar, Acceptabel, Realistisch, Tijdsgebonden).</p>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Prioriteit</th>
+                    <th>Doelstelling (Wat?)</th>
+                    <th>Concrete Actie</th>
+                    <th>Trekker (Wie?)</th>
+                    <th>Deadline</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td><textarea placeholder="Doel 1"></textarea></td>
+                    <td><textarea></textarea></td>
+                    <td><input type="text" style="width:100%"></td>
+                    <td><input type="date"></td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td><textarea placeholder="Doel 2"></textarea></td>
+                    <td><textarea></textarea></td>
+                    <td><input type="text" style="width:100%"></td>
+                    <td><input type="date"></td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td><textarea placeholder="Doel 3"></textarea></td>
+                    <td><textarea></textarea></td>
+                    <td><input type="text" style="width:100%"></td>
+                    <td><input type="date"></td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+</div>
+
+<button class="btn-print" onclick="window.print()">Opslaan als PDF / Printen</button>
+
+</body>
+</html>
