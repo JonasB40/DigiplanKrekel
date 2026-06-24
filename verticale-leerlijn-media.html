@@ -122,10 +122,12 @@
 
 <script>
 const ADMIN_CODE = "krekel";
-const STORE_KEY = "leerlijnViz_media_v1";
+const STORE_KEY = "leerlijnViz_media_v2";
 
 const LEERJAREN = [
-  {id:"KO", label:"Kleuter",        fase:1},
+  {id:"K1", label:"1ste kleuter",   fase:1},
+  {id:"K2", label:"2de kleuter",    fase:1},
+  {id:"K3", label:"3de kleuter",    fase:1},
   {id:"L1", label:"1ste leerjaar",  fase:2},
   {id:"L2", label:"2de leerjaar",   fase:2},
   {id:"L3", label:"3de leerjaar",   fase:3},
@@ -153,8 +155,8 @@ const TL = [
 
 const DEFAULT_DOELEN = [
   /* ── Mediaboodschappen kennen ── */
-  {code:"DIG 3.1",  tl:"media",     lj:"KO", text:"Kennismaken met verschillende vormen van mediaboodschappen."},
-  {code:"DIG 3.2",  tl:"media",     lj:"KO", text:"Reflecteren over hoe zij digitale media gebruiken in hun dagelijks leven."},
+  {code:"DIG 3.1",  tl:"media",     lj:"K1", text:"Kennismaken met verschillende vormen van mediaboodschappen."},
+  {code:"DIG 3.2",  tl:"media",     lj:"K3", text:"Reflecteren over hoe zij digitale media gebruiken in hun dagelijks leven."},
   {code:"DIG 3.4",  tl:"media",     lj:"L1", text:"Weten dat veel informatie digitaal beschikbaar is en dat de wereld doordrongen is van audiovisuele boodschappen, maar dat wat online staat niet noodzakelijk waar is.", onder:"Onder begeleiding voorbeelden van gemanipuleerde media zoals reclameboodschappen en nepnieuws bekijken en de manipulatie benoemen."},
   {code:"DIG 3.11", tl:"media",     lj:"L3", text:"De invloed van digitale media herkennen op je eigen mening en de mening van anderen (sociale aspecten).", onder:"Onder begeleiding ervaren dat onze keuzes beïnvloed worden door digitale media."},
   {code:"DIG 3.16", tl:"media",     lj:"L4", text:"De voor- en nadelen verwoorden van het participeren aan een sociale digitale samenleving (sociale aspecten).", onder:"Beschrijven wat een sociale digitale samenleving is."},
@@ -280,7 +282,7 @@ function buildFilterChips(){
   const fc = document.getElementById('faseChips');
   fc.innerHTML = [1,2,3,4].map(f=>`<button class="chip" data-fase="${f}">${FASES[f].label}</button>`).join(' ');
   const yc = document.getElementById('yearChips');
-  yc.innerHTML = LEERJAREN.map(l=>`<button class="chip" data-year="${l.id}">${l.label.replace(' leerjaar',' lj').replace('Kleuter','KO')}</button>`).join(' ');
+  yc.innerHTML = LEERJAREN.map(l=>`<button class="chip" data-year="${l.id}">${l.id.startsWith('K') ? l.id : l.label.replace(' leerjaar',' lj')}</button>`).join(' ');
   fc.querySelectorAll('[data-fase]').forEach(b=>b.onclick=()=>{toggle(filterFases, +b.dataset.fase); b.classList.toggle('on'); render();});
   yc.querySelectorAll('[data-year]').forEach(b=>b.onclick=()=>{toggle(filterYears, b.dataset.year); b.classList.toggle('on'); render();});
 }

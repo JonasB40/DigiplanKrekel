@@ -134,11 +134,13 @@
 
 <script>
 const ADMIN_CODE = "krekel"; // eenvoudige drempel, geen echte beveiliging
-const STORE_KEY = "leerlijnViz_ict_v1";
+const STORE_KEY = "leerlijnViz_ict_v2";
 
 /* Leerjaren van onder (index 0) naar boven. Render = omgekeerd (L6 bovenaan). */
 const LEERJAREN = [
-  {id:"KO", label:"Kleuter", fase:1},
+  {id:"K1", label:"1ste kleuter", fase:1},
+  {id:"K2", label:"2de kleuter",  fase:1},
+  {id:"K3", label:"3de kleuter",  fase:1},
   {id:"L1", label:"1ste leerjaar", fase:2},
   {id:"L2", label:"2de leerjaar", fase:2},
   {id:"L3", label:"3de leerjaar", fase:3},
@@ -168,10 +170,10 @@ const TL = [
 
 /* Standaarddoelen — gebootstrapt uit de OVSG-leerlijn (LeerLokaal). leerjaar afgeleid uit leeftijd. */
 const DEFAULT_DOELEN = [
-  {code:"DIG 1.1", tl:"basis", lj:"KO", text:"Spelenderwijs leren omgaan met digitale infrastructuur.", onder:"Zoals een tablet, computer, laptop of digitaal speelgoed."},
-  {code:"DIG 1.2", tl:"basis", lj:"KO", text:"Vlot bewegen op een digitaal scherm.", onder:"Met een vinger; later met pen, muis, touchpad of controller."},
-  {code:"DIG 1.3", tl:"basis", lj:"KO", text:"Met aangereikte en vertrouwde digitale tools oefenen.", onder:"Spelenderwijs binnen een veilige, afgeschermde omgeving."},
-  {code:"DIG 1.4", tl:"basis", lj:"KO", text:"Toetsen op een toetsenbord gericht aantikken."},
+  {code:"DIG 1.1", tl:"basis", lj:"K1", text:"Spelenderwijs leren omgaan met digitale infrastructuur.", onder:"Zoals een tablet, computer, laptop of digitaal speelgoed."},
+  {code:"DIG 1.2", tl:"basis", lj:"K1", text:"Vlot bewegen op een digitaal scherm.", onder:"Met een vinger; later met pen, muis, touchpad of controller."},
+  {code:"DIG 1.3", tl:"basis", lj:"K2", text:"Met aangereikte en vertrouwde digitale tools oefenen.", onder:"Spelenderwijs binnen een veilige, afgeschermde omgeving."},
+  {code:"DIG 1.4", tl:"basis", lj:"K3", text:"Toetsen op een toetsenbord gericht aantikken."},
   {code:"DIG 1.5", tl:"foto", lj:"L1", text:"Foto's en video's maken met een digitaal apparaat."},
   {code:"DIG 1.6", tl:"basis", lj:"L1", text:"Eenvoudige, functionele handelingen in een gekende tool begrijpen en correct uitvoeren.", onder:"Slepen, navigeren, selecteren, tools openen/sluiten, geluid regelen, inloggen met visuele codes."},
   {code:"DIG 1.7", tl:"bestanden", lj:"L2", text:"Het begrip 'het bestand' kennen en gebruiken.", onder:"Tekst, beeld, geluid, video of programma dat je kunt opslaan, openen of bewerken."},
@@ -300,7 +302,7 @@ function buildFilterChips(){
   const fc = document.getElementById('faseChips');
   fc.innerHTML = [1,2,3,4].map(f=>`<button class="chip" data-fase="${f}">${FASES[f].label}</button>`).join(' ');
   const yc = document.getElementById('yearChips');
-  yc.innerHTML = LEERJAREN.map(l=>`<button class="chip" data-year="${l.id}">${l.label.replace(' leerjaar',' lj').replace('Kleuter','KO')}</button>`).join(' ');
+  yc.innerHTML = LEERJAREN.map(l=>`<button class="chip" data-year="${l.id}">${l.id.startsWith('K') ? l.id : l.label.replace(' leerjaar',' lj')}</button>`).join(' ');
   fc.querySelectorAll('[data-fase]').forEach(b=>b.onclick=()=>{toggle(filterFases, +b.dataset.fase); b.classList.toggle('on'); render();});
   yc.querySelectorAll('[data-year]').forEach(b=>b.onclick=()=>{toggle(filterYears, b.dataset.year); b.classList.toggle('on'); render();});
 }
