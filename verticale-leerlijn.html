@@ -52,6 +52,7 @@
   .head-cell:hover{filter:brightness(1.06)}
   .head-cell .h-name{font-weight:700;font-size:.84rem;line-height:1.2}
   .head-cell .h-info{position:absolute;top:6px;right:8px;font-size:.8rem;opacity:.85}
+  .head-cell .h-step{position:absolute;top:6px;left:8px;width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.9);color:#0f1f30;font-size:.72rem;font-weight:800;display:flex;align-items:center;justify-content:center;line-height:1}
 
   .yr-cell{position:sticky;left:0;z-index:4;background:var(--bg);display:flex;flex-direction:column;justify-content:center;padding:8px 10px;border-radius:10px;min-width:120px}
   .yr-cell .yr{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1rem}
@@ -151,17 +152,17 @@ const FASES = {
   4:{label:"Fase 4", kleur:"#fae8ff", tekst:"#86198f"},
 };
 
-/* Tussenleerlijnen (kolommen) */
+/* Tussenleerlijnen (kolommen) — volgorde = pedagogische opbouw */
 const TL = [
-  {id:"basis",  label:"Basisvaardigheden", kleur:"#64748b", info:"De bediening van toestellen: bewegen op het scherm, klikken en slepen, het toetsenbord en in- en uitvoerapparaten. De technische basis waarop alle andere vaardigheden voortbouwen."},
-  {id:"foto",   label:"Experimenteren met foto/video/geluid", kleur:"#16a34a", info:"Beeld en geluid leren vastleggen en bewerken: foto's en video's maken, geluid opnemen en eenvoudige bewerkingen om eigen ideeën creatief vorm te geven."},
-  {id:"tekst",  label:"Tekstverwerking", kleur:"#2563eb", info:"Tekst digitaal schrijven en opmaken: van losse woorden naar verzorgde teksten met basisopmaak."},
-  {id:"presenteren", label:"Presenteren", kleur:"#f59e0b", info:"Informatie aan anderen voorstellen met een digitale tool, zoals een presentatie of een poster."},
-  {id:"communiceren", label:"Online communiceren", kleur:"#06b6d4", info:"Veilig en respectvol digitaal communiceren en de mogelijkheden van communicatietools leren kennen."},
-  {id:"info",   label:"Informatievaardig worden", kleur:"#0d9488", info:"Gericht zoeken in digitale bronnen, zoekresultaten verwerken en bronnen kritisch beoordelen — met een eerste kennismaking met artificiële intelligentie."},
-  {id:"bestanden", label:"Bestanden organiseren & delen", kleur:"#0ea5e9", info:"Werken met bestanden en mappen: opslaan, openen, ordenen, downloaden, uploaden en delen."},
-  {id:"systeem", label:"Systeem & instellingen", kleur:"#8b5cf6", info:"Eenvoudige systeeminstellingen aanpassen, zoals weergave, taal en het aan- of uitzetten van wifi."},
-  {id:"zelf",   label:"Zelfstandig leren & reflectie", kleur:"#db2777", info:"Met digitale tools zelfstandig oefenen en leren, en reflecteren op de meerwaarde van digitale toepassingen."},
+  {id:"basis",       label:"Basisvaardigheden",                  kleur:"#64748b", info:"De bediening van toestellen: bewegen op het scherm, klikken en slepen, het toetsenbord en in- en uitvoerapparaten. De technische basis waarop alle andere vaardigheden voortbouwen."},
+  {id:"systeem",     label:"Systeem & instellingen",             kleur:"#8b5cf6", info:"Inloggen op een toestel en schoolplatform (Office 365), eenvoudige systeeminstellingen aanpassen, zoals weergave, taal en het aan- of uitzetten van wifi."},
+  {id:"info",        label:"Informatievaardig worden",           kleur:"#0d9488", info:"Gericht zoeken in digitale bronnen, zoekresultaten verwerken en bronnen kritisch beoordelen — met een eerste kennismaking met artificiële intelligentie."},
+  {id:"communiceren",label:"Online communiceren",                kleur:"#06b6d4", info:"Veilig en respectvol digitaal communiceren en de mogelijkheden van communicatietools leren kennen, waaronder e-mail en videogesprekken."},
+  {id:"tekst",       label:"Tekstverwerking",                    kleur:"#2563eb", info:"Opgezochte informatie verwerken: tekst digitaal schrijven en opmaken, samenvatten en structureren in een tekstverwerker."},
+  {id:"foto",        label:"Experimenteren met foto/video/geluid",kleur:"#16a34a", info:"Beeld en geluid leren vastleggen en bewerken: foto's en video's maken, geluid opnemen en eenvoudige bewerkingen om eigen ideeën creatief vorm te geven."},
+  {id:"presenteren", label:"Presenteren",                        kleur:"#f59e0b", info:"Verwerkte informatie aan anderen voorstellen met presentatiesoftware: dia's opmaken, structureren en presenteren voor een publiek."},
+  {id:"bestanden",   label:"Bestanden organiseren & delen",      kleur:"#0ea5e9", info:"Samenwerken en bestanden delen via de cloud: opslaan, ordenen, downloaden, uploaden en delen in gedeelde mappen."},
+  {id:"zelf",        label:"Zelfstandig leren & reflectie",      kleur:"#db2777", info:"Met digitale tools zelfstandig oefenen en leren, en reflecteren op de meerwaarde van digitale toepassingen."},
 ];
 
 /* Standaarddoelen — gebootstrapt uit de OVSG-leerlijn (LeerLokaal). leerjaar afgeleid uit leeftijd. */
@@ -230,9 +231,11 @@ function render(){
 
   // header
   html += `<div class="corner"></div>`;
-  TL.forEach(t=>{
+  TL.forEach((t,i)=>{
     html += `<div class="head-cell" style="background:${t.kleur}" onclick="showInfo('${t.id}')">
-      <span class="h-info">ⓘ</span><span class="h-name">${t.label}</span></div>`;
+      <span class="h-info">ⓘ</span>
+      <span class="h-step">${i+1}</span>
+      <span class="h-name">${t.label}</span></div>`;
   });
 
   // precompute lane spans (over all data, not filtered)
