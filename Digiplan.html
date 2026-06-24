@@ -136,6 +136,14 @@
       min-height: 60px;
       filter: drop-shadow(0 8px 18px rgba(0,0,0,0.45));
     }
+    .hero-logo .logo-fallback {
+      display: flex; align-items: center; justify-content: center;
+      height: 14vh; min-height: 60px; padding: 10px 22px;
+      border: 2px solid rgba(255,255,255,0.7); border-radius: 14px;
+      color: #fff; font-family: 'DM Sans', sans-serif; font-weight: 700;
+      font-size: 1.15rem; letter-spacing: 0.5px; white-space: nowrap;
+      background: rgba(255,255,255,0.08);
+    }
 
     /* ── DASHBOARD GRID ── */
     .dashboard {
@@ -354,7 +362,7 @@
       <div class="hero-tagline">ICT-beleidsplan 2025–2028</div>
     </div>
     <div class="hero-logo">
-      <img src="https://dekrekel.net/wp-content/uploads/2022/04/Afbeelding1.png" alt="Logo GBS De Krekel">
+      <img src="https://dekrekel.net/wp-content/uploads/2022/04/Afbeelding1.png" alt="Logo GBS De Krekel" onerror='this.replaceWith(Object.assign(document.createElement("div"),{className:"logo-fallback",textContent:"GBS De Krekel"}))'>
     </div>
   </div>
 </div>
