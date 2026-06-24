@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verticale leerlijn – Digitale geletterdheid | GBS De Krekel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --dark:#0f1f30; --accent:#2563a8; --border:#e2e8f0; --bg:#f6f8fb;
+    --aanbreng:1; --radius:14px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--dark);line-height:1.5}
+
+  /* ── Topbar ── */
+  .topbar{background:linear-gradient(135deg,#0f1f30,#1e3a5f);color:#fff;padding:18px 26px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+  .topbar h1{font-family:'Space Grotesk',sans-serif;font-size:1.3rem;font-weight:700;display:flex;align-items:center;gap:10px}
+  .topbar .sub{font-size:.82rem;opacity:.8;font-weight:400}
+  .spacer{flex:1}
+  .btn{border:none;border-radius:10px;padding:9px 15px;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:7px;transition:.18s}
+  .btn-ghost{background:rgba(255,255,255,.12);color:#fff}
+  .btn-ghost:hover{background:rgba(255,255,255,.22)}
+  .btn-edit.active{background:#f59e0b;color:#1a1206}
+  .btn-pub{background:#22c55e;color:#04210f}
+  .btn-pub:hover{filter:brightness(1.08)}
+  .btn-reset{background:rgba(255,255,255,.08);color:#fecaca}
+
+  /* ── Filterbar ── */
+  .filterbar{background:#fff;border-bottom:1px solid var(--border);padding:12px 26px;display:flex;gap:22px;align-items:center;flex-wrap:wrap;position:sticky;top:0;z-index:30}
+  .fgroup{display:flex;align-items:center;gap:8px}
+  .fgroup .lbl{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#64748b}
+  .chip{border:1.5px solid var(--border);background:#fff;border-radius:999px;padding:5px 12px;font-size:.8rem;font-weight:600;cursor:pointer;color:#475569;transition:.15s}
+  .chip:hover{border-color:var(--accent)}
+  .chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
+  .chip.disabled{opacity:.4;cursor:not-allowed}
+  select.chip{appearance:auto;border-radius:8px}
+
+  /* ── Legende ── */
+  .legend{padding:10px 26px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-size:.78rem;color:#475569;background:#fff;border-bottom:1px solid var(--border)}
+  .legend .item{display:flex;align-items:center;gap:6px}
+  .swatch{width:22px;height:14px;border-radius:4px;border:1px solid rgba(0,0,0,.1)}
+  .swatch.aan{background:#2563a8}
+  .swatch.in{background:#2563a8;opacity:.22}
+
+  /* ── Grid ── */
+  .scrollwrap{overflow-x:auto;padding:18px 26px 60px}
+  .grid{display:grid;gap:6px;min-width:980px}
+  .corner{position:sticky;left:0;z-index:5}
+  .head-cell{display:flex;flex-direction:column;justify-content:flex-end;gap:4px;padding:8px 10px;border-radius:10px 10px 0 0;cursor:pointer;color:#fff;min-height:62px;transition:.15s;position:relative}
+  .head-cell:hover{filter:brightness(1.06)}
+  .head-cell .h-name{font-weight:700;font-size:.84rem;line-height:1.2}
+  .head-cell .h-info{position:absolute;top:6px;right:8px;font-size:.8rem;opacity:.85}
+
+  .yr-cell{position:sticky;left:0;z-index:4;background:var(--bg);display:flex;flex-direction:column;justify-content:center;padding:8px 10px;border-radius:10px;min-width:120px}
+  .yr-cell .yr{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1rem}
+  .yr-cell .fase{font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:2px 7px;border-radius:999px;display:inline-block;margin-top:3px;width:fit-content}
+
+  .cell{border-radius:9px;min-height:52px;padding:6px 8px;display:flex;flex-direction:column;gap:4px;position:relative}
+  .cell.empty{background:transparent}
+  .cell.inoef{border:1px dashed rgba(15,31,48,.18)}
+  .cell.inoef .in-lbl{font-size:.66rem;font-weight:600;color:#64748b;display:flex;align-items:center;gap:4px}
+  .block{border-radius:7px;padding:5px 7px;color:#fff;font-size:.74rem;font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.12);cursor:default;position:relative}
+  .block .code{font-family:'Space Grotesk',sans-serif;font-size:.66rem;opacity:.9;display:block}
+  .block .txt{font-weight:600;line-height:1.25;display:block;margin-top:1px}
+
+  /* edit controls */
+  .ec{display:none;gap:3px;margin-top:4px}
+  body.editing .ec{display:flex;flex-wrap:wrap}
+  .ec button,.ec select{font-size:.62rem;border:none;border-radius:5px;padding:2px 5px;cursor:pointer;background:rgba(255,255,255,.85);color:#0f1f30;font-weight:700}
+  .ec select{max-width:96px}
+  body.editing .block{outline:2px dashed rgba(255,255,255,.5);outline-offset:1px}
+
+  /* ── Modal ── */
+  .overlay{position:fixed;inset:0;background:rgba(15,31,48,.55);display:none;align-items:center;justify-content:center;z-index:100;padding:20px}
+  .overlay.show{display:flex}
+  .modal{background:#fff;border-radius:18px;max-width:480px;width:100%;padding:26px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+  .modal h2{font-family:'Space Grotesk',sans-serif;font-size:1.2rem;margin-bottom:4px;display:flex;align-items:center;gap:9px}
+  .modal .tl-color{width:14px;height:14px;border-radius:4px}
+  .modal p{font-size:.9rem;color:#334155;margin-top:10px}
+  .modal .close{margin-top:18px;float:right}
+  .modal input{width:100%;padding:10px;border:1.5px solid var(--border);border-radius:9px;font-size:.95rem;margin-top:12px}
+
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#0f1f30;color:#fff;padding:12px 20px;border-radius:10px;font-size:.85rem;opacity:0;pointer-events:none;transition:.3s;z-index:120}
+  .toast.show{opacity:1}
+  .hidden{display:none!important}
+  footer{text-align:center;padding:18px;font-size:.75rem;color:#94a3b8}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>🧭 Verticale leerlijn <span class="sub">Digitale geletterdheid · GBS De Krekel</span></h1>
+  <div class="spacer"></div>
+  <button class="btn btn-edit btn-ghost" id="editBtn">🔧 Bewerkmodus</button>
+  <button class="btn btn-pub hidden" id="pubBtn">⬇️ Publiceren (JSON)</button>
+  <button class="btn btn-reset hidden" id="resetBtn">↺ Herstel standaard</button>
+</div>
+
+<div class="filterbar">
+  <div class="fgroup">
+    <span class="lbl">Leerlijn</span>
+    <button class="chip on" data-ll="ict">💻 ICT-basisvaardigheden</button>
+    <button class="chip disabled" title="Binnenkort">🧩 Computationeel denken</button>
+    <button class="chip disabled" title="Binnenkort">📱 Mediawijsheid</button>
+  </div>
+  <div class="fgroup">
+    <span class="lbl">Fase</span>
+    <span id="faseChips"></span>
+  </div>
+  <div class="fgroup">
+    <span class="lbl">Leerjaar</span>
+    <span id="yearChips"></span>
+  </div>
+  <button class="chip" id="clearFilter">✕ Filters wissen</button>
+</div>
+
+<div class="legend">
+  <div class="item"><span class="swatch aan"></span> Nieuw aanbrengen</div>
+  <div class="item"><span class="swatch in"></span> Inoefenen / onderhouden</div>
+  <div class="item">↑ van onder (kleuter) naar boven (6de lj) opgebouwd — klik op een kolomtitel voor uitleg</div>
+</div>
+
+<div class="scrollwrap">
+  <div class="grid" id="grid"></div>
+</div>
+
+<div class="overlay" id="overlay"><div class="modal" id="modal"></div></div>
+<div class="toast" id="toast"></div>
+<footer>Verticale leerlijn-tool · spiraalopbouw naar OVSG · wijzigingen bewaard in je browser tot je publiceert</footer>
+
+<script>
+const ADMIN_CODE = "krekel"; // eenvoudige drempel, geen echte beveiliging
+const STORE_KEY = "leerlijnViz_ict_v1";
+
+/* Leerjaren van onder (index 0) naar boven. Render = omgekeerd (L6 bovenaan). */
+const LEERJAREN = [
+  {id:"KO", label:"Kleuter", fase:1},
+  {id:"L1", label:"1ste leerjaar", fase:2},
+  {id:"L2", label:"2de leerjaar", fase:2},
+  {id:"L3", label:"3de leerjaar", fase:3},
+  {id:"L4", label:"4de leerjaar", fase:3},
+  {id:"L5", label:"5de leerjaar", fase:4},
+  {id:"L6", label:"6de leerjaar", fase:4},
+];
+const FASES = {
+  1:{label:"Fase 1", kleur:"#e0f2fe", tekst:"#075985"},
+  2:{label:"Fase 2", kleur:"#dcfce7", tekst:"#166534"},
+  3:{label:"Fase 3", kleur:"#fef9c3", tekst:"#854d0e"},
+  4:{label:"Fase 4", kleur:"#fae8ff", tekst:"#86198f"},
+};
+
+/* Tussenleerlijnen (kolommen) */
+const TL = [
+  {id:"basis",  label:"Basisvaardigheden", kleur:"#64748b", info:"De bediening van toestellen: bewegen op het scherm, klikken en slepen, het toetsenbord en in- en uitvoerapparaten. De technische basis waarop alle andere vaardigheden voortbouwen."},
+  {id:"foto",   label:"Experimenteren met foto/video/geluid", kleur:"#16a34a", info:"Beeld en geluid leren vastleggen en bewerken: foto's en video's maken, geluid opnemen en eenvoudige bewerkingen om eigen ideeën creatief vorm te geven."},
+  {id:"tekst",  label:"Tekstverwerking", kleur:"#2563eb", info:"Tekst digitaal schrijven en opmaken: van losse woorden naar verzorgde teksten met basisopmaak."},
+  {id:"presenteren", label:"Presenteren", kleur:"#f59e0b", info:"Informatie aan anderen voorstellen met een digitale tool, zoals een presentatie of een poster."},
+  {id:"communiceren", label:"Online communiceren", kleur:"#06b6d4", info:"Veilig en respectvol digitaal communiceren en de mogelijkheden van communicatietools leren kennen."},
+  {id:"info",   label:"Informatievaardig worden", kleur:"#0d9488", info:"Gericht zoeken in digitale bronnen, zoekresultaten verwerken en bronnen kritisch beoordelen — met een eerste kennismaking met artificiële intelligentie."},
+  {id:"bestanden", label:"Bestanden organiseren & delen", kleur:"#0ea5e9", info:"Werken met bestanden en mappen: opslaan, openen, ordenen, downloaden, uploaden en delen."},
+  {id:"systeem", label:"Systeem & instellingen", kleur:"#8b5cf6", info:"Eenvoudige systeeminstellingen aanpassen, zoals weergave, taal en het aan- of uitzetten van wifi."},
+  {id:"zelf",   label:"Zelfstandig leren & reflectie", kleur:"#db2777", info:"Met digitale tools zelfstandig oefenen en leren, en reflecteren op de meerwaarde van digitale toepassingen."},
+];
+
+/* Standaarddoelen — gebootstrapt uit de OVSG-leerlijn (LeerLokaal). leerjaar afgeleid uit leeftijd. */
+const DEFAULT_DOELEN = [
+  {code:"DIG 1.1", tl:"basis", lj:"KO", text:"Spelenderwijs leren omgaan met digitale infrastructuur.", onder:"Zoals een tablet, computer, laptop of digitaal speelgoed."},
+  {code:"DIG 1.2", tl:"basis", lj:"KO", text:"Vlot bewegen op een digitaal scherm.", onder:"Met een vinger; later met pen, muis, touchpad of controller."},
+  {code:"DIG 1.3", tl:"basis", lj:"KO", text:"Met aangereikte en vertrouwde digitale tools oefenen.", onder:"Spelenderwijs binnen een veilige, afgeschermde omgeving."},
+  {code:"DIG 1.4", tl:"basis", lj:"KO", text:"Toetsen op een toetsenbord gericht aantikken."},
+  {code:"DIG 1.5", tl:"foto", lj:"L1", text:"Foto's en video's maken met een digitaal apparaat."},
+  {code:"DIG 1.6", tl:"basis", lj:"L1", text:"Eenvoudige, functionele handelingen in een gekende tool begrijpen en correct uitvoeren.", onder:"Slepen, navigeren, selecteren, tools openen/sluiten, geluid regelen, inloggen met visuele codes."},
+  {code:"DIG 1.7", tl:"bestanden", lj:"L2", text:"Het begrip 'het bestand' kennen en gebruiken.", onder:"Tekst, beeld, geluid, video of programma dat je kunt opslaan, openen of bewerken."},
+  {code:"DIG 1.8", tl:"basis", lj:"L2", text:"Cijfers, letters en symbolen gericht aantikken op een toetsenbord."},
+  {code:"DIG 1.9", tl:"foto", lj:"L2", text:"Een aangereikte digitale tool gebruiken om eigen ideeën creatief vorm te geven."},
+  {code:"DIG 1.10", tl:"info", lj:"L2", text:"Op internet digitale informatie opzoeken in een beveiligde omgeving."},
+  {code:"DIG 1.11", tl:"foto", lj:"L2", text:"Een aangereikt digitaal apparaat gebruiken om geluid op te nemen."},
+  {code:"DIG 1.12", tl:"basis", lj:"L3", text:"Invoer- en uitvoerapparaten functioneel gebruiken, met basisgebruik van een toetsenbord.", onder:"Toetsenbord, muis, touchscreen, beeldscherm, koptelefoon, luidsprekers."},
+  {code:"DIG 1.13", tl:"info", lj:"L3", text:"Een zoekvraag formuleren als zoekstrategie."},
+  {code:"DIG 1.14", tl:"info", lj:"L3", text:"Een zoektool kiezen als zoekstrategie."},
+  {code:"DIG 1.15", tl:"info", lj:"L3", text:"Een zoekopdracht formuleren als zoekstrategie."},
+  {code:"DIG 1.16", tl:"foto", lj:"L3", text:"Met een aangereikte tool afbeeldingen of foto's bewerken.", onder:"Grootte wijzigen, bijsnijden, filters, roteren, sepia/zwart-wit."},
+  {code:"DIG 1.17", tl:"tekst", lj:"L3", text:"Basisfuncties gebruiken voor het schrijven en creatief opmaken van een tekst."},
+  {code:"DIG 1.18", tl:"communiceren", lj:"L3", text:"Een aangereikte tool gebruiken om veilig en verantwoord te communiceren.", onder:"Met aandacht voor persoonsgegevens, paswoorden en het delen van foto's."},
+  {code:"DIG 1.19", tl:"presenteren", lj:"L4", text:"Een aangereikte tool gebruiken om informatie aan anderen voor te stellen."},
+  {code:"DIG 1.20", tl:"tekst", lj:"L4", text:"Met een aangereikte tool eenvoudige teksten digitaal schrijven.", onder:"Zoals digitale elfjes of gedichten, een dagelijkse waarneming."},
+  {code:"DIG 1.21", tl:"zelf", lj:"L4", text:"Met aangereikte digitale tools zelfstandig oefenen en leren."},
+  {code:"DIG 1.22", tl:"bestanden", lj:"L4", text:"Bestanden gebruiken via de bestaande mappenstructuur van het systeem."},
+  {code:"DIG 1.23", tl:"bestanden", lj:"L5", text:"Bestanden openen om te bewerken en sluiten om te bewaren."},
+  {code:"DIG 1.24", tl:"systeem", lj:"L5", text:"Eenvoudige systeeminstellingen aanpassen.", onder:"Weergave- en taalinstellingen, wifi aan/uit."},
+  {code:"DIG 1.25", tl:"info", lj:"L5", text:"Zoekresultaten uit digitale bronnen verwerken en bewaren."},
+  {code:"DIG 1.26", tl:"bestanden", lj:"L6", text:"Bestanden beheren via een aangereikte structuur."},
+  {code:"DIG 1.27", tl:"bestanden", lj:"L6", text:"Bestanden downloaden en opslaan op verschillende opslagmedia."},
+  {code:"DIG 1.28", tl:"bestanden", lj:"L6", text:"Bestanden uploaden, terugvinden en delen met een klasgenoot."},
+  {code:"DIG 1.29", tl:"basis", lj:"L6", text:"Invoer- en uitvoerapparaten doelgericht gebruiken en instellen, met vlot gebruik van een toetsenbord."},
+  {code:"DIG 1.30", tl:"communiceren", lj:"L6", text:"Mogelijkheden van digitale tools om te communiceren kennen.", onder:"Berichten, e-mail, chat, reacties of videogesprekken."},
+  {code:"DIG 1.31", tl:"info", lj:"L6", text:"Het begrip artificiële intelligentie kennen."},
+  {code:"DIG 1.32", tl:"info", lj:"L6", text:"Voorbeelden geven van toepassingen waarin AI gebruikt wordt."},
+  {code:"DIG 1.33", tl:"info", lj:"L6", text:"Digitale bronnen beoordelen op bruikbaarheid, betrouwbaarheid en correctheid."},
+  {code:"DIG 1.34", tl:"zelf", lj:"L6", text:"Reflecteren op de meerwaarde van het gebruik van digitale toepassingen."},
+];
+
+/* ── State ── */
+let doelen = load();
+let editing = false;
+let filterFases = new Set();
+let filterYears = new Set();
+
+function load(){
+  try{ const s = localStorage.getItem(STORE_KEY); if(s) return JSON.parse(s); }catch(e){}
+  return JSON.parse(JSON.stringify(DEFAULT_DOELEN));
+}
+function save(){ localStorage.setItem(STORE_KEY, JSON.stringify(doelen)); }
+
+const ljIndex = id => LEERJAREN.findIndex(l=>l.id===id);
+const ljById = id => LEERJAREN.find(l=>l.id===id);
+const tlById = id => TL.find(t=>t.id===id);
+
+/* ── Render ── */
+function render(){
+  const grid = document.getElementById('grid');
+  const visYears = LEERJAREN.filter(l=>
+    (filterYears.size===0 || filterYears.has(l.id)) &&
+    (filterFases.size===0 || filterFases.has(l.fase))
+  );
+  grid.style.gridTemplateColumns = `120px repeat(${TL.length}, minmax(150px,1fr))`;
+  let html = '';
+
+  // header
+  html += `<div class="corner"></div>`;
+  TL.forEach(t=>{
+    html += `<div class="head-cell" style="background:${t.kleur}" onclick="showInfo('${t.id}')">
+      <span class="h-info">ⓘ</span><span class="h-name">${t.label}</span></div>`;
+  });
+
+  // precompute lane spans (over all data, not filtered)
+  const spans = {};
+  TL.forEach(t=>{
+    const idxs = doelen.filter(d=>d.tl===t.id).map(d=>ljIndex(d.lj)).filter(i=>i>=0);
+    spans[t.id] = idxs.length ? {min:Math.min(...idxs), max:Math.max(...idxs)} : null;
+  });
+
+  // rows: top = highest leerjaar
+  [...visYears].reverse().forEach(yr=>{
+    const f = FASES[yr.fase];
+    html += `<div class="yr-cell"><span class="yr">${yr.label}</span>
+      <span class="fase" style="background:${f.kleur};color:${f.tekst}">${f.label}</span></div>`;
+    const idx = ljIndex(yr.id);
+    TL.forEach(t=>{
+      const here = doelen.filter(d=>d.tl===t.id && d.lj===yr.id);
+      const span = spans[t.id];
+      if(here.length){
+        html += `<div class="cell" style="background:${hex2rgba(t.kleur,.1)}">` +
+          here.map(d=>blockHTML(d,t)).join('') + `</div>`;
+      } else if(span && idx>span.min && idx<=span.max){
+        html += `<div class="cell inoef" style="background:${hex2rgba(t.kleur,.13)}">
+          <span class="in-lbl">↻ inoefenen</span></div>`;
+      } else {
+        html += `<div class="cell empty"></div>`;
+      }
+    });
+  });
+
+  grid.innerHTML = html;
+}
+
+function blockHTML(d,t){
+  const opts = TL.map(x=>`<option value="${x.id}" ${x.id===t.id?'selected':''}>${x.label}</option>`).join('');
+  return `<div class="block" style="background:${t.kleur}">
+    <span class="code">${d.code}</span>
+    <span class="txt">${esc(d.text)}</span>
+    <div class="ec">
+      <button onclick="move('${d.code}',1)" title="Een leerjaar hoger">▲</button>
+      <button onclick="move('${d.code}',-1)" title="Een leerjaar lager">▼</button>
+      <select onchange="moveTL('${d.code}',this.value)">${opts}</select>
+    </div>
+  </div>`;
+}
+
+/* ── Edit actions ── */
+function move(code,dir){
+  const d = doelen.find(x=>x.code===code); if(!d) return;
+  const ni = ljIndex(d.lj)+dir;
+  if(ni<0||ni>=LEERJAREN.length) return;
+  d.lj = LEERJAREN[ni].id; save(); render();
+}
+function moveTL(code,tl){
+  const d = doelen.find(x=>x.code===code); if(!d) return;
+  d.tl = tl; save(); render();
+}
+
+/* ── Filters ── */
+function buildFilterChips(){
+  const fc = document.getElementById('faseChips');
+  fc.innerHTML = [1,2,3,4].map(f=>`<button class="chip" data-fase="${f}">${FASES[f].label}</button>`).join(' ');
+  const yc = document.getElementById('yearChips');
+  yc.innerHTML = LEERJAREN.map(l=>`<button class="chip" data-year="${l.id}">${l.label.replace(' leerjaar',' lj').replace('Kleuter','KO')}</button>`).join(' ');
+  fc.querySelectorAll('[data-fase]').forEach(b=>b.onclick=()=>{toggle(filterFases, +b.dataset.fase); b.classList.toggle('on'); render();});
+  yc.querySelectorAll('[data-year]').forEach(b=>b.onclick=()=>{toggle(filterYears, b.dataset.year); b.classList.toggle('on'); render();});
+}
+function toggle(set,v){ set.has(v)?set.delete(v):set.add(v); }
+
+/* ── Info modal ── */
+function showInfo(tlId){
+  const t = tlById(tlId);
+  document.getElementById('modal').innerHTML =
+    `<h2><span class="tl-color" style="background:${t.kleur}"></span> ${t.label}</h2>
+     <p>${t.info}</p>
+     <button class="btn btn-ghost close" style="background:#0f1f30;color:#fff" onclick="closeOverlay()">Sluiten</button>`;
+  document.getElementById('overlay').classList.add('show');
+}
+function closeOverlay(){ document.getElementById('overlay').classList.remove('show'); }
+
+/* ── Bewerkmodus ── */
+document.getElementById('editBtn').onclick = ()=>{
+  if(!editing){
+    const c = prompt("Geef de beheerderscode om de bewerkmodus te openen:");
+    if(c===null) return;
+    if(c!==ADMIN_CODE){ toast("Onjuiste code."); return; }
+  }
+  editing = !editing;
+  document.body.classList.toggle('editing', editing);
+  document.getElementById('editBtn').classList.toggle('active', editing);
+  document.getElementById('pubBtn').classList.toggle('hidden', !editing);
+  document.getElementById('resetBtn').classList.toggle('hidden', !editing);
+  toast(editing ? "Bewerkmodus aan — versleep met ▲ ▼ of kies een andere kolom." : "Bewerkmodus uit.");
+};
+
+/* ── Publiceren ── */
+document.getElementById('pubBtn').onclick = ()=>{
+  const blob = new Blob([JSON.stringify(doelen,null,2)], {type:"application/json"});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = "leerlijn-ict-data.json";
+  a.click();
+  toast("Databestand gedownload. Stuur het door zodat het op GitHub komt.");
+};
+document.getElementById('resetBtn').onclick = ()=>{
+  if(confirm("Alle wijzigingen wissen en terugzetten naar de standaardversie?")){
+    doelen = JSON.parse(JSON.stringify(DEFAULT_DOELEN)); save(); render(); toast("Standaardversie hersteld.");
+  }
+};
+document.getElementById('clearFilter').onclick = ()=>{
+  filterFases.clear(); filterYears.clear();
+  document.querySelectorAll('.filterbar .chip.on:not([data-ll])').forEach(c=>{ if(!c.dataset.ll) c.classList.remove('on'); });
+  document.querySelectorAll('[data-fase],[data-year]').forEach(c=>c.classList.remove('on'));
+  render();
+};
+document.getElementById('overlay').onclick = e=>{ if(e.target.id==='overlay') closeOverlay(); };
+
+/* ── Helpers ── */
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function hex2rgba(h,a){ const n=parseInt(h.slice(1),16); return `rgba(${(n>>16)&255},${(n>>8)&255},${n&255},${a})`; }
+let toastT;
+function toast(m){ const t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('show'),2600); }
+
+buildFilterChips();
+render();
+</script>
+</body>
+</html>
