@@ -31,11 +31,15 @@
   .filterbar{background:#fff;border-bottom:1px solid var(--border);padding:12px 26px;display:flex;gap:22px;align-items:center;flex-wrap:wrap;position:sticky;top:0;z-index:30}
   .fgroup{display:flex;align-items:center;gap:8px}
   .fgroup .lbl{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#64748b}
-  .chip{border:1.5px solid var(--border);background:#fff;border-radius:999px;padding:5px 12px;font-size:.8rem;font-weight:600;cursor:pointer;color:#475569;transition:.15s}
+  .chip{border:1.5px solid var(--border);background:#fff;border-radius:999px;padding:5px 12px;font-size:.8rem;font-weight:600;cursor:pointer;color:#475569;transition:.15s;text-decoration:none}
   .chip:hover{border-color:var(--accent)}
   .chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
   .chip.disabled{opacity:.4;cursor:not-allowed}
   select.chip{appearance:auto;border-radius:8px}
+  .ll-chip{border:2px solid var(--border);background:#fff;border-radius:10px;padding:7px 14px;font-size:.85rem;font-weight:700;cursor:pointer;color:#475569;transition:.15s;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+  .ll-chip:hover{border-color:var(--accent);color:var(--accent)}
+  .ll-chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
+  .ll-sep{width:1px;height:28px;background:var(--border);margin:0 6px}
 
   /* ── Legende ── */
   .legend{padding:10px 26px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-size:.78rem;color:#475569;background:#fff;border-bottom:1px solid var(--border)}
@@ -94,8 +98,6 @@
 <div class="topbar">
   <h1>🧭 Verticale leerlijn <span class="sub">Digitale geletterdheid · GBS De Krekel</span></h1>
   <div class="spacer"></div>
-  <a class="btn btn-ghost" href="verticale-leerlijn-cd.html" style="text-decoration:none">🧩 Computationeel denken</a>
-  <a class="btn btn-ghost" href="verticale-leerlijn-media.html" style="text-decoration:none">📱 Mediawijsheid</a>
   <button class="btn btn-edit btn-ghost" id="editBtn">🔧 Bewerkmodus</button>
   <button class="btn btn-pub hidden" id="pubBtn">⬇️ Publiceren (JSON)</button>
   <button class="btn btn-reset hidden" id="resetBtn">↺ Herstel standaard</button>
@@ -103,10 +105,10 @@
 
 <div class="filterbar">
   <div class="fgroup">
-    <span class="lbl">Leerlijn</span>
-    <span class="chip on">💻 ICT-basisvaardigheden</span>
-    <a class="chip" href="verticale-leerlijn-cd.html" style="text-decoration:none;color:#475569">🧩 Computationeel denken</a>
-    <a class="chip" href="verticale-leerlijn-media.html" style="text-decoration:none;color:#475569">📱 Mediawijsheid</a>
+    <span class="ll-chip on">💻 ICT-basisvaardigheden</span>
+    <a class="ll-chip" href="verticale-leerlijn-cd.html">🧩 Computationeel denken</a>
+    <a class="ll-chip" href="verticale-leerlijn-media.html">📱 Mediawijsheid</a>
+    <span class="ll-sep"></span>
   </div>
   <div class="fgroup">
     <span class="lbl">Fase</span>

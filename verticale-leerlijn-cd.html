@@ -35,6 +35,10 @@
   .chip:hover{border-color:var(--accent)}
   .chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
   .chip.disabled{opacity:.4;cursor:not-allowed}
+  .ll-chip{border:2px solid var(--border);background:#fff;border-radius:10px;padding:7px 14px;font-size:.85rem;font-weight:700;cursor:pointer;color:#475569;transition:.15s;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+  .ll-chip:hover{border-color:var(--accent);color:var(--accent)}
+  .ll-chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
+  .ll-sep{width:1px;height:28px;background:var(--border);margin:0 6px}
 
   .legend{padding:10px 26px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-size:.78rem;color:#475569;background:#fff;border-bottom:1px solid var(--border)}
   .legend .item{display:flex;align-items:center;gap:6px}
@@ -88,8 +92,6 @@
 <div class="topbar">
   <h1>🧩 Verticale leerlijn <span class="sub">Computationeel denken · GBS De Krekel</span></h1>
   <div class="spacer"></div>
-  <a class="btn-back" href="verticale-leerlijn.html" style="text-decoration:none">← ICT-basisvaardigheden</a>
-  <a class="btn-back" href="verticale-leerlijn-media.html" style="text-decoration:none">📱 Mediawijsheid</a>
   <button class="btn btn-edit btn-ghost" id="editBtn">🔧 Bewerkmodus</button>
   <button class="btn btn-pub hidden" id="pubBtn">⬇️ Publiceren (JSON)</button>
   <button class="btn btn-reset hidden" id="resetBtn">↺ Herstel standaard</button>
@@ -97,10 +99,10 @@
 
 <div class="filterbar">
   <div class="fgroup">
-    <span class="lbl">Leerlijn</span>
-    <a class="chip" href="verticale-leerlijn.html" style="text-decoration:none;color:#475569">💻 ICT-basisvaardigheden</a>
-    <span class="chip on">🧩 Computationeel denken</span>
-    <a class="chip" href="verticale-leerlijn-media.html" style="text-decoration:none;color:#475569">📱 Mediawijsheid</a>
+    <a class="ll-chip" href="verticale-leerlijn.html">💻 ICT-basisvaardigheden</a>
+    <span class="ll-chip on">🧩 Computationeel denken</span>
+    <a class="ll-chip" href="verticale-leerlijn-media.html">📱 Mediawijsheid</a>
+    <span class="ll-sep"></span>
   </div>
   <div class="fgroup">
     <span class="lbl">Fase</span>
