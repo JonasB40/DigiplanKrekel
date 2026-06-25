@@ -77,16 +77,19 @@
   .ec select{max-width:96px}
   body.editing .block{outline:2px dashed rgba(255,255,255,.5);outline-offset:1px}
 
-  /* ── Spiraaloverzicht ── */
-  .ov-grid{display:grid;gap:5px;min-width:980px}
-  .ov-cell{border-radius:8px;height:48px;cursor:pointer;transition:.15s;position:relative;display:flex;align-items:center;justify-content:center}
-  .ov-cell.aan{opacity:1}
-  .ov-cell.in{opacity:.28;border:1.5px dashed rgba(15,31,48,.25)}
-  .ov-cell.empty{background:transparent;cursor:default}
-  .ov-cell.aan:hover{filter:brightness(1.1);transform:scaleY(1.04)}
-  .ov-cell.in:hover{opacity:.45}
-  .ov-cell .ov-count{font-family:'Space Grotesk',sans-serif;font-size:.75rem;font-weight:800;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.3)}
-  .ov-cell.in .ov-count{display:none}
+  /* ── Spiraalcurriculum ── */
+  .sp-grid{display:grid;gap:3px;min-width:1600px}
+  .sp-corner{min-height:36px}
+  .sp-group{border-radius:8px 8px 0 0;padding:5px 8px;color:#fff;font-weight:700;font-size:.72rem;display:flex;align-items:center;justify-content:center;text-align:center;min-height:36px;letter-spacing:.02em}
+  .sp-thema-head{writing-mode:vertical-rl;transform:rotate(180deg);padding:8px 5px;font-size:.67rem;font-weight:700;color:#fff;display:flex;align-items:center;justify-content:flex-start;height:118px;border-radius:0 0 6px 6px;cursor:default;opacity:.92}
+  .sp-cell{border-radius:7px;min-height:52px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:5px;transition:.15s;position:relative}
+  .sp-cell.aan{opacity:1}
+  .sp-cell.bouw{opacity:.3}
+  .sp-cell.leeg{background:transparent!important;cursor:default}
+  .sp-cell:not(.leeg):hover{filter:brightness(1.12);transform:scaleY(1.04)}
+  .sp-cell-lbl{font-size:.62rem;font-weight:700;color:#fff;text-align:center;line-height:1.25;text-shadow:0 1px 2px rgba(0,0,0,.4)}
+  .sp-cell.bouw .sp-cell-lbl{display:none}
+  .sp-legend{display:flex;gap:18px;align-items:center;font-size:.78rem;color:#475569}
   .view-toggle{display:flex;gap:4px;background:#f1f5f9;border-radius:10px;padding:3px}
   .view-btn{border:none;background:transparent;border-radius:8px;padding:6px 13px;font-size:.82rem;font-weight:700;cursor:pointer;color:#64748b;transition:.15s;display:flex;align-items:center;gap:5px}
   .view-btn.on{background:#fff;color:var(--accent);box-shadow:0 1px 4px rgba(0,0,0,.12)}
@@ -134,22 +137,27 @@
   </div>
   <div class="view-toggle">
     <button class="view-btn on" id="viewDetail">📋 Doelen</button>
-    <button class="view-btn" id="viewOverview">📊 Spiraaloverzicht</button>
+    <button class="view-btn" id="viewOverview">🌀 Spiraalcurriculum</button>
   </div>
   <button class="chip" id="clearFilter">✕ Filters wissen</button>
 </div>
 
-<div class="legend">
+<div class="legend" id="legendDetail">
   <div class="item"><span class="swatch aan"></span> Nieuw aanbrengen</div>
   <div class="item"><span class="swatch in"></span> Inoefenen / onderhouden</div>
   <div class="item">↑ van onder (kleuter) naar boven (6de lj) opgebouwd — klik op een kolomtitel voor uitleg</div>
+</div>
+<div class="legend hidden" id="legendSpiraal">
+  <div class="item"><span class="swatch aan"></span> Donker = nieuw aanbrengen dit jaar</div>
+  <div class="item"><span class="swatch in"></span> Licht = verder bouwen op wat eerder aangebracht werd</div>
+  <div class="item">Klik op een blok voor details en bewerkmogelijkheid</div>
 </div>
 
 <div class="scrollwrap" id="wrapDetail">
   <div class="grid" id="grid"></div>
 </div>
 <div class="scrollwrap hidden" id="wrapOverview">
-  <div class="ov-grid" id="ovGrid"></div>
+  <div class="sp-grid" id="spGrid"></div>
 </div>
 
 <div class="overlay" id="overlay"><div class="modal" id="modal"></div></div>
@@ -190,6 +198,141 @@ const TL = [
   {id:"presenteren", label:"Presenteren",                        kleur:"#f59e0b", info:"Verwerkte informatie aan anderen voorstellen met presentatiesoftware: dia's opmaken, structureren en presenteren voor een publiek."},
   {id:"bestanden",   label:"Bestanden organiseren & delen",      kleur:"#0ea5e9", info:"Samenwerken en bestanden delen via de cloud: opslaan, ordenen, downloaden, uploaden en delen in gedeelde mappen."},
   {id:"zelf",        label:"Zelfstandig leren & reflectie",      kleur:"#db2777", info:"Met digitale tools zelfstandig oefenen en leren, en reflecteren op de meerwaarde van digitale toepassingen."},
+];
+
+/* ── Spiraalcurriculum thema's (sub-onderwerpen per tussenleerlijn) ── */
+const THEMAS = [
+  {id:"t_aanzet", tl:"basis",        label:"Computer aan/uitzetten",       kleur:"#64748b"},
+  {id:"t_muis",   tl:"basis",        label:"Muis bedienen",                 kleur:"#64748b"},
+  {id:"t_touch",  tl:"basis",        label:"Touchscreen & touchpad",        kleur:"#64748b"},
+  {id:"t_toets",  tl:"basis",        label:"Toetsenbord gebruiken",         kleur:"#64748b"},
+  {id:"t_login",  tl:"systeem",      label:"Inloggen & wachtwoord",         kleur:"#8b5cf6"},
+  {id:"t_prog",   tl:"systeem",      label:"Programma's openen/sluiten",    kleur:"#8b5cf6"},
+  {id:"t_instel", tl:"systeem",      label:"Instellingen aanpassen",        kleur:"#8b5cf6"},
+  {id:"t_zoek",   tl:"info",         label:"Info opzoeken",                 kleur:"#0d9488"},
+  {id:"t_bron",   tl:"info",         label:"Bronnen beoordelen",            kleur:"#0d9488"},
+  {id:"t_ai",     tl:"info",         label:"AI als hulpmiddel",             kleur:"#0d9488"},
+  {id:"t_cit",    tl:"info",         label:"Bronnen vermelden",             kleur:"#0d9488"},
+  {id:"t_mail",   tl:"communiceren", label:"E-mail",                        kleur:"#06b6d4"},
+  {id:"t_samen",  tl:"communiceren", label:"Digitaal samenwerken",          kleur:"#06b6d4"},
+  {id:"t_agenda", tl:"communiceren", label:"Digitale agenda",               kleur:"#06b6d4"},
+  {id:"t_bast",   tl:"tekst",        label:"Tekst & basisopmaak",           kleur:"#2563eb"},
+  {id:"t_advt",   tl:"tekst",        label:"Geavanceerde opmaak",           kleur:"#2563eb"},
+  {id:"t_imgt",   tl:"tekst",        label:"Afb. & tabellen",               kleur:"#2563eb"},
+  {id:"t_cot",    tl:"tekst",        label:"Samenwerken in doc",            kleur:"#2563eb"},
+  {id:"t_foto",   tl:"foto",         label:"Foto & video",                  kleur:"#16a34a"},
+  {id:"t_geluid", tl:"foto",         label:"Geluid opnemen",                kleur:"#16a34a"},
+  {id:"t_pres1",  tl:"presenteren",  label:"Presentatie maken",             kleur:"#f59e0b"},
+  {id:"t_pres2",  tl:"presenteren",  label:"Opmaak & animaties",            kleur:"#f59e0b"},
+  {id:"t_pres3",  tl:"presenteren",  label:"Presenteren",                   kleur:"#f59e0b"},
+  {id:"t_best1",  tl:"bestanden",    label:"Bestanden opslaan",             kleur:"#0ea5e9"},
+  {id:"t_best2",  tl:"bestanden",    label:"Mappenstructuur",               kleur:"#0ea5e9"},
+  {id:"t_best3",  tl:"bestanden",    label:"Delen via cloud",               kleur:"#0ea5e9"},
+  {id:"t_best4",  tl:"bestanden",    label:"Beheren & archiveren",          kleur:"#0ea5e9"},
+  {id:"t_zelf1",  tl:"zelf",         label:"Tools verkennen",               kleur:"#db2777"},
+  {id:"t_zelf2",  tl:"zelf",         label:"Digitaal portfolio",            kleur:"#db2777"},
+];
+
+const SP_GROUPS = [
+  {label:"Basisvaardigheden & Systeem", kleur:"#64748b", span:7},
+  {label:"Informatievaardig worden",    kleur:"#0d9488", span:4},
+  {label:"Online communiceren",         kleur:"#06b6d4", span:3},
+  {label:"Tekstverwerking",             kleur:"#2563eb", span:4},
+  {label:"Foto, video & geluid",        kleur:"#16a34a", span:2},
+  {label:"Presenteren",                 kleur:"#f59e0b", span:3},
+  {label:"Bestanden",                   kleur:"#0ea5e9", span:4},
+  {label:"Zelfstandig leren",           kleur:"#db2777", span:2},
+];
+
+const DEFAULT_SPIRAAL = [
+  {thema:"t_aanzet",lj:"K1",type:"aan", label:"Spelenderwijs kennis maken met apparaten"},
+  {thema:"t_aanzet",lj:"K2",type:"bouw",label:"Computer/tablet aan- en uitzetten"},
+  {thema:"t_aanzet",lj:"K3",type:"bouw",label:"Correct afsluiten en opbergen"},
+  {thema:"t_aanzet",lj:"L1",type:"bouw",label:"Zelfstandig opstarten en afsluiten"},
+  {thema:"t_muis",  lj:"K1",type:"aan", label:"Scherm aanraken en slepen"},
+  {thema:"t_muis",  lj:"K2",type:"bouw",label:"Muis vasthouden en bewegen"},
+  {thema:"t_muis",  lj:"K3",type:"bouw",label:"Klikken, dubbelklikken en slepen"},
+  {thema:"t_muis",  lj:"L1",type:"bouw",label:"Muis vlot gebruiken"},
+  {thema:"t_muis",  lj:"L2",type:"bouw",label:"Scrollen en rechtermuisknop"},
+  {thema:"t_touch", lj:"K1",type:"aan", label:"Vingers bewegen op scherm"},
+  {thema:"t_touch", lj:"K2",type:"bouw",label:"Tikken, vegen en knijpen"},
+  {thema:"t_touch", lj:"K3",type:"bouw",label:"Touchpad verkennen"},
+  {thema:"t_touch", lj:"L1",type:"bouw",label:"Touchpad vlot gebruiken"},
+  {thema:"t_toets", lj:"K3",type:"aan", label:"Toetsen gericht aantikken"},
+  {thema:"t_toets", lj:"L1",type:"bouw",label:"Letters en cijfers typen"},
+  {thema:"t_toets", lj:"L2",type:"bouw",label:"Cijfers, letters en symbolen"},
+  {thema:"t_toets", lj:"L3",type:"bouw",label:"Sneltoetsen en speciale tekens"},
+  {thema:"t_toets", lj:"L6",type:"bouw",label:"Vlot toetsenbordgebruik"},
+  {thema:"t_login", lj:"K2",type:"aan", label:"Inloggen met pictogram of pin"},
+  {thema:"t_login", lj:"K3",type:"bouw",label:"Wachtwoord intypen"},
+  {thema:"t_login", lj:"L1",type:"bouw",label:"Schoolplatform openen"},
+  {thema:"t_login", lj:"L2",type:"bouw",label:"Office 365 inloggen"},
+  {thema:"t_login", lj:"L5",type:"bouw",label:"Wachtwoord beheren en wijzigen"},
+  {thema:"t_prog",  lj:"K1",type:"aan", label:"App openen met hulp van leerkracht"},
+  {thema:"t_prog",  lj:"K2",type:"bouw",label:"Vertrouwde apps zelfstandig openen"},
+  {thema:"t_prog",  lj:"L1",type:"bouw",label:"Programma's openen, wisselen, sluiten"},
+  {thema:"t_prog",  lj:"L3",type:"bouw",label:"Meerdere vensters beheren"},
+  {thema:"t_instel",lj:"L5",type:"aan", label:"Weergave en taalinstellingen"},
+  {thema:"t_instel",lj:"L6",type:"bouw",label:"Wifi, geluid en toegankelijkheid"},
+  {thema:"t_zoek",  lj:"L2",type:"aan", label:"Opzoeken in beveiligde omgeving"},
+  {thema:"t_zoek",  lj:"L3",type:"bouw",label:"Zoekvraag en zoekstrategie"},
+  {thema:"t_zoek",  lj:"L4",type:"bouw",label:"Gericht zoeken met zoektermen"},
+  {thema:"t_zoek",  lj:"L5",type:"bouw",label:"Zoekresultaten verwerken en bewaren"},
+  {thema:"t_zoek",  lj:"L6",type:"bouw",label:"Gevorderd zoeken, meerdere bronnen"},
+  {thema:"t_bron",  lj:"L3",type:"aan", label:"Feit en mening onderscheiden"},
+  {thema:"t_bron",  lj:"L5",type:"bouw",label:"Bronnen vergelijken op betrouwbaarheid"},
+  {thema:"t_bron",  lj:"L6",type:"bouw",label:"Digitale bronnen kritisch beoordelen"},
+  {thema:"t_ai",    lj:"L5",type:"aan", label:"Wat is AI? Voorbeelden herkennen"},
+  {thema:"t_ai",    lj:"L6",type:"bouw",label:"AI als hulpmiddel gebruiken"},
+  {thema:"t_cit",   lj:"L4",type:"aan", label:"Bronvermelding toevoegen"},
+  {thema:"t_cit",   lj:"L5",type:"bouw",label:"Correcte bronvermelding in tekst"},
+  {thema:"t_cit",   lj:"L6",type:"bouw",label:"Bibliografie opmaken"},
+  {thema:"t_mail",  lj:"L3",type:"aan", label:"Veilig digitaal communiceren"},
+  {thema:"t_mail",  lj:"L6",type:"bouw",label:"E-mail versturen en ontvangen"},
+  {thema:"t_samen", lj:"L4",type:"aan", label:"Samenwerken in gedeeld document"},
+  {thema:"t_samen", lj:"L5",type:"bouw",label:"Teams / Meet gebruiken"},
+  {thema:"t_samen", lj:"L6",type:"bouw",label:"Online vergaderen en presenteren"},
+  {thema:"t_agenda",lj:"L5",type:"aan", label:"Digitale agenda bijhouden"},
+  {thema:"t_agenda",lj:"L6",type:"bouw",label:"Takenlijst en planning"},
+  {thema:"t_bast",  lj:"L2",type:"aan", label:"Eenvoudige tekst typen"},
+  {thema:"t_bast",  lj:"L3",type:"bouw",label:"Bold, italic, underline, hoofdletter"},
+  {thema:"t_bast",  lj:"L4",type:"bouw",label:"Alinea's en regelafstand"},
+  {thema:"t_advt",  lj:"L4",type:"aan", label:"Opsommingstekens, koppen, uitlijnen"},
+  {thema:"t_advt",  lj:"L5",type:"bouw",label:"Stijlen en sjablonen"},
+  {thema:"t_advt",  lj:"L6",type:"bouw",label:"Paginaopmaak en inhoudsopgave"},
+  {thema:"t_imgt",  lj:"L4",type:"aan", label:"Afbeelding invoegen en verplaatsen"},
+  {thema:"t_imgt",  lj:"L5",type:"bouw",label:"Tabel invoegen en opmaken"},
+  {thema:"t_imgt",  lj:"L6",type:"bouw",label:"Lay-out met afbeeldingen en tabellen"},
+  {thema:"t_cot",   lj:"L5",type:"aan", label:"Gedeeld document bewerken"},
+  {thema:"t_cot",   lj:"L6",type:"bouw",label:"Opmerkingen en wijzigingen bijhouden"},
+  {thema:"t_foto",  lj:"L1",type:"aan", label:"Foto's en video's maken"},
+  {thema:"t_foto",  lj:"L2",type:"bouw",label:"Foto's bewerken met aangereikte tool"},
+  {thema:"t_foto",  lj:"L3",type:"bouw",label:"Bijsnijden en filters toepassen"},
+  {thema:"t_foto",  lj:"L4",type:"bouw",label:"Eenvoudige video monteren"},
+  {thema:"t_foto",  lj:"L5",type:"bouw",label:"Creatief beeldverhaal maken"},
+  {thema:"t_geluid",lj:"L2",type:"aan", label:"Geluid opnemen met apparaat"},
+  {thema:"t_geluid",lj:"L3",type:"bouw",label:"Opname beluisteren en opslaan"},
+  {thema:"t_geluid",lj:"L4",type:"bouw",label:"Geluidsfragmenten samenvoegen"},
+  {thema:"t_pres1", lj:"L4",type:"aan", label:"Presentatie met dia's opbouwen"},
+  {thema:"t_pres1", lj:"L5",type:"bouw",label:"Informatie structureren in dia's"},
+  {thema:"t_pres2", lj:"L5",type:"aan", label:"Animaties en overgangen toevoegen"},
+  {thema:"t_pres2", lj:"L6",type:"bouw",label:"Multimedia en lay-out verfijnen"},
+  {thema:"t_pres3", lj:"L4",type:"bouw",label:"Vertellen bij dia's"},
+  {thema:"t_pres3", lj:"L5",type:"bouw",label:"Presenteren met notities"},
+  {thema:"t_pres3", lj:"L6",type:"bouw",label:"Professioneel presenteren"},
+  {thema:"t_best1", lj:"L2",type:"aan", label:"Bestand kennen en opslaan"},
+  {thema:"t_best1", lj:"L3",type:"bouw",label:"Bestand openen en opnieuw opslaan"},
+  {thema:"t_best2", lj:"L4",type:"aan", label:"Bestanden via bestaande mappenstructuur"},
+  {thema:"t_best2", lj:"L5",type:"bouw",label:"Zelf mappen aanmaken"},
+  {thema:"t_best2", lj:"L6",type:"bouw",label:"Bestanden ordenen in eigen structuur"},
+  {thema:"t_best3", lj:"L5",type:"aan", label:"Bestanden uploaden en terugvinden"},
+  {thema:"t_best3", lj:"L6",type:"bouw",label:"Bestanden delen met klasgenoot"},
+  {thema:"t_best4", lj:"L6",type:"aan", label:"Bestanden downloaden en bewaren"},
+  {thema:"t_zelf1", lj:"L4",type:"aan", label:"Zelfstandig digitaal leren en oefenen"},
+  {thema:"t_zelf1", lj:"L5",type:"bouw",label:"Technische problemen zelf oplossen"},
+  {thema:"t_zelf1", lj:"L6",type:"bouw",label:"Hulpbronnen gebruiken bij problemen"},
+  {thema:"t_zelf2", lj:"L5",type:"aan", label:"Eigen werk digitaal bewaren"},
+  {thema:"t_zelf2", lj:"L6",type:"bouw",label:"Portfolio bijhouden en presenteren"},
 ];
 
 /* Standaarddoelen — gebootstrapt uit de OVSG-leerlijn (LeerLokaal). leerjaar afgeleid uit leeftijd. */
@@ -241,6 +384,14 @@ function load(){
   return JSON.parse(JSON.stringify(DEFAULT_DOELEN));
 }
 function save(){ localStorage.setItem(STORE_KEY, JSON.stringify(doelen)); }
+
+const STORE_KEY_SPIRAAL = "leerlijnViz_spiraal_v1";
+let spiraalDoelen = loadSpiraal();
+function loadSpiraal(){
+  try{ const s=localStorage.getItem(STORE_KEY_SPIRAAL); if(s) return JSON.parse(s); }catch(e){}
+  return JSON.parse(JSON.stringify(DEFAULT_SPIRAAL));
+}
+function saveSpiraal(){ localStorage.setItem(STORE_KEY_SPIRAAL, JSON.stringify(spiraalDoelen)); }
 
 const ljIndex = id => LEERJAREN.findIndex(l=>l.id===id);
 const ljById = id => LEERJAREN.find(l=>l.id===id);
@@ -327,8 +478,8 @@ function buildFilterChips(){
   fc.innerHTML = [1,2,3,4].map(f=>`<button class="chip" data-fase="${f}">${FASES[f].label}</button>`).join(' ');
   const yc = document.getElementById('yearChips');
   yc.innerHTML = LEERJAREN.map(l=>`<button class="chip" data-year="${l.id}">${l.id.startsWith('K') ? l.id : l.label.replace(' leerjaar',' lj')}</button>`).join(' ');
-  fc.querySelectorAll('[data-fase]').forEach(b=>b.onclick=()=>{toggle(filterFases, +b.dataset.fase); b.classList.toggle('on'); activeView==='overview'?renderOverview():render();});
-  yc.querySelectorAll('[data-year]').forEach(b=>b.onclick=()=>{toggle(filterYears, b.dataset.year); b.classList.toggle('on'); activeView==='overview'?renderOverview():render();});
+  fc.querySelectorAll('[data-fase]').forEach(b=>b.onclick=()=>{toggle(filterFases, +b.dataset.fase); b.classList.toggle('on'); activeView==='overview'?renderSpiraal():render();});
+  yc.querySelectorAll('[data-year]').forEach(b=>b.onclick=()=>{toggle(filterYears, b.dataset.year); b.classList.toggle('on'); activeView==='overview'?renderSpiraal():render();});
 }
 function toggle(set,v){ set.has(v)?set.delete(v):set.add(v); }
 
@@ -375,7 +526,7 @@ document.getElementById('resetBtn').onclick = ()=>{
 document.getElementById('clearFilter').onclick = ()=>{
   filterFases.clear(); filterYears.clear();
   document.querySelectorAll('[data-fase],[data-year]').forEach(c=>c.classList.remove('on'));
-  activeView==='overview'?renderOverview():render();
+  activeView==='overview'?renderSpiraal():render();
 };
 document.getElementById('overlay').onclick = e=>{ if(e.target.id==='overlay') closeOverlay(); };
 
@@ -395,93 +546,94 @@ function switchView(v){
   document.getElementById('viewDetail').classList.toggle('on', v==='detail');
   document.getElementById('viewOverview').classList.toggle('on', v==='overview');
   document.getElementById('editBtn').classList.toggle('hidden', v==='overview');
-  if(v==='overview') renderOverview();
+  document.getElementById('legendDetail').classList.toggle('hidden', v==='overview');
+  document.getElementById('legendSpiraal').classList.toggle('hidden', v==='detail');
+  if(v==='overview') renderSpiraal();
 }
 document.getElementById('viewDetail').onclick   = ()=>switchView('detail');
 document.getElementById('viewOverview').onclick = ()=>switchView('overview');
 
-/* ── Spiraaloverzicht render ── */
-function renderOverview(){
-  const ovGrid = document.getElementById('ovGrid');
+/* ── Spiraalcurriculum render ── */
+function renderSpiraal(){
+  const spGrid = document.getElementById('spGrid');
   const visYears = LEERJAREN.filter(l=>
     (filterYears.size===0 || filterYears.has(l.id)) &&
     (filterFases.size===0 || filterFases.has(l.fase))
   );
-
-  ovGrid.style.gridTemplateColumns = `120px repeat(${TL.length}, minmax(120px,1fr))`;
+  const N = THEMAS.length;
+  spGrid.style.gridTemplateColumns = `120px repeat(${N}, minmax(88px,1fr))`;
   let html = '';
 
-  // kolomkoppen — zelfde als detail
-  html += `<div class="corner"></div>`;
-  TL.forEach((t,i)=>{
-    html += `<div class="head-cell" style="background:${t.kleur}" onclick="showInfo('${t.id}')">
-      <span class="h-info">ⓘ</span>
-      <span class="h-step">${i+1}</span>
-      <span class="h-name">${t.label}</span></div>`;
+  // Rij 1: groepskoppen
+  html += `<div class="sp-corner"></div>`;
+  SP_GROUPS.forEach(g=>{
+    html += `<div class="sp-group" style="grid-column:span ${g.span};background:${g.kleur}">${esc(g.label)}</div>`;
   });
 
-  // precompute spans over alle data
-  const spans = {};
-  TL.forEach(t=>{
-    const idxs = doelen.filter(d=>d.tl===t.id).map(d=>ljIndex(d.lj)).filter(i=>i>=0);
-    spans[t.id] = idxs.length ? {min:Math.min(...idxs), max:Math.max(...idxs)} : null;
+  // Rij 2: thema-koppen (verticale tekst)
+  html += `<div class="sp-corner"></div>`;
+  THEMAS.forEach(t=>{
+    html += `<div class="sp-thema-head" style="background:${t.kleur}">${esc(t.label)}</div>`;
   });
 
-  // rijen: L6 bovenaan
+  // Datarijen: L6 bovenaan
   [...visYears].reverse().forEach(yr=>{
     const f = FASES[yr.fase];
-    const idx = ljIndex(yr.id);
     html += `<div class="yr-cell"><span class="yr">${yr.label}</span>
       <span class="fase" style="background:${f.kleur};color:${f.tekst}">${f.label}</span></div>`;
-    TL.forEach(t=>{
-      const here = doelen.filter(d=>d.tl===t.id && d.lj===yr.id);
-      const span = spans[t.id];
-      if(here.length){
-        html += `<div class="ov-cell aan" style="background:${t.kleur}"
-          onclick="showCellDetail('${t.id}','${yr.id}')">
-          <span class="ov-count">${here.length}</span></div>`;
-      } else if(span && idx>span.min && idx<=span.max){
-        html += `<div class="ov-cell in" style="background:${t.kleur}"
-          onclick="showCellDetail('${t.id}','${yr.id}')"></div>`;
+    THEMAS.forEach(t=>{
+      const entry = spiraalDoelen.find(s=>s.thema===t.id && s.lj===yr.id);
+      if(entry){
+        html += `<div class="sp-cell ${entry.type}" style="background:${t.kleur}"
+          onclick="showSpiraalDetail('${t.id}','${yr.id}')">
+          <span class="sp-cell-lbl">${esc(entry.label)}</span></div>`;
       } else {
-        html += `<div class="ov-cell empty"></div>`;
+        html += `<div class="sp-cell leeg"></div>`;
       }
     });
   });
 
-  ovGrid.innerHTML = html;
+  spGrid.innerHTML = html;
 }
 
-/* Popup: doelen van één cel (tussenleerlijn × leerjaar) */
-function showCellDetail(tlId, ljId){
-  const t = tlById(tlId);
+/* ── Spiraal popup ── */
+function showSpiraalDetail(themaId, ljId){
+  const t = THEMAS.find(x=>x.id===themaId);
   const lj = ljById(ljId);
-  const hier = doelen.filter(d=>d.tl===tlId && d.lj===ljId);
-  const span = (() => {
-    const idxs = doelen.filter(d=>d.tl===tlId).map(d=>ljIndex(d.lj)).filter(i=>i>=0);
-    return idxs.length ? {min:Math.min(...idxs), max:Math.max(...idxs)} : null;
-  })();
-  const idx = ljIndex(ljId);
-  const isInoef = span && idx>span.min && idx<=span.max && !hier.length;
-
-  let body = '';
-  if(hier.length){
-    body = hier.map(d=>`<div style="margin-top:10px;padding:9px 12px;border-radius:9px;background:#f8fafc;border-left:3px solid ${t.kleur}">
-      <span style="font-family:'Space Grotesk',sans-serif;font-size:.75rem;font-weight:700;color:${t.kleur}">${d.code}</span>
-      <p style="margin-top:4px;font-size:.88rem;color:#1e293b;font-weight:500">${esc(d.text)}</p>
-    </div>`).join('');
-  } else if(isInoef){
-    body = `<p style="margin-top:10px;color:#64748b;font-style:italic">↻ Inoefenen en onderhouden — geen nieuwe doelen dit jaar.</p>`;
-  }
-
+  const entry = spiraalDoelen.find(s=>s.thema===themaId && s.lj===ljId);
+  if(!entry) return;
+  const typeLabel = entry.type==='aan'
+    ? `<span style="background:${t.kleur};color:#fff;padding:3px 10px;border-radius:999px;font-size:.75rem;font-weight:700">Nieuw aanbrengen</span>`
+    : `<span style="background:${t.kleur}55;color:${t.kleur};padding:3px 10px;border-radius:999px;font-size:.75rem;font-weight:700;border:1.5px solid ${t.kleur}66">Verder bouwen</span>`;
   document.getElementById('modal').innerHTML =
-    `<h2><span class="tl-color" style="background:${t.kleur}"></span>${t.label}
+    `<h2><span class="tl-color" style="background:${t.kleur}"></span>${esc(t.label)}
      <span style="font-size:.85rem;font-weight:400;color:#64748b;margin-left:4px">· ${lj.label}</span></h2>
-     ${body}
-     <div style="clear:both;margin-top:18px">
-       <button class="btn btn-ghost close" style="background:#0f1f30;color:#fff" onclick="closeOverlay()">Sluiten</button>
+     <div style="margin-top:10px">${typeLabel}</div>
+     <p style="margin-top:12px;font-size:1rem;color:#1e293b;font-weight:600" id="spLblView">${esc(entry.label)}</p>
+     <div id="spEdit" style="display:none">
+       <input type="text" id="spInput" value="${esc(entry.label)}" style="margin-top:10px;width:100%;padding:10px;border:1.5px solid #e2e8f0;border-radius:9px;font-size:.95rem">
+       <select id="spType" style="margin-top:8px;padding:8px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:.88rem;width:100%">
+         <option value="aan" ${entry.type==='aan'?'selected':''}>Nieuw aanbrengen (donker)</option>
+         <option value="bouw" ${entry.type==='bouw'?'selected':''}>Verder bouwen (licht)</option>
+       </select>
+       <div style="margin-top:10px;display:flex;gap:8px">
+         <button class="btn" style="background:${t.kleur};color:#fff" onclick="saveSpiraalEntry('${themaId}','${ljId}')">Opslaan</button>
+         <button class="btn" style="background:#f1f5f9;color:#475569" onclick="document.getElementById('spEdit').style.display='none';document.getElementById('spLblView').style.display='block'">Annuleren</button>
+       </div>
+     </div>
+     <div style="margin-top:18px;display:flex;gap:8px">
+       <button class="btn btn-ghost" style="background:#0f1f30;color:#fff" onclick="closeOverlay()">Sluiten</button>
+       <button class="btn" style="background:#f1f5f9;color:#475569" onclick="document.getElementById('spEdit').style.display='block';document.getElementById('spLblView').style.display='none'">✏ Bewerken</button>
      </div>`;
   document.getElementById('overlay').classList.add('show');
+}
+
+function saveSpiraalEntry(themaId, ljId){
+  const idx = spiraalDoelen.findIndex(s=>s.thema===themaId && s.lj===ljId);
+  if(idx<0) return;
+  spiraalDoelen[idx].label = document.getElementById('spInput').value.trim();
+  spiraalDoelen[idx].type  = document.getElementById('spType').value;
+  saveSpiraal(); closeOverlay(); renderSpiraal(); toast("Opgeslagen.");
 }
 
 buildFilterChips();
