@@ -78,19 +78,25 @@
   body.editing .block{outline:2px dashed rgba(255,255,255,.5);outline-offset:1px}
 
   /* ── Spiraalcurriculum ── */
-  .sp-grid{display:grid;gap:3px}
-  .sp-yr-head{border-radius:10px 10px 0 0;padding:6px 8px;color:#fff;font-weight:700;font-size:.78rem;text-align:center;min-height:48px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:2px}
-  .sp-yr-fase{font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:2px 6px;border-radius:999px;display:inline-block}
-  .sp-group-row{border-radius:8px;padding:6px 12px;color:#fff;font-weight:700;font-size:.78rem;display:flex;align-items:center;gap:8px;letter-spacing:.02em;margin-top:4px}
-  .sp-thema-row{display:flex;align-items:center;font-size:.78rem;font-weight:600;color:#1e293b;padding:0 10px;border-radius:8px;background:#f8fafc;min-height:46px;border-left:4px solid transparent}
-  .sp-cell{border-radius:7px;min-height:46px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:4px 5px;transition:.15s;position:relative}
+  .sp-wrap{display:flex;gap:0;align-items:flex-start}
+  .sp-legend-panel{width:220px;flex-shrink:0;padding:18px 18px 60px;border-right:1px solid var(--border);position:sticky;left:0;background:var(--bg);z-index:10;align-self:stretch}
+  .sp-legend-group{margin-bottom:14px}
+  .sp-legend-group-title{font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px}
+  .sp-legend-item{display:flex;align-items:center;gap:7px;font-size:.76rem;color:#334155;font-weight:500;padding:3px 0;cursor:pointer;border-radius:6px;transition:.12s}
+  .sp-legend-item:hover{color:#0f1f30}
+  .sp-legend-swatch{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+  .sp-legend-swatch.aan{opacity:1}
+  .sp-legend-swatch.bouw{opacity:.3}
+  .sp-scroll{overflow-x:auto;flex:1;padding:18px 26px 60px}
+  .sp-grid{display:grid;gap:4px}
+  .sp-cell{border-radius:8px;min-height:58px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:5px 6px;transition:.15s;position:relative}
   .sp-cell.aan{opacity:1}
   .sp-cell.bouw{opacity:.28}
-  .sp-cell.leeg{background:transparent!important;cursor:default}
-  .sp-cell:not(.leeg):hover{filter:brightness(1.12);transform:scale(1.04)}
-  .sp-cell-lbl{font-size:.6rem;font-weight:700;color:#fff;text-align:center;line-height:1.25;text-shadow:0 1px 2px rgba(0,0,0,.4)}
+  .sp-cell.leeg{background:#f1f5f9!important;cursor:default;border-radius:6px}
+  .sp-cell:not(.leeg):hover{filter:brightness(1.1);transform:scaleY(1.05);z-index:2}
+  .sp-cell-lbl{font-size:.62rem;font-weight:700;color:#fff;text-align:center;line-height:1.3;text-shadow:0 1px 3px rgba(0,0,0,.35)}
   .sp-cell.bouw .sp-cell-lbl{display:none}
-  .sp-legend{display:flex;gap:18px;align-items:center;font-size:.78rem;color:#475569}
+  .sp-spacer{background:transparent!important;cursor:default;width:10px}
   .view-toggle{display:flex;gap:4px;background:#f1f5f9;border-radius:10px;padding:3px}
   .view-btn{border:none;background:transparent;border-radius:8px;padding:6px 13px;font-size:.82rem;font-weight:700;cursor:pointer;color:#64748b;transition:.15s;display:flex;align-items:center;gap:5px}
   .view-btn.on{background:#fff;color:var(--accent);box-shadow:0 1px 4px rgba(0,0,0,.12)}
@@ -157,8 +163,13 @@
 <div class="scrollwrap" id="wrapDetail">
   <div class="grid" id="grid"></div>
 </div>
-<div class="scrollwrap hidden" id="wrapOverview">
-  <div class="sp-grid" id="spGrid"></div>
+<div class="hidden" id="wrapOverview">
+  <div class="sp-wrap">
+    <div class="sp-legend-panel" id="spLegend"></div>
+    <div class="sp-scroll">
+      <div class="sp-grid" id="spGrid"></div>
+    </div>
+  </div>
 </div>
 
 <div class="overlay" id="overlay"><div class="modal" id="modal"></div></div>
@@ -525,41 +536,70 @@ function switchView(v){
 document.getElementById('viewDetail').onclick   = ()=>switchView('detail');
 document.getElementById('viewOverview').onclick = ()=>switchView('overview');
 
-/* ── Spiraalcurriculum render — leerjaren als rijen (verticaal), thema's als kolommen ── */
+/* ── Spiraalcurriculum render ── */
 function renderSpiraal(){
   const spGrid = document.getElementById('spGrid');
   const visYears = LEERJAREN.filter(l=>
     (filterYears.size===0 || filterYears.has(l.id)) &&
     (filterFases.size===0 || filterFases.has(l.fase))
   );
-  const N = THEMAS.length;
-  spGrid.style.gridTemplateColumns = `120px repeat(${N}, minmax(100px,1fr))`;
-  let html = '';
 
-  // Kolomkoppen: één rij met thema-namen (verticale tekst, kleur = TL-groep)
-  html += `<div></div>`;
+  // Kolommen: yr-cel + thema-kolommen met kleine spacer tussen groepen
+  const colDefs = ['120px'];
+  let prevGroup = null;
   THEMAS.forEach(t=>{
-    html += `<div class="sp-thema-head" style="background:${t.kleur}">${esc(t.label)}</div>`;
+    const g = SP_GROUPS.find(g=>g.tls.includes(t.tl));
+    if(prevGroup && prevGroup!==g) colDefs.push('10px');
+    colDefs.push('minmax(88px,1fr)');
+    prevGroup = g;
   });
+  spGrid.style.gridTemplateColumns = colDefs.join(' ');
 
-  // Datarijen: L6 bovenaan → K1 onderaan
+  let html = '';
   [...visYears].reverse().forEach(yr=>{
     const f = FASES[yr.fase];
     html += `<div class="yr-cell"><span class="yr">${yr.label}</span>
       <span class="fase" style="background:${f.kleur};color:${f.tekst}">${f.label}</span></div>`;
+    prevGroup = null;
     THEMAS.forEach(t=>{
+      const g = SP_GROUPS.find(g=>g.tls.includes(t.tl));
+      if(prevGroup && prevGroup!==g) html += `<div class="sp-spacer"></div>`;
       const entry = spiraalDoelen.find(s=>s.thema===t.id && s.lj===yr.id);
       if(entry){
         html += `<div class="sp-cell ${entry.type}" style="background:${t.kleur}"
           onclick="showSpiraalDetail('${t.id}','${yr.id}')">
           <span class="sp-cell-lbl">${esc(entry.label)}</span></div>`;
       } else {
-        html += `<div class="sp-cell leeg"></div>`;
+        html += `<div class="sp-cell leeg" style="background:${hex2rgba(t.kleur,.05)}"></div>`;
       }
+      prevGroup = g;
     });
   });
-
   spGrid.innerHTML = html;
+
+  // Legende links
+  let leg = '';
+  SP_GROUPS.forEach(g=>{
+    const themes = THEMAS.filter(t=>g.tls.includes(t.tl));
+    if(!themes.length) return;
+    leg += `<div class="sp-legend-group">
+      <div class="sp-legend-group-title" style="color:${g.kleur}">${esc(g.label)}</div>`;
+    themes.forEach(t=>{
+      leg += `<div class="sp-legend-item">
+        <span class="sp-legend-swatch" style="background:${t.kleur}"></span>
+        ${esc(t.label)}</div>`;
+    });
+    leg += `</div>`;
+  });
+  leg += `<div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border)">
+    <div class="sp-legend-item" style="gap:9px;margin-bottom:5px">
+      <span style="width:28px;height:12px;border-radius:4px;background:#64748b;flex-shrink:0"></span>
+      <span style="font-size:.72rem;color:#64748b">Nieuw aanbrengen</span></div>
+    <div class="sp-legend-item" style="gap:9px">
+      <span style="width:28px;height:12px;border-radius:4px;background:#64748b;opacity:.28;flex-shrink:0"></span>
+      <span style="font-size:.72rem;color:#64748b">Verder bouwen</span></div>
+  </div>`;
+  document.getElementById('spLegend').innerHTML = leg;
 }
 
 /* ── Spiraal popup ── */
