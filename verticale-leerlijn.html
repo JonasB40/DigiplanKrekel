@@ -536,15 +536,7 @@ function renderSpiraal(){
   spGrid.style.gridTemplateColumns = `120px repeat(${N}, minmax(100px,1fr))`;
   let html = '';
 
-  // Rij 1: groepskoppen (spannen meerdere kolommen)
-  html += `<div></div>`;
-  SP_GROUPS.forEach(g=>{
-    const span = THEMAS.filter(t=>g.tls.includes(t.tl)).length;
-    if(!span) return;
-    html += `<div class="sp-group" style="grid-column:span ${span};background:${g.kleur}">${esc(g.label)}</div>`;
-  });
-
-  // Rij 2: thema-koppen (verticale tekst)
+  // Kolomkoppen: één rij met thema-namen (verticale tekst, kleur = TL-groep)
   html += `<div></div>`;
   THEMAS.forEach(t=>{
     html += `<div class="sp-thema-head" style="background:${t.kleur}">${esc(t.label)}</div>`;
