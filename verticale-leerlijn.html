@@ -525,43 +525,45 @@ function switchView(v){
 document.getElementById('viewDetail').onclick   = ()=>switchView('detail');
 document.getElementById('viewOverview').onclick = ()=>switchView('overview');
 
-/* ── Spiraalcurriculum render — thema's als rijen, leerjaren als kolommen ── */
+/* ── Spiraalcurriculum render — leerjaren als rijen (verticaal), thema's als kolommen ── */
 function renderSpiraal(){
   const spGrid = document.getElementById('spGrid');
   const visYears = LEERJAREN.filter(l=>
     (filterYears.size===0 || filterYears.has(l.id)) &&
     (filterFases.size===0 || filterFases.has(l.fase))
   );
-  const N = visYears.length;
-  spGrid.style.gridTemplateColumns = `220px repeat(${N}, minmax(80px,1fr))`;
+  const N = THEMAS.length;
+  spGrid.style.gridTemplateColumns = `120px repeat(${N}, minmax(100px,1fr))`;
   let html = '';
 
-  // Kolomkoppen: leerjaren K1 → L6
+  // Rij 1: groepskoppen (spannen meerdere kolommen)
   html += `<div></div>`;
-  visYears.forEach(yr=>{
-    const f = FASES[yr.fase];
-    html += `<div class="sp-yr-head" style="background:#1e3a5f">
-      <span style="font-family:'Space Grotesk',sans-serif;font-weight:700">${yr.id.startsWith('K')?yr.id:yr.label.replace(' leerjaar',' lj')}</span>
-      <span class="sp-yr-fase" style="background:${f.kleur};color:${f.tekst}">${f.label}</span></div>`;
+  SP_GROUPS.forEach(g=>{
+    const span = THEMAS.filter(t=>g.tls.includes(t.tl)).length;
+    if(!span) return;
+    html += `<div class="sp-group" style="grid-column:span ${span};background:${g.kleur}">${esc(g.label)}</div>`;
   });
 
-  // Per groep: groepsrij (volledige breedte) + thema-rijen
-  SP_GROUPS.forEach(g=>{
-    const themesInGroup = THEMAS.filter(t=>g.tls.includes(t.tl));
-    if(!themesInGroup.length) return;
-    html += `<div class="sp-group-row" style="background:${g.kleur};grid-column:1 / -1">${esc(g.label)}</div>`;
-    themesInGroup.forEach(t=>{
-      html += `<div class="sp-thema-row" style="border-left-color:${t.kleur}">${esc(t.label)}</div>`;
-      visYears.forEach(yr=>{
-        const entry = spiraalDoelen.find(s=>s.thema===t.id && s.lj===yr.id);
-        if(entry){
-          html += `<div class="sp-cell ${entry.type}" style="background:${t.kleur}"
-            onclick="showSpiraalDetail('${t.id}','${yr.id}')">
-            <span class="sp-cell-lbl">${esc(entry.label)}</span></div>`;
-        } else {
-          html += `<div class="sp-cell leeg"></div>`;
-        }
-      });
+  // Rij 2: thema-koppen (verticale tekst)
+  html += `<div></div>`;
+  THEMAS.forEach(t=>{
+    html += `<div class="sp-thema-head" style="background:${t.kleur}">${esc(t.label)}</div>`;
+  });
+
+  // Datarijen: L6 bovenaan → K1 onderaan
+  [...visYears].reverse().forEach(yr=>{
+    const f = FASES[yr.fase];
+    html += `<div class="yr-cell"><span class="yr">${yr.label}</span>
+      <span class="fase" style="background:${f.kleur};color:${f.tekst}">${f.label}</span></div>`;
+    THEMAS.forEach(t=>{
+      const entry = spiraalDoelen.find(s=>s.thema===t.id && s.lj===yr.id);
+      if(entry){
+        html += `<div class="sp-cell ${entry.type}" style="background:${t.kleur}"
+          onclick="showSpiraalDetail('${t.id}','${yr.id}')">
+          <span class="sp-cell-lbl">${esc(entry.label)}</span></div>`;
+      } else {
+        html += `<div class="sp-cell leeg"></div>`;
+      }
     });
   });
 
