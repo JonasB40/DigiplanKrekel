@@ -77,6 +77,20 @@
   .ec select{max-width:96px}
   body.editing .block{outline:2px dashed rgba(255,255,255,.5);outline-offset:1px}
 
+  /* ── Spiraaloverzicht ── */
+  .ov-grid{display:grid;gap:5px;min-width:980px}
+  .ov-cell{border-radius:8px;height:48px;cursor:pointer;transition:.15s;position:relative;display:flex;align-items:center;justify-content:center}
+  .ov-cell.aan{opacity:1}
+  .ov-cell.in{opacity:.28;border:1.5px dashed rgba(15,31,48,.25)}
+  .ov-cell.empty{background:transparent;cursor:default}
+  .ov-cell.aan:hover{filter:brightness(1.1);transform:scaleY(1.04)}
+  .ov-cell.in:hover{opacity:.45}
+  .ov-cell .ov-count{font-family:'Space Grotesk',sans-serif;font-size:.75rem;font-weight:800;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.3)}
+  .ov-cell.in .ov-count{display:none}
+  .view-toggle{display:flex;gap:4px;background:#f1f5f9;border-radius:10px;padding:3px}
+  .view-btn{border:none;background:transparent;border-radius:8px;padding:6px 13px;font-size:.82rem;font-weight:700;cursor:pointer;color:#64748b;transition:.15s;display:flex;align-items:center;gap:5px}
+  .view-btn.on{background:#fff;color:var(--accent);box-shadow:0 1px 4px rgba(0,0,0,.12)}
+
   /* ── Modal ── */
   .overlay{position:fixed;inset:0;background:rgba(15,31,48,.55);display:none;align-items:center;justify-content:center;z-index:100;padding:20px}
   .overlay.show{display:flex}
@@ -118,6 +132,10 @@
     <span class="lbl">Leerjaar</span>
     <span id="yearChips"></span>
   </div>
+  <div class="view-toggle">
+    <button class="view-btn on" id="viewDetail">📋 Doelen</button>
+    <button class="view-btn" id="viewOverview">📊 Spiraaloverzicht</button>
+  </div>
   <button class="chip" id="clearFilter">✕ Filters wissen</button>
 </div>
 
@@ -127,8 +145,11 @@
   <div class="item">↑ van onder (kleuter) naar boven (6de lj) opgebouwd — klik op een kolomtitel voor uitleg</div>
 </div>
 
-<div class="scrollwrap">
+<div class="scrollwrap" id="wrapDetail">
   <div class="grid" id="grid"></div>
+</div>
+<div class="scrollwrap hidden" id="wrapOverview">
+  <div class="ov-grid" id="ovGrid"></div>
 </div>
 
 <div class="overlay" id="overlay"><div class="modal" id="modal"></div></div>
@@ -306,8 +327,8 @@ function buildFilterChips(){
   fc.innerHTML = [1,2,3,4].map(f=>`<button class="chip" data-fase="${f}">${FASES[f].label}</button>`).join(' ');
   const yc = document.getElementById('yearChips');
   yc.innerHTML = LEERJAREN.map(l=>`<button class="chip" data-year="${l.id}">${l.id.startsWith('K') ? l.id : l.label.replace(' leerjaar',' lj')}</button>`).join(' ');
-  fc.querySelectorAll('[data-fase]').forEach(b=>b.onclick=()=>{toggle(filterFases, +b.dataset.fase); b.classList.toggle('on'); render();});
-  yc.querySelectorAll('[data-year]').forEach(b=>b.onclick=()=>{toggle(filterYears, b.dataset.year); b.classList.toggle('on'); render();});
+  fc.querySelectorAll('[data-fase]').forEach(b=>b.onclick=()=>{toggle(filterFases, +b.dataset.fase); b.classList.toggle('on'); activeView==='overview'?renderOverview():render();});
+  yc.querySelectorAll('[data-year]').forEach(b=>b.onclick=()=>{toggle(filterYears, b.dataset.year); b.classList.toggle('on'); activeView==='overview'?renderOverview():render();});
 }
 function toggle(set,v){ set.has(v)?set.delete(v):set.add(v); }
 
@@ -353,9 +374,8 @@ document.getElementById('resetBtn').onclick = ()=>{
 };
 document.getElementById('clearFilter').onclick = ()=>{
   filterFases.clear(); filterYears.clear();
-  document.querySelectorAll('.filterbar .chip.on:not([data-ll])').forEach(c=>{ if(!c.dataset.ll) c.classList.remove('on'); });
   document.querySelectorAll('[data-fase],[data-year]').forEach(c=>c.classList.remove('on'));
-  render();
+  activeView==='overview'?renderOverview():render();
 };
 document.getElementById('overlay').onclick = e=>{ if(e.target.id==='overlay') closeOverlay(); };
 
@@ -364,6 +384,105 @@ function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').rep
 function hex2rgba(h,a){ const n=parseInt(h.slice(1),16); return `rgba(${(n>>16)&255},${(n>>8)&255},${n&255},${a})`; }
 let toastT;
 function toast(m){ const t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('show'),2600); }
+
+/* ── Weergave toggle ── */
+let activeView = 'detail';
+
+function switchView(v){
+  activeView = v;
+  document.getElementById('wrapDetail').classList.toggle('hidden', v!=='detail');
+  document.getElementById('wrapOverview').classList.toggle('hidden', v!=='overview');
+  document.getElementById('viewDetail').classList.toggle('on', v==='detail');
+  document.getElementById('viewOverview').classList.toggle('on', v==='overview');
+  document.getElementById('editBtn').classList.toggle('hidden', v==='overview');
+  if(v==='overview') renderOverview();
+}
+document.getElementById('viewDetail').onclick   = ()=>switchView('detail');
+document.getElementById('viewOverview').onclick = ()=>switchView('overview');
+
+/* ── Spiraaloverzicht render ── */
+function renderOverview(){
+  const ovGrid = document.getElementById('ovGrid');
+  const visYears = LEERJAREN.filter(l=>
+    (filterYears.size===0 || filterYears.has(l.id)) &&
+    (filterFases.size===0 || filterFases.has(l.fase))
+  );
+
+  ovGrid.style.gridTemplateColumns = `120px repeat(${TL.length}, minmax(120px,1fr))`;
+  let html = '';
+
+  // kolomkoppen — zelfde als detail
+  html += `<div class="corner"></div>`;
+  TL.forEach((t,i)=>{
+    html += `<div class="head-cell" style="background:${t.kleur}" onclick="showInfo('${t.id}')">
+      <span class="h-info">ⓘ</span>
+      <span class="h-step">${i+1}</span>
+      <span class="h-name">${t.label}</span></div>`;
+  });
+
+  // precompute spans over alle data
+  const spans = {};
+  TL.forEach(t=>{
+    const idxs = doelen.filter(d=>d.tl===t.id).map(d=>ljIndex(d.lj)).filter(i=>i>=0);
+    spans[t.id] = idxs.length ? {min:Math.min(...idxs), max:Math.max(...idxs)} : null;
+  });
+
+  // rijen: L6 bovenaan
+  [...visYears].reverse().forEach(yr=>{
+    const f = FASES[yr.fase];
+    const idx = ljIndex(yr.id);
+    html += `<div class="yr-cell"><span class="yr">${yr.label}</span>
+      <span class="fase" style="background:${f.kleur};color:${f.tekst}">${f.label}</span></div>`;
+    TL.forEach(t=>{
+      const here = doelen.filter(d=>d.tl===t.id && d.lj===yr.id);
+      const span = spans[t.id];
+      if(here.length){
+        html += `<div class="ov-cell aan" style="background:${t.kleur}"
+          onclick="showCellDetail('${t.id}','${yr.id}')">
+          <span class="ov-count">${here.length}</span></div>`;
+      } else if(span && idx>span.min && idx<=span.max){
+        html += `<div class="ov-cell in" style="background:${t.kleur}"
+          onclick="showCellDetail('${t.id}','${yr.id}')"></div>`;
+      } else {
+        html += `<div class="ov-cell empty"></div>`;
+      }
+    });
+  });
+
+  ovGrid.innerHTML = html;
+}
+
+/* Popup: doelen van één cel (tussenleerlijn × leerjaar) */
+function showCellDetail(tlId, ljId){
+  const t = tlById(tlId);
+  const lj = ljById(ljId);
+  const hier = doelen.filter(d=>d.tl===tlId && d.lj===ljId);
+  const span = (() => {
+    const idxs = doelen.filter(d=>d.tl===tlId).map(d=>ljIndex(d.lj)).filter(i=>i>=0);
+    return idxs.length ? {min:Math.min(...idxs), max:Math.max(...idxs)} : null;
+  })();
+  const idx = ljIndex(ljId);
+  const isInoef = span && idx>span.min && idx<=span.max && !hier.length;
+
+  let body = '';
+  if(hier.length){
+    body = hier.map(d=>`<div style="margin-top:10px;padding:9px 12px;border-radius:9px;background:#f8fafc;border-left:3px solid ${t.kleur}">
+      <span style="font-family:'Space Grotesk',sans-serif;font-size:.75rem;font-weight:700;color:${t.kleur}">${d.code}</span>
+      <p style="margin-top:4px;font-size:.88rem;color:#1e293b;font-weight:500">${esc(d.text)}</p>
+    </div>`).join('');
+  } else if(isInoef){
+    body = `<p style="margin-top:10px;color:#64748b;font-style:italic">↻ Inoefenen en onderhouden — geen nieuwe doelen dit jaar.</p>`;
+  }
+
+  document.getElementById('modal').innerHTML =
+    `<h2><span class="tl-color" style="background:${t.kleur}"></span>${t.label}
+     <span style="font-size:.85rem;font-weight:400;color:#64748b;margin-left:4px">· ${lj.label}</span></h2>
+     ${body}
+     <div style="clear:both;margin-top:18px">
+       <button class="btn btn-ghost close" style="background:#0f1f30;color:#fff" onclick="closeOverlay()">Sluiten</button>
+     </div>`;
+  document.getElementById('overlay').classList.add('show');
+}
 
 buildFilterChips();
 render();
