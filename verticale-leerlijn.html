@@ -79,7 +79,13 @@
 
   /* ── Spiraalcurriculum ── */
   .sp-wrap{display:flex;gap:0;align-items:flex-start}
-  .sp-legend-panel{width:220px;flex-shrink:0;padding:18px 18px 60px;border-right:1px solid var(--border);position:sticky;left:0;background:var(--bg);z-index:10;align-self:stretch}
+  .sp-legend-panel{width:220px;flex-shrink:0;padding:18px 18px 60px;border-right:1px solid var(--border);position:sticky;left:0;background:var(--bg);z-index:10;align-self:stretch;transition:width .2s,padding .2s}
+  .sp-legend-panel.collapsed{width:40px;padding:14px 8px;overflow:hidden}
+  .sp-legend-panel.collapsed .sp-legend-content{display:none}
+  .sp-legend-toggle{display:flex;align-items:center;justify-content:space-between;cursor:pointer;margin-bottom:10px;gap:6px}
+  .sp-legend-panel.collapsed .sp-legend-toggle{justify-content:center;margin-bottom:0}
+  .sp-legend-toggle-icon{font-size:.9rem;flex-shrink:0;transition:transform .2s}
+  .sp-legend-panel.collapsed .sp-legend-toggle-icon{transform:rotate(180deg)}
   .sp-legend-group{margin-bottom:14px}
   .sp-legend-group-title{font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px}
   .sp-legend-item{display:flex;align-items:center;gap:7px;font-size:.76rem;color:#334155;font-weight:500;padding:3px 0;cursor:pointer;border-radius:6px;transition:.12s}
@@ -577,11 +583,15 @@ function renderSpiraal(){
   });
   spGrid.innerHTML = html;
 
-  // Legende links — enkel groepsnamen
-  let leg = `<div style="font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:#94a3b8;margin-bottom:10px">Legende</div>`;
+  // Legende links — inklapbaar
+  let leg = `<div class="sp-legend-toggle" onclick="toggleSpLegend()">
+    <span style="font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:#94a3b8" class="sp-legend-lbl">Legende</span>
+    <span class="sp-legend-toggle-icon">◀</span>
+  </div>
+  <div class="sp-legend-content">`;
   SP_GROUPS.forEach(g=>{
     leg += `<div class="sp-legend-item" style="margin-bottom:6px">
-      <span class="sp-legend-swatch" style="background:${g.kleur};width:14px;height:14px;border-radius:4px"></span>
+      <span style="width:14px;height:14px;border-radius:4px;background:${g.kleur};flex-shrink:0"></span>
       <span style="font-size:.78rem;font-weight:600;color:#334155">${esc(g.label)}</span></div>`;
   });
   leg += `<div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border)">
@@ -591,7 +601,7 @@ function renderSpiraal(){
     <div class="sp-legend-item" style="gap:9px">
       <span style="width:28px;height:12px;border-radius:4px;background:#64748b;opacity:.28;flex-shrink:0"></span>
       <span style="font-size:.72rem;color:#64748b">Verder bouwen</span></div>
-  </div>`;
+  </div></div>`;
   document.getElementById('spLegend').innerHTML = leg;
 }
 
@@ -643,6 +653,10 @@ function showSpiraalDetail(themaId, ljId){
        <button class="btn" style="background:#f1f5f9;color:#475569" onclick="document.getElementById('spEdit').style.display='block'">✏ Bewerken</button>
      </div>`;
   document.getElementById('overlay').classList.add('show');
+}
+
+function toggleSpLegend(){
+  document.getElementById('spLegend').classList.toggle('collapsed');
 }
 
 function saveSpiraalEntry(themaId, ljId){
