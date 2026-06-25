@@ -577,19 +577,12 @@ function renderSpiraal(){
   });
   spGrid.innerHTML = html;
 
-  // Legende links
-  let leg = '';
+  // Legende links — enkel groepsnamen
+  let leg = `<div style="font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:#94a3b8;margin-bottom:10px">Legende</div>`;
   SP_GROUPS.forEach(g=>{
-    const themes = THEMAS.filter(t=>g.tls.includes(t.tl));
-    if(!themes.length) return;
-    leg += `<div class="sp-legend-group">
-      <div class="sp-legend-group-title" style="color:${g.kleur}">${esc(g.label)}</div>`;
-    themes.forEach(t=>{
-      leg += `<div class="sp-legend-item">
-        <span class="sp-legend-swatch" style="background:${t.kleur}"></span>
-        ${esc(t.label)}</div>`;
-    });
-    leg += `</div>`;
+    leg += `<div class="sp-legend-item" style="margin-bottom:6px">
+      <span class="sp-legend-swatch" style="background:${g.kleur};width:14px;height:14px;border-radius:4px"></span>
+      <span style="font-size:.78rem;font-weight:600;color:#334155">${esc(g.label)}</span></div>`;
   });
   leg += `<div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border)">
     <div class="sp-legend-item" style="gap:9px;margin-bottom:5px">
