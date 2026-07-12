@@ -110,6 +110,17 @@
 
   .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#0f1f30;color:#fff;padding:12px 20px;border-radius:10px;font-size:.85rem;opacity:0;pointer-events:none;transition:.3s;z-index:120}
   .toast.show{opacity:1}
+
+  /* ── Beheerpaneel ── */
+  .modal.wide{max-width:860px;width:95vw;max-height:88vh;overflow-y:auto;padding:22px 24px}
+  .bh-thema-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;color:#fff;font-weight:700;font-size:.9rem}
+  .bh-add-btn{background:rgba(255,255,255,.22);color:#fff;border:none;border-radius:6px;padding:3px 11px;font-size:.78rem;font-weight:700;cursor:pointer;transition:.15s}
+  .bh-add-btn:hover{background:rgba(255,255,255,.38)}
+  .bh-row{padding:10px 14px;border-top:1px solid #f1f5f9;display:grid;grid-template-columns:140px 108px 1fr 32px;gap:8px;align-items:start}
+  .bh-row select,.bh-row input,.bh-row textarea{padding:5px 8px;border:1.5px solid #e2e8f0;border-radius:7px;font-size:.8rem;font-family:inherit;width:100%;box-sizing:border-box}
+  .bh-row textarea{resize:vertical;min-height:52px}
+  .bh-del{background:#fee2e2;color:#b91c1c;border:none;border-radius:7px;padding:5px 7px;cursor:pointer;font-weight:800;align-self:start;margin-top:2px;transition:.15s}
+  .bh-del:hover{background:#fecaca}
   .hidden{display:none!important}
   footer{text-align:center;padding:18px;font-size:.75rem;color:#94a3b8}
 </style>
@@ -122,6 +133,7 @@
   <button class="btn btn-edit btn-ghost" id="editBtn">🔧 Bewerkmodus</button>
   <button class="btn btn-pub hidden" id="pubBtn">⬇️ Publiceren (JSON)</button>
   <button class="btn btn-reset hidden" id="resetBtn">↺ Herstel standaard</button>
+  <button class="btn btn-ghost hidden" id="beheerBtn" style="border-color:#6366f1;color:#6366f1">⚙ Inhoud beheren</button>
 </div>
 
 <div class="filterbar">
@@ -242,77 +254,133 @@ const SP_GROUPS = [
 
 const DEFAULT_SPIRAAL = [
   // Apparaatbediening
-  {thema:"t_apparaat",lj:"K1",type:"aan", label:"Kennis maken met apparaten",  detail:"Spelenderwijs omgaan met tablet, computer of digitaal speelgoed. Scherm aanraken en slepen met vinger."},
-  {thema:"t_apparaat",lj:"K2",type:"bouw",label:"Muis & scherm",               detail:"Muis vasthouden, klikken en bewegen. Touchscreen: tikken, vegen en knijpen."},
-  {thema:"t_apparaat",lj:"K3",type:"bouw",label:"Klikken & slepen vlot",       detail:"Dubbelklikken, slepen en scrollen. Computer correct afsluiten en opbergen."},
-  {thema:"t_apparaat",lj:"L1",type:"bouw",label:"Zelfstandig opstarten",       detail:"Computer zelfstandig opstarten en afsluiten. Muis en touchpad vlot gebruiken."},
-  {thema:"t_apparaat",lj:"L2",type:"bouw",label:"Invoer- en uitvoerapparaten", detail:"Scrollen, rechtermuisknop, koptelefoon en luidsprekers instellen."},
-  {thema:"t_apparaat",lj:"L3",type:"bouw",label:"Apparaten doelgericht",       detail:"Toetsenbord, muis, touchscreen, beeldscherm en koptelefoon functioneel gebruiken en instellen."},
+  {thema:"t_apparaat",lj:"K1",type:"aan", label:"Kennis maken met apparaten",
+   detail:"Kinderen raken spelenderwijs vertrouwd met een tablet, computer of digitaal speelgoed. Ze leren een scherm aanraken en met de vinger slepen. Voorbeelden: tekenapps, eenvoudige spelletjes, digitaal prentenboek."},
+  {thema:"t_apparaat",lj:"K2",type:"bouw",label:"Muis & touchscreen",
+   detail:"De computermuis vasthouden en bewegen: linkerknop klikken om iets te selecteren. Op een touchscreen tikken (= klikken), vegen om te scrollen, en knijpen om in of uit te zoomen. Voorbeeld: een foto groter maken door twee vingers uit elkaar te bewegen."},
+  {thema:"t_apparaat",lj:"K3",type:"bouw",label:"Klikken & slepen vlot",
+   detail:"Dubbelklikken om een bestand of programma te openen. Slepen om iets te verplaatsen (klikken, ingedrukt houden, bewegen, loslaten). Scrollen door een pagina met het scrollwieltje of twee vingers. Computer correct afsluiten via het startmenu — nooit zomaar de stekker eruit trekken."},
+  {thema:"t_apparaat",lj:"L1",type:"bouw",label:"Zelfstandig opstarten",
+   detail:"De computer zelfstandig opstarten en correct afsluiten. Muis en touchpad vlot en nauwkeurig gebruiken. Voorbeeld: de cursor precies op een kleine knop plaatsen om erop te klikken."},
+  {thema:"t_apparaat",lj:"L2",type:"bouw",label:"Invoer- en uitvoerapparaten",
+   detail:"Invoerapparaten sturen informatie naar de computer: toetsenbord (typen), muis of touchpad (bewegen), touchscreen (tikken), microfoon (geluid). Uitvoerapparaten tonen of spelen het resultaat af: beeldscherm (beeld), luidsprekers of koptelefoon (geluid), printer (papier). Leerlingen leren de koptelefoon aansluiten en het volume instellen."},
+  {thema:"t_apparaat",lj:"L3",type:"bouw",label:"Apparaten doelgericht kiezen",
+   detail:"Alle apparaten functioneel inzetten: toetsenbord voor typen, muis voor navigeren, touchscreen voor tikken en vegen, beeldscherm aflezen, koptelefoon of luidsprekers instellen naargelang de situatie. Leerlingen kiezen zelfstandig het juiste apparaat voor de taak — bijv. koptelefoon bij een luisteroefening, toetsenbord bij een schrijftaak."},
   // Toetsenbord
-  {thema:"t_toets",   lj:"K3",type:"aan", label:"Toetsen aantikken",           detail:"Toetsen gericht aantikken. Eerste letters en cijfers herkennen op het toetsenbord."},
-  {thema:"t_toets",   lj:"L1",type:"bouw",label:"Letters en cijfers typen",    detail:"Letters en cijfers typen. Backspace en enter gebruiken."},
-  {thema:"t_toets",   lj:"L2",type:"bouw",label:"Symbolen en leestekens",      detail:"Cijfers, letters en symbolen gericht aantikken. Shift, hoofdletter, vraagteken en komma."},
-  {thema:"t_toets",   lj:"L3",type:"bouw",label:"Sneltoetsen",                 detail:"Sneltoetsen gebruiken: Ctrl+C, Ctrl+V, Ctrl+Z. Speciale tekens en leestekens."},
-  {thema:"t_toets",   lj:"L6",type:"bouw",label:"Vlot toetsenbordgebruik",     detail:"Invoer- en uitvoerapparaten doelgericht gebruiken en instellen met vlot toetsenbordgebruik."},
+  {thema:"t_toets",   lj:"K3",type:"aan", label:"Toetsen aantikken",
+   detail:"Letters en cijfers herkennen op het toetsenbord. Met één vinger gericht een toets aantikken. Backspace gebruiken om een fout te verwijderen. Voorbeeld: de eigen naam intypen."},
+  {thema:"t_toets",   lj:"L1",type:"bouw",label:"Letters en cijfers typen",
+   detail:"Letters en cijfers correct intypen. Enter gebruiken om een nieuwe regel te beginnen. Backspace om fouten te verwijderen. Spatiebalk voor een spatie. Voorbeeld: een korte zin typen over de dag."},
+  {thema:"t_toets",   lj:"L2",type:"bouw",label:"Symbolen en leestekens",
+   detail:"Punt, komma, vraagteken en uitroepteken intypen. Hoofdletter maken met de Shift-toets (ingedrukt houden + letter). Cijfers en symbolen gebruiken, zoals @ voor e-mailadressen. Voorbeeld: een volledig correcte zin typen met leestekens."},
+  {thema:"t_toets",   lj:"L3",type:"bouw",label:"Sneltoetsen gebruiken",
+   detail:"Veelgebruikte sneltoetsen: Ctrl+C (kopiëren), Ctrl+V (plakken), Ctrl+Z (ongedaan maken), Ctrl+S (opslaan), Ctrl+A (alles selecteren). Voorbeeld: een stuk tekst kopiëren en plakken zonder de muis te gebruiken."},
+  {thema:"t_toets",   lj:"L6",type:"bouw",label:"Vlot toetsenbordgebruik",
+   detail:"Alle toetsenbordhandelingen vlot en automatisch uitvoeren. Sneltoetsen toepassen zonder nadenken. Het juiste invoerapparaat kiezen voor de taak. Voorbeeld: een heel document opmaken puur via sneltoetsen."},
   // Inloggen & instellingen
-  {thema:"t_login",   lj:"K2",type:"aan", label:"Inloggen met pictogram",      detail:"Inloggen met visuele code of pictogram. App openen met hulp van leerkracht."},
-  {thema:"t_login",   lj:"K3",type:"bouw",label:"Wachtwoord intypen",          detail:"Wachtwoord intypen. Vertrouwde apps zelfstandig openen en sluiten."},
-  {thema:"t_login",   lj:"L1",type:"bouw",label:"Schoolplatform openen",       detail:"Zelfstandig inloggen op schoolplatform. Programma's openen, wisselen en sluiten."},
-  {thema:"t_login",   lj:"L2",type:"bouw",label:"Office 365 inloggen",         detail:"Inloggen op Office 365. Meerdere programma's naast elkaar gebruiken."},
-  {thema:"t_login",   lj:"L5",type:"bouw",label:"Wachtwoord & instellingen",   detail:"Wachtwoord beheren en wijzigen. Weergave- en taalinstellingen aanpassen. Wifi aan/uit."},
+  {thema:"t_login",   lj:"K2",type:"aan", label:"Inloggen met pictogram",
+   detail:"Inloggen op het schooltoestel via een visuele code: een reeks pictogrammen of kleuren aanklikken als wachtwoord. Een vertrouwde app openen met hulp van de leerkracht. Voorbeeld: de tekenapp openen via het pictogram op het startscherm."},
+  {thema:"t_login",   lj:"K3",type:"bouw",label:"Wachtwoord intypen",
+   detail:"Een eenvoudig wachtwoord intypen op het toetsenbord. Vertrouwde apps (bijv. een rekenoefeningen-app, Klokhuis) zelfstandig openen via het startmenu of bureaublad en daarna correct sluiten."},
+  {thema:"t_login",   lj:"L1",type:"bouw",label:"Schoolplatform openen",
+   detail:"Zelfstandig inloggen op het schoolplatform (bijv. Office 365 of Smartschool) met de eigen gebruikersnaam en het wachtwoord. Programma's openen, van programma wisselen via de taakbalk en afsluiten via het kruisje."},
+  {thema:"t_login",   lj:"L2",type:"bouw",label:"Office 365 inloggen",
+   detail:"Met het schoolaccount inloggen op Office 365: Word Online, Teams, OneDrive en OneNote openen. Meerdere browsertabbladen of programma's naast elkaar openen en beheren."},
+  {thema:"t_login",   lj:"L5",type:"bouw",label:"Wachtwoord & instellingen",
+   detail:"Het eigen wachtwoord wijzigen via de accountinstellingen (en begrijpen waarom een sterk wachtwoord belangrijk is). De weergave aanpassen: lettergrootte, nachtmodus, schermresolutie. Taalinstelling controleren en wifi aan- en uitzetten."},
   // Informatie opzoeken
-  {thema:"t_zoek",    lj:"L2",type:"aan", label:"Opzoeken (beveiligd)",        detail:"Op internet digitale informatie opzoeken in een beveiligde omgeving."},
-  {thema:"t_zoek",    lj:"L3",type:"bouw",label:"Zoekvraag formuleren",        detail:"Een zoekvraag formuleren als zoekstrategie. Een zoektool kiezen en een zoekopdracht invullen."},
-  {thema:"t_zoek",    lj:"L4",type:"bouw",label:"Gericht zoeken",              detail:"Gericht zoeken met specifieke zoektermen. Resultaten vergelijken en selecteren."},
-  {thema:"t_zoek",    lj:"L5",type:"bouw",label:"Resultaten verwerken",        detail:"Zoekresultaten uit digitale bronnen verwerken en bewaren."},
-  {thema:"t_zoek",    lj:"L6",type:"bouw",label:"Gevorderd zoeken",            detail:"Gevorderd zoeken in meerdere bronnen. Zoekresultaten kritisch vergelijken."},
+  {thema:"t_zoek",    lj:"L2",type:"aan", label:"Opzoeken in beveiligde omgeving",
+   detail:"Via een veilige zoekmachine (bijv. Kiddle of Google SafeSearch) informatie opzoeken over een klasonderwerp. De leerkracht stelt de beveiligde omgeving in. Voorbeeld: plaatjes van dieren zoeken voor een spreekbeurt."},
+  {thema:"t_zoek",    lj:"L3",type:"bouw",label:"Zoekvraag formuleren",
+   detail:"Een goede zoekvraag opstellen vóór je gaat zoeken. Meerdere zoekwoorden combineren (bijv. 'vlinders levensloop' in plaats van alleen 'vlinders'). Een zoektool kiezen: zoekmachine, digitale encyclopedie of schoolplatform. Voorbeeld: niet 'dingen over bijen' maar 'bijen koningin taak'."},
+  {thema:"t_zoek",    lj:"L4",type:"bouw",label:"Gericht zoeken",
+   detail:"Zoektermen aanpassen als de resultaten niet kloppen. Meerdere zoekresultaten bekijken en vergelijken. De meest geschikte bron selecteren voor de opdracht. Voorbeeld: drie websites over klimaatverandering vergelijken en de meest duidelijke kiezen."},
+  {thema:"t_zoek",    lj:"L5",type:"bouw",label:"Zoekresultaten verwerken",
+   detail:"Gevonden informatie kopiëren naar een document of bewaren als bladwijzer. Notities maken bij gevonden bronnen. Samenvatten in eigen woorden in plaats van alles te kopiëren. Voorbeeld: aantekeningen maken op basis van drie websites over een onderwerp."},
+  {thema:"t_zoek",    lj:"L6",type:"bouw",label:"Gevorderd zoeken",
+   detail:"Zoeken in meerdere soorten bronnen: websites, digitale encyclopedieën (bijv. Wikipedia), educatieve YouTube-kanalen, digitale bibliotheek. Resultaten uit verschillende bronnen naast elkaar leggen en de beste kiezen."},
   // Kritisch & gevorderd
-  {thema:"t_kritisch",lj:"L3",type:"aan", label:"Feit vs. mening",             detail:"Verschil zien tussen feit en mening. Eerste stappen in bronnenkritiek."},
-  {thema:"t_kritisch",lj:"L4",type:"bouw",label:"Bronvermelding",              detail:"Bronvermelding toevoegen bij opgezochte informatie."},
-  {thema:"t_kritisch",lj:"L5",type:"bouw",label:"Bronnen beoordelen & AI",     detail:"Bronnen vergelijken op betrouwbaarheid. Wat is AI? Voorbeelden herkennen en benoemen."},
-  {thema:"t_kritisch",lj:"L6",type:"bouw",label:"Kritisch & AI toepassen",     detail:"Digitale bronnen beoordelen op bruikbaarheid en correctheid. AI als hulpmiddel gebruiken. Bibliografie opmaken."},
+  {thema:"t_kritisch",lj:"L3",type:"aan", label:"Feit vs. mening",
+   detail:"Het verschil leren zien tussen een feit ('De zon is een ster — dit is meetbaar en bewijsbaar') en een mening ('De zon is mooi — dit is persoonlijk'). Oefenen aan de hand van korte krantenberichten of nieuwswebsites voor kinderen zoals Karrewiet."},
+  {thema:"t_kritisch",lj:"L4",type:"bouw",label:"Bronvermelding toevoegen",
+   detail:"Bij elke bron die je gebruikt de naam van de website of het boek noteren, samen met de datum waarop je het geraadpleegd hebt. Waarom? Zodat anderen kunnen controleren waar de informatie vandaan komt en of ze het kunnen vertrouwen. Voorbeeld: 'Bron: www.wikipedia.org, geraadpleegd op 10 mei 2025.'"},
+  {thema:"t_kritisch",lj:"L5",type:"bouw",label:"Bronnen beoordelen & AI",
+   detail:"Controleren of een website betrouwbaar is: wie heeft het geschreven? Wanneer? Klopt het met andere bronnen? Let op: iedereen kan iets op het internet zetten. Kennismaking met artificiële intelligentie (AI): wat is het? Voorbeelden die leerlingen kennen: Siri, Google Assistent, ChatGPT, aanbevelingen op YouTube."},
+  {thema:"t_kritisch",lj:"L6",type:"bouw",label:"Kritisch & AI toepassen",
+   detail:"Digitale bronnen beoordelen op bruikbaarheid, betrouwbaarheid en correctheid. AI als hulpmiddel inzetten bij taken, maar de output altijd kritisch controleren (AI maakt fouten). Een correcte bibliografie opmaken met alle geraadpleegde bronnen."},
   // Digitaal communiceren
-  {thema:"t_mail",    lj:"L3",type:"aan", label:"Veilig communiceren",         detail:"Een aangereikte tool gebruiken om veilig en verantwoord te communiceren. Aandacht voor persoonsgegevens en paswoorden."},
-  {thema:"t_mail",    lj:"L6",type:"bouw",label:"E-mail",                      detail:"E-mail versturen en ontvangen. Mogelijkheden van digitale communicatietools kennen: berichten, e-mail, chat, reacties."},
+  {thema:"t_mail",    lj:"L3",type:"aan", label:"Veilig digitaal communiceren",
+   detail:"Via een aangereikte tool (bijv. Teams of Smartschool) berichten sturen naar de leerkracht of klasgenoten. Aandacht voor: nooit je adres, telefoonnummer of wachtwoord doorgeven. Respectvol schrijven: lees je bericht na voor je verstuurt. Geen foto's van anderen posten zonder toestemming."},
+  {thema:"t_mail",    lj:"L6",type:"bouw",label:"Communicatiemogelijkheden kennen",
+   detail:"Digitale tools bieden verschillende manieren om te communiceren. Leerlingen leren ze kennen én weten wanneer je welke gebruikt:\n• Berichten (via Teams of Smartschool): een bericht sturen aan een persoon of groep, vergelijkbaar met een sms maar via het schoolplatform.\n• E-mail: een formeel of langer bericht met onderwerpregel, aanhef ('Beste mevrouw...'), inhoud en groet. Je kan een bijlage toevoegen (bijv. een werkstuk). Je ontvangt e-mails in je inbox en kan ze beantwoorden of doorsturen.\n• Chat: korte berichtjes in real time, zoals een gesprekje. Handig voor snelle vragen. In Teams heet dit de chatfunctie.\n• Reacties: een reactie plaatsen op een post, foto of document — bijv. een duim omhoog, een hartje of een korte opmerking. Wordt gebruikt op schoolplatforms en sociale media.\nWanneer kies je wat? E-mail = formeel en langere boodschap (aan leerkracht, directie). Chat = snel en informeel (aan klasgenoot). Reactie = snelle feedback op iets dat iemand gepost heeft."},
   // Samenwerken & tools
-  {thema:"t_samen",   lj:"L4",type:"aan", label:"Samenwerken in document",     detail:"Samenwerken in een gedeeld document via Office 365."},
-  {thema:"t_samen",   lj:"L5",type:"bouw",label:"Teams / Meet & agenda",       detail:"Teams of Meet gebruiken voor digitale samenwerking. Digitale agenda bijhouden."},
-  {thema:"t_samen",   lj:"L6",type:"bouw",label:"Online vergaderen",           detail:"Online vergaderen en presenteren. Takenlijst en digitale planning bijhouden."},
+  {thema:"t_samen",   lj:"L4",type:"aan", label:"Samenwerken in gedeeld document",
+   detail:"Via Office 365 tegelijk met klasgenoten in hetzelfde Word- of OneNote-document werken. Ieders wijzigingen verschijnen in real time. Voorbeeld: de klas schrijft samen een verhaal — elk kind vult een alinea in vanuit zijn eigen toestel."},
+  {thema:"t_samen",   lj:"L5",type:"bouw",label:"Teams / Meet & digitale agenda",
+   detail:"Een Teams-videovergadering starten of eraan deelnemen: camera en microfoon in- of uitschakelen, chat gebruiken. De digitale agenda bijhouden: afspraken en deadlines invoeren. Digitale takenlijst gebruiken om je werk te plannen."},
+  {thema:"t_samen",   lj:"L6",type:"bouw",label:"Online vergaderen en plannen",
+   detail:"Een online vergadering leiden: spreektijd verdelen, scherm delen om iets te tonen. Een digitale planning bijhouden. Voorbeeld: een groepsproject plannen via een gedeeld document met taakverdeling en deadlines."},
   // Basis tekstverwerking
-  {thema:"t_tekst1",  lj:"L2",type:"aan", label:"Eerste tekst typen",          detail:"Eenvoudige tekst digitaal typen. Basisfuncties van een tekstverwerker verkennen."},
-  {thema:"t_tekst1",  lj:"L3",type:"bouw",label:"Basisopmaak",                 detail:"Bold, italic, underline, hoofdletter. Basisfuncties voor het schrijven en creatief opmaken van een tekst."},
-  {thema:"t_tekst1",  lj:"L4",type:"bouw",label:"Alinea's en structuur",       detail:"Alinea's, regelafstand en tekst structureren. Eenvoudige teksten digitaal schrijven."},
+  {thema:"t_tekst1",  lj:"L2",type:"aan", label:"Eerste tekst typen",
+   detail:"Voor het eerst een tekst typen in Word of Word Online. De cursor plaatsen door te klikken op de gewenste plek. Fouten verbeteren met Backspace. Het bestand opslaan via 'Opslaan als' en een duidelijke naam geven. Voorbeeld: een korte beschrijving van je favoriete dier typen."},
+  {thema:"t_tekst1",  lj:"L3",type:"bouw",label:"Basisopmaak",
+   detail:"Tekst selecteren door te klikken en te slepen. Geselecteerde tekst vet maken (B = Bold), cursief (I = Italic) of onderstrepen (U = Underline). Hoofdletters gebruiken. Een nieuwe alinea beginnen met Enter. Voorbeeld: in een gedicht de belangrijkste woorden vet zetten."},
+  {thema:"t_tekst1",  lj:"L4",type:"bouw",label:"Alinea's en structuur",
+   detail:"Tekst organiseren in duidelijke alinea's met een witruimte ertussen. Regelafstand aanpassen voor betere leesbaarheid. Tekst centreren (titels), links uitlijnen (lopende tekst) of rechts uitlijnen. Voorbeeld: een verslag van een uitstap structureren met inleiding, kern en besluit."},
   // Gevorderd tekstverwerking
-  {thema:"t_tekst2",  lj:"L4",type:"aan", label:"Opmaak uitbreiden",           detail:"Opsommingstekens, koppen en uitlijnen. Afbeelding invoegen en verplaatsen."},
-  {thema:"t_tekst2",  lj:"L5",type:"bouw",label:"Tabellen & samenwerken",      detail:"Tabel invoegen en opmaken. Samenwerken in gedeeld document. Opmerkingen toevoegen."},
-  {thema:"t_tekst2",  lj:"L6",type:"bouw",label:"Paginaopmaak",                detail:"Paginaopmaak, inhoudsopgave, lay-out met afbeeldingen en tabellen. Wijzigingen bijhouden."},
+  {thema:"t_tekst2",  lj:"L4",type:"aan", label:"Opmaak uitbreiden",
+   detail:"Opsommingstekens (bolletjes) en nummering toevoegen voor lijsten. Koppen gebruiken (Kop 1 voor titel, Kop 2 voor tussentitels) om de tekst te structureren. Tekst links, rechts of gecentreerd uitlijnen. Een afbeelding invoegen via 'Invoegen > Afbeelding' en verplaatsen door te slepen."},
+  {thema:"t_tekst2",  lj:"L5",type:"bouw",label:"Tabellen en samenwerken",
+   detail:"Een tabel invoegen via 'Invoegen > Tabel': rijen en kolommen bepalen, tekst in cellen typen, cellen opmaken. Samenwerken in een gedeeld document: opmerkingen toevoegen bij tekst van een klasgenoot via 'Invoegen > Opmerking'. Voorbeeld: een vergelijkingstabel maken van twee dieren."},
+  {thema:"t_tekst2",  lj:"L6",type:"bouw",label:"Paginaopmaak & inhoudsopgave",
+   detail:"Paginanummers toevoegen via de voettekst. Een automatische inhoudsopgave maken door koppen correct in te stellen. Koptekst invoegen met de naam van het document. Professionele lay-out: consistente lettertypes, kleuren en witruimte. Voorbeeld: een werkstuk opmaken als een echt boekje."},
   // Foto & video
-  {thema:"t_foto",    lj:"L1",type:"aan", label:"Foto's en video's maken",     detail:"Foto's en video's maken met een digitaal apparaat."},
-  {thema:"t_foto",    lj:"L2",type:"bouw",label:"Foto's bewerken",             detail:"Foto's bewerken met aangereikte tool: grootte wijzigen, bijsnijden, filters, roteren."},
-  {thema:"t_foto",    lj:"L3",type:"bouw",label:"Filters en bijsnijden",       detail:"Foto's bijsnijden, filters toepassen, zwart-wit of sepia."},
-  {thema:"t_foto",    lj:"L4",type:"bouw",label:"Video monteren",              detail:"Eenvoudige video monteren met aangereikte tool. Creatief ideeën visueel vormgeven."},
-  {thema:"t_foto",    lj:"L5",type:"bouw",label:"Creatief beeldverhaal",       detail:"Creatief beeldverhaal maken. Foto's, video en geluid combineren."},
+  {thema:"t_foto",    lj:"L1",type:"aan", label:"Foto's en video's maken",
+   detail:"Met een tablet of digitale camera foto's en video's maken. Opnames bekijken in de galerij en de beste kiezen. Voorbeeld: foto's maken van de schooltuin voor een project over de seizoenen."},
+  {thema:"t_foto",    lj:"L2",type:"bouw",label:"Foto's bewerken",
+   detail:"Met een aangereikte app (bijv. de standaard fotoapp of Snapseed) een foto bewerken: bijsnijden om het onderwerp te centreren, roteren als de foto scheef staat, een filter toepassen om de sfeer aan te passen."},
+  {thema:"t_foto",    lj:"L3",type:"bouw",label:"Filters en bijsnijden",
+   detail:"Foto's creatief bewerken: bijsnijden, zwart-wit of sepia filter, helderheid en contrast aanpassen. Grootte aanpassen voor gebruik in een document of presentatie. Voorbeeld: een zwart-witfoto maken voor een geschiedenisproject."},
+  {thema:"t_foto",    lj:"L4",type:"bouw",label:"Video monteren",
+   detail:"Met een eenvoudige app (bijv. Clipchamp, iMovie of Photos op Windows) video-fragmenten aan elkaar plakken: een stuk bijknippen, de volgorde aanpassen, een tekstvak of titel toevoegen, achtergrondmuziek invoegen. Voorbeeld: een filmpje maken over een klasuitstap."},
+  {thema:"t_foto",    lj:"L5",type:"bouw",label:"Creatief beeldverhaal",
+   detail:"Een creatief beeldverhaal of korte documentaire maken door foto's, videofragmenten en geluidsopnames te combineren. Voorbeeld: een reportage over het schoolleven waarbij leerlingen zelf filmen, interviewen en monteren."},
   // Geluid opnemen
-  {thema:"t_geluid",  lj:"L2",type:"aan", label:"Geluid opnemen",              detail:"Een aangereikt digitaal apparaat gebruiken om geluid op te nemen."},
-  {thema:"t_geluid",  lj:"L3",type:"bouw",label:"Opname verwerken",            detail:"Opname beluisteren, eenvoudig bewerken en opslaan."},
-  {thema:"t_geluid",  lj:"L4",type:"bouw",label:"Geluidsfragmenten",           detail:"Geluidsfragmenten samenvoegen in een aangereikte tool."},
+  {thema:"t_geluid",  lj:"L2",type:"aan", label:"Geluid opnemen",
+   detail:"Met de ingebouwde microfoon van de tablet of laptop een geluidsopname maken via de standaard opname-app. Voorbeeld: een gedicht voorlezen en opnemen, of geluiden in de natuur opnemen voor een project."},
+  {thema:"t_geluid",  lj:"L3",type:"bouw",label:"Opname beluisteren en opslaan",
+   detail:"De opname terugluisteren en beoordelen: is het duidelijk? Is er storend achtergrondgeluid? Een stuk opnieuw opnemen als het niet goed is. Het geluidsbestand opslaan met een duidelijke naam en terugvinden in de map."},
+  {thema:"t_geluid",  lj:"L4",type:"bouw",label:"Geluidsfragmenten samenvoegen",
+   detail:"Meerdere geluidsopnames samenvoegen in een aangereikte tool (bijv. GarageBand of Audacity). Achtergrondmuziek als tweede spoor toevoegen en het volume afstellen zodat de stem goed hoorbaar blijft. Voorbeeld: een radioprogramma of podcast maken."},
   // Basis presenteren
-  {thema:"t_pres1",   lj:"L4",type:"aan", label:"Presentatie opbouwen",        detail:"Een aangereikte tool gebruiken om informatie aan anderen voor te stellen. Presentatie met dia's opbouwen."},
-  {thema:"t_pres1",   lj:"L5",type:"bouw",label:"Structureren & vertellen",    detail:"Informatie structureren in dia's. Vertellen bij dia's. Presenteren met notities."},
+  {thema:"t_pres1",   lj:"L4",type:"aan", label:"Presentatie opbouwen",
+   detail:"Met PowerPoint of Google Slides een presentatie maken. Een thema of achtergrond kiezen. Tekst en afbeeldingen toevoegen aan een dia. Meerdere dia's aanmaken en een logische volgorde bepalen. Voorbeeld: een spreekbeurt over een dier presenteren in 5 dia's."},
+  {thema:"t_pres1",   lj:"L5",type:"bouw",label:"Structureren en vertellen",
+   detail:"De presentatie logisch opbouwen: inleiding (onderwerp en doel), middenstuk (inhoud in blokken), slot (conclusie of vraag aan publiek). Stichworden op de dia zetten — niet de volledige tekst — en de uitleg er zelf bij vertellen. Presentatornotities gebruiken als geheugensteun."},
   // Gevorderd presenteren
-  {thema:"t_pres2",   lj:"L5",type:"aan", label:"Animaties & multimedia",      detail:"Animaties en overgangen toevoegen. Multimedia en afbeeldingen invoegen."},
-  {thema:"t_pres2",   lj:"L6",type:"bouw",label:"Professioneel presenteren",   detail:"Multimedia en lay-out verfijnen. Professioneel presenteren voor een publiek."},
+  {thema:"t_pres2",   lj:"L5",type:"aan", label:"Animaties en multimedia",
+   detail:"Animaties toevoegen aan tekst en afbeeldingen (bijv. 'Inzoomen' of 'Doorvliegen') zodat inhoud stap voor stap verschijnt. Overgangen tussen dia's instellen. Een YouTube-fragment of video rechtstreeks in de presentatie invoegen. Voorbeeld: een wetenschappelijk experiment stap voor stap toelichten met animaties."},
+  {thema:"t_pres2",   lj:"L6",type:"bouw",label:"Professioneel presenteren",
+   detail:"Een professionele lay-out verzorgen: consistent lettertype en kleurenschema doorheen de hele presentatie, voldoende witruimte, kwalitatieve afbeeldingen. Presenteren voor de klas met oogcontact, duidelijke stem en het gebruik van de presentatietools (aanwijzer, volgende dia). Vragen van het publiek beantwoorden."},
   // Basis bestanden
-  {thema:"t_best1",   lj:"L2",type:"aan", label:"Bestand kennen",              detail:"Het begrip 'bestand' kennen en gebruiken. Bestand opslaan voor de eerste keer."},
-  {thema:"t_best1",   lj:"L3",type:"bouw",label:"Openen en opslaan",           detail:"Bestand openen om te bewerken en sluiten om te bewaren. Bestanden in bestaande mappenstructuur terugvinden."},
-  {thema:"t_best1",   lj:"L4",type:"bouw",label:"Mappenstructuur gebruiken",   detail:"Bestanden gebruiken via bestaande mappenstructuur. Bestanden openen en sluiten."},
+  {thema:"t_best1",   lj:"L2",type:"aan", label:"Wat is een bestand?",
+   detail:"Een bestand is een stuk informatie dat je kunt bewaren op een computer: een tekst (.docx), een foto (.jpg), een video (.mp4) of een programma (.exe). Een bestand opslaan via 'Bestand > Opslaan als', een duidelijke naam geven (bijv. 'werkstuk_bijen_Jonas') en kiezen in welke map het terechtkomt."},
+  {thema:"t_best1",   lj:"L3",type:"bouw",label:"Openen en opslaan",
+   detail:"Een bestaand bestand terugvinden in de map en openen door erop te dubbelklikken. Wijzigingen opslaan met Ctrl+S (zonder de naam te veranderen). Bestand sluiten via het kruisje. Voorbeeld: het werkstuk van gisteren terugvinden in de klasmap en verder aanvullen."},
+  {thema:"t_best1",   lj:"L4",type:"bouw",label:"Mappenstructuur gebruiken",
+   detail:"De bestaande mappenstructuur op het schoolnetwerk of OneDrive gebruiken: eigen map, klasmap, gedeelde projectmap. Bestanden op de juiste plek opslaan zodat iedereen ze kan terugvinden. Voorbeeld: het verslag van het groepswerk opslaan in de gedeelde klasmap, niet op het bureaublad."},
   // Gevorderd bestanden
-  {thema:"t_best2",   lj:"L5",type:"aan", label:"Mappen & cloud",              detail:"Zelf mappen aanmaken. Bestanden uploaden en terugvinden via cloud."},
-  {thema:"t_best2",   lj:"L6",type:"bouw",label:"Beheren & delen",             detail:"Bestanden downloaden, uploaden, ordenen en delen met een klasgenoot. Bestanden archiveren."},
+  {thema:"t_best2",   lj:"L5",type:"aan", label:"Mappen aanmaken en cloud",
+   detail:"Zelf een nieuwe map aanmaken: rechtermuisknop > Nieuwe map, dan een logische naam geven. Bestanden uploaden naar OneDrive via de browser of app. Bestanden terugvinden via de zoekfunctie (Verkenner of OneDrive). Voorbeeld: voor elk vak een eigen map aanmaken in OneDrive."},
+  {thema:"t_best2",   lj:"L6",type:"bouw",label:"Bestanden beheren en delen",
+   detail:"Bestanden downloaden van het internet of vanuit OneDrive naar de eigen computer. Een bestand delen met een klasgenoot of leerkracht via een deellink (zonder het te e-mailen). Bestanden hernoemen, verplaatsen naar een andere map of verwijderen naar de prullenbak. Voorbeeld: het eindwerkstuk delen met de leerkracht via een OneDrive-link."},
   // Zelfstandig leren
-  {thema:"t_zelf",    lj:"L4",type:"aan", label:"Zelfstandig digitaal leren",  detail:"Met aangereikte digitale tools zelfstandig oefenen en leren."},
-  {thema:"t_zelf",    lj:"L5",type:"bouw",label:"Problemen oplossen",          detail:"Technische problemen zelf oplossen. Hulpbronnen gebruiken. Eigen werk digitaal bewaren."},
-  {thema:"t_zelf",    lj:"L6",type:"bouw",label:"Portfolio & reflectie",       detail:"Reflecteren op de meerwaarde van digitale toepassingen. Portfolio bijhouden en presenteren."},
+  {thema:"t_zelf",    lj:"L4",type:"aan", label:"Zelfstandig digitaal leren",
+   detail:"Met digitale oefenplatformen zelfstandig oefenen en leren: bijv. Bingel, Rekentuin, Khan Academy of een aangereikte leerapp. Feedback lezen en de oefening opnieuw proberen als er fouten zijn. Voorbeeld: 15 minuten per week zelfstandig rekenen via Bingel."},
+  {thema:"t_zelf",    lj:"L5",type:"bouw",label:"Technische problemen oplossen",
+   detail:"Wanneer iets niet werkt: eerst zelf proberen op te lossen (herstarten, de helpfunctie raadplegen via F1 of het vraagteken, iets opzoeken op internet). Daarna een klasgenoot om hulp vragen. Pas als laatste stap de leerkracht. Voorbeeld: de printer doet het niet — controleer of hij aanstaat en verbonden is."},
+  {thema:"t_zelf",    lj:"L6",type:"bouw",label:"Portfolio en reflectie",
+   detail:"Eigen digitaal werk bewaren in een portfolio (bijv. een gedeelde OneDrive-map of OneNote-notitieboek). Terugkijken op wat je al kunt en wat nog moeilijk is. Nadenken over de meerwaarde van digitale tools: wanneer helpt technologie écht en wanneer werkt een pen en papier sneller?"},
 ];
 
 /* Standaarddoelen — gebootstrapt uit de OVSG-leerlijn (LeerLokaal). leerjaar afgeleid uit leeftijd. */
@@ -365,7 +433,7 @@ function load(){
 }
 function save(){ localStorage.setItem(STORE_KEY, JSON.stringify(doelen)); }
 
-const STORE_KEY_SPIRAAL = "leerlijnViz_spiraal_v2";
+const STORE_KEY_SPIRAAL = "leerlijnViz_spiraal_v4";
 let spiraalDoelen = loadSpiraal();
 function loadSpiraal(){
   try{ const s=localStorage.getItem(STORE_KEY_SPIRAAL); if(s) return JSON.parse(s); }catch(e){}
@@ -472,7 +540,10 @@ function showInfo(tlId){
      <button class="btn btn-ghost close" style="background:#0f1f30;color:#fff" onclick="closeOverlay()">Sluiten</button>`;
   document.getElementById('overlay').classList.add('show');
 }
-function closeOverlay(){ document.getElementById('overlay').classList.remove('show'); }
+function closeOverlay(){
+  document.getElementById('overlay').classList.remove('show');
+  document.getElementById('modal').classList.remove('wide');
+}
 
 /* ── Bewerkmodus ── */
 document.getElementById('editBtn').onclick = ()=>{
@@ -511,7 +582,7 @@ document.getElementById('clearFilter').onclick = ()=>{
 document.getElementById('overlay').onclick = e=>{ if(e.target.id==='overlay') closeOverlay(); };
 
 /* ── Helpers ── */
-function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function hex2rgba(h,a){ const n=parseInt(h.slice(1),16); return `rgba(${(n>>16)&255},${(n>>8)&255},${n&255},${a})`; }
 let toastT;
 function toast(m){ const t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('show'),2600); }
@@ -526,6 +597,7 @@ function switchView(v){
   document.getElementById('viewDetail').classList.toggle('on', v==='detail');
   document.getElementById('viewOverview').classList.toggle('on', v==='overview');
   document.getElementById('editBtn').classList.toggle('hidden', v==='overview');
+  document.getElementById('beheerBtn').classList.toggle('hidden', v==='detail');
   document.getElementById('legendDetail').classList.toggle('hidden', v==='overview');
   document.getElementById('legendSpiraal').classList.toggle('hidden', v==='detail');
   if(v==='overview') renderSpiraal();
@@ -614,7 +686,7 @@ function showSpiraalDetail(themaId, ljId){
      <span style="font-size:.85rem;font-weight:400;color:#64748b;margin-left:4px">· ${lj.label}</span></h2>
      <div style="margin-top:10px">${typeLabel}</div>
      <p style="margin-top:12px;font-size:.97rem;color:#1e293b;font-weight:600;line-height:1.4" id="spLblView">${esc(entry.label)}</p>
-     <p style="margin-top:6px;font-size:.85rem;color:#475569;line-height:1.5" id="spDetailView">${esc(entry.detail||'')}</p>
+     <p style="margin-top:6px;font-size:.85rem;color:#475569;line-height:1.5;white-space:pre-line" id="spDetailView">${esc(entry.detail||'')}</p>
      ${doelenHtml}
      <div id="spEdit" style="display:none;margin-top:12px">
        <label style="font-size:.75rem;font-weight:700;color:#64748b">Korte naam</label>
@@ -648,6 +720,109 @@ function saveSpiraalEntry(themaId, ljId){
   spiraalDoelen[idx].detail = document.getElementById('spDetailInput').value.trim();
   spiraalDoelen[idx].type   = document.getElementById('spType').value;
   saveSpiraal(); closeOverlay(); renderSpiraal(); toast("Opgeslagen.");
+}
+
+/* ── Beheerpaneel ── */
+document.getElementById('beheerBtn').onclick = openBeheer;
+
+function openBeheer(){
+  const m = document.getElementById('modal');
+  m.classList.add('wide');
+  m.innerHTML = renderBeheerHtml();
+  document.getElementById('overlay').classList.add('show');
+}
+
+function closeBeheer(){
+  document.getElementById('modal').classList.remove('wide');
+  closeOverlay();
+}
+
+function renderBeheerHtml(){
+  let html = `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+    <h2 style="margin:0;font-family:'Space Grotesk',sans-serif;font-size:1.15rem">⚙ Spiraalinhoudbeheer</h2>
+    <button class="btn btn-ghost" style="background:#0f1f30;color:#fff;font-size:.82rem" onclick="closeBeheer()">✕ Sluiten</button>
+  </div>
+  <p style="font-size:.78rem;color:#64748b;margin:0 0 16px">Klik in een veld om te bewerken — wijzigingen worden direct opgeslagen. Voeg blokken toe of verwijder ze per thema.</p>
+  <div style="display:grid;grid-template-columns:140px 108px 1fr 32px;gap:8px;padding:6px 14px;background:#f8fafc;border-radius:8px;margin-bottom:10px;font-size:.72rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.04em">
+    <span>Leerjaar</span><span>Type</span><span>Naam & uitleg</span><span></span>
+  </div>`;
+
+  THEMAS.forEach(t=>{
+    const entries = spiraalDoelen
+      .map((s,i)=>({...s,_i:i}))
+      .filter(s=>s.thema===t.id)
+      .sort((a,b)=>LEERJAREN.findIndex(l=>l.id===a.lj)-LEERJAREN.findIndex(l=>l.id===b.lj));
+
+    html += `<div style="margin-bottom:14px;border:1.5px solid #e2e8f0;border-radius:10px;overflow:hidden">
+      <div class="bh-thema-header" style="background:${t.kleur}">
+        <span>${esc(t.label)}</span>
+        <button class="bh-add-btn" onclick="addBeheerEntry('${t.id}')">+ Toevoegen</button>
+      </div>`;
+
+    if(entries.length){
+      entries.forEach(entry=>{
+        const i = entry._i;
+        const ljOpts = LEERJAREN.map(l=>`<option value="${l.id}" ${l.id===entry.lj?'selected':''}>${l.label}</option>`).join('');
+        html += `<div class="bh-row">
+          <select onchange="updateBeheerEntry(${i},'lj',this.value)">${ljOpts}</select>
+          <select onchange="updateBeheerEntry(${i},'type',this.value)">
+            <option value="aan" ${entry.type==='aan'?'selected':''}>Nieuw (donker)</option>
+            <option value="bouw" ${entry.type==='bouw'?'selected':''}>Bouwen (licht)</option>
+          </select>
+          <div>
+            <input type="text" value="${esc(entry.label)}" onblur="updateBeheerEntry(${i},'label',this.value)" placeholder="Korte naam..." style="margin-bottom:5px">
+            <textarea onblur="updateBeheerEntry(${i},'detail',this.value)" placeholder="Uitleg voor leerkracht...">${esc(entry.detail||'')}</textarea>
+          </div>
+          <button class="bh-del" onclick="deleteBeheerEntry(${i})" title="Verwijderen">✕</button>
+        </div>`;
+      });
+    } else {
+      html += `<div style="padding:12px 14px;font-size:.82rem;color:#94a3b8;font-style:italic">Geen blokken — klik + Toevoegen.</div>`;
+    }
+
+    html += `</div>`;
+  });
+
+  html += `<div style="text-align:right;margin-top:6px">
+    <button class="btn btn-ghost" style="background:#0f1f30;color:#fff" onclick="closeBeheer()">Sluiten</button>
+  </div>`;
+  return html;
+}
+
+function updateBeheerEntry(i, field, value){
+  if(i<0||i>=spiraalDoelen.length) return;
+  const trimmed = typeof value==='string' ? value.trim() : value;
+  if(spiraalDoelen[i][field]===trimmed) return;
+  spiraalDoelen[i][field] = trimmed;
+  saveSpiraal();
+  if(field==='lj'||field==='thema'){
+    document.getElementById('modal').innerHTML = renderBeheerHtml();
+    document.getElementById('modal').classList.add('wide');
+  }
+  renderSpiraal();
+  toast("Opgeslagen.");
+}
+
+function deleteBeheerEntry(i){
+  if(!confirm("Dit blok verwijderen?")) return;
+  spiraalDoelen.splice(i,1);
+  saveSpiraal();
+  document.getElementById('modal').innerHTML = renderBeheerHtml();
+  document.getElementById('modal').classList.add('wide');
+  renderSpiraal();
+  toast("Verwijderd.");
+}
+
+function addBeheerEntry(themaId){
+  const t = THEMAS.find(x=>x.id===themaId)||THEMAS[0];
+  const used = spiraalDoelen.filter(s=>s.thema===t.id).map(s=>s.lj);
+  const firstFree = LEERJAREN.find(l=>!used.includes(l.id));
+  spiraalDoelen.push({thema:t.id, lj:firstFree?firstFree.id:'L1', type:'aan', label:'Nieuw blok', detail:''});
+  saveSpiraal();
+  document.getElementById('modal').innerHTML = renderBeheerHtml();
+  document.getElementById('modal').classList.add('wide');
+  renderSpiraal();
+  toast("Nieuw blok toegevoegd.");
 }
 
 buildFilterChips();

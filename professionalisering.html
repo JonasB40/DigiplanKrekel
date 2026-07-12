@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <title>Professionalisering – Digiplan GBS De Krekel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shared.css">
+  <style>
+    :root { --accent: #16a34a; --accent-light: #dcfce7; }
+
+    /* ── DIGCOMPEDU DOMEIN KAARTEN ── */
+    .domein-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+    .domein-card {
+      background: white;
+      border-radius: 14px;
+      border: 2px solid var(--border);
+      overflow: hidden;
+      box-shadow: 0 2px 12px rgba(15,31,48,0.06);
+    }
+    .domein-header {
+      padding: 16px 20px 13px;
+      display: flex;
+      align-items: flex-start;
+      gap: 13px;
+      border-bottom: 1px solid var(--border);
+    }
+    .domein-nr {
+      width: 42px; height: 42px;
+      border-radius: 11px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: white;
+      flex-shrink: 0;
+    }
+    .domein-meta h3 { font-size: 0.98rem; font-weight: 700; color: var(--dark); margin-bottom: 2px; }
+    .domein-meta .domein-sub { font-size: 0.77rem; color: var(--muted); font-style: italic; line-height: 1.4; }
+    .domein-body { padding: 14px 20px 18px; }
+    .comp-list { list-style: none; padding: 0; margin: 0; }
+    .comp-list li {
+      font-size: 0.86rem;
+      padding: 5px 0 5px 20px;
+      position: relative;
+      color: #374151;
+      line-height: 1.5;
+    }
+    .comp-list li::before {
+      content: '▸';
+      position: absolute; left: 2px;
+      color: var(--dom-kleur, var(--accent));
+      font-weight: 700;
+    }
+    .voorbeeld {
+      margin-top: 12px;
+      background: #f8fafc;
+      border-left: 3px solid var(--dom-kleur, var(--accent));
+      border-radius: 8px;
+      padding: 10px 13px;
+      font-size: 0.8rem;
+      color: #57534e;
+      line-height: 1.55;
+    }
+    .voorbeeld strong { color: var(--dom-kleur, var(--accent)); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; display: block; margin-bottom: 3px; }
+
+    /* ── NIVEAUS ── */
+    .niveau-track {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px;
+      margin-top: 16px;
+    }
+    @media (max-width: 700px) { .niveau-track { grid-template-columns: repeat(2, 1fr); } }
+    .niveau-stap {
+      border-radius: 11px;
+      padding: 14px 12px;
+      text-align: center;
+      border: 2px solid transparent;
+    }
+    .niveau-code {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.35rem;
+      font-weight: 900;
+      margin-bottom: 3px;
+    }
+    .niveau-naam { font-size: 0.78rem; font-weight: 700; margin-bottom: 5px; }
+    .niveau-desc { font-size: 0.72rem; line-height: 1.45; color: #57534e; }
+
+    /* ── ZELFASSESSMENT TABEL ── */
+    .assess-tabel {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+      margin-top: 14px;
+    }
+    .assess-tabel th {
+      background: var(--accent);
+      color: white;
+      padding: 10px 13px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.79rem;
+    }
+    .assess-tabel td {
+      padding: 9px 13px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+      color: #374151;
+    }
+    .assess-tabel tr:nth-child(even) td { background: #f8fafc; }
+    .assess-tabel select, .assess-tabel input {
+      width: 100%;
+      padding: 6px 9px;
+      border: 1.5px solid var(--border);
+      border-radius: 7px;
+      font-family: inherit;
+      font-size: 0.83rem;
+      background: white;
+    }
+
+    /* ── NASCHOLINGSPLAN ── */
+    .nascholing-rij {
+      display: grid;
+      grid-template-columns: 1fr 150px 150px 130px 36px;
+      gap: 8px;
+      margin-bottom: 8px;
+      align-items: center;
+    }
+    @media (max-width: 800px) { .nascholing-rij { grid-template-columns: 1fr 1fr; } }
+    .nascholing-rij input, .nascholing-rij select {
+      padding: 8px 10px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.85rem;
+      width: 100%;
+    }
+    .rij-del {
+      background: #fee2e2; color: #b91c1c;
+      border: none; border-radius: 8px;
+      width: 34px; height: 34px;
+      cursor: pointer; font-weight: 800;
+      transition: background 0.15s;
+    }
+    .rij-del:hover { background: #fecaca; }
+    .btn-add {
+      background: var(--accent-light);
+      color: var(--accent);
+      border: 1.5px dashed var(--accent);
+      border-radius: 9px;
+      padding: 9px 18px;
+      font-family: inherit;
+      font-size: 0.86rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 6px;
+      transition: background 0.15s;
+    }
+    .btn-add:hover { background: #bbf7d0; }
+
+    /* ── STAPPENPLAN ── */
+    .stappen { counter-reset: stap; list-style: none; padding: 0; margin: 14px 0 0; }
+    .stappen li {
+      counter-increment: stap;
+      position: relative;
+      padding: 0 0 22px 52px;
+    }
+    .stappen li::before {
+      content: counter(stap);
+      position: absolute; left: 0; top: -2px;
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: white;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700;
+      font-size: 1rem;
+    }
+    .stappen li:not(:last-child)::after {
+      content: '';
+      position: absolute; left: 17px; top: 38px; bottom: 4px;
+      width: 2px;
+      background: var(--border);
+    }
+    .stappen h4 { font-size: 0.95rem; font-weight: 700; color: var(--dark); margin-bottom: 4px; }
+    .stappen p { font-size: 0.87rem; line-height: 1.6; color: #57534e; margin: 0; }
+    .stappen a { color: var(--accent); font-weight: 600; }
+
+    .omzendbrief-tip {
+      background: #fef3c7;
+      border-left: 4px solid #d97706;
+      border-radius: 10px;
+      padding: 14px 18px;
+      font-size: 0.88rem;
+      line-height: 1.65;
+      margin-bottom: 6px;
+    }
+    .omzendbrief-tip strong { color: #92400e; }
+
+    .save-bar {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: var(--dark);
+      color: rgba(255,255,255,0.7);
+      padding: 14px 5%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 0.85rem;
+      z-index: 50;
+    }
+    .save-bar button {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 9px 22px;
+      border-radius: 8px;
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+    }
+    .save-bar button:hover { opacity: 0.85; }
+    .save-bar .saved-msg { color: #86efac; font-size: 0.8rem; display: none; }
+    .save-bar .saved-msg.show { display: inline; }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <span>🎓 Professionalisering · GBS De Krekel</span>
+  <a href="Digiplan.html">← Terug naar Digiplan</a>
+</div>
+
+<div class="page-header">
+  <div class="page-header-inner">
+    <div class="page-header-label">Professionalisering · DigCompEdu</div>
+    <h1>Professionaliseringsplan</h1>
+    <p>Digitale competenties van ons team versterken volgens het Europese DigCompEdu-kader — technisch én pedagogisch-didactisch (omzendbrief NO/2025/03).</p>
+  </div>
+</div>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-card">
+      <div class="sidebar-title">Inhoud</div>
+      <nav>
+        <a href="#kader" class="active"><span class="nav-dot"></span>DigCompEdu-kader</a>
+        <a href="#niveaus"><span class="nav-dot"></span>De 6 niveaus</a>
+        <a href="#stappenplan"><span class="nav-dot"></span>Stappenplan</a>
+        <a href="#teamfoto"><span class="nav-dot"></span>Teamfoto</a>
+        <a href="#nascholing"><span class="nav-dot"></span>Nascholingsplan</a>
+      </nav>
+      <div class="sidebar-back">
+        <a href="Digiplan.html">← Digiplan</a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main>
+
+    <!-- INTRO -->
+    <div class="section" style="padding: 22px 28px;">
+      <div class="omzendbrief-tip">
+        <strong>Omzendbrief NO/2025/03</strong> verplicht vanaf 1 september 2026 een professionaliseringsluik in het ICT-beleidsplan: leerkrachten worden opgeleid in zowel <strong>technische</strong> als <strong>pedagogisch-didactische</strong> ICT-vaardigheden. Wij gebruiken hiervoor het Europese <strong>DigCompEdu-kader</strong>.
+      </div>
+    </div>
+
+    <!-- DIGCOMPEDU KADER -->
+    <div class="section" id="kader">
+      <div class="section-label">Het kader</div>
+      <h2>DigCompEdu: 6 domeinen, 22 competenties</h2>
+      <p>DigCompEdu is het Europese referentiekader voor digitale competenties van leraren. Het beschrijft wat een digitaal vaardige leerkracht kent en kan — niet alleen technisch, maar vooral didactisch.</p>
+
+      <div class="domein-grid">
+
+        <!-- DOMEIN 1 -->
+        <div class="domein-card" style="--dom-kleur:#2563a8;">
+          <div class="domein-header">
+            <div class="domein-nr" style="background:#2563a8;">1</div>
+            <div class="domein-meta">
+              <h3>Professioneel engagement</h3>
+              <div class="domein-sub">Digitale tools gebruiken voor communicatie, samenwerking en eigen groei</div>
+            </div>
+          </div>
+          <div class="domein-body">
+            <ul class="comp-list">
+              <li>Communicatie binnen de schoolorganisatie</li>
+              <li>Professionele samenwerking met collega's</li>
+              <li>Reflectie op de eigen digitale praktijk</li>
+              <li>Digitale permanente vorming</li>
+            </ul>
+            <div class="voorbeeld">
+              <strong>Bij ons op school</strong>
+              Teams gebruiken voor teamcommunicatie, samen documenten voorbereiden in Office 365, deelnemen aan webinars.
+            </div>
+          </div>
+        </div>
+
+        <!-- DOMEIN 2 -->
+        <div class="domein-card" style="--dom-kleur:#0d9488;">
+          <div class="domein-header">
+            <div class="domein-nr" style="background:#0d9488;">2</div>
+            <div class="domein-meta">
+              <h3>Digitale leermiddelen</h3>
+              <div class="domein-sub">Digitaal lesmateriaal vinden, maken en delen</div>
+            </div>
+          </div>
+          <div class="domein-body">
+            <ul class="comp-list">
+              <li>Selecteren van digitale leermiddelen</li>
+              <li>Creëren en aanpassen van eigen materiaal</li>
+              <li>Beheren, beschermen en delen (incl. auteursrecht & GDPR)</li>
+            </ul>
+            <div class="voorbeeld">
+              <strong>Bij ons op school</strong>
+              Werkbladen en oefeningen maken in Word/Forms, materiaal delen via SharePoint, letten op privacy bij het kiezen van apps.
+            </div>
+          </div>
+        </div>
+
+        <!-- DOMEIN 3 -->
+        <div class="domein-card" style="--dom-kleur:#7c3aed;">
+          <div class="domein-header">
+            <div class="domein-nr" style="background:#7c3aed;">3</div>
+            <div class="domein-meta">
+              <h3>Lesgeven en leren</h3>
+              <div class="domein-sub">ICT doelgericht inzetten in de les</div>
+            </div>
+          </div>
+          <div class="domein-body">
+            <ul class="comp-list">
+              <li>Lesgeven met digitale ondersteuning</li>
+              <li>Leerlingen begeleiden bij digitaal werken</li>
+              <li>Samenwerkend leren ondersteunen</li>
+              <li>Zelfgestuurd leren stimuleren</li>
+            </ul>
+            <div class="voorbeeld">
+              <strong>Bij ons op school</strong>
+              Digibord doelgericht gebruiken, leerlingen laten samenwerken in een gedeeld document, oefensoftware inzetten op eigen tempo.
+            </div>
+          </div>
+        </div>
+
+        <!-- DOMEIN 4 -->
+        <div class="domein-card" style="--dom-kleur:#f59e0b;">
+          <div class="domein-header">
+            <div class="domein-nr" style="background:#f59e0b;">4</div>
+            <div class="domein-meta">
+              <h3>Evaluatie</h3>
+              <div class="domein-sub">Digitaal evalueren en feedback geven</div>
+            </div>
+          </div>
+          <div class="domein-body">
+            <ul class="comp-list">
+              <li>Digitale evaluatiestrategieën</li>
+              <li>Leerbewijzen analyseren (leerlingdata)</li>
+              <li>Feedback en bijsturing via digitale weg</li>
+            </ul>
+            <div class="voorbeeld">
+              <strong>Bij ons op school</strong>
+              Quiz in Forms of Kahoot als formatieve toets, resultaten van oefensoftware bekijken om bij te sturen.
+            </div>
+          </div>
+        </div>
+
+        <!-- DOMEIN 5 -->
+        <div class="domein-card" style="--dom-kleur:#dc2626;">
+          <div class="domein-header">
+            <div class="domein-nr" style="background:#dc2626;">5</div>
+            <div class="domein-meta">
+              <h3>Leerlingen versterken</h3>
+              <div class="domein-sub">Toegankelijkheid, differentiatie en actieve betrokkenheid</div>
+            </div>
+          </div>
+          <div class="domein-body">
+            <ul class="comp-list">
+              <li>Toegankelijkheid en inclusie</li>
+              <li>Differentiatie en personalisering</li>
+              <li>Leerlingen actief betrekken</li>
+            </ul>
+            <div class="voorbeeld">
+              <strong>Bij ons op school</strong>
+              Voorleessoftware voor leerlingen met leesproblemen, oefeningen op maat, digitale inclusie bewaken (zie luik Digitale inclusie).
+            </div>
+          </div>
+        </div>
+
+        <!-- DOMEIN 6 -->
+        <div class="domein-card" style="--dom-kleur:#06b6d4;">
+          <div class="domein-header">
+            <div class="domein-nr" style="background:#06b6d4;">6</div>
+            <div class="domein-meta">
+              <h3>Digitale competenties van leerlingen bevorderen</h3>
+              <div class="domein-sub">Leerlingen zelf digitaal vaardig maken</div>
+            </div>
+          </div>
+          <div class="domein-body">
+            <ul class="comp-list">
+              <li>Informatie- en mediageletterdheid</li>
+              <li>Digitale communicatie & samenwerking</li>
+              <li>Digitale content maken</li>
+              <li>Verantwoord en veilig ICT-gebruik</li>
+              <li>Digitale probleemoplossing</li>
+            </ul>
+            <div class="voorbeeld">
+              <strong>Bij ons op school</strong>
+              Dit domein voeren we uit via onze <a href="LeerLokaal.html" style="color:#06b6d4;font-weight:600;">verticale leerlijnen</a> digitale geletterdheid.
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- NIVEAUS -->
+    <div class="section" id="niveaus">
+      <div class="section-label">Groeipad</div>
+      <h2>De 6 bekwaamheidsniveaus</h2>
+      <p>Elke leerkracht groeit stap voor stap. De niveaus lopen zoals bij talen van A1 tot C2 — niemand hoeft overal expert te zijn. Voor ons team is <strong>B1 (Integrator)</strong> een realistisch streefdoel voor iedereen.</p>
+
+      <div class="niveau-track">
+        <div class="niveau-stap" style="background:#fef2f2;">
+          <div class="niveau-code" style="color:#dc2626;">A1</div>
+          <div class="niveau-naam" style="color:#dc2626;">Nieuwkomer</div>
+          <div class="niveau-desc">Weinig ervaring, heeft begeleiding nodig</div>
+        </div>
+        <div class="niveau-stap" style="background:#fff7ed;">
+          <div class="niveau-code" style="color:#ea580c;">A2</div>
+          <div class="niveau-naam" style="color:#ea580c;">Ontdekker</div>
+          <div class="niveau-desc">Gebruikt ICT basaal, nog niet systematisch</div>
+        </div>
+        <div class="niveau-stap" style="background:#fefce8; border-color:#facc15;">
+          <div class="niveau-code" style="color:#ca8a04;">B1</div>
+          <div class="niveau-naam" style="color:#ca8a04;">Integrator ⭐</div>
+          <div class="niveau-desc">Zet ICT doelgericht in, experimenteert — ons streefdoel</div>
+        </div>
+        <div class="niveau-stap" style="background:#f0fdf4;">
+          <div class="niveau-code" style="color:#16a34a;">B2</div>
+          <div class="niveau-naam" style="color:#16a34a;">Expert</div>
+          <div class="niveau-desc">Gebruikt ICT strategisch en gevarieerd</div>
+        </div>
+        <div class="niveau-stap" style="background:#eff6ff;">
+          <div class="niveau-code" style="color:#2563a8;">C1</div>
+          <div class="niveau-naam" style="color:#2563a8;">Leider</div>
+          <div class="niveau-desc">Inspireert collega's, deelt praktijken</div>
+        </div>
+        <div class="niveau-stap" style="background:#faf5ff;">
+          <div class="niveau-code" style="color:#7c3aed;">C2</div>
+          <div class="niveau-naam" style="color:#7c3aed;">Pionier</div>
+          <div class="niveau-desc">Vernieuwt het onderwijs, ontwikkelt nieuwe aanpakken</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STAPPENPLAN -->
+    <div class="section" id="stappenplan">
+      <div class="section-label">Aanpak</div>
+      <h2>Ons stappenplan</h2>
+      <ol class="stappen">
+        <li>
+          <h4>Zelfassessment (start schooljaar)</h4>
+          <p>Elke leerkracht vult de gratis online zelfscan in via <a href="https://www.vlaanderen.be/kenniscentrum-digisprong" target="_blank" rel="noopener">Kenniscentrum Digisprong</a> (gebaseerd op DigCompEdu). Resultaat: een persoonlijk niveau per domein.</p>
+        </li>
+        <li>
+          <h4>Teamfoto maken</h4>
+          <p>De pedagogisch ICT-begeleider verzamelt de resultaten (anoniem op teamniveau) in de tabel hieronder. Zo zien we waar het team sterk staat en waar de grootste noden zitten.</p>
+        </li>
+        <li>
+          <h4>Prioriteiten kiezen</h4>
+          <p>Op basis van de teamfoto kiezen we per schooljaar maximaal 2 focusdomeinen. Beter één domein goed verdiepen dan zes domeinen oppervlakkig aanraken.</p>
+        </li>
+        <li>
+          <h4>Nascholing plannen</h4>
+          <p>Mix van vormen: externe nascholing, interne werksessies o.l.v. de ICT-begeleider, collegiale klasbezoeken en micro-momenten op personeelsvergaderingen (15 min "digitip").</p>
+        </li>
+        <li>
+          <h4>Evalueren en bijsturen (einde schooljaar)</h4>
+          <p>Zelfassessment opnieuw invullen. Groei zichtbaar maken en het plan voor volgend schooljaar bijsturen.</p>
+        </li>
+      </ol>
+    </div>
+
+    <!-- TEAMFOTO -->
+    <div class="section" id="teamfoto">
+      <div class="section-label">Stap 2</div>
+      <h2>Teamfoto: waar staan we?</h2>
+      <p>Vul per domein in hoe het team gemiddeld scoort (op basis van de zelfassessments) en welk niveau we nastreven.</p>
+
+      <table class="assess-tabel">
+        <thead>
+          <tr>
+            <th style="width:38%">Domein</th>
+            <th style="width:19%">Huidig niveau (gem.)</th>
+            <th style="width:19%">Streefdoel</th>
+            <th style="width:24%">Prioriteit dit schooljaar?</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong style="color:#2563a8;">1.</strong> Professioneel engagement</td>
+            <td><select id="d1-nu"><option value="">—</option><option>A1</option><option>A2</option><option>B1</option><option>B2</option><option>C1</option><option>C2</option></select></td>
+            <td><select id="d1-doel"><option value="">—</option><option>A2</option><option>B1</option><option>B2</option><option>C1</option><option>C2</option></select></td>
+            <td><select id="d1-prio"><option value="">—</option><option>✅ Focusdomein</option><option>Onderhouden</option><option>Later</option></select></td>
+          </tr>
+          <tr>
+            <td><strong style="color:#0d9488;">2.</strong> Digitale leermiddelen</td>
+            <td><select id="d2-nu"><option value="">—</option><option>A1</option><option>A2</option><option>B1</option><option>B2</option><option>C1</option><option>C2</option></select></td>
+            <td><select id="d2-doel"><option value="">—</option><option>A2</option><option>B1</option><option>B2</option><option>C1</option><option>C2</option></select></td>
+            <td><select id="d2-prio"><option value="">—</option><option>✅ Focusdomein</option><option>Onderhouden</option><option>Later</option></select></td>
+          </tr>
+          <tr>
+            <td><strong style="color:#7c3aed;">3.</strong> Lesgeven en leren</td>
+            <td><select id="d3-nu"><option value="">—</option><option>A1</option><option>A2</option><option>B1</option><option>B2</option><option>C1</option><option>C2</option></select></td>
+            <td><select id="d3-doel"><option value="">—</option><option>A2</option><option>B1</option><option>B2</option><option>C1</option><option>C2</option></select></td>
+            <td><select id="d3-prio"><option value="">—</option><option>✅ Focusdomein</option><option>Onderhouden</option><option>Later</option></select></td>
+          </tr>
+          <tr>
+            <td><strong style="color:#f59e0b;">4.</strong> Evaluatie</td>
+            <td><select id="d4-nu"><option value="">—</option><option>A1</option><option>A2</option><option>B1</option><option>B2</option><option>C1</option><option>C2</option></select></td>
+            <td><select id="d4-doel"><option value="">—</option><option>A2</option><option>B1</option><option>B2</option><option>C1</option><option>C2</option></select></td>
+            <td><select id="d4-prio"><option value="">—</option><option>✅ Focusdomein</option><option>Onderhouden</option><option>Later</option></select></td>
+          </tr>
+          <tr>
+            <td><strong style="color:#dc2626;">5.</strong> Leerlingen versterken</td>
+            <td><select id="d5-nu"><option value="">—</option><option>A1</option><option>A2</option><option>B1</option><option>B2</option><option>C1</option><option>C2</option></select></td>
+            <td><select id="d5-doel"><option value="">—</option><option>A2</option><option>B1</option><option>B2</option><option>C1</option><option>C2</option></select></td>
+            <td><select id="d5-prio"><option value="">—</option><option>✅ Focusdomein</option><option>Onderhouden</option><option>Later</option></select></td>
+          </tr>
+          <tr>
+            <td><strong style="color:#06b6d4;">6.</strong> Digitale competenties leerlingen</td>
+            <td><select id="d6-nu"><option value="">—</option><option>A1</option><option>A2</option><option>B1</option><option>B2</option><option>C1</option><option>C2</option></select></td>
+            <td><select id="d6-doel"><option value="">—</option><option>A2</option><option>B1</option><option>B2</option><option>C1</option><option>C2</option></select></td>
+            <td><select id="d6-prio"><option value="">—</option><option>✅ Focusdomein</option><option>Onderhouden</option><option>Later</option></select></td>
+          </tr>
+        </tbody>
+      </table>
+      <p style="font-size:0.8rem;color:var(--muted);margin-top:10px;font-style:italic;">Tip: hou de individuele resultaten vertrouwelijk — de teamfoto toont alleen het gemiddelde beeld.</p>
+    </div>
+
+    <!-- NASCHOLINGSPLAN -->
+    <div class="section" id="nascholing">
+      <div class="section-label">Stap 4</div>
+      <h2>Nascholingsplan</h2>
+      <p>Concrete vormingsacties voor dit schooljaar: wat, voor wie, wanneer, en aan welk DigCompEdu-domein het werkt.</p>
+
+      <div class="nascholing-rij" style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);margin-bottom:4px;">
+        <span>Vorming / actie</span><span>Doelgroep</span><span>Domein</span><span>Wanneer</span><span></span>
+      </div>
+      <div id="nascholingLijst"></div>
+      <button class="btn-add" onclick="voegRijToe()">+ Vorming toevoegen</button>
+    </div>
+
+  </main>
+</div>
+
+<div class="save-bar">
+  <span>Wijzigingen worden bewaard in je browser.</span>
+  <span class="saved-msg" id="savedMsg">✓ Opgeslagen</span>
+  <button onclick="slaOp()">💾 Opslaan</button>
+</div>
+
+<footer style="padding-bottom:70px;">© 2025 GBS De Krekel · Zelzate · ICT-beleidsplan 2025–2028</footer>
+
+<script>
+const STORE_KEY = 'digiplan_professionalisering_v1';
+
+const TEAMFOTO_VELDEN = ['d1-nu','d1-doel','d1-prio','d2-nu','d2-doel','d2-prio','d3-nu','d3-doel','d3-prio','d4-nu','d4-doel','d4-prio','d5-nu','d5-doel','d5-prio','d6-nu','d6-doel','d6-prio'];
+
+const DOMEIN_OPTIES = ['1. Prof. engagement','2. Leermiddelen','3. Lesgeven & leren','4. Evaluatie','5. Leerlingen versterken','6. Comp. leerlingen'];
+
+let nascholingen = [];
+
+function rijHtml(n, i){
+  const domOpts = DOMEIN_OPTIES.map(d=>`<option ${d===n.domein?'selected':''}>${d}</option>`).join('');
+  return `<div class="nascholing-rij">
+    <input type="text" value="${esc(n.wat)}" placeholder="bijv. Werksessie: differentiëren met oefensoftware" onchange="updateRij(${i},'wat',this.value)">
+    <input type="text" value="${esc(n.wie)}" placeholder="bijv. Hele team" onchange="updateRij(${i},'wie',this.value)">
+    <select onchange="updateRij(${i},'domein',this.value)"><option value="">— domein —</option>${domOpts}</select>
+    <input type="text" value="${esc(n.wanneer)}" placeholder="bijv. Okt 2026" onchange="updateRij(${i},'wanneer',this.value)">
+    <button class="rij-del" onclick="verwijderRij(${i})" title="Verwijderen">✕</button>
+  </div>`;
+}
+
+function renderNascholing(){
+  document.getElementById('nascholingLijst').innerHTML =
+    nascholingen.map((n,i)=>rijHtml(n,i)).join('') ||
+    '<p style="font-size:0.85rem;color:var(--muted);font-style:italic;padding:8px 0;">Nog geen vormingen gepland — klik op + Vorming toevoegen.</p>';
+}
+
+function voegRijToe(){
+  nascholingen.push({wat:'', wie:'', domein:'', wanneer:''});
+  renderNascholing();
+  slaOp();
+}
+function updateRij(i, veld, waarde){
+  if(nascholingen[i]){ nascholingen[i][veld] = waarde; slaOp(); }
+}
+function verwijderRij(i){
+  if(!confirm('Deze vorming verwijderen?')) return;
+  nascholingen.splice(i,1);
+  renderNascholing();
+  slaOp();
+}
+
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function laad(){
+  try {
+    const data = JSON.parse(localStorage.getItem(STORE_KEY) || '{}');
+    TEAMFOTO_VELDEN.forEach(id => {
+      const el = document.getElementById(id);
+      if(el && data[id] !== undefined) el.value = data[id];
+    });
+    nascholingen = data.nascholingen || [];
+  } catch(e){ nascholingen = []; }
+  renderNascholing();
+}
+
+function slaOp(){
+  const data = { nascholingen };
+  TEAMFOTO_VELDEN.forEach(id => {
+    const el = document.getElementById(id);
+    if(el) data[id] = el.value;
+  });
+  localStorage.setItem(STORE_KEY, JSON.stringify(data));
+  const msg = document.getElementById('savedMsg');
+  msg.classList.add('show');
+  setTimeout(() => msg.classList.remove('show'), 2500);
+}
+
+document.addEventListener('change', e => {
+  if(e.target.tagName === 'SELECT' && TEAMFOTO_VELDEN.includes(e.target.id)) slaOp();
+});
+
+laad();
+
+// Actieve sectie in sidebar markeren
+const sections = document.querySelectorAll('.section[id]');
+const navLinks = document.querySelectorAll('.sidebar nav a');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => { if(window.scrollY >= s.offsetTop - 80) current = s.id; });
+  navLinks.forEach(a => {
+    a.classList.toggle('active', a.getAttribute('href') === '#'+current);
+  });
+});
+</script>
+</body>
+</html>

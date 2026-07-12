@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <title>ICT-team rolverdeling – Digiplan GBS De Krekel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shared.css">
+  <style>
+    :root { --accent: #7c3aed; --accent-light: #ede9fe; }
+
+    /* ── ROL KAARTEN ── */
+    .rol-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .rol-card {
+      background: white;
+      border-radius: 14px;
+      border: 2px solid var(--border);
+      overflow: hidden;
+      box-shadow: 0 2px 12px rgba(15,31,48,0.06);
+      transition: box-shadow 0.2s;
+    }
+    .rol-card:hover { box-shadow: 0 6px 24px rgba(15,31,48,0.11); }
+
+    .rol-header {
+      padding: 18px 20px 14px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .rol-icon {
+      width: 46px; height: 46px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+    .rol-meta h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--dark);
+      margin-bottom: 3px;
+    }
+    .rol-meta .rol-sub {
+      font-size: 0.78rem;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    .rol-body { padding: 16px 20px; }
+
+    .rol-taken {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 14px;
+    }
+    .rol-taken li {
+      font-size: 0.875rem;
+      padding: 5px 0 5px 20px;
+      position: relative;
+      color: #374151;
+      line-height: 1.55;
+      border-bottom: 1px solid #f8fafc;
+    }
+    .rol-taken li::before {
+      content: '✓';
+      position: absolute; left: 0;
+      color: var(--rol-kleur, var(--accent));
+      font-weight: 700;
+      font-size: 0.8rem;
+    }
+
+    .rol-invullen {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-top: 12px;
+    }
+    .rol-invullen label {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .rol-invullen input, .rol-invullen select {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.88rem;
+      color: var(--dark);
+      background: white;
+      margin-bottom: 8px;
+      transition: border-color 0.15s;
+    }
+    .rol-invullen input:focus, .rol-invullen select:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    .rol-invullen input:last-child, .rol-invullen select:last-child { margin-bottom: 0; }
+
+    .uren-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--accent-light);
+      color: var(--accent);
+      border-radius: 999px;
+      padding: 3px 11px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      margin-top: 4px;
+    }
+
+    /* ── TAKENOVERZICHT TABEL ── */
+    .taak-tabel {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+      margin-top: 12px;
+    }
+    .taak-tabel th {
+      background: var(--accent);
+      color: white;
+      padding: 10px 14px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.8rem;
+    }
+    .taak-tabel th:first-child { border-radius: 8px 0 0 0; }
+    .taak-tabel th:last-child { border-radius: 0 8px 0 0; }
+    .taak-tabel td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+      line-height: 1.55;
+      color: #374151;
+    }
+    .taak-tabel tr:last-child td { border-bottom: none; }
+    .taak-tabel tr:nth-child(even) td { background: #f8fafc; }
+    .taak-tabel td.rol-chip {
+      white-space: nowrap;
+    }
+    .chip-tag {
+      display: inline-block;
+      padding: 2px 9px;
+      border-radius: 999px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: white;
+    }
+
+    /* ── FREQUENTIE BADGE ── */
+    .freq { font-size: 0.72rem; color: var(--muted); font-style: italic; }
+
+    /* ── INFO BANNER ── */
+    .omzendbrief-tip {
+      background: #fef3c7;
+      border-left: 4px solid #d97706;
+      border-radius: 10px;
+      padding: 14px 18px;
+      font-size: 0.88rem;
+      line-height: 1.65;
+      margin-bottom: 20px;
+    }
+    .omzendbrief-tip strong { color: #92400e; }
+
+    .save-bar {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: var(--dark);
+      color: rgba(255,255,255,0.7);
+      padding: 14px 5%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 0.85rem;
+      z-index: 50;
+    }
+    .save-bar button {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 9px 22px;
+      border-radius: 8px;
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .save-bar button:hover { opacity: 0.85; }
+    .save-bar .saved-msg { color: #86efac; font-size: 0.8rem; display:none; }
+    .save-bar .saved-msg.show { display: inline; }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <span>📋 ICT-team rolverdeling · GBS De Krekel</span>
+  <a href="Digiplan.html">← Terug naar Digiplan</a>
+</div>
+
+<div class="page-header">
+  <div class="page-header-inner">
+    <div class="page-header-label">ICT-team · Verantwoordelijkheden</div>
+    <h1>Rolverdeling & Takenoverzicht</h1>
+    <p>Wie doet wat in ons ICT-team? Gebaseerd op teamgerichte ICT-coördinatie (omzendbrief NO/2025/03).</p>
+  </div>
+</div>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-card">
+      <div class="sidebar-title">Inhoud</div>
+      <nav>
+        <a href="#rollen" class="active"><span class="nav-dot"></span>De 5 rollen</a>
+        <a href="#takenoverzicht"><span class="nav-dot"></span>Takenoverzicht</a>
+        <a href="#vergadering"><span class="nav-dot"></span>ICT-overleg</a>
+        <a href="#afspraken"><span class="nav-dot"></span>Afspraken</a>
+      </nav>
+      <div class="sidebar-back">
+        <a href="Digiplan.html">← Digiplan</a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main>
+
+    <!-- INTRO -->
+    <div class="section" style="padding: 22px 28px;">
+      <div class="omzendbrief-tip">
+        <strong>Omzendbrief NO/2025/03</strong> beveelt aan om ICT-coördinatie te verdelen over een team met complementaire vaardigheden in plaats van alles bij één coördinator. Dat verlaagt de werkdruk en maakt het beleid duurzamer.
+      </div>
+      <p>Vul hieronder voor elke rol in wie ze opneemt en hoeveel tijd ervoor vrijgemaakt wordt. Één persoon kan meerdere rollen combineren.</p>
+    </div>
+
+    <!-- DE 5 ROLLEN -->
+    <div class="section" id="rollen">
+      <div class="section-label">Stap 1</div>
+      <h2>De 5 kernrollen</h2>
+      <p>Kies wie welke rol opneemt. Combinaties zijn mogelijk — geef dan aan hoeveel uren per week/maand per rol voorzien worden.</p>
+
+      <div class="rol-grid">
+
+        <!-- ROL 1 -->
+        <div class="rol-card" style="--rol-kleur:#7c3aed; border-color:#ede9fe;">
+          <div class="rol-header">
+            <div class="rol-icon" style="background:#ede9fe;">🎯</div>
+            <div class="rol-meta">
+              <h3>ICT-coördinator</h3>
+              <div class="rol-sub">Eindverantwoordelijke — beleid & visie</div>
+              <div class="uren-badge" style="background:#ede9fe;color:#7c3aed;">≈ 2–4u / week</div>
+            </div>
+          </div>
+          <div class="rol-body">
+            <ul class="rol-taken">
+              <li>ICT-beleidsplan opstellen, bewaken en bijsturen</li>
+              <li>Budget opvolgen en bestedingen verantwoorden</li>
+              <li>Externe contacten: begeleiding, gemeente, leveranciers</li>
+              <li>Rapportage aan directie en schoolraad</li>
+              <li>ICT-team coördineren en overleg organiseren</li>
+              <li>Digiplan actueel houden (deadline sept. 2026)</li>
+            </ul>
+            <div class="rol-invullen">
+              <label>Wie neemt deze rol op?</label>
+              <input type="text" id="r1-naam" placeholder="Naam teamlid..." />
+              <label>Uren / maand</label>
+              <input type="text" id="r1-uren" placeholder="bijv. 8u/maand" />
+            </div>
+          </div>
+        </div>
+
+        <!-- ROL 2 -->
+        <div class="rol-card" style="--rol-kleur:#2563a8; border-color:#dbeafe;">
+          <div class="rol-header">
+            <div class="rol-icon" style="background:#dbeafe;">🔧</div>
+            <div class="rol-meta">
+              <h3>Technisch beheerder</h3>
+              <div class="rol-sub">Infrastructuur & apparatuur</div>
+              <div class="uren-badge" style="background:#dbeafe;color:#2563a8;">≈ 2–3u / week</div>
+            </div>
+          </div>
+          <div class="rol-body">
+            <ul class="rol-taken">
+              <li>Toestellen instellen, updaten en onderhouden</li>
+              <li>Netwerk en wifi beheren en problemen oplossen</li>
+              <li>Inventaris toestellen bijhouden (type, leeftijd, toestand)</li>
+              <li>Licenties en software-abonnementen beheren</li>
+              <li>Helpdesk voor collega's bij technische problemen</li>
+              <li>Defecte toestellen opvolgen en herstellen/vervangen</li>
+            </ul>
+            <div class="rol-invullen">
+              <label>Wie neemt deze rol op?</label>
+              <input type="text" id="r2-naam" placeholder="Naam teamlid..." />
+              <label>Uren / maand</label>
+              <input type="text" id="r2-uren" placeholder="bijv. 6u/maand" />
+            </div>
+          </div>
+        </div>
+
+        <!-- ROL 3 -->
+        <div class="rol-card" style="--rol-kleur:#16a34a; border-color:#dcfce7;">
+          <div class="rol-header">
+            <div class="rol-icon" style="background:#dcfce7;">🎓</div>
+            <div class="rol-meta">
+              <h3>Pedagogisch ICT-begeleider</h3>
+              <div class="rol-sub">Professionalisering & didactiek</div>
+              <div class="uren-badge" style="background:#dcfce7;color:#16a34a;">≈ 2–3u / week</div>
+            </div>
+          </div>
+          <div class="rol-body">
+            <ul class="rol-taken">
+              <li>Collega's begeleiden bij ICT in de klas</li>
+              <li>Goede praktijken verzamelen en delen</li>
+              <li>Nascholing organiseren en opvolgen (DigCompEdu)</li>
+              <li>Nieuwe digitale tools evalueren op pedagogische waarde</li>
+              <li>DigCompEdu-niveau's opvolgen per teamlid</li>
+              <li>Leerlijnen ICT-vaardigheden bewaken</li>
+            </ul>
+            <div class="rol-invullen">
+              <label>Wie neemt deze rol op?</label>
+              <input type="text" id="r3-naam" placeholder="Naam teamlid..." />
+              <label>Uren / maand</label>
+              <input type="text" id="r3-uren" placeholder="bijv. 6u/maand" />
+            </div>
+          </div>
+        </div>
+
+        <!-- ROL 4 -->
+        <div class="rol-card" style="--rol-kleur:#0d9488; border-color:#ccfbf1;">
+          <div class="rol-header">
+            <div class="rol-icon" style="background:#ccfbf1;">🤝</div>
+            <div class="rol-meta">
+              <h3>Inclusie-trekker</h3>
+              <div class="rol-sub">Digitale gelijke kansen</div>
+              <div class="uren-badge" style="background:#ccfbf1;color:#0d9488;">≈ 1–2u / week</div>
+            </div>
+          </div>
+          <div class="rol-body">
+            <ul class="rol-taken">
+              <li>Uitleendienst toestellen organiseren en beheren</li>
+              <li>Kwetsbare leerlingen zonder thuistoegang opvolgen</li>
+              <li>Ouders informeren over digitale toegangsmogelijkheden</li>
+              <li>Sociale correcties en kostenbeheersing bewaken</li>
+              <li>Samenwerking met CLB en sociale diensten</li>
+              <li>Rapporteren over inclusie-initiatieven (verplicht na 2027)</li>
+            </ul>
+            <div class="rol-invullen">
+              <label>Wie neemt deze rol op?</label>
+              <input type="text" id="r4-naam" placeholder="Naam teamlid..." />
+              <label>Uren / maand</label>
+              <input type="text" id="r4-uren" placeholder="bijv. 3u/maand" />
+            </div>
+          </div>
+        </div>
+
+        <!-- ROL 5 -->
+        <div class="rol-card" style="--rol-kleur:#dc2626; border-color:#fee2e2;">
+          <div class="rol-header">
+            <div class="rol-icon" style="background:#fee2e2;">🔒</div>
+            <div class="rol-meta">
+              <h3>Privacy & veiligheid</h3>
+              <div class="rol-sub">GDPR · Cybersecurity · Data</div>
+              <div class="uren-badge" style="background:#fee2e2;color:#dc2626;">≈ 1–2u / week</div>
+            </div>
+          </div>
+          <div class="rol-body">
+            <ul class="rol-taken">
+              <li>GDPR-naleving bewaken: welke data, hoe, hoe lang bewaard</li>
+              <li>Nieuwe tools en apps screenen op privacy-conformiteit</li>
+              <li>Datalekken of veiligheidsincidenten beheren en melden</li>
+              <li>Wachtwoordbeleid en toegangsrechten opvolgen</li>
+              <li>Leerlingen en collega's sensibiliseren (cybersecurity)</li>
+              <li>Privacyverklaring school actueel houden</li>
+            </ul>
+            <div class="rol-invullen">
+              <label>Wie neemt deze rol op?</label>
+              <input type="text" id="r5-naam" placeholder="Naam teamlid..." />
+              <label>Uren / maand</label>
+              <input type="text" id="r5-uren" placeholder="bijv. 3u/maand" />
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- TAKENOVERZICHT -->
+    <div class="section" id="takenoverzicht">
+      <div class="section-label">Overzicht</div>
+      <h2>Takenoverzicht per domein</h2>
+      <p>Volledig overzicht van alle ICT-taken, wie ze opneemt en hoe vaak ze terugkeren.</p>
+
+      <table class="taak-tabel">
+        <thead>
+          <tr>
+            <th style="width:34%">Taak</th>
+            <th style="width:22%">Rol</th>
+            <th style="width:14%">Frequentie</th>
+            <th style="width:30%">Wie?</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td colspan="4" style="background:#ede9fe;font-weight:700;font-size:0.8rem;color:#7c3aed;padding:8px 14px;">🎯 BELEID & COÖRDINATIE</td>
+          </tr>
+          <tr>
+            <td>ICT-beleidsplan opvolgen en bijwerken</td>
+            <td class="rol-chip"><span class="chip-tag" style="background:#7c3aed;">Coördinator</span></td>
+            <td class="freq">Jaarlijks</td>
+            <td><input type="text" style="width:100%;border:1px solid #e2e8f0;border-radius:6px;padding:5px 8px;font-size:0.82rem;" placeholder="Naam..."></td>
+          </tr>
+          <tr>
+            <td>Budget opvolgen en bestedingen verantwoorden</td>
+            <td class="rol-chip"><span class="chip-tag" style="background:#7c3aed;">Coördinator</span></td>
+            <td class="freq">Maandelijks</td>
+            <td><input type="text" style="width:100%;border:1px solid #e2e8f0;border-radius:6px;padding:5px 8px;font-size:0.82rem;" placeholder="Naam..."></td>
+          </tr>
+          <tr>
+            <td>Rapportage aan directie over ICT-staat</td>
+            <td class="rol-chip"><span class="chip-tag" style="background:#7c3aed;">Coördinator</span></td>
+            <td class="freq">3x/jaar</td>
+            <td><input type="text" style="width:100%;border:1px solid #e2e8f0;border-radius:6px;padding:5px 8px;font-size:0.82rem;" placeholder="Naam..."></td>
+          </tr>
+          <tr>
+            <td>ICT-teamoverleg organiseren</td>
+            <td class="rol-chip"><span class="chip-tag" style="background:#7c3aed;">Coördinator</span></td>
+            <td class="freq">Maandelijks</td>
+            <td><input type="text" style="width:100%;border:1px solid #e2e8f0;border-radius:6px;padding:5px 8px;font-size:0.82rem;" placeholder="Naam..."></td>
+          </tr>
+          <tr>
+            <td colspan="4" style="background:#dbeafe;font-weight:700;font-size:0.8rem;color:#2563a8;padding:8px 14px;">🔧 TECHNISCH BEHEER</td>
+          </tr>
+          <tr>
+            <td>Toestellen updaten en onderhouden</td>
+            <td class="rol-chip"><span class="chip-tag" style="background:#2563a8;">Technisch</span></td>
+            <td class="freq">Maandelijks</td>
+            <td><input type="text" style="width:100%;border:1px solid #e2e8f0;border-radius:6px;padding:5px 8px;font-size:0.82rem;" placeholder="Naam..."></td>
+          </tr>
+          <tr>
+            <td>Inventaris toestellen bijhouden</td>
+            <td class="rol-chip"><span class="chip-tag" style="background:#2563a8;">Technisch</span></td>
+            <td class="freq">Per aankoop</td>
+            <td><input type="text" style="width:100%;border:1px solid #e2e8f0;border-radius:6px;padding:5px 8px;font-size:0.82rem;" placeholder="Naam..."></td>
+          </tr>
+          <tr>
+            <td>Netwerk en wifi controleren</td>
+            <td class="rol-chip"><span class="chip-tag" style="background:#2563a8;">Technisch</span></td>
+            <td class="freq">Wekelijks</td>
+            <td><input type="text" style="width:100%;border:1px solid #e2e8f0;border-radius:6px;padding:5px 8px;font-size:0.82rem;" placeholder="Naam..."></td>
+          </tr>
+          <tr>
+            <td>Helpdesk problemen oplossen</td>
+            <td class="rol-chip"><span class="chip-tag" style="background:#2563a8;">Technisch</span></td>
+            <td class="freq">Doorlopend</td>
+            <td><input type="text" style="width:100%;border:1px solid #e2e8f0;border-radius:6px;padding:5px 8px;font-size:0.82rem;" placeholder="Naam..."></td>
+          </tr>
+          <tr>
+            <td>Nieuwe toestellen instellen en verdelen</td>
+            <td class="rol-chip"><span class="chip-tag" style="background:#2563a8;">Technisch</span></td>
+            <td class="freq">Bij aankoop</td>
+            <td><input type="text" style="width:100%;border:1px solid #e2e8f0;border-radius:6px;padding:5px 8px;font-size:0.82rem;" placeholder="Naam..."></td>
+          </tr>
+          <tr>
+            <td colspan="4" style="background:#dcfce7;font-weight:700;font-size:0.8rem;color:#16a34a;padding:8px 14px;">🎓 PEDAGOGISCHE ONDERSTEUNING</td>
+          </tr>
+          <tr>
+            <td>Collega's begeleiden bij ICT in de klas</td>
+            <td class="rol-chip"><span class="chip-tag" style="background:#16a34a;">Pedagogisch</span></td>
+            <td class="freq">Doorlopend</td>
+            <td><input type="text" style="width:100%;border:1px solid #e2e8f0;border-radius:6px;padding:5px 8px;font-size:0.82rem;" placeholder="Naam..."></td>
+          </tr>
+          <tr>
+            <td>Nascholingen organiseren (DigCompEdu)</td>
+            <td class="rol-chip"><span class="chip-tag" style="background:#16a34a;">Pedagogisch</span></td>
+            <td class="freq">2x/jaar</td>
+            <td><input type="text" style="width:100%;border:1px solid #e2e8f0;border-radius:6px;padding:5px 8px;font-size:0.82rem;" placeholder="Naam..."></td>
+          </tr>
+          <tr>
+            <td>Nieuwe tools evalueren en aanbevelen</td>
+            <td class="rol-chip"><span class="chip-tag" style="background:#16a34a;">Pedagogisch</span></td>
+            <td class="freq">Continu</td>
+            <td><input type="text" style="width:100%;border:1px solid #e2e8f0;border-radius:6px;padding:5px 8px;font-size:0.82rem;" placeholder="Naam..."></td>
+          </tr>
+          <tr>
+            <td>Digitale leerlijnen bewaken</td>
+            <td class="rol-chip"><span class="chip-tag" style="background:#16a34a;">Pedagogisch</span></td>
+            <td class="freq">Jaarlijks</td>
+            <td><input type="text" style="width:100%;border:1px solid #e2e8f0;border-radius:6px;padding:5px 8px;font-size:0.82rem;" placeholder="Naam..."></td>
+          </tr>
+          <tr>
+            <td colspan="4" style="background:#ccfbf1;font-weight:700;font-size:0.8rem;color:#0d9488;padding:8px 14px;">🤝 DIGITALE INCLUSIE</td>
+          </tr>
+          <tr>
+            <td>Uitleendienst toestellen beheren</td>
+            <td class="rol-chip"><span class="chip-tag" style="background:#0d9488;">Inclusie</span></td>
+            <td class="freq">Doorlopend</td>
+            <td><input type="text" style="width:100%;border:1px solid #e2e8f0;border-radius:6px;padding:5px 8px;font-size:0.82rem;" placeholder="Naam..."></td>
+          </tr>
+          <tr>
+            <td>Kwetsbare leerlingen zonder toegang opvolgen</td>
+            <td class="rol-chip"><span class="chip-tag" style="background:#0d9488;">Inclusie</span></td>
+            <td class="freq">Per trimester</td>
+            <td><input type="text" style="width:100%;border:1px solid #e2e8f0;border-radius:6px;padding:5px 8px;font-size:0.82rem;" placeholder="Naam..."></td>
+          </tr>
+          <tr>
+            <td>Kostenbeheersing ouders bewaken</td>
+            <td class="rol-chip"><span class="chip-tag" style="background:#0d9488;">Inclusie</span></td>
+            <td class="freq">Jaarlijks</td>
+            <td><input type="text" style="width:100%;border:1px solid #e2e8f0;border-radius:6px;padding:5px 8px;font-size:0.82rem;" placeholder="Naam..."></td>
+          </tr>
+          <tr>
+            <td colspan="4" style="background:#fee2e2;font-weight:700;font-size:0.8rem;color:#dc2626;padding:8px 14px;">🔒 PRIVACY & VEILIGHEID</td>
+          </tr>
+          <tr>
+            <td>Nieuwe tools screenen op GDPR-conformiteit</td>
+            <td class="rol-chip"><span class="chip-tag" style="background:#dc2626;">Privacy</span></td>
+            <td class="freq">Bij nieuwe tool</td>
+            <td><input type="text" style="width:100%;border:1px solid #e2e8f0;border-radius:6px;padding:5px 8px;font-size:0.82rem;" placeholder="Naam..."></td>
+          </tr>
+          <tr>
+            <td>Datalekken beheren en melden</td>
+            <td class="rol-chip"><span class="chip-tag" style="background:#dc2626;">Privacy</span></td>
+            <td class="freq">Bij incident</td>
+            <td><input type="text" style="width:100%;border:1px solid #e2e8f0;border-radius:6px;padding:5px 8px;font-size:0.82rem;" placeholder="Naam..."></td>
+          </tr>
+          <tr>
+            <td>Wachtwoordbeleid opvolgen</td>
+            <td class="rol-chip"><span class="chip-tag" style="background:#dc2626;">Privacy</span></td>
+            <td class="freq">Jaarlijks</td>
+            <td><input type="text" style="width:100%;border:1px solid #e2e8f0;border-radius:6px;padding:5px 8px;font-size:0.82rem;" placeholder="Naam..."></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ICT-OVERLEG -->
+    <div class="section" id="vergadering">
+      <div class="section-label">Structuur</div>
+      <h2>ICT-teamoverleg</h2>
+      <p>Een regelmatig overlegmoment houdt het team op koers. Stel hieronder de vaste structuur in.</p>
+
+      <div class="two-col" style="margin-top:16px;">
+        <div class="info-block">
+          <h4>📅 Frequentie en moment</h4>
+          <div style="margin-top:8px;">
+            <label style="font-size:0.78rem;font-weight:600;color:var(--muted);display:block;margin-bottom:4px;">Hoe vaak?</label>
+            <select style="width:100%;padding:7px 10px;border:1.5px solid var(--border);border-radius:8px;font-family:inherit;font-size:0.88rem;margin-bottom:8px;" id="overleg-freq">
+              <option>Maandelijks</option>
+              <option>6-wekelijks</option>
+              <option>Tweemaandelijks</option>
+              <option>Per trimester</option>
+            </select>
+            <label style="font-size:0.78rem;font-weight:600;color:var(--muted);display:block;margin-bottom:4px;">Vast moment</label>
+            <input type="text" id="overleg-moment" placeholder="bijv. Eerste woensdag van de maand, 16u" style="width:100%;padding:7px 10px;border:1.5px solid var(--border);border-radius:8px;font-family:inherit;font-size:0.88rem;">
+          </div>
+        </div>
+        <div class="info-block">
+          <h4>📝 Vaste agendapunten</h4>
+          <ul style="margin-top:8px;">
+            <li style="font-size:0.84rem;padding:4px 0 4px 18px;position:relative;color:#374151;">
+              <span style="position:absolute;left:0;color:var(--accent);">→</span> Opvolging actiepunten vorige vergadering
+            </li>
+            <li style="font-size:0.84rem;padding:4px 0 4px 18px;position:relative;color:#374151;">
+              <span style="position:absolute;left:0;color:var(--accent);">→</span> Stand van zaken per rol (kort rondje)
+            </li>
+            <li style="font-size:0.84rem;padding:4px 0 4px 18px;position:relative;color:#374151;">
+              <span style="position:absolute;left:0;color:var(--accent);">→</span> Technische problemen en meldingen
+            </li>
+            <li style="font-size:0.84rem;padding:4px 0 4px 18px;position:relative;color:#374151;">
+              <span style="position:absolute;left:0;color:var(--accent);">→</span> Pedagogische praktijken delen
+            </li>
+            <li style="font-size:0.84rem;padding:4px 0 4px 18px;position:relative;color:#374151;">
+              <span style="position:absolute;left:0;color:var(--accent);">→</span> Budget en aankopen
+            </li>
+            <li style="font-size:0.84rem;padding:4px 0 4px 18px;position:relative;color:#374151;">
+              <span style="position:absolute;left:0;color:var(--accent);">→</span> Actiepunten voor volgende periode
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- AFSPRAKEN -->
+    <div class="section" id="afspraken">
+      <div class="section-label">Stap 2</div>
+      <h2>Onderlinge afspraken</h2>
+      <p>Leg hier de basisafspraken van het team vast.</p>
+
+      <div style="display:flex;flex-direction:column;gap:12px;margin-top:14px;">
+        <div>
+          <label style="font-size:0.78rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:6px;">Hoe melden collega's een technisch probleem?</label>
+          <input type="text" id="afsp-melding" placeholder="bijv. Via Teams-kanaal 'ICT-problemen' of e-mail naar ict@dekrekel.net" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:9px;font-family:inherit;font-size:0.9rem;">
+        </div>
+        <div>
+          <label style="font-size:0.78rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:6px;">Hoe lang duurt het voor een probleem opgelost is?</label>
+          <input type="text" id="afsp-sla" placeholder="bijv. Urgent: binnen 24u / Niet-urgent: binnen 1 week" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:9px;font-family:inherit;font-size:0.9rem;">
+        </div>
+        <div>
+          <label style="font-size:0.78rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:6px;">Hoe vraag je een nieuw apparaat of licentie aan?</label>
+          <input type="text" id="afsp-aanvraag" placeholder="bijv. Aanvraagformulier invullen en bezorgen aan de coördinator" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:9px;font-family:inherit;font-size:0.9rem;">
+        </div>
+        <div>
+          <label style="font-size:0.78rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:6px;">Waar vinden collega's handleidingen en afspraken?</label>
+          <input type="text" id="afsp-docs" placeholder="bijv. SharePoint-map 'ICT voor leerkrachten' of Teams-kanaal" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:9px;font-family:inherit;font-size:0.9rem;">
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<div class="save-bar">
+  <span>Wijzigingen worden bewaard in je browser.</span>
+  <span class="saved-msg" id="savedMsg">✓ Opgeslagen</span>
+  <button onclick="slaOp()">💾 Opslaan</button>
+</div>
+
+<footer style="padding-bottom:70px;">© 2025 GBS De Krekel · Zelzate · ICT-beleidsplan 2025–2028</footer>
+
+<script>
+const STORE_KEY = 'digiplan_rolverdeling_v1';
+
+const VELDEN = [
+  'r1-naam','r1-uren','r2-naam','r2-uren','r3-naam','r3-uren',
+  'r4-naam','r4-uren','r5-naam','r5-uren',
+  'overleg-freq','overleg-moment',
+  'afsp-melding','afsp-sla','afsp-aanvraag','afsp-docs'
+];
+
+function laad(){
+  try {
+    const data = JSON.parse(localStorage.getItem(STORE_KEY) || '{}');
+    VELDEN.forEach(id => {
+      const el = document.getElementById(id);
+      if(el && data[id] !== undefined) el.value = data[id];
+    });
+    // takenoverzicht inputs
+    document.querySelectorAll('.taak-tabel input[type=text]').forEach((el,i) => {
+      if(data['taak_'+i] !== undefined) el.value = data['taak_'+i];
+    });
+  } catch(e){}
+}
+
+function slaOp(){
+  const data = {};
+  VELDEN.forEach(id => {
+    const el = document.getElementById(id);
+    if(el) data[id] = el.value;
+  });
+  document.querySelectorAll('.taak-tabel input[type=text]').forEach((el,i) => {
+    data['taak_'+i] = el.value;
+  });
+  localStorage.setItem(STORE_KEY, JSON.stringify(data));
+  const msg = document.getElementById('savedMsg');
+  msg.classList.add('show');
+  setTimeout(() => msg.classList.remove('show'), 2500);
+}
+
+// Auto-opslaan bij verlaten veld
+document.addEventListener('change', e => {
+  if(e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') slaOp();
+});
+
+laad();
+
+// Actieve sectie in sidebar markeren
+const sections = document.querySelectorAll('.section[id]');
+const navLinks = document.querySelectorAll('.sidebar nav a');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => { if(window.scrollY >= s.offsetTop - 80) current = s.id; });
+  navLinks.forEach(a => {
+    a.classList.toggle('active', a.getAttribute('href') === '#'+current);
+  });
+});
+</script>
+</body>
+</html>
