@@ -5,10 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Actieplan – Digiplan GBS De Krekel</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="shared.css">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shared.css?v=2">
+  <link rel="stylesheet" href="digiplan.css?v=2">
+  <script src="digiplan.js?v=2" defer></script>
   <style>
-    :root { --accent: #d4820a; --accent-light: #fef3c7; }
+    :root { --accent: #9a5b00; --accent-light: #fef3c7; }
 
     /* ── FILTERS ── */
     .filter-bar {
@@ -20,7 +22,7 @@
       border-radius: 999px;
       border: 1.5px solid var(--border);
       background: white;
-      font-size: 0.82rem;
+      font-size: 0.9rem;
       font-family: inherit;
       cursor: pointer;
       font-weight: 500;
@@ -56,18 +58,20 @@
       min-width: 30px; height: 30px;
       border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
-      font-size: 0.8rem; font-weight: 700; flex-shrink: 0;
+      font-size: 0.9rem; font-weight: 700; flex-shrink: 0;
     }
-    .prio-1 { background:#fee2e2; color:#dc2626; }
-    .prio-2 { background:#fed7aa; color:#c2410c; }
+    .prio-1 { background:#fee2e2; color:#a81818; }
+    .prio-2 { background:#fed7aa; color:#8f2f08; }
     .prio-3 { background:#fef9c3; color:#a16207; }
-    .prio-4 { background:#dcfce7; color:#16a34a; }
+    .prio-4 { background:#dcfce7; color:#15803d; }
 
+    .action-edit-btn, .action-del-btn { min-height: 36px; }
+    @media (max-width: 700px) { .action-header { flex-wrap: wrap; } .action-title { flex-basis: calc(100% - 60px); } }
     .action-title { font-weight: 600; font-size: 0.95rem; flex: 1; }
 
     .action-tags { display: flex; gap: 6px; flex-wrap: wrap; }
     .action-tag {
-      font-size: 0.7rem; padding: 2px 8px;
+      font-size: 0.82rem; padding: 2px 8px;
       border-radius: 999px;
       font-weight: 600;
     }
@@ -78,7 +82,7 @@
     .tag-ouders  { background:#fce7f3; color:#9d174d; }
 
     .action-status {
-      font-size: 0.75rem; padding: 3px 10px;
+      font-size: 0.82rem; padding: 3px 10px;
       border-radius: 999px; font-weight: 600;
       white-space: nowrap;
     }
@@ -87,7 +91,7 @@
     .status-klaar    { background:#dcfce7; color:#166534; }
 
     .action-chevron {
-      font-size: 0.75rem; color: var(--muted);
+      font-size: 0.82rem; color: var(--muted);
       transition: transform 0.25s;
       flex-shrink: 0;
     }
@@ -108,21 +112,20 @@
       gap: 10px;
       margin: 14px 0;
     }
-    .meta-item { font-size: 0.84rem; }
+    .meta-item { font-size: 0.9rem; }
     .meta-item label {
       display: block;
-      font-size: 0.7rem; font-weight: 700;
-      text-transform: uppercase; letter-spacing: 0.08em;
+      font-size: 0.82rem; font-weight: 700;
       color: var(--muted); margin-bottom: 3px;
     }
     .meta-item span { color: var(--dark); }
 
     .action-desc {
-      font-size: 0.88rem; line-height: 1.7;
+      font-size: 0.96rem; line-height: 1.7;
       color: #374151; margin-top: 6px;
     }
     .action-desc ul { list-style: disc; padding-left: 18px; margin-top: 6px; }
-    .action-desc ul li { font-size: 0.87rem; padding: 2px 0; }
+    .action-desc ul li { font-size: 0.96rem; padding: 2px 0; }
     .action-desc ul li::before { display: none; }
 
     .progress-bar {
@@ -147,23 +150,23 @@
     .smart-header {
       display: flex; justify-content: space-between; align-items: center;
       padding: 11px 16px; cursor: pointer; user-select: none;
-      font-size: 0.85rem; font-weight: 600; color: #0369a1;
+      font-size: 0.9rem; font-weight: 600; color: #0369a1;
     }
     .smart-header:hover { background: #e0f2fe; }
-    .smart-chevron { font-size: 0.75rem; transition: transform 0.25s; }
+    .smart-chevron { font-size: 0.82rem; transition: transform 0.25s; }
     .smart-card.open .smart-chevron { transform: rotate(90deg); }
     .smart-body { display: none; padding: 4px 16px 14px; }
     .smart-card.open .smart-body { display: block; }
     .smart-grid { display: flex; flex-direction: column; gap: 7px; }
     .smart-item {
       display: flex; align-items: flex-start; gap: 10px;
-      font-size: 0.84rem; color: #334155;
+      font-size: 0.9rem; color: #334155;
     }
     .smart-letter {
       min-width: 24px; height: 24px; border-radius: 6px;
       background: #0369a1; color: white;
       display: flex; align-items: center; justify-content: center;
-      font-size: 0.78rem; font-weight: 800; flex-shrink: 0;
+      font-size: 0.86rem; font-weight: 800; flex-shrink: 0;
     }
 
     /* ── RICH TEXT EDITOR ── */
@@ -178,7 +181,7 @@
     .editor-toolbar button {
       background: white; border: 1px solid var(--border);
       border-radius: 5px; padding: 3px 9px;
-      font-size: 0.82rem; cursor: pointer; font-family: inherit;
+      font-size: 0.9rem; cursor: pointer; font-family: inherit;
       transition: all 0.12s; color: var(--dark);
       line-height: 1.4;
     }
@@ -192,14 +195,14 @@
       padding: 9px 12px;
       border: 1.5px solid var(--border);
       border-radius: 0 0 9px 9px;
-      font-family: inherit; font-size: 0.9rem;
+      font-family: inherit; font-size: 0.96rem;
       line-height: 1.7; outline: none;
       overflow-y: auto; cursor: text;
     }
     .editor-content:focus { border-color: var(--accent); }
     .editor-content:empty::before {
       content: attr(data-placeholder);
-      color: #9ca3af; pointer-events: none;
+      color: #5b6b7f; pointer-events: none;
     }
     .editor-content ul, .editor-content ol { padding-left: 20px; margin: 4px 0; }
     .editor-content li { margin: 2px 0; }
@@ -210,7 +213,7 @@
       border: 1px solid var(--border);
       border-radius: 7px;
       padding: 3px 10px;
-      font-size: 0.75rem;
+      font-size: 0.82rem;
       font-family: inherit;
       cursor: pointer;
       color: var(--muted);
@@ -229,7 +232,7 @@
       border: 1px solid var(--border);
       border-radius: 7px;
       padding: 3px 10px;
-      font-size: 0.75rem;
+      font-size: 0.82rem;
       font-family: inherit;
       cursor: pointer;
       color: var(--muted);
@@ -250,7 +253,7 @@
     }
     .prog-value {
       min-width: 38px; text-align: right;
-      font-size: 0.88rem; font-weight: 700;
+      font-size: 0.96rem; font-weight: 700;
       color: var(--accent);
     }
 
@@ -260,7 +263,7 @@
       width: 100%; padding: 14px 18px;
       background: white; border: 2px dashed var(--border);
       border-radius: 14px; cursor: pointer;
-      font-family: inherit; font-size: 0.9rem;
+      font-family: inherit; font-size: 0.96rem;
       color: var(--muted); transition: all 0.15s;
       margin-top: 6px;
     }
@@ -281,13 +284,12 @@
       box-shadow: 0 20px 60px rgba(0,0,0,0.25);
     }
     .modal h3 {
-      font-family: 'Playfair Display', serif;
+      font-family: var(--titel);
       font-size: 1.3rem; margin-bottom: 20px; color: var(--dark);
     }
     .form-group { margin-bottom: 14px; }
     .form-group label {
-      display: block; font-size: 0.78rem; font-weight: 700;
-      text-transform: uppercase; letter-spacing: 0.08em;
+      display: block; font-size: 0.86rem; font-weight: 700;
       color: var(--muted); margin-bottom: 5px;
     }
     .form-group input,
@@ -295,7 +297,7 @@
     .form-group textarea {
       width: 100%; padding: 9px 12px;
       border: 1.5px solid var(--border); border-radius: 9px;
-      font-family: inherit; font-size: 0.9rem;
+      font-family: inherit; font-size: 0.96rem;
       transition: border-color 0.15s; outline: none;
     }
     .form-group input:focus,
@@ -309,7 +311,7 @@
     .btn-primary {
       padding: 9px 22px; border-radius: 9px;
       background: var(--accent); color: white;
-      border: none; font-family: inherit; font-size: 0.9rem;
+      border: none; font-family: inherit; font-size: 0.96rem;
       font-weight: 600; cursor: pointer;
       transition: opacity 0.15s;
     }
@@ -317,7 +319,7 @@
     .btn-cancel {
       padding: 9px 22px; border-radius: 9px;
       background: white; border: 1.5px solid var(--border);
-      font-family: inherit; font-size: 0.9rem; cursor: pointer;
+      font-family: inherit; font-size: 0.96rem; cursor: pointer;
       color: var(--muted);
     }
 
@@ -332,10 +334,10 @@
       border-radius: 12px; padding: 14px 16px; text-align: center;
     }
     .stat-box .sb-num {
-      font-family: 'Playfair Display', serif;
+      font-family: var(--titel);
       font-size: 1.8rem; font-weight: 700; color: var(--accent);
     }
-    .stat-box .sb-label { font-size: 0.76rem; color: var(--muted); }
+    .stat-box .sb-label { font-size: 0.86rem; color: var(--muted); }
 
     /* ── ROLLEN & VERANTWOORDELIJKHEDEN ── */
     .roles-grid {
@@ -358,13 +360,12 @@
     .role-card .role-icon { font-size: 1.4rem; }
     .role-card .role-name { font-weight: 700; font-size: 0.98rem; color: var(--dark); }
     .role-card .role-who {
-      font-size: 0.72rem; color: var(--rc, var(--accent));
-      font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
-      margin-bottom: 10px;
+      font-size: 0.82rem; color: var(--rc, var(--accent));
+      font-weight: 700; margin-bottom: 10px;
     }
     .role-card ul { list-style: none; padding: 0; margin: 0; }
     .role-card ul li {
-      font-size: 0.85rem; line-height: 1.5; color: #374151;
+      font-size: 0.9rem; line-height: 1.5; color: #374151;
       padding: 4px 0 4px 18px; position: relative;
     }
     .role-card ul li::before {
@@ -373,12 +374,9 @@
     }
   </style>
 </head>
-<body>
+<body data-beheer>
 
-<div class="topbar">
-  <a href="Digiplan.html">← Terug naar Dashboard</a>
-  <span>GBS De Krekel · Digiplan 2025–2028</span>
-</div>
+<div class="topbar"><a href="Digiplan.html">← Digiplan</a></div>
 
 <div class="page-header">
   <div class="page-header-inner">
@@ -392,10 +390,10 @@
 
   <aside class="sidebar">
     <div class="sidebar-card">
-      <div class="sidebar-title">Navigatie</div>
+      <div class="sidebar-title">Op deze pagina</div>
       <nav>
         <a href="#acties" class="active"><span class="nav-dot"></span> Actiepunten</a>
-        <a href="#rollen"><span class="nav-dot"></span> Rollen &amp; verantwoordelijkheden</a>
+        <a href="#rollen"><span class="nav-dot"></span> Rollen &amp; verant&shy;woordelijk&shy;heden</a>
       </nav>
       <div style="margin-top:14px; padding-top:14px; border-top:1px solid var(--border);">
         <div class="sidebar-title">Filter op thema</div>
@@ -408,19 +406,19 @@
           <a href="#" onclick="filterActions('ouders');return false;"><span class="nav-dot"></span> Ouders</a>
         </nav>
       </div>
-      <div class="sidebar-back">
-        <a href="Digiplan.html">← Terug naar Dashboard</a>
-      </div>
     </div>
   </aside>
 
   <main>
     <section class="section" id="acties" style="padding-bottom:24px;">
       <div class="section-label">B8 · Actieplan</div>
-      <h2>Onze actiepunten</h2>
-      <p style="margin-bottom:12px;">Klik op een actiepunt voor details. Voeg nieuwe acties toe via de knop onderaan.</p>
+      <div class="lijst-kop">
+        <h2>Onze actiepunten</h2>
+        <button class="lijst-knop alleen-beheer" onclick="openModal()">Nieuwe actie</button>
+      </div>
+      <p style="margin-bottom:12px;">Klik op een actiepunt voor details.</p>
 
-      <div class="card" style="margin-bottom:14px;font-size:0.84rem;">
+      <div class="card alleen-beheer" style="margin-bottom:14px;font-size:0.9rem;">
         <strong>⚠️ Let op:</strong> wijzigingen worden opgeslagen in <em>deze browser op deze computer</em> — niet in OneDrive. Op een andere pc zie je de originele actiepunten.
       </div>
 
@@ -462,8 +460,8 @@
               <span class="action-tag tag-team">Team</span>
             </div>
             <span class="action-status status-actief">Actief</span>
-            <button class="action-edit-btn" onclick="openEditModal('ac1');event.stopPropagation()">✏ Bewerken</button>
-            <button class="action-del-btn" onclick="deleteAction(this.closest('.action-card').id);event.stopPropagation()" title="Verwijderen">🗑 Verwijderen</button>
+            <button class="action-edit-btn alleen-beheer" onclick="openEditModal('ac1');event.stopPropagation()">Bewerken</button>
+            <button class="action-del-btn alleen-beheer" onclick="deleteAction(this.closest('.action-card').id);event.stopPropagation()" title="Verwijderen">Verwijderen</button>
             <span class="action-chevron">›</span>
           </div>
           <div class="action-body">
@@ -495,8 +493,8 @@
               <span class="action-tag tag-team">Team</span>
             </div>
             <span class="action-status status-gepland">Gepland</span>
-            <button class="action-edit-btn" onclick="openEditModal('ac2');event.stopPropagation()">✏ Bewerken</button>
-            <button class="action-del-btn" onclick="deleteAction(this.closest('.action-card').id);event.stopPropagation()" title="Verwijderen">🗑 Verwijderen</button>
+            <button class="action-edit-btn alleen-beheer" onclick="openEditModal('ac2');event.stopPropagation()">Bewerken</button>
+            <button class="action-del-btn alleen-beheer" onclick="deleteAction(this.closest('.action-card').id);event.stopPropagation()" title="Verwijderen">Verwijderen</button>
             <span class="action-chevron">›</span>
           </div>
           <div class="action-body">
@@ -529,8 +527,8 @@
               <span class="action-tag tag-team">Team</span>
             </div>
             <span class="action-status status-actief">Actief</span>
-            <button class="action-edit-btn" onclick="openEditModal('ac3');event.stopPropagation()">✏ Bewerken</button>
-            <button class="action-del-btn" onclick="deleteAction(this.closest('.action-card').id);event.stopPropagation()" title="Verwijderen">🗑 Verwijderen</button>
+            <button class="action-edit-btn alleen-beheer" onclick="openEditModal('ac3');event.stopPropagation()">Bewerken</button>
+            <button class="action-del-btn alleen-beheer" onclick="deleteAction(this.closest('.action-card').id);event.stopPropagation()" title="Verwijderen">Verwijderen</button>
             <span class="action-chevron">›</span>
           </div>
           <div class="action-body">
@@ -564,8 +562,8 @@
               <span class="action-tag tag-lln">Leerlingen</span>
             </div>
             <span class="action-status status-gepland">Gepland</span>
-            <button class="action-edit-btn" onclick="openEditModal('ac4');event.stopPropagation()">✏ Bewerken</button>
-            <button class="action-del-btn" onclick="deleteAction(this.closest('.action-card').id);event.stopPropagation()" title="Verwijderen">🗑 Verwijderen</button>
+            <button class="action-edit-btn alleen-beheer" onclick="openEditModal('ac4');event.stopPropagation()">Bewerken</button>
+            <button class="action-del-btn alleen-beheer" onclick="deleteAction(this.closest('.action-card').id);event.stopPropagation()" title="Verwijderen">Verwijderen</button>
             <span class="action-chevron">›</span>
           </div>
           <div class="action-body">
@@ -597,8 +595,8 @@
               <span class="action-tag tag-ouders">Ouders</span>
             </div>
             <span class="action-status status-gepland">Gepland</span>
-            <button class="action-edit-btn" onclick="openEditModal('ac5');event.stopPropagation()">✏ Bewerken</button>
-            <button class="action-del-btn" onclick="deleteAction(this.closest('.action-card').id);event.stopPropagation()" title="Verwijderen">🗑 Verwijderen</button>
+            <button class="action-edit-btn alleen-beheer" onclick="openEditModal('ac5');event.stopPropagation()">Bewerken</button>
+            <button class="action-del-btn alleen-beheer" onclick="deleteAction(this.closest('.action-card').id);event.stopPropagation()" title="Verwijderen">Verwijderen</button>
             <span class="action-chevron">›</span>
           </div>
           <div class="action-body">
@@ -631,8 +629,8 @@
               <span class="action-tag tag-beleid">Beleid</span>
             </div>
             <span class="action-status status-gepland">Gepland</span>
-            <button class="action-edit-btn" onclick="openEditModal('ac6');event.stopPropagation()">✏ Bewerken</button>
-            <button class="action-del-btn" onclick="deleteAction(this.closest('.action-card').id);event.stopPropagation()" title="Verwijderen">🗑 Verwijderen</button>
+            <button class="action-edit-btn alleen-beheer" onclick="openEditModal('ac6');event.stopPropagation()">Bewerken</button>
+            <button class="action-del-btn alleen-beheer" onclick="deleteAction(this.closest('.action-card').id);event.stopPropagation()" title="Verwijderen">Verwijderen</button>
             <span class="action-chevron">›</span>
           </div>
           <div class="action-body">
@@ -660,8 +658,8 @@
               <span class="action-tag tag-beleid">Beleid</span>
             </div>
             <span class="action-status status-gepland">Gepland</span>
-            <button class="action-edit-btn" onclick="openEditModal('ac7');event.stopPropagation()">✏ Bewerken</button>
-            <button class="action-del-btn" onclick="deleteAction(this.closest('.action-card').id);event.stopPropagation()" title="Verwijderen">🗑 Verwijderen</button>
+            <button class="action-edit-btn alleen-beheer" onclick="openEditModal('ac7');event.stopPropagation()">Bewerken</button>
+            <button class="action-del-btn alleen-beheer" onclick="deleteAction(this.closest('.action-card').id);event.stopPropagation()" title="Verwijderen">Verwijderen</button>
             <span class="action-chevron">›</span>
           </div>
           <div class="action-body">
@@ -688,8 +686,8 @@
               <span class="action-tag tag-beleid">Beleid</span>
             </div>
             <span class="action-status status-klaar">Klaar</span>
-            <button class="action-edit-btn" onclick="openEditModal('ac8');event.stopPropagation()">✏ Bewerken</button>
-            <button class="action-del-btn" onclick="deleteAction(this.closest('.action-card').id);event.stopPropagation()" title="Verwijderen">🗑 Verwijderen</button>
+            <button class="action-edit-btn alleen-beheer" onclick="openEditModal('ac8');event.stopPropagation()">Bewerken</button>
+            <button class="action-del-btn alleen-beheer" onclick="deleteAction(this.closest('.action-card').id);event.stopPropagation()" title="Verwijderen">Verwijderen</button>
             <span class="action-chevron">›</span>
           </div>
           <div class="action-body">
@@ -708,11 +706,6 @@
         </div>
 
       </div><!-- /#actionList -->
-
-      <!-- ADD NEW ACTION -->
-      <button class="add-btn" onclick="openModal()">
-        + Nieuw actiepunt toevoegen
-      </button>
 
     </section>
 
@@ -752,7 +745,7 @@
           </ul>
         </div>
 
-        <div class="role-card" style="--rc:#16a34a;">
+        <div class="role-card" style="--rc:#15803d;">
           <div class="role-head">
             <span class="role-icon">👩‍🏫</span>
             <span class="role-name">Leerkrachten</span>
@@ -859,7 +852,7 @@
   </div>
 </div>
 
-<footer>GBS De Krekel · Zelzate · ICT-beleidsplan 2025–2028 · <a href="Digiplan.html" style="color:inherit">← Dashboard</a></footer>
+<footer>GBS De Krekel · Zelzate · ICT-beleidsplan 2025–2028 · <a href="Digiplan.html">Naar Digiplan</a></footer>
 
 <script>
   const tagLabels = {
@@ -947,8 +940,8 @@
             <div class="action-title">${esc(a.title)}</div>
             <div class="action-tags">${tagsHtml}</div>
             <span class="action-status ${s.cls}">${s.label}</span>
-            <button class="action-edit-btn" onclick="openEditModal(${i});event.stopPropagation()" aria-label="Actiepunt bewerken">✏ Bewerken</button>
-            <button class="action-del-btn" onclick="deleteAction(${i});event.stopPropagation()" title="Verwijderen" aria-label="Actiepunt verwijderen">🗑 Verwijderen</button>
+            <button class="action-edit-btn alleen-beheer" onclick="openEditModal(${i});event.stopPropagation()" aria-label="Actiepunt bewerken">Bewerken</button>
+            <button class="action-del-btn alleen-beheer" onclick="deleteAction(${i});event.stopPropagation()" title="Verwijderen" aria-label="Actiepunt verwijderen">Verwijderen</button>
             <span class="action-chevron">›</span>
           </div>
           <div class="action-body">

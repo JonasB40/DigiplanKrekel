@@ -5,8 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Inventaris – Digiplan GBS De Krekel</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="shared.css">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shared.css?v=2">
+  <link rel="stylesheet" href="digiplan.css?v=2">
+  <script src="digiplan.js?v=2" defer></script>
   <!-- SheetJS for Excel import/export -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <style>
@@ -14,13 +16,12 @@
 
     /* ── BREDERE LAYOUT VOOR INVENTARIS ── */
     .layout {
-      max-width: 1500px;
-      grid-template-columns: 180px 1fr;
-      gap: 24px;
+      max-width: 1548px;
+      grid-template-columns: 216px minmax(0, 1fr);
     }
     .section { padding: 28px 30px; }
     @media (max-width: 1100px) {
-      .layout { max-width: 100%; padding: 0 3% 80px; }
+      .layout { max-width: 100%; }
     }
 
     /* ── PIN LOCK ── */
@@ -44,12 +45,12 @@
       margin-bottom: 12px;
     }
     .pin-box h2 {
-      font-family: 'Playfair Display', serif;
+      font-family: var(--titel);
       font-size: 1.5rem; margin-bottom: 6px;
       color: var(--dark);
     }
     .pin-box p {
-      font-size: 0.88rem;
+      font-size: 0.96rem;
       color: var(--muted);
       margin-bottom: 22px;
       line-height: 1.5;
@@ -61,7 +62,6 @@
       border: 2px solid var(--border);
       border-radius: 10px;
       text-align: center;
-      letter-spacing: 0.25em;
       font-weight: 600;
       font-family: inherit;
       margin-bottom: 14px;
@@ -86,7 +86,7 @@
     .pin-box button:hover { background: #0d5d56; }
     .pin-error {
       color: #dc2626;
-      font-size: 0.85rem;
+      font-size: 0.9rem;
       margin-top: 10px;
       min-height: 1.2em;
     }
@@ -109,7 +109,7 @@
       padding: 10px 14px 10px 38px;
       border: 1px solid var(--border);
       border-radius: 10px;
-      font-size: 0.92rem;
+      font-size: 0.96rem;
       font-family: inherit;
       background: white;
     }
@@ -123,14 +123,14 @@
       position: absolute;
       left: 12px; top: 50%;
       transform: translateY(-50%);
-      font-size: 0.9rem;
+      font-size: 0.96rem;
     }
     .btn {
       padding: 9px 14px;
       border: 1px solid var(--border);
       background: white;
       border-radius: 9px;
-      font-size: 0.85rem;
+      font-size: 0.9rem;
       font-weight: 600;
       cursor: pointer;
       font-family: inherit;
@@ -169,7 +169,7 @@
       border: none;
       background: transparent;
       padding: 9px 14px;
-      font-size: 0.82rem;
+      font-size: 0.9rem;
       font-weight: 600;
       cursor: pointer;
       font-family: inherit;
@@ -196,7 +196,7 @@
       border: none;
       border-bottom: 3px solid transparent;
       margin-bottom: -2px;
-      font-size: 0.86rem;
+      font-size: 0.96rem;
       font-weight: 600;
       cursor: pointer;
       font-family: inherit;
@@ -219,7 +219,7 @@
     .tab-btn .tab-count {
       background: rgba(15,118,110,0.15);
       color: var(--accent);
-      font-size: 0.72rem;
+      font-size: 0.82rem;
       padding: 2px 7px;
       border-radius: 99px;
       font-weight: 700;
@@ -239,16 +239,14 @@
     table.inv-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 0.86rem;
+      font-size: 0.96rem;
     }
     .inv-table th {
       background: #f8fafc;
       padding: 10px 12px;
       text-align: left;
       font-weight: 600;
-      font-size: 0.78rem;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
+      font-size: 0.86rem;
       color: var(--muted);
       border-bottom: 1px solid var(--border);
       white-space: nowrap;
@@ -267,7 +265,7 @@
       display: inline-block;
       padding: 2px 9px;
       border-radius: 99px;
-      font-size: 0.72rem;
+      font-size: 0.82rem;
       font-weight: 600;
       white-space: nowrap;
     }
@@ -289,7 +287,7 @@
       background: white;
       border-radius: 6px;
       cursor: pointer;
-      font-size: 0.85rem;
+      font-size: 0.9rem;
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -303,7 +301,7 @@
       text-align: center;
       padding: 40px 20px;
       color: var(--muted);
-      font-size: 0.9rem;
+      font-size: 0.96rem;
     }
 
     .stat-row {
@@ -319,16 +317,14 @@
       padding: 12px 14px;
     }
     .stat-mini .v {
-      font-family: 'Playfair Display', serif;
+      font-family: var(--titel);
       font-size: 1.6rem;
       font-weight: 700;
       color: var(--accent);
       line-height: 1;
     }
     .stat-mini .l {
-      font-size: 0.74rem;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
+      font-size: 0.82rem;
       color: var(--muted);
       margin-top: 4px;
       font-weight: 600;
@@ -355,7 +351,7 @@
       box-shadow: 0 20px 60px rgba(0,0,0,0.3);
     }
     .modal-box h3 {
-      font-family: 'Playfair Display', serif;
+      font-family: var(--titel);
       font-size: 1.3rem;
       margin-bottom: 16px;
       color: var(--dark);
@@ -369,19 +365,17 @@
     .form-row.full { grid-column: 1 / -1; }
     .form-row label {
       display: block;
-      font-size: 0.78rem;
+      font-size: 0.86rem;
       font-weight: 600;
-      letter-spacing: 0.04em;
       color: var(--muted);
       margin-bottom: 4px;
-      text-transform: uppercase;
-    }
+      }
     .form-row input, .form-row select {
       width: 100%;
       padding: 9px 11px;
       border: 1px solid var(--border);
       border-radius: 8px;
-      font-size: 0.9rem;
+      font-size: 0.96rem;
       font-family: inherit;
       background: white;
     }
@@ -406,7 +400,7 @@
       padding: 12px 18px;
       border-radius: 10px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-      font-size: 0.88rem;
+      font-size: 0.96rem;
       font-weight: 500;
       z-index: 1000;
       opacity: 0;
@@ -418,6 +412,7 @@
       opacity: 1;
       transform: translateY(0);
     }
+    @media (max-width: 900px) { .layout { grid-template-columns: minmax(0, 1fr); padding: 0 16px 56px; } }
   </style>
 </head>
 <body>
@@ -434,10 +429,7 @@
   </div>
 </div>
 
-<div class="topbar">
-  <a href="Digiplan.html">← Terug naar Dashboard</a>
-  <span>GBS De Krekel · Digiplan 2025–2028</span>
-</div>
+<div class="topbar"><a href="Digiplan.html">← Digiplan</a></div>
 
 <div class="page-header">
   <div class="page-header-inner">
@@ -451,15 +443,12 @@
 
   <aside class="sidebar">
     <div class="sidebar-card">
-      <div class="sidebar-title">Inventaris</div>
+      <div class="sidebar-title">Op deze pagina</div>
       <nav>
         <a href="#overzicht" class="active"><span class="nav-dot"></span> Overzicht</a>
         <a href="#toestellen"><span class="nav-dot"></span> Toestellen</a>
         <a href="#beheer"><span class="nav-dot"></span> Beheer</a>
       </nav>
-      <div class="sidebar-back">
-        <a href="budget.html">→ Budget &amp; planning</a>
-      </div>
       <div class="sidebar-back" style="margin-top:0;padding-top:8px;border:none;">
         <a href="Digiplan.html">← Terug naar Dashboard</a>
       </div>
@@ -494,7 +483,7 @@
           <button class="active" data-view="simple" onclick="setView('simple')">Eenvoudig</button>
           <button data-view="full" onclick="setView('full')">Technisch</button>
         </div>
-        <button class="btn btn-primary" onclick="openAddModal()">＋ Toevoegen</button>
+        <button class="btn btn-primary" onclick="openAddModal()">Toevoegen</button>
       </div>
 
       <!-- Table -->
@@ -516,7 +505,7 @@
         <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">📤 Excel importeren</button>
         <input type="file" id="fileInput" accept=".xlsx,.xls" style="display:none" onchange="importExcel(event)" />
         <button class="btn" onclick="exportExcel()">📥 Excel downloaden</button>
-        <button class="btn btn-danger" onclick="resetData()">↺ Reset naar originele data</button>
+        <button class="btn btn-danger" style="margin-left:auto" onclick="resetData()">↺ Reset naar originele data</button>
       </div>
 
       <div class="card" style="margin-top:18px;">
@@ -541,7 +530,7 @@
 
 <div class="toast" id="toast"></div>
 
-<footer>GBS De Krekel · Zelzate · ICT-beleidsplan 2025–2028 · <a href="Digiplan.html" style="color:inherit">← Dashboard</a></footer>
+<footer>GBS De Krekel · Zelzate · ICT-beleidsplan 2025–2028 · <a href="Digiplan.html">Naar Digiplan</a></footer>
 
 <script>
 /* ════════════════════════════════════════════════════════════════

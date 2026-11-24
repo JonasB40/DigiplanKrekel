@@ -5,8 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Analyse – Digiplan GBS De Krekel</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="shared.css">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shared.css?v=2">
+  <link rel="stylesheet" href="digiplan.css?v=2">
+  <script src="digiplan.js?v=2" defer></script>
   <style>
     :root { --accent: #7c3aed; --accent-light: #ede9fe; }
 
@@ -27,14 +29,12 @@
     }
     .balans-pillar .ico { font-size: 1.5rem; margin-bottom: 5px; }
     .balans-pillar h4 {
-      font-size: 0.78rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
+      font-size: 0.86rem;
       color: var(--accent);
       font-weight: 700;
       margin-bottom: 4px;
     }
-    .balans-pillar p { font-size: 0.78rem; color: #475569; line-height: 1.45; }
+    .balans-pillar p { font-size: 0.86rem; color: #475569; line-height: 1.45; }
 
 
     /* ── LINK BLOCK ── */
@@ -48,7 +48,7 @@
       border-radius: 10px;
       text-decoration: none;
       font-weight: 600;
-      font-size: 0.88rem;
+      font-size: 0.96rem;
       margin-top: 8px;
       transition: all 0.15s;
     }
@@ -57,7 +57,7 @@
       color: white;
     }
     .link-block .lock {
-      font-size: 0.7rem;
+      font-size: 0.82rem;
       background: rgba(255,255,255,0.6);
       padding: 1px 7px;
       border-radius: 99px;
@@ -80,8 +80,8 @@
       text-align: center;
     }
     .device-card .d-icon { font-size: 1.8rem; margin-bottom: 6px; }
-    .device-card .d-title { font-weight: 600; font-size: 0.88rem; margin-bottom: 3px; }
-    .device-card .d-desc { font-size: 0.78rem; color: var(--muted); line-height: 1.4; }
+    .device-card .d-title { font-weight: 600; font-size: 0.96rem; margin-bottom: 3px; }
+    .device-card .d-desc { font-size: 0.86rem; color: var(--muted); line-height: 1.4; }
 
     /* ── Professionalisering niveaus ── */
     .prof-row {
@@ -91,15 +91,14 @@
     .prof-badge {
       min-width: 80px; height: 28px;
       border-radius: 999px;
-      font-size: 0.7rem; font-weight: 700;
-      letter-spacing: 0.06em; text-transform: uppercase;
+      font-size: 0.82rem; font-weight: 700;
       display: flex; align-items: center; justify-content: center;
       flex-shrink: 0;
     }
     .pb-starter  { background:#ede9fe; color:#6d28d9; }
     .pb-gevorderd{ background:#dbeafe; color:#1d4ed8; }
     .pb-expert   { background:#d1fae5; color:#065f46; }
-    .prof-content { font-size:0.875rem; line-height:1.65; color:#374151; padding-top:3px; }
+    .prof-content { font-size:0.96rem; line-height:1.65; color:#374151; padding-top:3px; }
 
     /* ── BIJSCHOLINGEN LOG ── */
     .nascholing-toolbar {
@@ -115,7 +114,7 @@
       padding: 8px 12px;
       border: 1px solid var(--border);
       border-radius: 8px;
-      font-size: 0.86rem;
+      font-size: 0.96rem;
       font-family: inherit;
     }
     .nascholing-toolbar input:focus { outline: none; border-color: var(--accent); }
@@ -125,7 +124,7 @@
       color: white;
       border: none;
       border-radius: 8px;
-      font-size: 0.85rem;
+      font-size: 0.9rem;
       font-weight: 600;
       cursor: pointer;
       font-family: inherit;
@@ -141,16 +140,14 @@
     .nas-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 0.88rem;
+      font-size: 0.96rem;
     }
     .nas-table th {
       background: #faf8ff;
       padding: 10px 12px;
       text-align: left;
       font-weight: 600;
-      font-size: 0.74rem;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
+      font-size: 0.82rem;
       color: var(--muted);
       border-bottom: 1px solid var(--border);
     }
@@ -164,14 +161,14 @@
       display: inline-block;
       padding: 2px 9px;
       border-radius: 99px;
-      font-size: 0.72rem;
+      font-size: 0.82rem;
       font-weight: 600;
     }
     .niv-starter { background: #ede9fe; color: #6d28d9; }
     .niv-gevorderd { background: #dbeafe; color: #1d4ed8; }
     .niv-expert { background: #d1fae5; color: #065f46; }
     .row-del {
-      width: 28px; height: 28px;
+      width: 36px; height: 36px;
       border: 1px solid var(--border);
       background: white;
       border-radius: 6px;
@@ -179,7 +176,7 @@
       transition: all 0.15s;
     }
     .row-del:hover { border-color: #dc2626; color: #dc2626; background: #fef2f2; }
-    .empty-state { text-align: center; padding: 30px; color: var(--muted); font-size: 0.9rem; }
+    .empty-state { text-align: center; padding: 30px; color: var(--muted); font-size: 0.96rem; }
 
     /* ── SWOT ── */
     .swot-grid {
@@ -195,14 +192,13 @@
       border-top: 5px solid var(--sc, #ccc);
     }
     .swot-card h4 {
-      font-size: 0.82rem; font-weight: 700;
-      letter-spacing: 0.08em; text-transform: uppercase;
+      font-size: 0.9rem; font-weight: 700;
       color: var(--sc); margin-bottom: 10px;
     }
     .swot-card ul { list-style: none; padding: 0; }
     .swot-card ul li {
       padding: 5px 0;
-      font-size: 0.87rem;
+      font-size: 0.96rem;
       line-height: 1.55;
       color: #374151;
       border-bottom: 1px solid rgba(0,0,0,0.05);
@@ -213,12 +209,12 @@
       content: attr(data-icon);
       float: left;
       margin-right: 8px;
-      font-size: 0.8rem;
+      font-size: 0.9rem;
     }
-    .sc-s { --sc: #16a34a; background: rgba(22,  163,  74, 0.15); }
+    .sc-s { --sc: #15803d; background: rgba(22,  163,  74, 0.15); }
     .sc-w { --sc: #dc2626; background: rgba(220,  38,  38, 0.15); }
     .sc-o { --sc: #2563a8; background: rgba( 37,  99, 168, 0.15); }
-    .sc-t { --sc: #d97706; background: rgba(217, 119,   6, 0.15); }
+    .sc-t { --sc: #b45309; background: rgba(217, 119,   6, 0.15); }
 
 
     /* ── BOUWSTEENKAARTEN (SWOT-keuze) ── */
@@ -247,9 +243,9 @@
     }
     .bouwsteen-ico { font-size: 1.8rem; }
     .bouwsteen-name { font-weight: 700; font-size: 1rem; color: var(--dark); }
-    .bouwsteen-desc { font-size: 0.83rem; color: var(--muted); line-height: 1.45; }
+    .bouwsteen-desc { font-size: 0.9rem; color: var(--muted); line-height: 1.45; }
     .bouwsteen-cta {
-      margin-top: 8px; font-size: 0.8rem; font-weight: 700;
+      margin-top: 8px; font-size: 0.9rem; font-weight: 700;
       color: var(--bc, var(--accent));
     }
 
@@ -276,7 +272,7 @@
     }
     .swot-modal-head .smh-ico { font-size: 1.6rem; }
     .swot-modal-head .smh-title {
-      font-family: 'Playfair Display', serif;
+      font-family: var(--titel);
       font-size: 1.3rem; color: var(--dark); flex: 1;
     }
     .swot-modal-close {
@@ -310,7 +306,7 @@
       box-shadow: 0 20px 60px rgba(0,0,0,0.3);
     }
     .modal-box h3 {
-      font-family: 'Playfair Display', serif;
+      font-family: var(--titel);
       font-size: 1.3rem;
       margin-bottom: 16px;
       color: var(--dark);
@@ -324,24 +320,22 @@
     .form-row.full { grid-column: 1 / -1; }
     .form-row label {
       display: block;
-      font-size: 0.78rem;
+      font-size: 0.86rem;
       font-weight: 600;
-      letter-spacing: 0.04em;
       color: var(--muted);
       margin-bottom: 4px;
-      text-transform: uppercase;
-    }
+      }
     .form-row input, .form-row select {
       width: 100%; padding: 9px 11px;
       border: 1px solid var(--border); border-radius: 8px;
-      font-size: 0.9rem; font-family: inherit; background: white;
+      font-size: 0.96rem; font-family: inherit; background: white;
     }
     .form-row input:focus, .form-row select:focus { outline: none; border-color: var(--accent); }
     .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 18px; }
     .modal-actions button {
       padding: 9px 18px;
       border-radius: 8px;
-      font-size: 0.88rem;
+      font-size: 0.96rem;
       font-weight: 600;
       cursor: pointer;
       font-family: inherit;
@@ -356,12 +350,9 @@
     }
   </style>
 </head>
-<body>
+<body data-beheer>
 
-<div class="topbar">
-  <a href="Digiplan.html">← Terug naar Dashboard</a>
-  <span>GBS De Krekel · Digiplan 2025–2028</span>
-</div>
+<div class="topbar"><a href="Digiplan.html">← Digiplan</a></div>
 
 <div class="page-header">
   <div class="page-header-inner">
@@ -375,7 +366,7 @@
 
   <aside class="sidebar">
     <div class="sidebar-card">
-      <div class="sidebar-title">Secties</div>
+      <div class="sidebar-title">Op deze pagina</div>
       <nav>
         <a href="#overzicht"><span class="nav-dot"></span> Overzicht</a>
         <a href="#visie"><span class="nav-dot"></span> Visie</a>
@@ -384,9 +375,6 @@
         <a href="#infrastructuur"><span class="nav-dot"></span> Infrastructuur</a>
         <a href="#swot"><span class="nav-dot"></span> SWOT-analyse</a>
       </nav>
-      <div class="sidebar-back">
-        <a href="Digiplan.html">← Terug naar Dashboard</a>
-      </div>
     </div>
   </aside>
 
@@ -488,12 +476,14 @@
 
       <div class="divider"></div>
 
-      <h3>Logboek gevolgde bijscholingen</h3>
-      <p>Een overzicht van de bijscholingen die het team al heeft gevolgd. Volledig bewerkbaar — voeg toe wat collega's bijwoonden.</p>
+      <div class="lijst-kop">
+        <h3>Logboek gevolgde bijscholingen</h3>
+        <button class="lijst-knop alleen-beheer" onclick="openNasModal()">Bijscholing toevoegen</button>
+      </div>
+      <p>Een overzicht van de bijscholingen die het team al heeft gevolgd.</p>
 
       <div class="nascholing-toolbar">
         <input type="text" id="nasSearch" placeholder="🔍 Zoek op leerkracht, titel of organisator..." oninput="renderNascholing()" />
-        <button class="add-btn" onclick="openNasModal()">＋ Bijscholing toevoegen</button>
       </div>
 
       <div class="table-wrap">
@@ -605,19 +595,19 @@
       <p>Een eerlijke analyse per bouwsteen van het 4-in-balans-model, gebaseerd op een <strong>bevraging bij ons lerarenteam (19 leerkrachten)</strong> en onze bestaande beleidsdocumenten. <strong>Klik op een bouwsteen</strong> om de SWOT te bekijken.</p>
 
       <div class="bouwsteen-grid">
-        <button class="bouwsteen-card" style="--bc:#3b82f6;" onclick="openSwot('visie')">
+        <button class="bouwsteen-card" style="--bc:#2563eb;" onclick="openSwot('visie')">
           <span class="bouwsteen-ico">🔭</span>
           <span class="bouwsteen-name">Visie</span>
           <span class="bouwsteen-desc">Waarom en hoe we ICT inzetten in ons onderwijs</span>
           <span class="bouwsteen-cta">SWOT bekijken →</span>
         </button>
-        <button class="bouwsteen-card" style="--bc:#16a34a;" onclick="openSwot('deskundigheid')">
+        <button class="bouwsteen-card" style="--bc:#15803d;" onclick="openSwot('deskundigheid')">
           <span class="bouwsteen-ico">🎓</span>
           <span class="bouwsteen-name">Deskundigheid</span>
           <span class="bouwsteen-desc">De digitale competenties van ons team</span>
           <span class="bouwsteen-cta">SWOT bekijken →</span>
         </button>
-        <button class="bouwsteen-card" style="--bc:#d97706;" onclick="openSwot('leermateriaal')">
+        <button class="bouwsteen-card" style="--bc:#b45309;" onclick="openSwot('leermateriaal')">
           <span class="bouwsteen-ico">📚</span>
           <span class="bouwsteen-name">Digitaal leermateriaal</span>
           <span class="bouwsteen-desc">Software, platformen en leermiddelen</span>
@@ -631,7 +621,7 @@
         </button>
       </div>
 
-      <p style="margin-top:18px;font-size:0.88rem;color:var(--muted);">Deze bevindingen voeden rechtstreeks de prioriteiten in de <a href="visie.html#moscow" style="color:var(--accent);font-weight:600;">MoSCoW-analyse</a> (visie) en het <a href="actieplan.html" style="color:var(--accent);font-weight:600;">actieplan</a>.</p>
+      <p style="margin-top:18px;font-size:0.96rem;color:var(--muted);">Deze bevindingen voeden rechtstreeks de prioriteiten in de <a href="visie.html#moscow" style="color:var(--accent);font-weight:600;">MoSCoW-analyse</a> (visie) en het <a href="actieplan.html" style="color:var(--accent);font-weight:600;">actieplan</a>.</p>
     </section>
 
   </main>
@@ -688,7 +678,7 @@
   </div>
 </div>
 
-<footer>GBS De Krekel · Zelzate · ICT-beleidsplan 2025–2028 · <a href="Digiplan.html" style="color:inherit">← Dashboard</a></footer>
+<footer>GBS De Krekel · Zelzate · ICT-beleidsplan 2025–2028 · <a href="Digiplan.html">Naar Digiplan</a></footer>
 
 <script>
 /* ════════════════════════════════════════════════════════════════
@@ -721,7 +711,7 @@ function renderNascholing() {
     <td>${escapeHtml(r.titel)}</td>
     <td>${escapeHtml(r.organisator)}</td>
     <td><span class="niveau-tag niv-${(r.niveau||'').toLowerCase()}">${escapeHtml(r.niveau)}</span></td>
-    <td><button class="row-del" onclick="delNas(${idx})" title="Verwijderen" aria-label="Bijscholing verwijderen">🗑️</button></td>
+    <td><button class="row-del alleen-beheer" onclick="delNas(${idx})" title="Verwijderen" aria-label="Bijscholing verwijderen">🗑️</button></td>
   </tr>`).join('');
 }
 
@@ -763,21 +753,21 @@ renderNascholing();
    ════════════════════════════════════════════════════════════════ */
 const SWOT_DATA = {
   visie: {
-    ico:"🔭", title:"Visie", color:"#3b82f6",
+    ico:"🔭", title:"Visie", color:"#2563eb",
     s:[`Uitgewerkte visietekst met heldere kernovertuiging`,`Duidelijke leidende principes die de ICT-keuzes sturen`,`Verankerd in het pedagogisch project`,`Concrete leerlijnen per graad reeds uitgeschreven (ICT-basisvaardigheden, computationeel denken, mediawijsheid)`],
     w:[`De visie leeft nog onvoldoende bij een deel van het team`,`De leerlijnen zijn nog onvoldoende gekend`,`Leerkrachten vinden het nog moeilijk om de leerlijndoelen naar concrete lessen te vertalen`,`Grote spreiding in vaardigheden binnen het team`],
     o:[`De visie en leerlijnen zijn al uitgewerkt — de focus kan op het vertalen naar de klaspraktijk liggen (geen nieuw ontwikkelwerk nodig)`,`Regionale partners (bib, CLB) kunnen ondersteunen bij de uitvoering`],
     t:[`Risico dat het digiplan een "papieren werkelijkheid" blijft`,`Leefwereld van leerlingen (bv. smartphonegebruik) evolueert sneller dan de visie wordt herzien`]
   },
   deskundigheid: {
-    ico:"🎓", title:"Deskundigheid", color:"#16a34a",
+    ico:"🎓", title:"Deskundigheid", color:"#15803d",
     s:[`Professionalisering is een leidend principe in de visie — beleidsmatig draagvlak aanwezig`,`Brede basisvaardigheden (bestandsbeheer, Office 365) goed ingeburgerd`,`Diverse interne expertise aanwezig (Canva, AI, Excel, fotobewerking) en deelbaar`],
     w:[`Grote spreiding in vaardigheidsniveaus, geen gemeenschappelijke basis`,`Computationeel denken is voor het team nog de minst vertrouwde leerlijn`,`Bestaande activiteiten worden nog niet bewust aan computationeel denken gekoppeld`,`Mediawijsheid blijft afhankelijk van individueel initiatief, ondanks een uitgewerkte leerlijn`,`AI-geletterdheid onvoldoende voor veilig en pedagogisch AI-gebruik`,`Tijd voor voorbereiding scoort zeer laag`],
     o:[`Bestaand mediawijsheidsmateriaal direct inzetbaar voor de meest gevraagde nood (concrete lesvoorbeelden)`,`Drie leerlijnen bieden een kant-en-klaar kader om individuele input te structureren`,`Peertutoring/buddywerking sluit aan bij de gevraagde collegiale uitwisseling`,`Computationeel denken: laagdrempelige bewustmaking (taal/kader, geen nieuwe vaardigheid) heeft groot bereik`],
     t:[`Zonder professionalisering blijft het fundament voor andere ambities (AI, evaluatie, mediawijsheid) wankel`,`Te grote afhankelijkheid van één coördinator voor kennisoverdracht`,`Gelijke-kansen-doelstelling onder druk als leerkrachten onvoldoende vaardig zijn om gedifferentieerd te werken met kwetsbare/anderstalige leerlingen`]
   },
   leermateriaal: {
-    ico:"📚", title:"Digitaal leermateriaal", color:"#d97706",
+    ico:"📚", title:"Digitaal leermateriaal", color:"#b45309",
     s:[`Gratis digitaal leermateriaal voor alle leerlingen gerealiseerd (conform pedagogisch project / maximumfactuur)`,`Kabas, Canva, Gynzy en LeerLokaal positief gewaardeerd, sluiten aan bij de leerlijnen`,`Brede, gevarieerde inzet (instructie, differentiatie, evaluatie, klasorganisatie)`],
     w:[`Digitaal evalueren (digitaal toetsen) wordt nog weinig structureel ingezet`,`Mediawijsheid wordt nog te weinig structureel met materiaal ondersteund`,`Computationeel-denkenmateriaal (mTiny, Scratch (Junior)) wordt nog weinig benut`,`Scoodle (meest gebruikte tool) is tegelijk de grootste frustratiebron`,`Foto's op de schoolwebsite plaatsen wordt als moeilijk ervaren`,`Gimme bereikt niet alle ouders`],
     o:[`Een digitaal portfolio kan het digitaal evalueren versterken`,`Bestaand leerlijnmateriaal (mTiny, Scratch) actiever inzetten`,`Oudercommunicatie verbeteren via een combinatie van kanalen + pictogrammen, conform het inclusiebeleid`],

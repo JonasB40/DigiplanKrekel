@@ -5,21 +5,23 @@
   <title>Digitale Inclusie – Digiplan GBS De Krekel</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="shared.css">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shared.css?v=2">
+  <link rel="stylesheet" href="digiplan.css?v=2">
+  <script src="digiplan.js?v=2" defer></script>
   <style>
-    :root { --accent: #16a34a; --accent-light: #dcfce7; }
+    :root { --accent: #15803d; --accent-light: #dcfce7; }
 
     /* Sectie-accenten per thema */
     .section { border-top: 4px solid var(--sc, var(--accent)); }
-    .section[data-c="green"]  { --sc: #16a34a; }
+    .section[data-c="green"]  { --sc: #15803d; }
     .section[data-c="red"]    { --sc: #dc2626; }
-    .section[data-c="teal"]   { --sc: #0d9488; }
+    .section[data-c="teal"]   { --sc: #0f766e; }
     .section[data-c="purple"] { --sc: #7c3aed; }
     .section .section-label { color: var(--sc, var(--accent)); }
 
-    .section-sub { font-size: 0.9rem; color: var(--muted); margin-bottom: 16px; }
-    .click-hint { font-size: 0.78rem; color: var(--muted); opacity: 0.75; margin-bottom: 10px; font-style: italic; }
+    .section-sub { font-size: 0.96rem; color: var(--muted); margin-bottom: 16px; }
+    .click-hint { font-size: 0.86rem; color: var(--muted); opacity: 0.75; margin-bottom: 10px; font-style: italic; }
 
     /* ── PROBLEM CARDS met uitklap ── */
     .problem-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap: 12px; margin-top: 14px; }
@@ -32,12 +34,12 @@
     }
     .problem-card:hover { border-color: #f87171; box-shadow: 0 4px 14px rgba(220,38,38,0.08); }
     .problem-icon { font-size: 1.6rem; margin-bottom: 8px; }
-    .problem-title { font-size: 0.92rem; font-weight: 600; margin-bottom: 4px; display: flex; justify-content: space-between; align-items: center; color: var(--dark); }
-    .problem-title .toggle-arrow { font-size: 0.75rem; color: var(--muted); transition: transform 0.25s; }
+    .problem-title { font-size: 0.96rem; font-weight: 600; margin-bottom: 4px; display: flex; justify-content: space-between; align-items: center; color: var(--dark); }
+    .problem-title .toggle-arrow { font-size: 0.82rem; color: var(--muted); transition: transform 0.25s; }
     .problem-card.open .toggle-arrow { transform: rotate(90deg); }
-    .problem-short { font-size: 0.84rem; color: #57534e; line-height: 1.55; }
+    .problem-short { font-size: 0.9rem; color: #57534e; line-height: 1.55; }
     .problem-full {
-      font-size: 0.84rem; color: #57534e; line-height: 1.6;
+      font-size: 0.9rem; color: #57534e; line-height: 1.6;
       max-height: 0; overflow: hidden;
       transition: max-height 0.35s ease, margin-top 0.2s ease;
       margin-top: 0;
@@ -58,22 +60,22 @@
       cursor: pointer; gap: 8px;
     }
     .beleid-title { font-size: 0.97rem; font-weight: 600; color: var(--dark); }
-    .beleid-arrow { font-size: 0.75rem; color: var(--muted); flex-shrink: 0; transition: transform 0.25s; }
+    .beleid-arrow { font-size: 0.82rem; color: var(--muted); flex-shrink: 0; transition: transform 0.25s; }
     .beleid-item.open .beleid-arrow { transform: rotate(90deg); }
-    .beleid-desc { font-size: 0.87rem; color: var(--muted); line-height: 1.6; margin-top: 6px; }
+    .beleid-desc { font-size: 0.96rem; color: var(--muted); line-height: 1.6; margin-top: 6px; }
     .beleid-extra {
       max-height: 0; overflow: hidden;
       transition: max-height 0.4s ease;
     }
     .beleid-item.open .beleid-extra { max-height: 600px; }
     .beleid-sub-title {
-      font-size: 0.84rem; font-weight: 600; color: var(--dark);
+      font-size: 0.9rem; font-weight: 600; color: var(--dark);
       margin-top: 12px; margin-bottom: 4px;
     }
     .beleid-bullets { padding-left: 0; list-style: none; margin: 0; }
-    .beleid-bullets li { font-size: 0.84rem; color: #475569; padding: 3px 0 3px 0 !important; display: flex; gap: 7px; line-height: 1.6; }
+    .beleid-bullets li { font-size: 0.9rem; color: #475569; padding: 3px 0 3px 0 !important; display: flex; gap: 7px; line-height: 1.6; }
     .beleid-bullets li::before { display: none; }
-    .li-dot { color: var(--accent); font-size: 10px; margin-top: 6px; flex-shrink: 0; }
+    .li-dot { color: var(--accent); font-size: 13px; margin-top: 6px; flex-shrink: 0; }
 
     /* ── KANSEN & GEVAREN ── */
     .kansen-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
@@ -95,12 +97,12 @@
     }
     .gevaar-card:hover { border-color: #f87171; box-shadow: 0 4px 14px rgba(220,38,38,0.08); }
     .kg-icon { font-size: 1.3rem; margin-bottom: 6px; }
-    .kg-title { font-size: 0.92rem; font-weight: 600; margin-bottom: 4px; display: flex; justify-content: space-between; color: var(--dark); }
-    .kg-title .toggle-arrow { font-size: 0.75rem; color: var(--muted); transition: transform 0.25s; }
+    .kg-title { font-size: 0.96rem; font-weight: 600; margin-bottom: 4px; display: flex; justify-content: space-between; color: var(--dark); }
+    .kg-title .toggle-arrow { font-size: 0.82rem; color: var(--muted); transition: transform 0.25s; }
     .kg-card.open .toggle-arrow { transform: rotate(90deg); }
-    .kg-short { font-size: 0.84rem; color: #57534e; line-height: 1.55; }
+    .kg-short { font-size: 0.9rem; color: #57534e; line-height: 1.55; }
     .kg-full {
-      font-size: 0.84rem; color: #57534e; line-height: 1.6;
+      font-size: 0.9rem; color: #57534e; line-height: 1.6;
       max-height: 0; overflow: hidden;
       transition: max-height 0.35s ease;
       margin-top: 0;
@@ -114,7 +116,7 @@
       border-left: 4px solid var(--accent);
       border-radius: 10px;
       padding: 16px 18px;
-      font-size: 0.92rem;
+      font-size: 0.96rem;
       line-height: 1.7;
       margin-top: 12px;
       color: #374151;
@@ -128,10 +130,7 @@
 </head>
 <body>
 
-<div class="topbar">
-  <a href="Digiplan.html">← Terug naar Dashboard</a>
-  <span>GBS De Krekel · Digiplan 2025–2028</span>
-</div>
+<div class="topbar"><a href="Digiplan.html">← Digiplan</a></div>
 
 <div class="page-header">
   <div class="page-header-inner">
@@ -146,7 +145,7 @@
   <!-- Sidebar -->
   <aside class="sidebar">
     <div class="sidebar-card">
-      <div class="sidebar-title">Inhoud</div>
+      <div class="sidebar-title">Op deze pagina</div>
       <nav>
         <a href="#waarom"><span class="nav-dot"></span> Waarom inclusie?</a>
         <a href="#problemen"><span class="nav-dot"></span> Problemen &amp; gevaren</a>
@@ -154,9 +153,6 @@
         <a href="#kansen-gevaren"><span class="nav-dot"></span> Kansen &amp; gevaren</a>
         <a href="#conclusie"><span class="nav-dot"></span> Conclusie</a>
       </nav>
-      <div class="sidebar-back">
-        <a href="Digiplan.html">← Terug naar Dashboard</a>
-      </div>
     </div>
   </aside>
 
@@ -387,7 +383,7 @@
   </main>
 </div>
 
-<footer>GBS De Krekel · Zelzate · ICT-beleidsplan 2025–2028 · <a href="Digiplan.html" style="color:inherit">← Dashboard</a></footer>
+<footer>GBS De Krekel · Zelzate · ICT-beleidsplan 2025–2028 · <a href="Digiplan.html">Naar Digiplan</a></footer>
 
 <script>
   /* Fade-in observer */

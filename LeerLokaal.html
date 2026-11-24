@@ -5,101 +5,103 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>LeerLokaal – Digitale Competenties OVSG</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="shared.css">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css?v=2">
+  <link rel="stylesheet" href="digiplan.css?v=2">
+  <script src="digiplan.js?v=2" defer></script>
 <style>
 :root { --accent: #2563a8; --accent-light: #dbeafe; }
 body{font-family:'DM Sans',sans-serif;background:var(--cream);color:#1E293B;font-size:15px}
-.wrap{max-width:1100px;margin:-28px auto 0;padding:0 5% 60px;position:relative;z-index:5}
+.wrap{max-width:calc(var(--breedte) + 48px);margin:24px auto 0;padding:0 24px 60px}
 .app-card{background:white;border-radius:var(--radius);padding:30px 28px;box-shadow:0 2px 16px rgba(15,31,48,0.07);border:1px solid var(--border)}
 .header{display:flex;align-items:center;gap:14px;margin-bottom:28px;padding-bottom:20px;border-bottom:2px solid #E2E8F0}
 .logo{width:44px;height:44px;background:linear-gradient(135deg,var(--accent),#7C3AED);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
-.app-title{font-size:20px;font-weight:700;color:#1E293B;font-family:'Playfair Display',serif}
-.app-sub{font-size:12px;color:#94A3B8;margin-top:2px}
-.step-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#94A3B8;margin-bottom:6px}
-.section-title{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:#1E293B;margin-bottom:14px}
+.app-title{font-size:20px;font-weight:700;color:#1E293B;font-family:var(--titel)}
+.app-sub{font-size:13.5px;color:#5b6b7f;margin-top:2px}
+.step-label{font-size:13px;font-weight:700;color:#5b6b7f;margin-bottom:6px}
+.section-title{font-family:var(--titel);font-size:1.3rem;font-weight:700;color:#1E293B;margin-bottom:14px}
 .ll-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:28px}
 .ll-card{background:#fff;border:2px solid #E2E8F0;border-radius:14px;padding:18px 14px;cursor:pointer;text-align:center;transition:all .18s}
-.ll-card:hover{border-color:#94A3B8;transform:translateY(-2px)}
+.ll-card:hover{border-color:#5b6b7f;transform:translateY(-2px)}
 .ll-card.sel-ict{border-color:var(--accent);background:var(--accent-light)}
 .ll-card.sel-comp{border-color:#7C3AED;background:#F5F3FF}
-.ll-card.sel-media{border-color:#059669;background:#ECFDF5}
+.ll-card.sel-media{border-color:#047857;background:#ECFDF5}
 .ll-icon{font-size:32px;margin-bottom:8px}
-.ll-name{font-size:14px;font-weight:800;color:#1E293B;margin-bottom:4px}
-.ll-desc{font-size:11px;color:#64748B;line-height:1.5}
+.ll-name{font-size:15px;font-weight:800;color:#1E293B;margin-bottom:4px}
+.ll-desc{font-size:13px;color:#64748B;line-height:1.5}
 .phase-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:28px}
-.phase-btn{background:#fff;border:2px solid #E2E8F0;border-radius:12px;padding:10px 18px;cursor:pointer;font-size:13px;font-weight:700;color:#1E293B;transition:all .15s;text-align:center}
-.phase-btn:hover{border-color:#94A3B8}
+.phase-btn{background:#fff;border:2px solid #E2E8F0;border-radius:12px;padding:10px 18px;cursor:pointer;font-size:14.5px;font-weight:700;color:#1E293B;transition:all .15s;text-align:center}
+.phase-btn:hover{border-color:#5b6b7f}
 .phase-btn.active{border-color:var(--accent);background:var(--accent-light);color:var(--accent)}
-.phase-age{font-size:10px;font-weight:600;color:#94A3B8;margin-top:2px}
+.phase-age{font-size:13px;font-weight:600;color:#5b6b7f;margin-top:2px}
 /* Weergave-keuze */
 .view-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:26px}
-.view-btn{background:#fff;border:2px solid #E2E8F0;border-radius:12px;padding:10px 18px;cursor:pointer;font-size:13px;font-weight:700;color:#64748B;transition:all .15s;display:flex;align-items:center;gap:7px}
-.view-btn:hover{border-color:#94A3B8}
+.view-btn{background:#fff;border:2px solid #E2E8F0;border-radius:12px;padding:10px 18px;cursor:pointer;font-size:14.5px;font-weight:700;color:#64748B;transition:all .15s;display:flex;align-items:center;gap:7px}
+.view-btn:hover{border-color:#5b6b7f}
 .view-btn.active{border-color:var(--accent);background:var(--accent-light);color:var(--accent)}
 /* Leerjaar-chips */
 .jaar-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:26px}
-.jaar-btn{background:#fff;border:2px solid #E2E8F0;border-radius:10px;padding:8px 15px;cursor:pointer;font-size:13px;font-weight:700;color:#1E293B;transition:all .15s}
-.jaar-btn:hover{border-color:#94A3B8}
+.jaar-btn{background:#fff;border:2px solid #E2E8F0;border-radius:10px;padding:8px 15px;cursor:pointer;font-size:14.5px;font-weight:700;color:#1E293B;transition:all .15s}
+.jaar-btn:hover{border-color:#5b6b7f}
 .jaar-btn.active{border-color:var(--accent);background:var(--accent-light);color:var(--accent)}
 /* Gegroepeerde doelen per leerlijn */
 .ll-group{margin-bottom:20px}
-.ll-group-header{display:flex;align-items:center;gap:8px;font-weight:800;font-size:14px;margin-bottom:8px;padding:7px 12px;border-radius:9px}
+.ll-group-header{display:flex;align-items:center;gap:8px;font-weight:800;font-size:15px;margin-bottom:8px;padding:7px 12px;border-radius:9px}
 /* Fase-badge op doelkaart */
-.fase-badge{font-size:10px;font-weight:700;background:#F1F5F9;color:#64748B;padding:2px 9px;border-radius:100px;margin-left:auto;flex-shrink:0;align-self:center}
+.fase-badge{font-size:13px;font-weight:700;background:#F1F5F9;color:#64748B;padding:2px 9px;border-radius:100px;margin-left:auto;flex-shrink:0;align-self:center}
 /* Zoekveld doelen */
-.goal-search{width:100%;padding:11px 15px;border:2px solid #E2E8F0;border-radius:12px;font-size:13px;font-family:inherit;margin-bottom:16px;background:#fff}
+.goal-search{width:100%;padding:11px 15px;border:2px solid #E2E8F0;border-radius:12px;font-size:14.5px;font-family:inherit;margin-bottom:16px;background:#fff}
 .goal-search:focus{outline:none;border-color:var(--accent)}
-.no-results{padding:18px;text-align:center;color:#94A3B8;font-size:13px;display:none}
+.no-results{padding:18px;text-align:center;color:#5b6b7f;font-size:14.5px;display:none}
 /* Globale zoekbalk */
-.global-search{padding:14px 18px;font-size:14.5px;border-color:#cbd5e1;box-shadow:0 2px 10px rgba(15,31,48,0.05);margin-bottom:6px}
+.global-search{padding:14px 18px;font-size:15px;border-color:#cbd5e1;box-shadow:0 2px 10px rgba(15,31,48,0.05);margin-bottom:6px}
 .global-search:focus{border-color:var(--accent);box-shadow:0 2px 14px rgba(37,99,168,0.15)}
-.global-hint{font-size:11.5px;color:#94A3B8;margin-bottom:20px}
-.tool-badge{font-size:10px;font-weight:700;background:#FEF3C7;color:#92400E;padding:2px 8px;border-radius:100px;flex-shrink:0;align-self:center;white-space:nowrap}
+.global-hint{font-size:13px;color:#5b6b7f;margin-bottom:20px}
+.tool-badge{font-size:13px;font-weight:700;background:#FEF3C7;color:#92400E;padding:2px 8px;border-radius:100px;flex-shrink:0;align-self:center;white-space:nowrap}
 .clear-search-row{display:flex;justify-content:flex-end;margin-bottom:10px}
 .goals-list{display:flex;flex-direction:column;gap:8px;margin-bottom:24px}
 .goal-card{background:#fff;border:2px solid #E2E8F0;border-radius:12px;padding:12px 16px;cursor:pointer;display:flex;flex-direction:column;gap:6px;transition:all .15s}
-.goal-card:hover{border-color:#94A3B8}
+.goal-card:hover{border-color:#5b6b7f}
 .goal-card.active{border-color:var(--accent);background:var(--accent-light)}
 .goal-row{display:flex;gap:14px;align-items:flex-start;width:100%}
-.goal-code{font-size:11px;font-weight:800;color:var(--accent);min-width:76px;padding-top:2px;flex-shrink:0}
-.goal-text{font-size:13px;color:#1E293B;line-height:1.55;flex:1}
-.badge-nieuw{font-size:10px;font-weight:800;background:#FEF3C7;color:#B45309;padding:2px 8px;border-radius:100px;flex-shrink:0;letter-spacing:.05em;align-self:center}
-.goal-meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:11px;color:#94A3B8;font-weight:600;padding-left:90px;line-height:1.5}
-.meta-pill{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:700;padding:2.5px 10px;border-radius:100px;white-space:nowrap}
+.goal-code{font-size:13px;font-weight:800;color:var(--accent);min-width:76px;padding-top:2px;flex-shrink:0}
+.goal-text{font-size:14.5px;color:#1E293B;line-height:1.55;flex:1}
+.badge-nieuw{font-size:13px;font-weight:800;background:#FEF3C7;color:#B45309;padding:2px 8px;border-radius:100px;flex-shrink:0;align-self:center}
+.goal-meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:13px;color:#5b6b7f;font-weight:600;padding-left:90px;line-height:1.5}
+.meta-pill{display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:700;padding:2.5px 10px;border-radius:100px;white-space:nowrap}
 .mp-age{background:#E0F2FE;color:#075985}
 .mp-fase{background:#EDE9FE;color:#5B21B6}
 .mp-jaar{background:#DCFCE7;color:#166534}
-.meta-extra{font-size:10.5px;color:#94A3B8;font-weight:600}
-.diff-toggle{background:none;border:none;color:var(--accent);font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;padding:0}
+.meta-extra{font-size:13px;color:#5b6b7f;font-weight:600}
+.diff-toggle{background:none;border:none;color:var(--accent);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;padding:0}
 .diff-panel{padding:10px 12px;background:#F8FAFC;border:1.5px solid #E2E8F0;border-radius:10px;margin-left:90px}
-.diff-line{font-size:12px;color:#475569;line-height:1.55;margin-bottom:7px;display:flex;gap:8px;align-items:flex-start}
+.diff-line{font-size:13.5px;color:#475569;line-height:1.55;margin-bottom:7px;display:flex;gap:8px;align-items:flex-start}
 .diff-line:last-child{margin-bottom:0}
-.diff-tag{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;padding:2px 7px;border-radius:100px;flex-shrink:0;margin-top:2px}
+.diff-tag{font-size:13px;font-weight:800;padding:2px 7px;border-radius:100px;flex-shrink:0;margin-top:2px}
 .dt-onder{background:#FFF7ED;color:#EA580C}
 .dt-verdiep{background:#F5F3FF;color:#7C3AED}
 @media(max-width:600px){.goal-meta,.diff-panel{padding-left:0;margin-left:0}}
 /* ── TEACHER PROGRESS ── */
-.prog-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:2.5px 9px;border-radius:100px;flex-shrink:0;cursor:pointer;border:1.5px solid currentColor;background:transparent;font-family:inherit;transition:all .15s;white-space:nowrap}
+.prog-badge{display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:700;padding:2.5px 9px;border-radius:100px;flex-shrink:0;cursor:pointer;border:1.5px solid currentColor;background:transparent;font-family:inherit;transition:all .15s;white-space:nowrap}
 .prog-badge:hover{opacity:.75}
-.prog-none{color:#94A3B8;border-color:#CBD5E1}
+.prog-none{color:#5b6b7f;border-color:#CBD5E1}
 .prog-bezig{color:#92400E;background:#FEF9C3;border-color:#FDE047}
 .prog-behandeld{color:#166534;background:#DCFCE7;border-color:#4ADE80}
 .prog-geval{color:#1e4d96;background:#DBEAFE;border-color:#60A5FA}
-.rubric-btn{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;padding:2.5px 9px;border-radius:100px;background:#F0F9FF;color:#0369A1;border:1.5px solid #BAE6FD;text-decoration:none;cursor:pointer;flex-shrink:0;white-space:nowrap}
+.rubric-btn{display:inline-flex;align-items:center;gap:3px;font-size:13px;font-weight:700;padding:2.5px 9px;border-radius:100px;background:#F0F9FF;color:#0369A1;border:1.5px solid #BAE6FD;text-decoration:none;cursor:pointer;flex-shrink:0;white-space:nowrap}
 .rubric-btn:hover{background:#BAE6FD}
 .prog-summary{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px;align-items:center}
-.prog-stat{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:#1E293B}
+.prog-stat{display:flex;align-items:center;gap:6px;font-size:14.5px;font-weight:700;color:#1E293B}
 .prog-stat-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
-.prog-empty{padding:40px 0;text-align:center;color:#94A3B8;font-size:14px;line-height:1.7}
-.btn-primary{background:var(--accent);color:#fff;border:none;border-radius:10px;padding:12px 24px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;transition:background .15s}
+.prog-empty{padding:40px 0;text-align:center;color:#5b6b7f;font-size:15px;line-height:1.7}
+.btn-primary{background:var(--accent);color:#fff;border:none;border-radius:10px;padding:12px 24px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;transition:background .15s}
 .btn-primary:hover{background:#1e4276}
-.btn-green{background:#059669;color:#fff;border:none;border-radius:10px;padding:12px 24px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit}
+.btn-green{background:#047857;color:#fff;border:none;border-radius:10px;padding:12px 24px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit}
 .btn-green:hover{background:#047857}
-.btn-ghost{background:transparent;color:#64748B;border:2px solid #E2E8F0;border-radius:10px;padding:11px 22px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit}
+.btn-ghost{background:transparent;color:#64748B;border:2px solid #E2E8F0;border-radius:10px;padding:11px 22px;font-size:14.5px;font-weight:700;cursor:pointer;font-family:inherit}
 .btn-ghost:hover{background:#F8FAFC}
 .btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
-.crumb{font-size:12px;color:#64748B;margin-bottom:18px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.crumb{font-size:13.5px;color:#64748B;margin-bottom:18px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .crumb-link{color:#64748B;cursor:pointer;text-decoration:underline}
 .crumb-link:hover{color:var(--accent)}
 .crumb-sep{color:#CBD5E1}
@@ -107,75 +109,75 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:#1E293B;font
 .spin-ring{width:44px;height:44px;border:4px solid #E2E8F0;border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .spin-msg{font-size:15px;font-weight:700;color:#475569}
-.spin-sub{font-size:12px;color:#94A3B8}
-.err-box{background:#FFF1F2;border:1.5px solid #FECDD3;border-radius:10px;padding:12px 16px;color:#BE123C;font-size:13px;margin-bottom:14px}
+.spin-sub{font-size:13.5px;color:#5b6b7f}
+.err-box{background:#FFF1F2;border:1.5px solid #FECDD3;border-radius:10px;padding:12px 16px;color:#BE123C;font-size:14.5px;margin-bottom:14px}
 .lib-section{margin-bottom:6px}
-.lib-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#94A3B8;margin-bottom:8px}
+.lib-label{font-size:13px;font-weight:700;color:#5b6b7f;margin-bottom:8px}
 .lib-ideas{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
-.lib-idea{background:#fff;border:1.5px solid #E2E8F0;border-radius:10px;padding:11px 16px;cursor:pointer;font-size:13px;color:#1E293B;transition:all .15s;font-weight:600}
-.lib-idea:hover{border-color:#94A3B8}
+.lib-idea{background:#fff;border:1.5px solid #E2E8F0;border-radius:10px;padding:11px 16px;cursor:pointer;font-size:14.5px;color:#1E293B;transition:all .15s;font-weight:600}
+.lib-idea:hover{border-color:#5b6b7f}
 .lib-idea.selected{border-color:var(--accent);background:var(--accent-light);color:#1e4276}
 .ai-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px}
 .ai-card{background:#fff;border:1.5px solid #E2E8F0;border-radius:12px;padding:14px;cursor:pointer;transition:all .15s}
 .ai-card:hover{border-color:var(--accent);transform:translateY(-2px)}
-.ai-num{font-size:11px;color:#94A3B8;margin-bottom:6px;font-weight:700}
-.ai-title{font-size:14px;font-weight:800;color:#1E293B;margin-bottom:6px}
-.ai-desc{font-size:12px;color:#64748B;line-height:1.55}
+.ai-num{font-size:13px;color:#5b6b7f;margin-bottom:6px;font-weight:700}
+.ai-title{font-size:15px;font-weight:800;color:#1E293B;margin-bottom:6px}
+.ai-desc{font-size:13.5px;color:#64748B;line-height:1.55}
 .ai-arrow{margin-top:10px;font-size:16px;color:var(--accent)}
-.info-box{background:#F0F9FF;border:1.5px solid #BAE6FD;border-radius:10px;padding:10px 14px;font-size:12px;color:#0369A1;margin-bottom:16px;line-height:1.5}
+.info-box{background:#F0F9FF;border:1.5px solid #BAE6FD;border-radius:10px;padding:10px 14px;font-size:13.5px;color:#0369A1;margin-bottom:16px;line-height:1.5}
 /* FICHE */
 .fiche-header{background:#fff;border:2px solid #E2E8F0;border-radius:14px;padding:22px 24px;margin-bottom:14px}
-.fiche-age-badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;padding:3px 10px;border-radius:100px;margin-bottom:10px}
-.fiche-title-main{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:#1E293B;margin-bottom:4px}
-.fiche-subtitle{font-size:13px;color:#64748B;font-weight:600;margin-bottom:12px}
+.fiche-age-badge{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;padding:3px 10px;border-radius:100px;margin-bottom:10px}
+.fiche-title-main{font-family:var(--titel);font-size:1.5rem;font-weight:700;color:#1E293B;margin-bottom:4px}
+.fiche-subtitle{font-size:14.5px;color:#64748B;font-weight:600;margin-bottom:12px}
 .fiche-meta{display:flex;gap:18px;flex-wrap:wrap}
-.fiche-meta span{font-size:12px;color:#64748B;font-weight:600}
+.fiche-meta span{font-size:13.5px;color:#64748B;font-weight:600}
 .tabs{display:flex;background:#fff;border-radius:12px;padding:5px;border:2px solid #E2E8F0;margin-bottom:16px;gap:4px}
-.tab-btn{flex:1;padding:10px 6px;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;background:transparent;color:#64748B;transition:all .15s}
+.tab-btn{flex:1;padding:10px 6px;border:none;border-radius:8px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:inherit;background:transparent;color:#64748B;transition:all .15s}
 .tab-btn.active{background:var(--accent);color:#fff}
 .card{background:#fff;border:2px solid #E2E8F0;border-radius:14px;padding:18px 20px;margin-bottom:12px}
-.card-title{font-size:14px;font-weight:800;color:#1E293B;margin-bottom:12px}
-.goal-banner{background:#F0FDF4;border-left:4px solid #10B981;border-radius:0 10px 10px 0;padding:12px 16px;font-size:14px;font-weight:700;color:#1E293B;margin-bottom:10px}
-.subdoel{display:flex;gap:8px;margin-bottom:7px;font-size:13px;color:#475569;line-height:1.5}
+.card-title{font-size:15px;font-weight:800;color:#1E293B;margin-bottom:12px}
+.goal-banner{background:#F0FDF4;border-left:4px solid #10B981;border-radius:0 10px 10px 0;padding:12px 16px;font-size:15px;font-weight:700;color:#1E293B;margin-bottom:10px}
+.subdoel{display:flex;gap:8px;margin-bottom:7px;font-size:14.5px;color:#475569;line-height:1.5}
 .dot{width:7px;height:7px;border-radius:50%;background:#10B981;margin-top:5px;flex-shrink:0}
-.tag{display:inline-block;background:var(--accent-light);color:var(--accent);font-size:11px;padding:4px 10px;border-radius:100px;margin:3px 3px 3px 0;font-weight:700}
+.tag{display:inline-block;background:var(--accent-light);color:var(--accent);font-size:13px;padding:4px 10px;border-radius:100px;margin:3px 3px 3px 0;font-weight:700}
 .diff-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .diff-easy{background:#FFF7ED;border:1.5px solid #FED7AA;border-radius:10px;padding:14px}
 .diff-hard{background:#F5F3FF;border:1.5px solid #DDD6FE;border-radius:10px;padding:14px}
-.diff-label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.diff-label{font-size:13px;font-weight:800;margin-bottom:6px}
 .diff-easy .diff-label{color:#EA580C}
 .diff-hard .diff-label{color:#7C3AED}
-.diff-text{font-size:13px;color:#1E293B;line-height:1.55}
+.diff-text{font-size:14.5px;color:#1E293B;line-height:1.55}
 .opwarmer{background:#FFFBEB;border:1.5px solid #FDE68A;border-radius:10px;padding:14px;margin-bottom:18px}
-.opwarmer-label{font-size:11px;font-weight:800;color:#D97706;margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em}
-.opwarmer-text{font-size:13px;color:#1E293B;line-height:1.6}
+.opwarmer-label{font-size:13px;font-weight:800;color:#b45309;margin-bottom:6px;}
+.opwarmer-text{font-size:14.5px;color:#1E293B;line-height:1.6}
 .step-row{display:flex;gap:16px;margin-bottom:20px}
 .step-line{display:flex;flex-direction:column;align-items:center;flex-shrink:0}
-.step-num{width:32px;height:32px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800}
+.step-num{width:32px;height:32px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14.5px;font-weight:800}
 .step-connector{width:2px;background:#E2E8F0;flex:1;margin-top:6px;min-height:20px}
 .step-body{flex:1;padding-bottom:4px}
 .step-title-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap}
-.step-title{font-size:14px;font-weight:800;color:#1E293B}
-.step-time{font-size:11px;color:#94A3B8;background:#F1F5F9;padding:3px 10px;border-radius:100px;font-weight:700}
-.step-desc{font-size:13px;color:#475569;line-height:1.6;margin-bottom:10px}
+.step-title{font-size:15px;font-weight:800;color:#1E293B}
+.step-time{font-size:13px;color:#5b6b7f;background:#F1F5F9;padding:3px 10px;border-radius:100px;font-weight:700}
+.step-desc{font-size:14.5px;color:#475569;line-height:1.6;margin-bottom:10px}
 .dialoog-box{background:#F8FAFC;border:1.5px solid #E2E8F0;border-radius:10px;padding:12px 16px}
-.dialoog-label{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--accent);margin-bottom:5px}
-.dialoog-text{font-size:13px;color:#1E293B;line-height:1.6;font-style:italic}
+.dialoog-label{font-size:13px;font-weight:800;color:var(--accent);margin-bottom:5px}
+.dialoog-text{font-size:14.5px;color:#1E293B;line-height:1.6;font-style:italic}
 .afsluiting{background:#F0FDF4;border:1.5px solid #A7F3D0;border-radius:10px;padding:14px;margin-bottom:10px}
-.afsluiting-label{font-size:11px;font-weight:800;color:#059669;margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em}
-.afsluiting-text{font-size:13px;color:#1E293B;line-height:1.6}
+.afsluiting-label{font-size:13px;font-weight:800;color:#047857;margin-bottom:6px;}
+.afsluiting-text{font-size:14.5px;color:#1E293B;line-height:1.6}
 .toetsing{background:#F8FAFC;border:1.5px solid #E2E8F0;border-radius:10px;padding:14px}
-.mat-item{display:flex;gap:10px;margin-bottom:8px;font-size:13px;color:#475569;line-height:1.5}
+.mat-item{display:flex;gap:10px;margin-bottom:8px;font-size:14.5px;color:#475569;line-height:1.5}
 .mat-dot{color:var(--accent);font-weight:800;flex-shrink:0}
 .mat-uitleg{background:#F8FAFC;border-radius:10px;padding:14px;margin-bottom:10px}
-.mat-uitleg-title{font-size:13px;font-weight:800;color:#1E293B;margin-bottom:5px}
-.mat-uitleg-text{font-size:13px;color:#475569;line-height:1.6}
+.mat-uitleg-title{font-size:14.5px;font-weight:800;color:#1E293B;margin-bottom:5px}
+.mat-uitleg-text{font-size:14.5px;color:#475569;line-height:1.6}
 .tip-item{border-left:3px solid var(--accent);padding-left:14px;margin-bottom:14px}
-.tip-title{font-size:13px;font-weight:800;color:#1E293B;margin-bottom:4px}
-.tip-text{font-size:13px;color:#475569;line-height:1.55}
+.tip-title{font-size:14.5px;font-weight:800;color:#1E293B;margin-bottom:4px}
+.tip-text{font-size:14.5px;color:#475569;line-height:1.55}
 .begrip-item{background:var(--accent-light);border-radius:10px;padding:12px 14px;margin-bottom:8px}
-.begrip-term{font-size:13px;font-weight:800;color:var(--accent);margin-bottom:3px}
-.begrip-def{font-size:12px;color:#475569;line-height:1.55}
+.begrip-term{font-size:14.5px;font-weight:800;color:var(--accent);margin-bottom:3px}
+.begrip-def{font-size:13.5px;color:#475569;line-height:1.55}
 /* Print */
 @media print{
   .no-print{display:none!important}
@@ -187,26 +189,18 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:#1E293B;font
   .tabs,.btn-row,.header{display:none}
   .tab-content{display:block!important}
 }
+@media(max-width:700px){.ll-grid,.ai-grid,.diff-grid{grid-template-columns:1fr}.wrap{padding:0 16px 48px}.app-card{padding:20px 18px}}
 </style>
 </head>
-<body>
-<div class="topbar">
-  <div style="display:flex;gap:8px;flex-wrap:wrap;">
-    <a href="Digiplan.html">← Terug naar Dashboard</a>
-    <a href="leerplandoelen/index.html">← Leerplandoelen</a>
-  </div>
-  <span>GBS De Krekel · Digiplan 2025–2028</span>
-</div>
+<body data-geen-afdruk>
+<div class="topbar"><a href="Digiplan.html">← Digiplan</a></div>
 
 <div class="page-header">
   <div class="page-header-inner">
     <div class="page-header-label">LeerLokaal · OVSG-leerplan</div>
     <h1>Lesfiches bij de leerplandoelen</h1>
     <p>Digitale competenties doorheen alle leerjaren: kies een leerlijn, fase en leerplandoel en genereer een volledig uitgewerkte lesfiche.</p>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:16px">
-      <a href="woordenlijst.html" style="display:inline-flex;align-items:center;gap:8px;background:#fff;color:var(--accent);text-decoration:none;font-weight:700;font-size:0.9rem;padding:11px 20px;border-radius:999px;box-shadow:0 4px 14px rgba(0,0,0,0.18);transition:transform .15s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">📖 Woordenlijst digitale competenties</a>
-      <a href="rubrics_digitale_geletterdheid.html" style="display:inline-flex;align-items:center;gap:8px;background:#fff;color:#059669;text-decoration:none;font-weight:700;font-size:0.9rem;padding:11px 20px;border-radius:999px;box-shadow:0 4px 14px rgba(0,0,0,0.18);transition:transform .15s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">📋 Rubrics digitale geletterdheid</a>
-    </div>
+    <div class="kop-acties"><a class="kop-knop" href="woordenlijst.html">Woordenlijst</a><a class="kop-knop" href="rubrics_digitale_geletterdheid.html">Rubrics</a></div>
   </div>
 </div>
 
@@ -214,7 +208,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:#1E293B;font
   <div class="app-card" id="app"></div>
 </div>
 
-<footer>GBS De Krekel · Zelzate · ICT-beleidsplan 2025–2028 · <a href="Digiplan.html" style="color:inherit">← Dashboard</a></footer>
+<footer>GBS De Krekel · Zelzate · ICT-beleidsplan 2025–2028 · <a href="Digiplan.html">Naar Digiplan</a></footer>
 
 <script>
 // ─── DATA ─────────────────────────────────────────────────────────────
@@ -471,7 +465,7 @@ const DATA = {
       {code:"DIG 2 B.21",age:11,md:["MD L6 8.2.6"],text:"Een zoekstrategie uitwerken, toepassen en indien nodig bijsturen vanuit de principes van computationeel denken.",onder:["Een onderzoeksopdracht plannen: bepalen welke informatie nodig is, welke bronnen bruikbaar zijn, en de aanpak aanpassen wanneer de informatie onvoldoende is."],verdiep:["Een eenvoudige en effectieve prompt formuleren in een door de school beschikbaar gestelde AI-tool om content/informatie te verkrijgen."],vorig:["DIG 2.34"]}
     ]
   }},
-  media:{label:"Mediawijsheid",icon:"📱",color:"#059669",colorLight:"#ECFDF5",doelen:{
+  media:{label:"Mediawijsheid",icon:"📱",color:"#047857",colorLight:"#ECFDF5",doelen:{
     1:[
       {code:"DIG 3 B.1",age:3,md:["MD L6 8.3.4"],text:"Kennismaken met verschillende vormen van mediaboodschappen.",ll23:["DIG 3 B.1"],vorig:["DIG 3.1"]}
     ],
@@ -786,7 +780,7 @@ function herbekijkHtml(){
   let h="";
   if(van)h+=`<div class="info-box">♻️ ${van} status${van===1?" is":"sen zijn"} overgenomen uit de vorige versie van het leerplan.</div>`;
   if(!codes.length)return h;
-  h+=`<div class="ll-group"><div class="ll-group-header" style="background:#FEF3C7;color:#92400E;border-left:4px solid #d4820a">🔎 Te herbekijken — ${codes.length} status${codes.length===1?"":"sen"} uit een vorige versie</div>
+  h+=`<div class="ll-group"><div class="ll-group-header" style="background:#FEF3C7;color:#92400E;border-left:4px solid #9a5b00">🔎 Te herbekijken — ${codes.length} status${codes.length===1?"":"sen"} uit een vorige versie</div>
     <div class="info-box">Deze doelen zijn gesplitst, samengevoegd, gewijzigd of geschrapt. Hun status is daarom nergens automatisch ingevuld. Kies zelf op welk doel ze van toepassing is.</div>
     <div class="goals-list">`;
   codes.forEach((c,i)=>{
@@ -1087,7 +1081,7 @@ function renderGlobalResults(){
     return;
   }
   viewArea.style.display="none";
-  let h=`<div class="clear-search-row"><button type="button" class="btn-ghost" style="padding:6px 14px;font-size:12px" onclick="clearGlobalSearch()">✕ Wis zoekopdracht</button></div>`;
+  let h=`<div class="clear-search-row"><button type="button" class="btn-ghost" style="padding:6px 14px;font-size:13.5px" onclick="clearGlobalSearch()">✕ Wis zoekopdracht</button></div>`;
   const shown=new Set();
 
   // 1. Programma-treffers
@@ -1095,7 +1089,7 @@ function renderGlobalResults(){
     const cards=t.codes.map(findDoel).filter(Boolean)
       .map(({ll,f,d})=>{shown.add(d.code);return goalCardHtml(ll,f,d,true,t.name);}).join("");
     if(cards)h+=`<div class="ll-group">
-      <div class="ll-group-header" style="background:#FEF3C7;color:#92400E;border-left:4px solid #d4820a">🔗 ${t.name} — ${t.uitleg}</div>
+      <div class="ll-group-header" style="background:#FEF3C7;color:#92400E;border-left:4px solid #9a5b00">🔗 ${t.name} — ${t.uitleg}</div>
       <div class="goals-list">${cards}</div>
     </div>`;
   });
@@ -1109,14 +1103,14 @@ function renderGlobalResults(){
   const oud23=cv&&cv.soort==="B"?ALL_DOELEN.filter(({d})=>(d.ll23||[]).some(c=>isCode(c,cv)&&c!==d.code)):[];
   if(txt.length){
     h+=`<div class="ll-group">
-      <div class="ll-group-header" style="background:#f1f5f9;color:#475569;border-left:4px solid #94a3b8">📄 Doelen met "${esc(S.gq.trim())}"</div>
+      <div class="ll-group-header" style="background:#f1f5f9;color:#475569;border-left:4px solid #5b6b7f">📄 Doelen met "${esc(S.gq.trim())}"</div>
       <div class="goals-list">${txt.map(({ll,f,d})=>goalCardHtml(ll,f,d,true)).join("")}</div>
     </div>`;
   }
 
   if(oud23.length){
     h+=`<div class="ll-group">
-      <div class="ll-group-header" style="background:#FEF3C7;color:#92400E;border-left:4px solid #d4820a">🕰 Zocht je de code uit leerplan 2023? Dat doel heeft nu een andere code</div>
+      <div class="ll-group-header" style="background:#FEF3C7;color:#92400E;border-left:4px solid #9a5b00">🕰 Zocht je de code uit leerplan 2023? Dat doel heeft nu een andere code</div>
       <div class="goals-list">${oud23.map(({ll,f,d})=>goalCardHtml(ll,f,d,true)).join("")}</div>
     </div>`;
   }
@@ -1126,7 +1120,7 @@ function renderGlobalResults(){
   if(vh){
     const cards=vh.naar.filter(c=>!txt.some(x=>x.d.code===c)).map(findDoel).map(({ll,f,d})=>goalCardHtml(ll,f,d,true)).join("");
     if(cards||!vh.naar.length)h+=`<div class="ll-group">
-      <div class="ll-group-header" style="background:#FEF3C7;color:#92400E;border-left:4px solid #d4820a">🕰 ${vv} uit de vorige versie: ${esc(vh.text)}</div>
+      <div class="ll-group-header" style="background:#FEF3C7;color:#92400E;border-left:4px solid #9a5b00">🕰 ${vv} uit de vorige versie: ${esc(vh.text)}</div>
       <div class="goals-list">${cards||(vh.naar.length?"":`<div class="info-box">Geen overeenkomstig doel meer in het huidige leerplan.</div>`)}</div>
     </div>`;
   }
@@ -1239,10 +1233,10 @@ function renderSelect(app){
       <span class="prog-stat"><span class="prog-stat-dot" style="background:#FDE047"></span>${cnt.bezig||0} bezig</span>
       <span class="prog-stat"><span class="prog-stat-dot" style="background:#4ADE80"></span>${cnt.behandeld||0} behandeld</span>
       <span class="prog-stat"><span class="prog-stat-dot" style="background:#60A5FA"></span>${cnt['geëvalueerd']||0} geëvalueerd</span>
-      <span style="color:#94A3B8;font-size:12px">van ${total} doelen (93 basis, 3 uitbreiding)</span>
-      <button class="btn-ghost" style="padding:6px 14px;font-size:12px;margin-left:auto" onclick="exportProgress()">⬇ Exporteer</button>
-      <button class="btn-ghost" style="padding:6px 14px;font-size:12px" onclick="importProgress()">⬆ Importeer</button>
-      <button class="btn-ghost" style="padding:6px 14px;font-size:12px;color:#dc2626;border-color:#fca5a5" onclick="wisVoortgang()">🗑 Wis alles</button>
+      <span style="color:#5b6b7f;font-size:13.5px">van ${total} doelen (93 basis, 3 uitbreiding)</span>
+      <button class="btn-ghost" style="padding:6px 14px;font-size:13.5px;margin-left:auto" onclick="exportProgress()">⬇ Exporteer</button>
+      <button class="btn-ghost" style="padding:6px 14px;font-size:13.5px" onclick="importProgress()">⬆ Importeer</button>
+      <button class="btn-ghost" style="padding:6px 14px;font-size:13.5px;color:#dc2626;border-color:#fca5a5" onclick="wisVoortgang()">🗑 Wis alles</button>
     </div>`;
     h+=herbekijkHtml();
     if(progCodes.length===0){
@@ -1274,7 +1268,7 @@ function renderSelect(app){
   const hasKey=!!localStorage.getItem(API_KEY_STORE);
   h+=`<div style="margin-top:30px;padding-top:16px;border-top:1px solid #E2E8F0;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
     <button class="btn-ghost" onclick="setApiKey()">🔑 AI-sleutel ${hasKey?"wijzigen":"instellen"}</button>
-    <span style="font-size:11px;color:#94A3B8;line-height:1.5">${hasKey?"✅ Sleutel ingesteld in deze browser.":"Optioneel: voor AI-gegenereerde lessuggesties en lesfiches."} De bibliotheek-ideeën bekijken kan altijd, ook zonder sleutel. <strong style="color:#d97706">Let op:</strong> dit is een persoonlijke sleutel buiten het schoolaccount — gebruik nooit leerlingnamen of vertrouwelijke schoolinfo in de prompts.</span>
+    <span style="font-size:13px;color:#5b6b7f;line-height:1.5">${hasKey?"✅ Sleutel ingesteld in deze browser.":"Optioneel: voor AI-gegenereerde lessuggesties en lesfiches."} De bibliotheek-ideeën bekijken kan altijd, ook zonder sleutel. <strong style="color:#b45309">Let op:</strong> dit is een persoonlijke sleutel buiten het schoolaccount — gebruik nooit leerlingnamen of vertrouwelijke schoolinfo in de prompts.</span>
   </div>`;
 
   app.innerHTML=h;
@@ -1364,7 +1358,7 @@ function renderFiche(app){
   if(S.tab==="overzicht"||true){
     const vis=S.tab==="overzicht";
     h+=`<div style="${vis?"":"display:none"}">`;
-    h+=`<div class="card"><div class="card-title">📝 Beschrijving</div><p style="font-size:14px;color:#475569;line-height:1.7">${f.beschrijving||""}</p></div>`;
+    h+=`<div class="card"><div class="card-title">📝 Beschrijving</div><p style="font-size:15px;color:#475569;line-height:1.7">${f.beschrijving||""}</p></div>`;
     h+=`<div class="card"><div class="card-title">🎯 Hoofdlesdoel</div><div class="goal-banner">${f.hoofddoel||""}</div>`;
     (f.subdoelen||[]).forEach(s=>{ h+=`<div class="subdoel"><div class="dot"></div><span>${s}</span></div>`; });
     h+=`</div>`;
@@ -1390,7 +1384,7 @@ function renderFiche(app){
       </div>`;
     });
     h+=`<div class="afsluiting"><div class="afsluiting-label">✅ Afsluiting</div><div class="afsluiting-text">${f.lesplan?.afsluiting||""}</div></div>`;
-    h+=`<div class="toetsing"><div style="font-weight:800;color:#059669;margin-bottom:6px;font-size:12px;text-transform:uppercase;letter-spacing:.05em">🔍 Toetsing / Hoe check je begrip?</div><div style="font-size:13px;color:#1E293B;line-height:1.6">${f.lesplan?.toetsing||""}</div></div>`;
+    h+=`<div class="toetsing"><div style="font-weight:800;color:#047857;margin-bottom:6px;font-size:13.5px;">🔍 Toetsing / Hoe check je begrip?</div><div style="font-size:14.5px;color:#1E293B;line-height:1.6">${f.lesplan?.toetsing||""}</div></div>`;
     h+=`</div>`;
   }
   if(S.tab==="materialen"||true){

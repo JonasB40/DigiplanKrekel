@@ -7,12 +7,15 @@
 <meta name="description" content="Leerplandoelen digitale geletterdheid per leerjaar, als verticale opbouw, in kettingen en in het spiraalcurriculum.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="stijl.css">
+<link rel="stylesheet" href="../digiplan.css?v=2">
+<link rel="stylesheet" href="stijl.css?v=5">
+<script src="../digiplan.js?v=2"></script>
 </head>
 <body>
 
+<div class="topbar"><a href="../Digiplan.html">← Digiplan</a></div>
+
 <header class="kop">
-  <a class="terug" href="../Digiplan.html">← Digiplan</a>
   <div class="titel">
     <h1>Leerplandoelen</h1>
     <p>Digitale geletterdheid</p>
@@ -21,12 +24,10 @@
     <span class="sr">Zoek in de doelen</span>
     <input type="search" id="zoek" placeholder="Zoek een doel, code of woord" autocomplete="off">
   </label>
-  <nav class="verwant" aria-label="Verwante pagina's">
-    <a href="../LeerLokaal.html">LeerLokaal</a>
-    <a href="../rubrics_digitale_geletterdheid.html">Rubrics</a>
-    <a href="../woordenlijst.html">Woordenlijst</a>
-  </nav>
-  <button class="beheer-knop" id="beheerKnop" type="button" aria-pressed="false">Beheer</button>
+  <div class="kop-acties">
+    <button class="kop-knop" id="afdrukKnop" type="button">Afdrukken</button>
+    <button class="kop-knop" id="beheerKnop" data-dp="beheer" type="button" aria-pressed="false">Beheer</button>
+  </div>
 </header>
 
 <div class="balk">
@@ -41,23 +42,12 @@
   <aside id="paneel" aria-label="Details" hidden></aside>
 </div>
 
-<dialog id="codeDialoog">
-  <form method="dialog" id="codeForm">
-    <h2>Beheer openen</h2>
-    <label for="codeVeld">Beheerderscode</label>
-    <input id="codeVeld" type="password" autocomplete="off">
-    <p class="fout" id="codeFout" role="alert"></p>
-    <div class="rij">
-      <button type="button" class="knop" id="codeAnnuleer">Annuleren</button>
-      <button type="submit" class="knop vol">Openen</button>
-    </div>
-  </form>
-</dialog>
 <div class="melding" id="melding" role="status"></div>
 <noscript>Deze pagina heeft JavaScript nodig om de leerplandoelen te tonen.</noscript>
 
-<script src="doelen-data.js"></script>
+<script src="doelen-data.js?v=3"></script>
+<script src="schoolkettingen-data.js?v=3"></script>
 <script src="spiraal-data.js"></script>
-<script src="app.js"></script>
+<script src="app.js?v=4"></script>
 </body>
 </html>

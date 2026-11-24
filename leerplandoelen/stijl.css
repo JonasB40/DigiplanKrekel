@@ -8,6 +8,8 @@
 .l-ict{--l:#1f5c9e; --lt:#e8f1fa}
 .l-cd{--l:#6d28d9; --lt:#f1ebfd}
 .l-media{--l:#047857; --lt:#e4f4ee}
+.l-school,.ai-eigen{--l:#8a4b00; --lt:#fff3e0}
+.l-ailink,.ai-link{--l:#a8145a; --lt:#fdeaf2}
 
 *{box-sizing:border-box;margin:0;padding:0}
 html{height:100%}
@@ -17,25 +19,18 @@ button,input,select,textarea{font:inherit;color:inherit}
 button{cursor:pointer}
 a{color:inherit}
 [hidden]{display:none!important}
+.pre{white-space:pre-line}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 :focus-visible{outline:3px solid var(--goud);outline-offset:2px}
 
 /* ── Kop ── */
-.kop{background:var(--merk);color:#fff;display:flex;align-items:center;gap:10px 22px;padding:10px 24px;flex-wrap:wrap}
+.kop{background:linear-gradient(100deg,#0f1f30 0%,#1f5c9e 115%);color:#fff;display:flex;align-items:center;gap:10px 22px;padding:12px 24px;flex-wrap:wrap}
 .kop a{text-decoration:none}
-.terug{padding:7px 12px;border:1px solid rgba(255,255,255,.35);border-radius:8px;font-weight:600;font-size:14px;white-space:nowrap}
-.terug:hover{background:rgba(255,255,255,.14)}
 .titel{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
-.titel h1{color:#fff;font-size:21px;font-weight:700}
+.titel h1{color:#fff;font-size:24px;font-weight:700}
 .titel p{font-size:14px;color:#c9d8e6}
 .zoek{flex:1;min-width:200px;max-width:380px;margin-left:auto}
 .zoek input{width:100%;padding:8px 14px;border:1px solid transparent;border-radius:8px;background:#fff;color:var(--inkt);font-size:15px}
-.verwant{display:flex;gap:4px}
-.verwant a{padding:7px 10px;border-radius:8px;font-size:14px;font-weight:500;color:#dbe7f2}
-.verwant a:hover{background:rgba(255,255,255,.14);color:#fff}
-.beheer-knop{background:none;border:1px solid rgba(255,255,255,.35);border-radius:8px;color:#fff;padding:7px 12px;font-size:14px;font-weight:600}
-.beheer-knop:hover{background:rgba(255,255,255,.14)}
-.beheer-knop[aria-pressed=true]{background:var(--goud);border-color:var(--goud);color:#1d1200}
 
 /* ── Balk met weergaven en leerlijnen ── */
 .balk{display:flex;align-items:center;justify-content:space-between;gap:4px 24px;padding:0 24px;background:var(--papier);border-bottom:1px solid var(--lijn);flex-wrap:wrap}
@@ -76,6 +71,21 @@ a{color:inherit}
 .kaart .tekst{overflow-wrap:break-word}
 mark{background:#ffe6b0;color:inherit;border-radius:3px;padding:0 1px}
 
+/* ── Kleurcode AI: roze = link met een leerplandoel, oranje = eigen doel ── */
+.ai-teken{display:inline-block;background:var(--l);color:#fff;border-radius:6px;padding:0 6px;margin-left:8px;font-size:12.5px;font-weight:700;line-height:1.5;vertical-align:1px}
+.ai-teken.ai-eigen{background:#fff;color:var(--l);box-shadow:inset 0 0 0 1.5px var(--l)}
+section h3 .ai-teken,.ai-legende .ai-teken{margin-left:0;margin-right:3px}
+.ai-legende{font-size:14px;color:var(--stil);white-space:nowrap}
+.ai-legendes{display:flex;gap:6px 18px;flex-wrap:wrap;margin:-8px 0 12px}
+.kaart.ai-link{border:1.5px solid var(--l);background:var(--lt)}
+.kaart.ai-eigen{border:1.5px dashed var(--l);background:var(--lt)}
+.kaart .ai-label{float:right;font-weight:600;font-size:12.5px}
+.ai-groep{border-top:1px solid var(--lijn);margin-top:16px}
+.tag.ai-link,.tag.ai-eigen{background:var(--lt);color:var(--l)}
+.tag.ai-eigen{outline:1.5px dashed var(--l)}
+.tag.ai-link{outline:1.5px solid var(--l)}
+.lj-opties{display:flex;align-items:center;gap:8px 18px;flex-wrap:wrap}
+
 /* ── Per leerjaar ── */
 .stapper{position:sticky;top:0;z-index:5;display:flex;gap:10px;padding:14px 0 12px;background:var(--vlak);overflow-x:auto}
 .stapper fieldset{border:1px solid var(--lijn);border-radius:10px;background:var(--papier);padding:4px 5px 5px;display:flex;gap:3px;flex:var(--n) 1 0;min-width:max-content}
@@ -90,7 +100,6 @@ mark{background:#ffe6b0;color:inherit;border-radius:3px;padding:0 1px}
 .lj-kop{display:flex;align-items:center;justify-content:space-between;gap:10px 20px;flex-wrap:wrap;margin:10px 0 16px}
 .lj-kop h2{font-size:24px}
 .lj-kop p{color:var(--stil)}
-.lj-acties{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
 .kolommen{display:grid;grid-template-columns:repeat(var(--k),minmax(0,1fr));gap:24px;align-items:start}
 .kolommen.een{max-width:820px}
 .vak-kop{display:flex;align-items:baseline;justify-content:space-between;gap:10px;border-bottom:3px solid var(--l);padding-bottom:7px;margin-bottom:4px}
@@ -139,7 +148,7 @@ mark{background:#ffe6b0;color:inherit;border-radius:3px;padding:0 1px}
 
 /* ── Kettingen ── */
 .ketting-wrap{display:grid;grid-template-columns:290px minmax(0,1fr);gap:34px;padding-top:18px;align-items:start}
-.rail{position:sticky;top:18px;display:grid;gap:18px}
+.rail{position:sticky;top:0;display:grid;gap:16px;max-height:calc(100dvh - 172px);overflow-y:auto;padding:4px 4px 12px 0}
 .rail h3{font-size:14px;margin-bottom:6px}
 .rail button{display:flex;justify-content:space-between;gap:10px;width:100%;text-align:left;background:none;border:1px solid transparent;border-radius:8px;padding:8px 11px;font-weight:500;line-height:1.3}
 .rail button:hover{background:var(--lt)}
@@ -157,6 +166,20 @@ mark{background:#ffe6b0;color:inherit;border-radius:3px;padding:0 1px}
 .schakels .wanneer b{display:block;font-size:14px;color:var(--inkt)}
 .schakels .wanneer span{font-size:13px;color:var(--stil)}
 .schakels .nr{position:relative;width:30px;height:30px;margin-top:6px;border-radius:50%;background:var(--l);color:#fff;font-weight:700;font-size:13.5px;display:grid;place-items:center;box-shadow:0 0 0 4px var(--vlak)}
+
+.tekstknop{background:none;border:none;padding:0;color:var(--l);font-weight:600;text-decoration:underline}
+.rail .tekstknop{display:inline!important;width:auto!important;padding:0!important;border:none!important}
+.knop.ook{margin-top:3px;padding:4px 2px;border:none;background:none;font-size:13.5px;color:var(--l);text-decoration:underline;text-underline-offset:3px}
+.ai-themas{display:flex;flex-wrap:wrap;gap:6px;margin:-4px 0 18px}
+.ai-themas button{border:1px solid var(--lijn);background:#fff;border-radius:8px;padding:6px 12px;font-size:14px;font-weight:600;color:var(--stil)}
+.ai-themas button:hover{border-color:var(--l);color:var(--l)}
+.ai-themas button[aria-pressed=true]{background:var(--lt);border-color:var(--l);color:var(--l)}
+.mijlpaal{border:2px solid var(--l);border-radius:8px;background:var(--lt);padding:11px 13px}
+.mijlpaal .code{display:block;font-size:13px;font-weight:700;color:var(--l);margin-bottom:2px}
+.mijlpaal .meta{display:block;margin-top:6px;font-size:13.5px;color:var(--stil)}
+.mijlpaal .meta button{background:none;border:none;padding:0;color:var(--l);font-weight:600;text-decoration:underline}
+.schakels .is-mijlpaal .nr{background:#fff;color:var(--l);border:2px solid var(--l);font-size:15px}
+.reeks.ai button{grid-template-columns:78px 1fr}
 
 /* ── Spiraal ── */
 .sp-groepen{display:flex;gap:6px;flex-wrap:wrap}
@@ -211,13 +234,6 @@ mark{background:#ffe6b0;color:inherit;border-radius:3px;padding:0 1px}
 .zoek-kop{margin:18px 0 8px}
 .zoek-kop h2{font-size:21px}
 .zoek-kop p{color:var(--stil)}
-dialog{margin:auto;border:none;border-radius:14px;padding:24px;width:min(380px,calc(100vw - 32px));color:var(--tekst)}
-dialog::backdrop{background:rgba(18,40,58,.55)}
-dialog h2{font-size:19px;margin-bottom:12px}
-dialog label{font-weight:600;font-size:14px}
-dialog input{width:100%;margin-top:4px;padding:9px 11px;border:1px solid var(--lijn-sterk);border-radius:8px}
-dialog .fout{color:#a11d1d;font-size:14px;min-height:21px;margin-top:4px}
-dialog .rij{display:flex;justify-content:flex-end;gap:8px;margin-top:8px}
 .melding{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--inkt);color:#fff;border-radius:9px;padding:10px 18px;font-size:14.5px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:40;max-width:calc(100vw - 32px)}
 .melding.toon{opacity:1}
 
@@ -225,7 +241,6 @@ dialog .rij{display:flex;justify-content:flex-end;gap:8px;margin-top:8px}
 @media(max-width:1100px){
   .kolommen{grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr))}
   .ketting-wrap{grid-template-columns:230px minmax(0,1fr);gap:22px}
-  .verwant{order:5}
 }
 @media(max-width:860px){
   #paneel{position:fixed;inset:0;width:auto;z-index:30;border:none;padding:16px 18px 40px}
@@ -234,17 +249,14 @@ dialog .rij{display:flex;justify-content:flex-end;gap:8px;margin-top:8px}
   .titel p{display:none}
   .zoek{order:4;flex-basis:100%;max-width:none}
   .kop{gap:8px 14px;padding-top:8px;padding-bottom:8px}
-  .verwant{order:5;flex:1;gap:0}
-  .verwant a{padding:5px 8px}
-  .verwant a:first-child{padding-left:0}
-  .terug,.beheer-knop{padding:5px 10px}
-  .beheer-knop{order:6}
+  .kop-acties{margin-left:auto}
+  .kop-knop{padding:8px 12px}
   .tabs button{padding:10px 8px 7px;font-size:14px}
   .tabs,.lijnen,.stapper{max-width:100vw;scrollbar-width:none}
   .stapper{gap:7px;margin:0 -16px;padding-left:16px;padding-right:16px}
   .stapper button{min-width:46px}
   .ketting-wrap{grid-template-columns:minmax(0,1fr)}
-  .rail{position:static}
+  .rail{position:static;max-height:none}
   .schakels li{grid-template-columns:30px minmax(0,1fr)}
   .schakels li::before{left:13.5px}
   .schakels .wanneer{grid-column:2;text-align:left;padding:0 0 4px;display:flex;gap:8px;align-items:baseline}
@@ -258,7 +270,7 @@ dialog .rij{display:flex;justify-content:flex-end;gap:8px;margin-top:8px}
 /* ── Afdrukken (per leerjaar) ── */
 @media print{
   body{height:auto;overflow:visible;display:block;font-size:11pt;background:#fff}
-  .kop,.balk,.beheer-balk,#paneel,.stapper,.lj-acties,.melding,.ctx,.rail{display:none!important}
+  .kop,.balk,.beheer-balk,#paneel,.stapper,.lj-kop .vink,.melding,.ctx,.rail{display:none!important}
   .werk,#inhoud{display:block;overflow:visible;padding:0}
   .lj-kop h2::before{content:"Leerplandoelen digitale geletterdheid · "}
   .kolommen{display:block}

@@ -1,0 +1,97 @@
+/* Menubalk, paginaknoppen en beheer: op elke pagina gelijk (zie digiplan.js) */
+
+/* ── Menubalk ── */
+.topbar {
+  background: #0f1f30; color: #c3d0de;
+  font-family: 'DM Sans', system-ui, sans-serif; font-size: 15px; line-height: 1.3;
+  display: flex; align-items: center; gap: 6px 14px;
+  min-height: 54px; padding: 6px 24px; flex-shrink: 0;
+}
+.topbar a { color: #fff; text-decoration: none; }
+.menubalk { position: sticky; top: 0; z-index: 60; }
+.menubalk .mb-thuis {
+  display: flex; align-items: center; gap: 8px; font-weight: 700; white-space: nowrap;
+  padding: 8px 14px 8px 11px; border-radius: 8px; background: rgba(255,255,255,.1);
+}
+.menubalk .mb-thuis:hover { background: rgba(255,255,255,.2); }
+.menubalk .mb-lijst { display: flex; gap: 2px; }
+.menubalk .mb-groep { position: relative; }
+.menubalk .mb-groep > button {
+  font: inherit; font-weight: 600; color: #dbe6f1; cursor: pointer;
+  background: none; border: none; border-radius: 8px; padding: 9px 13px;
+  display: flex; align-items: center; gap: 8px;
+}
+.menubalk .mb-groep > button::after {
+  content: ''; width: 7px; height: 7px; margin-top: -4px;
+  border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(45deg);
+}
+.menubalk .mb-groep > button:hover, .menubalk .mb-groep.open > button { background: rgba(255,255,255,.14); color: #fff; }
+.menubalk .mb-groep.actief > button { color: #fff; box-shadow: inset 0 -3px 0 #f0b354; }
+.menubalk .mb-groep ul {
+  display: none; position: absolute; left: 0; top: calc(100% + 6px);
+  list-style: none; margin: 0; padding: 6px; min-width: 250px;
+  background: #fff; border: 1px solid #d5dde6; border-radius: 12px; box-shadow: 0 12px 32px rgba(15,31,48,.22);
+}
+.menubalk .mb-groep.open ul { display: block; }
+.menubalk .mb-groep li { margin: 0; padding: 0; }
+.menubalk .mb-groep li::before { content: none; }
+.menubalk .mb-groep li a {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 16px;
+  color: #17293b; font-size: 15.5px; padding: 10px 12px; border-radius: 8px;
+}
+.menubalk .mb-groep li a:hover { background: #eef3f8; }
+.menubalk .mb-groep li a[aria-current=page] { background: #e3edf7; font-weight: 700; }
+.menubalk .mb-groep small { color: #5b6b7f; font-size: 13.5px; font-weight: 500; }
+.menubalk .mb-school { margin-left: auto; font-size: 14px; white-space: nowrap; }
+.menubalk .mb-knop { display: none; }
+.menubalk :focus-visible { outline: 3px solid #f0b354; outline-offset: 2px; }
+
+/* ── Knoppen rechts naast de titel ── */
+.kop-acties { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.kop-knop {
+  font: 600 15px/1.2 'DM Sans', system-ui, sans-serif; color: #fff; cursor: pointer; text-decoration: none;
+  background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.5); border-radius: 9px; padding: 10px 16px;
+}
+.kop-knop:hover { background: rgba(255,255,255,.24); }
+.kop-knop.hoofd { background: #fff; border-color: #fff; color: #0f1f30; }
+.kop-knop.hoofd:hover { background: #e8eef4; }
+.kop-knop[aria-pressed=true] { background: #f0b354; border-color: #f0b354; color: #1d1200; }
+.kop-knop:focus-visible { outline: 3px solid #f0b354; outline-offset: 2px; }
+
+/* ── Beheer ── */
+body:not(.beheer-aan) .alleen-beheer { display: none !important; }
+[data-beheer-velden] :is(input, select, textarea):disabled {
+  background: transparent !important; border-color: transparent !important; box-shadow: none;
+  color: inherit; opacity: 1; padding-left: 0 !important; appearance: none; -webkit-appearance: none; resize: none; cursor: text;
+}
+[data-beheer-velden] :is(input, textarea):disabled::placeholder { color: #5b6b7f; opacity: 1; font-style: italic; }
+.dp-dialoog { margin: auto; border: none; border-radius: 14px; padding: 24px; width: min(380px, calc(100vw - 32px)); font-family: 'DM Sans', system-ui, sans-serif; color: #2b3d4f; }
+.dp-dialoog::backdrop { background: rgba(15,31,48,.6); }
+.dp-dialoog h2 { font: 600 20px/1.25 'Poppins', 'DM Sans', sans-serif; color: #0f1f30; margin: 0 0 12px; }
+.dp-dialoog label { font-weight: 600; font-size: 15px; }
+.dp-dialoog input { width: 100%; box-sizing: border-box; margin-top: 4px; padding: 10px 12px; border: 1px solid #b9c5d2; border-radius: 8px; font: inherit; font-size: 16px; }
+.dp-fout { color: #a11d1d; font-size: 14.5px; min-height: 22px; margin: 4px 0 0; }
+.dp-rij { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
+.dp-knop { font: 600 15px/1.2 'DM Sans', sans-serif; background: #fff; color: #0f1f30; border: 1px solid #b9c5d2; border-radius: 8px; padding: 10px 16px; cursor: pointer; }
+.dp-knop.vol { background: #123a5a; border-color: #123a5a; color: #fff; }
+#dpMelding {
+  position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 90; max-width: calc(100vw - 32px);
+  background: #0f1f30; color: #fff; border-radius: 9px; padding: 11px 18px;
+  font: 500 15px/1.3 'DM Sans', sans-serif; opacity: 0; pointer-events: none; transition: opacity .2s;
+}
+#dpMelding.toon { opacity: 1; }
+
+@media (max-width: 900px) { .menubalk .mb-school { display: none; } }
+@media (max-width: 760px) {
+  .topbar { padding: 6px 16px; }
+  .menubalk { flex-wrap: wrap; justify-content: space-between; }
+  .menubalk .mb-knop {
+    display: block; font: inherit; font-weight: 600; color: #fff; cursor: pointer;
+    background: none; border: 1px solid rgba(255,255,255,.4); border-radius: 8px; padding: 8px 14px;
+  }
+  .menubalk .mb-lijst { display: none; flex-basis: 100%; flex-direction: column; padding: 4px 0 8px; max-height: calc(100dvh - 66px); overflow-y: auto; }
+  .menubalk.open .mb-lijst { display: flex; }
+  .menubalk .mb-groep > button { width: 100%; justify-content: space-between; min-height: 44px; }
+  .menubalk .mb-groep ul { position: static; box-shadow: none; margin: 4px 0 6px; }
+}
+@media print { .topbar, .kop-acties, .alleen-beheer, .dp-dialoog, #dpMelding { display: none !important; } }
