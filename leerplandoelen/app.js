@@ -151,7 +151,7 @@ function vLeerjaar(){
     });
     const ai = st.ai ? AI_DOELEN.filter(d => aiInLijn(d,li.id) && (d.fase === String(L.fase) || (d.fase === 'U' && L.fase === 4))) : [];
     const volgende = doelen.filter(d => d.lijn === li.id && ljIdx(d.lj) > ljIdx(st.lj)).sort((a,b) => ljIdx(a.lj) - ljIdx(b.lj))[0];
-    return `<section class="l-${li.id}"><div class="vak-kop"><h3>${li.icoon} ${li.label}</h3><span>${li.dig} · ${aantal(hier.length)}</span></div>
+    return `<section class="l-${li.id}"><div class="vak-kop"><span class="icoon" aria-hidden="true">${li.icoon}</span><span class="label">${li.dig} · ${aantal(hier.length)}</span><h3>${li.label}</h3></div>
       ${groepen || `<p class="leeg">Geen doelen die in dit leerjaar starten.${volgende ? ` Eerstvolgende doel: <button type="button" data-act="lj" data-id="${volgende.lj}">${volgende.code} in ${lj(volgende.lj).label}</button>` : ''}</p>`}
       ${ai.length ? `<div class="groep ai-groep"><h4><button type="button" data-act="ketting" data-id="s-ai" title="Open de ketting AI">AI-leerlijn van de school, fase ${L.fase}</button></h4><div class="stapel">${ai.map(d => kaartAi(d,{wanneer:d.fase === 'U'})).join('')}</div></div>` : ''}
       ${loopt.length ? `<p class="leeg loopt">Blijven inoefenen: ${loopt.map(t => `<button type="button" data-act="thema" data-lijn="${li.id}" data-id="${t.id}">${esc(t.label)}</button>`).join(', ')}</p>` : ''}</section>`;
@@ -280,8 +280,8 @@ function vZoek(){
   return `<div class="zoek-kop"><h2>${n ? aantal(n) + ' gevonden' : 'Niets gevonden'}</h2><p>${n ? 'Er is ook gezocht in ondersteuning, verdieping en minimumdoelen.' : 'Probeer een ander woord of een code zoals B.12.'}</p></div>
     <div class="kolommen" style="--k:3">${LEERLIJNEN.map(li => {
       const ds = gevonden.filter(d => d.lijn === li.id), us = uit.filter(u => u.lijn === li.id);
-      return ds.length + us.length ? `<section class="l-${li.id}"><div class="vak-kop"><h3>${li.icoon} ${li.label}</h3><span>${ds.length + us.length}</span></div><div class="stapel" style="margin-top:12px">${ds.map(d => kaart(d,{wanneer:true,zoek:kleur})).join('')}${us.map(u => `<div class="kaart l-${u.lijn}"><span class="code">${u.code} <i>· uitbreiding</i></span><span class="tekst">${kleur(u.text)}</span></div>`).join('')}</div></section>` : '';
-    }).join('')}${ai.length ? `<section class="l-school"><div class="vak-kop"><h3>🏫 AI-leerlijn van de school</h3><span>${ai.length}</span></div><div class="stapel" style="margin-top:12px">${ai.map(d => kaartAi(d,{wanneer:true,zoek:kleur})).join('')}</div></section>` : ''}</div>`;
+      return ds.length + us.length ? `<section class="l-${li.id}"><div class="vak-kop"><span class="icoon" aria-hidden="true">${li.icoon}</span><span class="label">${li.dig} · ${aantal(ds.length + us.length)}</span><h3>${li.label}</h3></div><div class="stapel" style="margin-top:12px">${ds.map(d => kaart(d,{wanneer:true,zoek:kleur})).join('')}${us.map(u => `<div class="kaart l-${u.lijn}"><span class="code">${u.code} <i>· uitbreiding</i></span><span class="tekst">${kleur(u.text)}</span></div>`).join('')}</div></section>` : '';
+    }).join('')}${ai.length ? `<section class="l-school"><div class="vak-kop"><span class="icoon" aria-hidden="true">🏫</span><span class="label">Van de school · ${aantal(ai.length)}</span><h3>AI-leerlijn</h3></div><div class="stapel" style="margin-top:12px">${ai.map(d => kaartAi(d,{wanneer:true,zoek:kleur})).join('')}</div></section>` : ''}</div>`;
 }
 
 /* ── Detailpaneel ── */
@@ -441,8 +441,6 @@ document.addEventListener('digiplan:beheer', e => {
   if(!e.detail && st.open?.nieuw) sluit();
   st.beheer = e.detail; toon(); if(st.open) open(st.open);
 });
-$('#beheerKnop').addEventListener('click', () => Digiplan.vraagBeheer());
-$('#afdrukKnop').addEventListener('click', () => window.print());
 
 st.beheer = Digiplan.beheer;
 if(!lj(st.lj)) st.lj = 'L1';

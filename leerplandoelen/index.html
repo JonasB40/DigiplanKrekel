@@ -7,28 +7,25 @@
 <meta name="description" content="Leerplandoelen digitale geletterdheid per leerjaar, als verticale opbouw, in kettingen en in het spiraalcurriculum.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../digiplan.css?v=2">
-<link rel="stylesheet" href="stijl.css?v=5">
-<script src="../digiplan.js?v=2"></script>
+<link rel="stylesheet" href="../digiplan.css?v=4">
+<link rel="stylesheet" href="stijl.css?v=8">
+<script src="../digiplan.js?v=3"></script>
 </head>
-<body>
+<body data-beheer>
 
 <div class="topbar"><a href="../Digiplan.html">← Digiplan</a></div>
 
-<header class="kop">
-  <div class="titel">
-    <h1>Leerplandoelen</h1>
-    <p>Digitale geletterdheid</p>
-  </div>
+<header class="page-header"><div class="page-header-inner">
+  <div class="page-header-label">Leerplan</div>
+  <h1>Leerplandoelen</h1>
+  <p>Digitale geletterdheid per leerjaar, in verticale leerlijnen en kettingen</p>
+  <div class="kop-acties">
   <label class="zoek">
     <span class="sr">Zoek in de doelen</span>
-    <input type="search" id="zoek" placeholder="Zoek een doel, code of woord" autocomplete="off">
+    <input type="search" id="zoek" placeholder="Zoek een doel of code" autocomplete="off">
   </label>
-  <div class="kop-acties">
-    <button class="kop-knop" id="afdrukKnop" type="button">Afdrukken</button>
-    <button class="kop-knop" id="beheerKnop" data-dp="beheer" type="button" aria-pressed="false">Beheer</button>
   </div>
-</header>
+</div></header>
 
 <div class="balk">
   <nav class="tabs" id="tabs" aria-label="Weergave"></nav>
@@ -48,6 +45,6 @@
 <script src="doelen-data.js?v=3"></script>
 <script src="schoolkettingen-data.js?v=4"></script>
 <script src="spiraal-data.js"></script>
-<script src="app.js?v=4"></script>
+<script src="app.js?v=6"></script>
 </body>
 </html>

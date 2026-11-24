@@ -4,16 +4,17 @@
   const BEHEERCODE = 'krekel'; // eenvoudige drempel, geen echte beveiliging
   const SLEUTEL = 'digiplan_beheer';
   const basis = new URL('.', document.currentScript.src);
+  /* [pagina, naam, icoon van de tegel, bijschrift] */
   const GROEPEN = [
     {label:'Beleidsplan', items:[
-      ['visie.html','Visie','Fase 1'], ['Context.html','Context','Fase 2'], ['analyse.html','Analyse','Fase 3'], ['actieplan.html','Actieplan','Fase 4'],
-      ['digitale-inclusie.html','Digitale inclusie'], ['Pedagogisch project.html','Pedagogisch project']]},
+      ['visie.html','Visie','🔭','Fase 1'], ['Context.html','Context','🏫','Fase 2'], ['analyse.html','Analyse','🔍','Fase 3'], ['actieplan.html','Actieplan','🚀','Fase 4'],
+      ['digitale-inclusie.html','Digitale inclusie','🤝'], ['Pedagogisch project.html','Pedagogisch project','🌱']]},
     {label:'Leerplan', items:[
-      ['leerplandoelen/index.html','Leerplandoelen'], ['LeerLokaal.html','Lesfiches'], ['rubrics_digitale_geletterdheid.html','Rubrics'], ['woordenlijst.html','Woordenlijst']]},
+      ['leerplandoelen/index.html','Leerplandoelen','📚'], ['LeerLokaal.html','Lesfiches','📝'], ['rubrics_digitale_geletterdheid.html','Rubrics','📋'], ['woordenlijst.html','Woordenlijst','📖']]},
     {label:'Team en AI', items:[
-      ['professionalisering.html','Professionalisering'], ['rolverdeling.html','Rolverdeling'], ['AI-good_practices.html','AI op school']]},
+      ['professionalisering.html','Professionalisering','🎓'], ['rolverdeling.html','Rolverdeling','👥'], ['AI-good_practices.html','AI op school','🤖']]},
     {label:'Middelen', items:[
-      ['inventaris.html','Inventaris toestellen','Beveiligd'], ['budget.html','Budget en planning','Beveiligd']]},
+      ['inventaris.html','Inventaris toestellen','💻','Beveiligd'], ['budget.html','Budget en planning','💰','Beveiligd']]},
   ];
   const HUIS = '<svg viewBox="0 0 20 20" width="17" height="17" aria-hidden="true"><path d="M2.5 9.5 10 3l7.5 6.5M5 8v8.5h3.6v-5h2.8v5H15V8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/></svg>';
   const adres = p => new URL(encodeURI(p), basis).href;
@@ -34,14 +35,14 @@
     if(!balk) return;
     balk.classList.add('menubalk');
     balk.innerHTML = `
-      <a class="mb-thuis" href="${adres('Digiplan.html')}">${HUIS} Digiplan</a>
+      <a class="mb-thuis" href="${adres('Digiplan.html')}"${isHier('Digiplan.html') ? ' aria-current="page"' : ''}>${HUIS} Digiplan</a>
       <button type="button" class="mb-knop" aria-expanded="false" aria-controls="mbLijst">Menu</button>
       <nav class="mb-lijst" id="mbLijst" aria-label="Onderdelen van het Digiplan">${GROEPEN.map((g,i) => `
         <div class="mb-groep${g.items.some(x => isHier(x[0])) ? ' actief' : ''}">
           <button type="button" aria-expanded="false" aria-controls="mbg${i}">${g.label}</button>
-          <ul id="mbg${i}">${g.items.map(x => `<li><a href="${adres(x[0])}"${isHier(x[0]) ? ' aria-current="page"' : ''}>${x[1]}${x[2] ? ` <small>${x[2]}</small>` : ''}</a></li>`).join('')}</ul>
+          <ul id="mbg${i}">${g.items.map(x => `<li><a href="${adres(x[0])}"${isHier(x[0]) ? ' aria-current="page"' : ''}><span class="mb-icoon" aria-hidden="true">${x[2]}</span>${x[1]}${x[3] ? ` <small>${x[3]}</small>` : ''}</a></li>`).join('')}</ul>
         </div>`).join('')}</nav>
-      <span class="mb-school">GBS De Krekel</span>`;
+      ${isHier('Digiplan.html') ? '' : `<span class="mb-school"><img src="${adres('logo-krekel.png')}" alt="GBS De Krekel"></span>`}`;
     const groepen = [...balk.querySelectorAll('.mb-groep')], knop = balk.querySelector('.mb-knop');
     const zet = (g,aan) => { g.classList.toggle('open',aan); g.querySelector('button').setAttribute('aria-expanded',aan); };
     const sluit = () => { groepen.forEach(g => zet(g,false)); balk.classList.remove('open'); knop.setAttribute('aria-expanded','false'); };
@@ -68,6 +69,8 @@
   function paginaknoppen(){
     const kop = document.querySelector('.page-header-inner');
     if(!kop) return;
+    const pagina = GROEPEN.flatMap(g => g.items).find(x => isHier(x[0]));
+    if(pagina) kop.insertAdjacentHTML('afterbegin', `<div class="kop-tegel${/^Fase/.test(pagina[3]||'') ? ' fase' : ''}" aria-hidden="true">${pagina[2]}</div>`);
     let acties = kop.querySelector('.kop-acties');
     if(!acties){ acties = document.createElement('div'); acties.className = 'kop-acties'; kop.append(acties); }
     if(!document.body.hasAttribute('data-geen-afdruk'))

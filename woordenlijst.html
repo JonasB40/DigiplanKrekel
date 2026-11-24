@@ -6,9 +6,9 @@
   <title>Woordenlijst – Digiplan GBS De Krekel</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="shared.css?v=2">
-  <link rel="stylesheet" href="digiplan.css?v=2">
-  <script src="digiplan.js?v=2" defer></script>
+  <link rel="stylesheet" href="shared.css?v=3">
+  <link rel="stylesheet" href="digiplan.css?v=4">
+  <script src="digiplan.js?v=3" defer></script>
   <style>
     :root {
       --accent: #2563a8;
@@ -25,11 +25,11 @@
     /* ─── CONTROLS BAR ─── */
     .controls-bar {
       background: white; border-bottom: 1px solid var(--border);
-      padding: 10px 24px; position: sticky; top: 54px; z-index: 40;
+      padding: 10px var(--dp-marge); position: sticky; top: 56px; z-index: 40;
       box-shadow: 0 2px 12px rgba(15,31,48,0.06);
     }
     .controls-inner {
-      max-width: var(--breedte); margin: 0 auto;
+      max-width: none; margin: 0;
       display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
     }
 
@@ -88,13 +88,13 @@
 
     /* ─── PAGE BODY ─── */
     .page-body {
-      max-width: calc(var(--breedte) + 48px); margin: 24px auto; padding: 0 24px 80px;
+      max-width: none; margin: 22px 0; padding: 0 var(--dp-marge) 80px;
       display: grid; grid-template-columns: 50px 1fr; gap: 18px;
     }
 
     /* ─── ALPHABET SIDEBAR ─── */
     .alpha-sidebar {
-      position: sticky; top: 178px; align-self: flex-start;
+      position: sticky; top: 180px; align-self: flex-start;
       display: flex; flex-direction: column; gap: 2px;
       max-height: calc(100vh - 198px); overflow-y: auto; scrollbar-width: none;
     }
@@ -365,7 +365,7 @@
 <div class="page-header">
   <div class="page-header-inner">
     <div class="page-header-label">Woordenlijst · Digitale competenties</div>
-    <h1>📖 Woordenlijst</h1>
+    <h1>Woordenlijst</h1>
     <p>Begrippen uit het vernieuwde leerplan digitale competenties — helder uitgelegd voor leerkracht én kind.</p>
     <div class="kop-acties"><button type="button" class="kop-knop hoofd" onclick="openModal()">Begrip toevoegen</button></div>
   </div>

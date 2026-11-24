@@ -6,19 +6,19 @@
 <title>Rubrics Digitale Geletterdheid – OVSG</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="digiplan.css?v=2">
-<script src="digiplan.js?v=2" defer></script>
+<link rel="stylesheet" href="digiplan.css?v=4">
+<script src="digiplan.js?v=3" defer></script>
 <style>
 :root {
   --blue-dark: #1a3a5c;
   --blue-mid: #2e6da4;
   --blue-light: #d6e8f5;
   --accent: #e67e22;
-  --bg: #f4f7fa;
+  --bg: #fafaf8;
   --card: #ffffff;
   --border: #d0dbe8;
   --text: #1e2d3d;
-  --muted: #56667a;
+  --muted: #475a6d;
   /* Excel exact colors */
   --col-starter: #F96F6F;
   --col-junior: #F5C6AC;
@@ -52,11 +52,13 @@ body{font-family:'DM Sans','Segoe UI',Arial,sans-serif;font-size:15px;background
 .btn-icon{padding:7px;border-radius:7px;}
 
 /* LAYOUT */
-.app-body{display:flex;min-height:calc(100vh - 140px);}
+.page-header{--accent:#1f5c9e}
+#sidebarToggle{border-radius:999px;margin-bottom:8px}
+.app-body{display:flex;gap:20px;min-height:calc(100vh - 190px);padding:22px var(--dp-marge) 40px;align-items:flex-start;}
 
 /* SIDEBAR */
-.sidebar{width:300px;min-width:240px;background:var(--card);border-right:1px solid var(--border);padding:16px 14px;overflow-y:auto;flex-shrink:0;transition:width .2s ease, min-width .2s ease, padding .2s ease;}
-.sidebar.collapsed{width:0;min-width:0;padding:0;border-right:none;overflow:hidden;}
+.sidebar{width:330px;min-width:260px;background:var(--dp-tegel);border:1px solid var(--dp-tegel-rand);border-top:6px solid #1f5c9e;border-radius:18px;padding:16px 14px;overflow-y:auto;flex-shrink:0;transition:width .2s ease, min-width .2s ease, padding .2s ease;}
+.sidebar.collapsed{width:0;min-width:0;padding:0;border:none;margin-right:-20px;overflow:hidden;}
 .sidebar h3{font-size:13px;font-weight:700;color:var(--muted);margin-bottom:8px;padding-left:4px;}
 .leerlijn-group{margin-bottom:14px;}
 .leerlijn-header{display:flex;align-items:center;gap:7px;padding:7px 9px;border-radius:7px;cursor:pointer;font-weight:700;font-size:13.5px;transition:background .15s;user-select:none;}
@@ -66,7 +68,7 @@ body{font-family:'DM Sans','Segoe UI',Arial,sans-serif;font-size:15px;background
 .leerlijn-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
 .dot-ict{background:#2980b9;} .dot-comp{background:#27ae60;} .dot-media{background:#8e44ad;}
 .goal-list{padding-left:6px;}
-.goal-item{padding:5px 9px;border-radius:5px;cursor:pointer;font-size:13.5px;color:var(--text);transition:background .12s;line-height:1.4;border-left:3px solid transparent;margin-bottom:1px;}
+.goal-item{padding:7px 10px;background:rgba(255,255,255,.72);border-radius:10px;margin-bottom:5px;cursor:pointer;font-size:13.5px;color:var(--text);transition:background .12s;line-height:1.4;border-left:3px solid transparent;margin-bottom:1px;}
 .goal-item:hover{background:var(--blue-light);border-left-color:var(--blue-mid);}
 .goal-item.active{background:var(--blue-light);border-left-color:var(--blue-mid);font-weight:600;color:var(--blue-dark);}
 .fase-badge{display:inline-block;font-size:13px;background:var(--border);color:#3b4b5c;border-radius:3px;padding:1px 4px;margin-right:3px;}
@@ -75,7 +77,7 @@ body{font-family:'DM Sans','Segoe UI',Arial,sans-serif;font-size:15px;background
 .search-box input:focus{border-color:var(--blue-mid);}
 
 /* MAIN */
-.main-content{flex:1;padding:24px 28px;overflow-y:auto;}
+.main-content{flex:1;min-width:0;padding:22px 26px;background:#fff;border:1px solid var(--border);border-left:6px solid #1f5c9e;border-radius:18px;}
 .welcome{text-align:center;padding:60px 20px;}
 .welcome h2{font-size:22px;color:var(--blue-dark);margin-bottom:10px;}
 .welcome p{color:var(--muted);font-size:14px;line-height:1.6;}
@@ -282,7 +284,7 @@ textarea,.paste-area{resize:vertical;min-height:70px;line-height:1.5;}
 
 /* PRINT */
 @media print{
-  .sidebar,.app-header,.rubric-header-actions,.student-bar,.klas-nav,.overlay,
+  .sidebar,.app-header,.page-header,.topbar,#sidebarToggle,.rubric-header-actions,.student-bar,.klas-nav,.overlay,
   .rubric-toolbar,.nvt-btn,.opm-label,
   .lc .selected-checkmark{display:none!important;}
   .app-body{display:block;}
@@ -340,22 +342,20 @@ textarea,.paste-area{resize:vertical;min-height:70px;line-height:1.5;}
 ::-webkit-scrollbar{width:6px;} ::-webkit-scrollbar-track{background:transparent;} ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
 </style>
 </head>
-<body>
+<body data-geen-afdruk>
 
 <div class="topbar"><a href="Digiplan.html">← Digiplan</a></div>
 
-<div class="app-header">
-  <div>
-    <h1 class="logo">Rubrics</h1>
-    <div class="subtitle">Digitale geletterdheid · LeerLokaal</div>
+<div class="page-header"><div class="page-header-inner">
+  <div class="page-header-label">LeerLokaal</div>
+  <h1>Rubrics</h1>
+  <p>Digitale geletterdheid, per leerplandoel</p>
+  <div class="kop-acties">
+    <button class="kop-knop" onclick="openMakeModal()">Nieuwe rubric</button>
+    <button class="kop-knop" onclick="openKlasModal()">Klasrubric</button>
+    <button class="kop-knop" onclick="doPrint()">Afdrukken</button>
   </div>
-  <button class="btn btn-secondary btn-sm" id="sidebarToggle" onclick="toggleSidebar()" title="Doelenlijst verbergen">◀ Doelen</button>
-  <div class="header-right">
-    <button class="btn btn-secondary" onclick="openMakeModal()">Nieuwe rubric</button>
-    <button class="btn btn-secondary" onclick="openKlasModal()">Klasrubric</button>
-    <button class="btn btn-secondary" onclick="doPrint()">Afdrukken</button>
-  </div>
-</div>
+</div></div>
 
 <div class="app-body">
   <div class="sidebar" id="sidebar">
@@ -364,6 +364,7 @@ textarea,.paste-area{resize:vertical;min-height:70px;line-height:1.5;}
     <div id="goalTree"></div>
   </div>
   <div class="main-content" id="mainContent">
+    <button class="btn btn-outline btn-sm" id="sidebarToggle" onclick="toggleSidebar()" title="Doelenlijst verbergen">◀ Doelenlijst</button>
     <div class="welcome" id="welcomeScreen">
       <div style="font-size:60px;margin-bottom:14px;">📋</div>
       <h2>Welkom bij de Rubrics-tool</h2>
@@ -660,7 +661,7 @@ function collapseSidebar(state) {
   const sb = document.getElementById('sidebar');
   const btn = document.getElementById('sidebarToggle');
   sb.classList.toggle('collapsed', state);
-  if (btn) btn.textContent = state ? '☰ Doelen' : '◀ Doelen';
+  if (btn) btn.textContent = state ? '☰ Doelenlijst' : '◀ Doelenlijst';
 }
 
 // ─── SIDEBAR ───
@@ -1478,7 +1479,7 @@ function toggleSidebar() {
   const btn = document.getElementById('sidebarToggle');
   sb.classList.toggle('collapsed');
   const hidden = sb.classList.contains('collapsed');
-  btn.textContent = hidden ? '☰ Doelen' : '◀ Doelen';
+  btn.textContent = hidden ? '☰ Doelenlijst' : '◀ Doelenlijst';
   btn.title = hidden ? 'Doelenlijst tonen' : 'Doelenlijst verbergen';
 }
 
