@@ -191,14 +191,17 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:#1E293B;font
 </head>
 <body>
 <div class="topbar">
-  <a href="Digiplan.html">← Terug naar Dashboard</a>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;">
+    <a href="Digiplan.html">← Terug naar Dashboard</a>
+    <a href="leerplandoelen/index.html">← Leerplandoelen</a>
+  </div>
   <span>GBS De Krekel · Digiplan 2025–2028</span>
 </div>
 
 <div class="page-header">
   <div class="page-header-inner">
     <div class="page-header-label">LeerLokaal · OVSG-leerplan</div>
-    <h1>Verticale leerlijnen</h1>
+    <h1>Lesfiches bij de leerplandoelen</h1>
     <p>Digitale competenties doorheen alle leerjaren: kies een leerlijn, fase en leerplandoel en genereer een volledig uitgewerkte lesfiche.</p>
     <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:16px">
       <a href="woordenlijst.html" style="display:inline-flex;align-items:center;gap:8px;background:#fff;color:var(--accent);text-decoration:none;font-weight:700;font-size:0.9rem;padding:11px 20px;border-radius:999px;box-shadow:0 4px 14px rgba(0,0,0,0.18);transition:transform .15s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">📖 Woordenlijst digitale competenties</a>
@@ -215,293 +218,362 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:#1E293B;font
 
 <script>
 // ─── DATA ─────────────────────────────────────────────────────────────
+// LET OP: de sleutels "LL23 DIG n B.x" zijn codes uit leerplan 2023. De huidige
+// doelen heten ook "DIG n B.x" maar betekenen vaak iets anders. Koppelen gebeurt
+// daarom nooit op gelijke code, enkel via de velden ll23 en les van een doel.
 const LIBRARY = {
-  "DIG 1 B.1":["Digitaal speel-hoekje inrichten","Kleutersoftware ontdekken","Tablet-speelkwartiertje","Touchscreen-raadspel","Digitale verhalenhoek"],
-  "DIG 1 B.2":["Veegspelletjes op tablet","Pijlspelletje op scherm","Tik de letter aan","Schuifpuzzel app","Stippen volgen op touchscreen"],
-  "DIG 1 B.3":["Vertrouwd tekenprogramma","Foto's bekijken in gallery","Eenvoudig kleurprogramma","Educatieve game herhalen","Digitale stempels"],
-  "DIG 1 B.4":["Rekenmachine ontdekken","Tellen op tablet","Cijfers aanraken op scherm","Getallenlied met app","Digitale dobbelsteen"],
-  "DIG 1 B.5":["Rekenmachine vs. vingers","Som op tablet oplossen","Digitale telrij","Optellen met app","Getallen linken aan tool"],
-  "DIG 1 B.6":["Blindtypen oefening","Jouw naam tikken","Letterzoekspel op toetsenbord","Typrij oefening","Toetsenbord-bingo"],
-  "DIG 1 B.7":["Klasfoto's maken","Video van experiment","Selfie-project","Natuur fotograferen","Foto's sorteren"],
-  "DIG 1 B.8":["Verven in Paint","Bestand opslaan oefenen","Map aanmaken","Zoomen en scrollen","Kopiëren en plakken"],
-  "DIG 1 B.9":["Verhaal tikken in Word","Briefje typen","Woordenlijst maken","Tekst opmaken","Dictee in tekstverwerker"],
-  "DIG 1 B.10":["Digitaal kunstwerk maken","Presentatie illustreren","Collage met foto's","Animatie bouwen","Digitaal kleurboek"],
-  "DIG 1 B.11":["Beveiligd zoeken in browser","Afbeelding opzoeken","Dierenfeitenzoektocht","Zoekopdracht in klas","Veilig surfen-les"],
-  "DIG 1 B.12":["Geluidsfragment opnemen","Podcast-intro","Geluiden van dieren opnemen","Interview opnemen","Muziek opnemen"],
-  "DIG 1 B.13":["Foto bewerken met filter","Achtergrond veranderen","Collage maken","Kleur aanpassen","Bijschrift toevoegen"],
-  "DIG 1 B.14":["Tekst opmaken in Word","Koptitels instellen","Lettertype kiezen","Lijst maken","Afbeelding invoegen"],
-  "DIG 1 B.15":["Rekenmachine gebruiken","Sommetjes controleren","Eenvoudige berekeningen","Procenten uitrekenen","Tabel invullen met calculator"],
-  "DIG 1 B.16":["Rekenmachine vs. hoofdrekenen","Antwoord controleren","Sommen twee keer checken","Fout zoeken","Rekentool vergelijken"],
-  "DIG 1 B.17":["E-mail schrijven","Digitale begroeting","Chat-etiquette oefenen","Bericht sturen in veilige omgeving","Online samenwerken"],
-  "DIG 1 B.18":["Digitale presentatie maken","Poster in Canva","Slidedeck met foto's","Infographic ontwerpen","Video-intro maken"],
-  "DIG 1 B.19":["Kort verhaal tikken","Dagboek digitaal","Zin per dag","Woorden typen","Tekst met opmaak"],
-  "DIG 1 B.20":["Zelfstandig in oefenapp","Khan Academy","Educatieve game","Digitale leerkring","Online quiz"],
-  "DIG 1 B.21":["Informatie opzoeken en bewaren","Research-opdracht","Knipselmand digitaal","Bronnen ordenen","Favorietenmap aanmaken"],
-  "DIG 1 B.22":["Complexe berekening met tool","Statistieken uitrekenen","Gemiddelde berekenen","Rekenmachine-wedstrijd","Complexe som checken"],
-  "DIG 1 B.23":["Opslaan op USB","Bewaren in cloud","Drive-les","Lokale vs. cloudopslag","Backup maken"],
-  "DIG 1 B.24":["Bestand delen met klasgenoot","Samenwerken in Drive","Upload-oefening","Gedeelde map","Link delen"],
-  "DIG 1 B.25":["ICT-meerwaarde bespreken","Voor/nadelen ICT","Reflectieposter","Nut van apps","Digitale vs. analoge aanpak"],
-  "DIG 2 B.1":["Voorwerpen sorteren: computer vs. niet-computer","Speelhoek met oude apparaten","Prenten zoeken: waar zie jij een computer?","Computers in de klas tellen","Memoryspel: apparaat ↔ functie"],
-  "DIG 2 B.2":["Kringgesprek met foto's van thuis","Speurtocht in de school","Tekenopdracht: 'Hier zie ik een computer'","Rollenspel: kassa, dokter, treinbestuurder","Pictogrammen koppelen aan situaties"],
-  "DIG 2 B.3":["Robot-dans","Herhalingspatronen met blokjes","Liedjes met refreinen","Volg-de-leider met herhaling","Herhaal-machine spel"],
-  "DIG 2 B.4":["Verhaalstroken ordenen","Dagritmekaarten sorteren","Foto's van activiteiten in volgorde leggen","Puzzel zonder voorbeeld","'Wat komt eerst?'-spel"],
-  "DIG 2 B.5":["Kartonnen computer met losse onderdelen","Lego-bouw: benoem de onderdelen","Fiets of auto tekenen en benoemen","Deel ↔ geheel sorteren","Speelgoed uit elkaar halen (veilig)"],
-  "DIG 2 B.6":["Kralenpatronen uitbreiden","Bewegingspatronen","Muziekritmes","Patronen in de natuur","Pixelpatronen op ruitjespapier"],
-  "DIG 2 B.7":["Sandwich maken in stappen","Speelgoed opruimen in stappen","Tandenpoetsen in stappen","Lego-bouwplan maken","Route naar de speelplaats"],
-  "DIG 2 B.8":["Dansroutine","Patronen in muziek","Herhalende stappen in een recept","Bewegingsspel met triggers","Patronen in kleding"],
-  "DIG 2 B.9":["Reflectiekaartjes","Stripverhaal tekenen","Nabespreking na digitale oefening","Foto's van stappen bespreken","Probleem-detective"],
-  "DIG 2 B.10":["Getallenreeksen leggen","Reeksen in de natuur","Domino's sorteren","Reeksen met kleuren/vormen","'Wat hoort hier?'-spel"],
-  "DIG 2 B.11":["Programmeer de leerkracht","Bee-Bot unplugged","Pijlenkaartjes","Speurtocht met instructies","Robot-vriendje"],
-  "DIG 2 B.12":["Recept volgen","Bouwplan volgen","Route volgen op grid","Puzzel met stappenkaart","Origami"],
-  "DIG 2 B.13":["Foto's van automatische systemen","Wandeling door de school","Tekenopdracht","Memoryspel systeem ↔ functie","Mini-museum"],
-  "DIG 2 B.14":["Recept ontleden","Lego-bouwplan analyseren","Fiets ontleden","Stripverhaal maken","Flowchart tekenen"],
-  "DIG 2 B.15":["Onduidelijke instructies spel","Programmeer de leerkracht fout","Exacte tekenopdrachten","Tangram met instructies","Foute vs. correcte algoritmes"],
-  "DIG 2 B.16":["Discussie: robotstofzuiger","Voor/nadelenmatrix","Rollenspel mens vs. machine","Video's van robots","'Wat als?'-scenario's"],
-  "DIG 2 B.17":["Flowcharts","Stripverhalen","Pictogram-instructies","Routekaarten","Lego-bouwplan ontwerpen"],
-  "DIG 2 B.18":["Patronen zoeken in klassen","Sorteren op eigenschap","Symmetriepatronen","Rekenpatronen","Abstracte vormen vergelijken"],
-  "DIG 2 B.19":["Kaartspel met voorwaarden","Bewegingsspel met regels","Weerstation","Sorteeropdrachten","Eigen spelregels ontwerpen"],
-  "DIG 2 B.20":["Unplugged pijlen-programmeren","Flowchart → code","Kaartspel met loops","Scratch-project","Micro:bit basisprogramma's"],
-  "DIG 3 B.1":["Media-speurtocht in de klas","Reclame vs. verhaal","Geluidenspel","Mediahoek bouwen","Emotiekaartjes"],
-  "DIG 3 B.2":["Mijn mediadagboek","Praatkring 'Wat doe jij online?'","Goed idee / minder goed idee-kaartjes","Media-memory","Rollenspel"],
-  "DIG 3 B.3":["Wachtwoord-verhalen","Inlog-oefenhoek","Goed of fout?","Sterk wachtwoord bouwen","Digitale oefenomgeving"],
-  "DIG 3 B.4":["Verhaal Sunita — nepnieuws (2de lj)","Waar of niet waar-quiz","Foto-manipulatie herkennen","Mini-onderzoek","Fabel of feit?","Reclame herkennen"],
-  "DIG 3 B.5":["Verhaal Nuram — catfish & digitale identiteit (4de–5de lj)","Avatar-spel","Chat-rollenspel","Verhaal 'Wie zit er achter het scherm?'","Foto vs. werkelijkheid","Veiligheidsregels opstellen"],
-  "DIG 3 B.6":["Verhaal Sarah — phishing & privacy (4de lj)","Gegevens-stoplicht","Situatiekaartjes","Poster 'Mijn gegevens zijn van mij'","Website-check","Verhaal met cliffhanger"],
-  "DIG 3 B.7":["Nettiquette-kaartjes","Emoji-interpretatie","Chat-simulatie","Voorbeeld vs. tegenvoorbeeld","Digitale complimentenronde"],
-  "DIG 3 B.8":["Stop-denk-doe-schema","Situaties nabootsen","Vertrouwenspersonen-poster","Verhaal 'De vreemde boodschap'","Knop 'Help!'"],
-  "DIG 3 B.9":["Verhaal Souffian — cyberpesten (3de lj)","Cyberpest-scenario's","Digitale empathie-oefening","Poster 'Wij zijn een respectvolle klas'","Rollenspel","Complimentenmuur"],
-  "DIG 3 B.10":["Reclame-analyse","Influencer-experiment","Discussie 'Waarom vind ik dit leuk?'","Vooroordelen in media","Meningsmeter"],
-  "DIG 3 B.11":["Media-skills zelftest","Reflectieposter","Media-competentie-cirkel","Mini-workshops","Portfolio-opdracht"],
-  "DIG 3 B.12":["Risico-rad","Kansenkaartjes","Fake news-detective","Privacy-lab","Voor- en nadelenmatrix"],
-  "DIG 3 B.13":["Debat 'Online zijn: top of flop?'","Digitale burger-case","Voor/nadelen-kaartenset","Reflectieopdracht","Interview met ouders/grootouders"],
-  "DIG 3 B.14":["Phishing-simulatie","STOP-methode","Berichten analyseren","Veiligheidschecklist","Rollenspel"],
-  "DIG 3 B.15":["Respect-challenge","Privacy-overtredingen herkennen","Digitale gedragsregels opstellen","Voorbeeldgedrag analyseren","Reflectie"],
-  "DIG 3 B.16":["Verhaal Lucas — digitale voetafdruk (5de lj)","Digitale voetafdruk-visualisatie","Voorbeeldcases","Denk-voor-je-post-oefening","Tijdlijnspel","Reflectieopdracht"],
-  "DIG 3 B.17":["Verhaal Thomas — auteurs- & portretrecht (6de lj)","Auteursrecht-intro","Toestemmingsspel","Licentie-pictogrammen leren","Schoolregels analyseren","Praktijkopdracht"],
+  "LL23 DIG 1 B.1":["Digitaal speel-hoekje inrichten","Kleutersoftware ontdekken","Tablet-speelkwartiertje","Touchscreen-raadspel","Digitale verhalenhoek"],
+  "LL23 DIG 1 B.2":["Veegspelletjes op tablet","Pijlspelletje op scherm","Tik de letter aan","Schuifpuzzel app","Stippen volgen op touchscreen"],
+  "LL23 DIG 1 B.3":["Vertrouwd tekenprogramma","Foto's bekijken in gallery","Eenvoudig kleurprogramma","Educatieve game herhalen","Digitale stempels"],
+  "LL23 DIG 1 B.4":["Rekenmachine ontdekken","Tellen op tablet","Cijfers aanraken op scherm","Getallenlied met app","Digitale dobbelsteen"],
+  "LL23 DIG 1 B.5":["Rekenmachine vs. vingers","Som op tablet oplossen","Digitale telrij","Optellen met app","Getallen linken aan tool"],
+  "LL23 DIG 1 B.6":["Blindtypen oefening","Jouw naam tikken","Letterzoekspel op toetsenbord","Typrij oefening","Toetsenbord-bingo"],
+  "LL23 DIG 1 B.7":["Klasfoto's maken","Video van experiment","Selfie-project","Natuur fotograferen","Foto's sorteren"],
+  "LL23 DIG 1 B.8":["Verven in Paint","Bestand opslaan oefenen","Map aanmaken","Zoomen en scrollen","Kopiëren en plakken"],
+  "LL23 DIG 1 B.9":["Verhaal tikken in Word","Briefje typen","Woordenlijst maken","Tekst opmaken","Dictee in tekstverwerker"],
+  "LL23 DIG 1 B.10":["Digitaal kunstwerk maken","Presentatie illustreren","Collage met foto's","Animatie bouwen","Digitaal kleurboek"],
+  "LL23 DIG 1 B.11":["Beveiligd zoeken in browser","Afbeelding opzoeken","Dierenfeitenzoektocht","Zoekopdracht in klas","Veilig surfen-les"],
+  "LL23 DIG 1 B.12":["Geluidsfragment opnemen","Podcast-intro","Geluiden van dieren opnemen","Interview opnemen","Muziek opnemen"],
+  "LL23 DIG 1 B.13":["Foto bewerken met filter","Achtergrond veranderen","Collage maken","Kleur aanpassen","Bijschrift toevoegen"],
+  "LL23 DIG 1 B.14":["Tekst opmaken in Word","Koptitels instellen","Lettertype kiezen","Lijst maken","Afbeelding invoegen"],
+  "LL23 DIG 1 B.15":["Rekenmachine gebruiken","Sommetjes controleren","Eenvoudige berekeningen","Procenten uitrekenen","Tabel invullen met calculator"],
+  "LL23 DIG 1 B.16":["Rekenmachine vs. hoofdrekenen","Antwoord controleren","Sommen twee keer checken","Fout zoeken","Rekentool vergelijken"],
+  "LL23 DIG 1 B.17":["E-mail schrijven","Digitale begroeting","Chat-etiquette oefenen","Bericht sturen in veilige omgeving","Online samenwerken"],
+  "LL23 DIG 1 B.18":["Digitale presentatie maken","Poster in Canva","Slidedeck met foto's","Infographic ontwerpen","Video-intro maken"],
+  "LL23 DIG 1 B.19":["Kort verhaal tikken","Dagboek digitaal","Zin per dag","Woorden typen","Tekst met opmaak"],
+  "LL23 DIG 1 B.20":["Zelfstandig in oefenapp","Khan Academy","Educatieve game","Digitale leerkring","Online quiz"],
+  "LL23 DIG 1 B.21":["Informatie opzoeken en bewaren","Research-opdracht","Knipselmand digitaal","Bronnen ordenen","Favorietenmap aanmaken"],
+  "LL23 DIG 1 B.22":["Complexe berekening met tool","Statistieken uitrekenen","Gemiddelde berekenen","Rekenmachine-wedstrijd","Complexe som checken"],
+  "LL23 DIG 1 B.23":["Opslaan op USB","Bewaren in cloud","Drive-les","Lokale vs. cloudopslag","Backup maken"],
+  "LL23 DIG 1 B.24":["Bestand delen met klasgenoot","Samenwerken in Drive","Upload-oefening","Gedeelde map","Link delen"],
+  "LL23 DIG 1 B.25":["ICT-meerwaarde bespreken","Voor/nadelen ICT","Reflectieposter","Nut van apps","Digitale vs. analoge aanpak"],
+  "LL23 DIG 2 B.1":["Voorwerpen sorteren: computer vs. niet-computer","Speelhoek met oude apparaten","Prenten zoeken: waar zie jij een computer?","Computers in de klas tellen","Memoryspel: apparaat ↔ functie"],
+  "LL23 DIG 2 B.2":["Kringgesprek met foto's van thuis","Speurtocht in de school","Tekenopdracht: 'Hier zie ik een computer'","Rollenspel: kassa, dokter, treinbestuurder","Pictogrammen koppelen aan situaties"],
+  "LL23 DIG 2 B.3":["Robot-dans","Herhalingspatronen met blokjes","Liedjes met refreinen","Volg-de-leider met herhaling","Herhaal-machine spel"],
+  "LL23 DIG 2 B.4":["Verhaalstroken ordenen","Dagritmekaarten sorteren","Foto's van activiteiten in volgorde leggen","Puzzel zonder voorbeeld","'Wat komt eerst?'-spel"],
+  "LL23 DIG 2 B.5":["Kartonnen computer met losse onderdelen","Lego-bouw: benoem de onderdelen","Fiets of auto tekenen en benoemen","Deel ↔ geheel sorteren","Speelgoed uit elkaar halen (veilig)"],
+  "LL23 DIG 2 B.6":["Kralenpatronen uitbreiden","Bewegingspatronen","Muziekritmes","Patronen in de natuur","Pixelpatronen op ruitjespapier"],
+  "LL23 DIG 2 B.7":["Sandwich maken in stappen","Speelgoed opruimen in stappen","Tandenpoetsen in stappen","Lego-bouwplan maken","Route naar de speelplaats"],
+  "LL23 DIG 2 B.8":["Dansroutine","Patronen in muziek","Herhalende stappen in een recept","Bewegingsspel met triggers","Patronen in kleding"],
+  "LL23 DIG 2 B.9":["Reflectiekaartjes","Stripverhaal tekenen","Nabespreking na digitale oefening","Foto's van stappen bespreken","Probleem-detective"],
+  "LL23 DIG 2 B.10":["Getallenreeksen leggen","Reeksen in de natuur","Domino's sorteren","Reeksen met kleuren/vormen","'Wat hoort hier?'-spel"],
+  "LL23 DIG 2 B.11":["Programmeer de leerkracht","Bee-Bot unplugged","Pijlenkaartjes","Speurtocht met instructies","Robot-vriendje"],
+  "LL23 DIG 2 B.12":["Recept volgen","Bouwplan volgen","Route volgen op grid","Puzzel met stappenkaart","Origami"],
+  "LL23 DIG 2 B.13":["Foto's van automatische systemen","Wandeling door de school","Tekenopdracht","Memoryspel systeem ↔ functie","Mini-museum"],
+  "LL23 DIG 2 B.14":["Recept ontleden","Lego-bouwplan analyseren","Fiets ontleden","Stripverhaal maken","Flowchart tekenen"],
+  "LL23 DIG 2 B.15":["Onduidelijke instructies spel","Programmeer de leerkracht fout","Exacte tekenopdrachten","Tangram met instructies","Foute vs. correcte algoritmes"],
+  "LL23 DIG 2 B.16":["Discussie: robotstofzuiger","Voor/nadelenmatrix","Rollenspel mens vs. machine","Video's van robots","'Wat als?'-scenario's"],
+  "LL23 DIG 2 B.17":["Flowcharts","Stripverhalen","Pictogram-instructies","Routekaarten","Lego-bouwplan ontwerpen"],
+  "LL23 DIG 2 B.18":["Patronen zoeken in klassen","Sorteren op eigenschap","Symmetriepatronen","Rekenpatronen","Abstracte vormen vergelijken"],
+  "LL23 DIG 2 B.19":["Kaartspel met voorwaarden","Bewegingsspel met regels","Weerstation","Sorteeropdrachten","Eigen spelregels ontwerpen"],
+  "LL23 DIG 2 B.20":["Unplugged pijlen-programmeren","Flowchart → code","Kaartspel met loops","Scratch-project","Micro:bit basisprogramma's"],
+  "LL23 DIG 3 B.1":["Media-speurtocht in de klas","Reclame vs. verhaal","Geluidenspel","Mediahoek bouwen","Emotiekaartjes"],
+  "LL23 DIG 3 B.2":["Mijn mediadagboek","Praatkring 'Wat doe jij online?'","Goed idee / minder goed idee-kaartjes","Media-memory","Rollenspel"],
+  "LL23 DIG 3 B.3":["Wachtwoord-verhalen","Inlog-oefenhoek","Goed of fout?","Sterk wachtwoord bouwen","Digitale oefenomgeving"],
+  "LL23 DIG 3 B.4":["Verhaal Sunita — nepnieuws (2de lj)","Waar of niet waar-quiz","Foto-manipulatie herkennen","Mini-onderzoek","Fabel of feit?","Reclame herkennen"],
+  "LL23 DIG 3 B.5":["Verhaal Nuram — catfish & digitale identiteit (4de–5de lj)","Avatar-spel","Chat-rollenspel","Verhaal 'Wie zit er achter het scherm?'","Foto vs. werkelijkheid","Veiligheidsregels opstellen"],
+  "LL23 DIG 3 B.6":["Verhaal Sarah — phishing & privacy (4de lj)","Gegevens-stoplicht","Situatiekaartjes","Poster 'Mijn gegevens zijn van mij'","Website-check","Verhaal met cliffhanger"],
+  "LL23 DIG 3 B.7":["Nettiquette-kaartjes","Emoji-interpretatie","Chat-simulatie","Voorbeeld vs. tegenvoorbeeld","Digitale complimentenronde"],
+  "LL23 DIG 3 B.8":["Stop-denk-doe-schema","Situaties nabootsen","Vertrouwenspersonen-poster","Verhaal 'De vreemde boodschap'","Knop 'Help!'"],
+  "LL23 DIG 3 B.9":["Verhaal Souffian — cyberpesten (3de lj)","Cyberpest-scenario's","Digitale empathie-oefening","Poster 'Wij zijn een respectvolle klas'","Rollenspel","Complimentenmuur"],
+  "LL23 DIG 3 B.10":["Reclame-analyse","Influencer-experiment","Discussie 'Waarom vind ik dit leuk?'","Vooroordelen in media","Meningsmeter"],
+  "LL23 DIG 3 B.11":["Media-skills zelftest","Reflectieposter","Media-competentie-cirkel","Mini-workshops","Portfolio-opdracht"],
+  "LL23 DIG 3 B.12":["Risico-rad","Kansenkaartjes","Fake news-detective","Privacy-lab","Voor- en nadelenmatrix"],
+  "LL23 DIG 3 B.13":["Debat 'Online zijn: top of flop?'","Digitale burger-case","Voor/nadelen-kaartenset","Reflectieopdracht","Interview met ouders/grootouders"],
+  "LL23 DIG 3 B.14":["Phishing-simulatie","STOP-methode","Berichten analyseren","Veiligheidschecklist","Rollenspel"],
+  "LL23 DIG 3 B.15":["Respect-challenge","Privacy-overtredingen herkennen","Digitale gedragsregels opstellen","Voorbeeldgedrag analyseren","Reflectie"],
+  "LL23 DIG 3 B.16":["Verhaal Lucas — digitale voetafdruk (5de lj)","Digitale voetafdruk-visualisatie","Voorbeeldcases","Denk-voor-je-post-oefening","Tijdlijnspel","Reflectieopdracht"],
+  "LL23 DIG 3 B.17":["Verhaal Thomas — auteurs- & portretrecht (6de lj)","Auteursrecht-intro","Toestemmingsspel","Licentie-pictogrammen leren","Schoolregels analyseren","Praktijkopdracht"],
 
-  /* ── Nieuwe doelen zonder oude code: onze eigen Scratch-progressie ── */
-  "DIG 2.21":["Scratch — fouten in je code opsporen en verbeteren (debuggen)","Stappenplan testen en bijsturen"],
-  "DIG 2.22":["Scratch Jr → Scratch: sprites toevoegen, personaliseren & laten bewegen (toetsen/random/naar een punt)","Scratch — een eigen spel bouwen (bv. paaseieren vangen)","Scratch — een lineair algoritme stap voor stap opbouwen, testen en debuggen"],
-  "DIG 2.33":["Scratch — variabelen & als-dan-constructies (bv. Sint gooit pakjes)","Scratch — signalen gebruiken (bv. spel kat/vleermuis/bal)","Scratch-spel: motorboot of sneeuwvlokken vangen","Scratch — meervoudige code combineren: sequentie, herhaling en keuze"]
+  /* ── Onze eigen Scratch-progressie, los van leerplancodes ── */
+  "eigen:scratch-debuggen":["Scratch — fouten in je code opsporen en verbeteren (debuggen)","Stappenplan testen en bijsturen"],
+  "eigen:scratch-lineair":["Scratch Jr → Scratch: sprites toevoegen, personaliseren & laten bewegen (toetsen/random/naar een punt)","Scratch — een eigen spel bouwen (bv. paaseieren vangen)","Scratch — een lineair algoritme stap voor stap opbouwen, testen en debuggen"],
+  "eigen:scratch-combinatie":["Scratch — variabelen & als-dan-constructies (bv. Sint gooit pakjes)","Scratch — signalen gebruiken (bv. spel kat/vleermuis/bal)","Scratch-spel: motorboot of sneeuwvlokken vangen","Scratch — meervoudige code combineren: sequentie, herhaling en keuze"]
 };
 
 /* ════════════════════════════════════════════════════════════════
    CONCRETE INHOUDEN UIT ONZE EIGEN RUBRICS (OVSG — Baes, De Clercq,
    Griffioen & Troch). Per doel concrete deelvaardigheden en
    voorbeeldcontexten, gedistilleerd uit de rubrickolommen
-   "subdoel" en "inhouden". Gekoppeld aan de oude doelcode.
+   "subdoel" en "inhouden". Sleutels: zie LIBRARY.
    ════════════════════════════════════════════════════════════════ */
 const RUBRIC_IDEAS = {
   // ICT-basisvaardigheden
-  "DIG 1 B.1":["Toestellen herkennen & benoemen: computer, scherm, tablet, kassa","Complexere toestellen ontdekken: printer, beamer, smartwatch, VR-bril","Digitale infrastructuur gebruiken in een rollenspel"],
-  "DIG 1 B.2":["Touchscreen: tikken, gericht aanklikken en verslepen","Muis hanteren: klikken en slepen"],
-  "DIG 1 B.3":["Digitaal voorleesverhaal beluisteren","Digitale prentenboeken verkennen","Eenvoudige educatieve spelletjes spelen"],
-  "DIG 1 B.4":["Cijfers en symbolen (+ − =) op een digitale tool leren kennen","Wiskundige initiatie via apps"],
-  "DIG 1 B.5":["Winkelhoek: de +toets per product gebruiken","Optellen met visuele + en = in apps"],
-  "DIG 1 B.6":["Speciale toetsen: spatie, pijltjes, enter","Cijfertoetsen gericht aantikken via een spelletje"],
-  "DIG 1 B.7":["Foto's maken: compositie en perspectief (vogel-/kikvorsperspectief)","Cameraknoppen: zoom, flits, timer, selfie","Met zorg en stabiel filmen"],
-  "DIG 1 B.8":["Tool starten, opslaan, sluiten, vergroten/verkleinen","Inloggen met gebruikersnaam en wachtwoord","Basisiconen herkennen: vuilbak, diskette, kruisje, pijl"],
-  "DIG 1 B.9":["Hoofdletters via de Shift-toets","Beide handen op het toetsenbord","Symbolen typen: @ * / ! ( )"],
-  "DIG 1 B.10":["Eigen tekening in een tekenprogramma","GIF of animatie maken","Geluid bewerken: knippen, in- en uitfaden"],
-  "DIG 1 B.11":["Navigeren binnen een educatieve website","Zoeken op verschillende websites","Bladwijzers en favorieten gebruiken"],
-  "DIG 1 B.12":["Geluid opnemen richting de microfoon","Letten op akoestiek en geluidskwaliteit","Audio bewerken: faden, bijsnijden, effecten"],
-  "DIG 1 B.13":["Foto bijsnijden en formaat wijzigen","Effecten: zwart-wit, spiegelen, sepia, filter","Iets aanduiden: pijl, kader, cirkel, markeren","Achtergrond verwijderen"],
-  "DIG 1 B.14":["Lettertype, grootte, vet en onderlijnen","Opsommingstekens en uitlijnen","Kop- en voettekst, paginanummers"],
-  "DIG 1 B.15":["Rekenmachine: cijfers en + − = × :","Natuurlijke getallen intikken en berekenen"],
-  "DIG 1 B.16":["Uitkomst van een bewerking controleren","Weten wanneer een rekentool zinvol is"],
-  "DIG 1 B.17":["E-mail: onderwerp, lay-out, handtekening","Formeel versus informeel communiceren","Chatafspraken toepassen"],
-  "DIG 1 B.18":["Presentatie volgens de 1-6-6-regel","Affiche of wenskaart ontwerpen","Infographic met grafieken en kleur","Stopmotion of filmpje maken"],
-  "DIG 1 B.19":["Structuur: titels, koppen en stijlen","Opmaak: vet/cursief, uitlijnen, opsomming","Documentoverzicht gebruiken"],
-  "DIG 1 B.20":["Zelfstandig oefenen op Bingel, Kabas, Scoodle Play of Quizlet","Correct gebruik van ICT-middelen"],
-  "DIG 1 B.21":["Trefwoord kiezen om info op te zoeken","Gepaste afbeeldingen zoeken (Creative Commons)","Info verwerken in een presentatie en bewaren"],
-  "DIG 1 B.22":["Winst, verlies en korting berekenen","Percentages en kommagetallen","Opeenvolgende bewerkingen met haakjes"],
-  "DIG 1 B.23":["Mappen en bestanden aanmaken en benoemen","Ordenen, verplaatsen en verwijderen"],
-  "DIG 1 B.24":["Bestand uploaden en terugvinden","Delen met een klasgenoot","Rechten instellen"],
-  "DIG 1 B.25":["Digitale toepassingen in ons dagelijks leven","Vergelijken met vroeger","Voor- en nadelen en de invloed van AI bespreken"],
+  "LL23 DIG 1 B.1":["Toestellen herkennen & benoemen: computer, scherm, tablet, kassa","Complexere toestellen ontdekken: printer, beamer, smartwatch, VR-bril","Digitale infrastructuur gebruiken in een rollenspel"],
+  "LL23 DIG 1 B.2":["Touchscreen: tikken, gericht aanklikken en verslepen","Muis hanteren: klikken en slepen"],
+  "LL23 DIG 1 B.3":["Digitaal voorleesverhaal beluisteren","Digitale prentenboeken verkennen","Eenvoudige educatieve spelletjes spelen"],
+  "LL23 DIG 1 B.4":["Cijfers en symbolen (+ − =) op een digitale tool leren kennen","Wiskundige initiatie via apps"],
+  "LL23 DIG 1 B.5":["Winkelhoek: de +toets per product gebruiken","Optellen met visuele + en = in apps"],
+  "LL23 DIG 1 B.6":["Speciale toetsen: spatie, pijltjes, enter","Cijfertoetsen gericht aantikken via een spelletje"],
+  "LL23 DIG 1 B.7":["Foto's maken: compositie en perspectief (vogel-/kikvorsperspectief)","Cameraknoppen: zoom, flits, timer, selfie","Met zorg en stabiel filmen"],
+  "LL23 DIG 1 B.8":["Tool starten, opslaan, sluiten, vergroten/verkleinen","Inloggen met gebruikersnaam en wachtwoord","Basisiconen herkennen: vuilbak, diskette, kruisje, pijl"],
+  "LL23 DIG 1 B.9":["Hoofdletters via de Shift-toets","Beide handen op het toetsenbord","Symbolen typen: @ * / ! ( )"],
+  "LL23 DIG 1 B.10":["Eigen tekening in een tekenprogramma","GIF of animatie maken","Geluid bewerken: knippen, in- en uitfaden"],
+  "LL23 DIG 1 B.11":["Navigeren binnen een educatieve website","Zoeken op verschillende websites","Bladwijzers en favorieten gebruiken"],
+  "LL23 DIG 1 B.12":["Geluid opnemen richting de microfoon","Letten op akoestiek en geluidskwaliteit","Audio bewerken: faden, bijsnijden, effecten"],
+  "LL23 DIG 1 B.13":["Foto bijsnijden en formaat wijzigen","Effecten: zwart-wit, spiegelen, sepia, filter","Iets aanduiden: pijl, kader, cirkel, markeren","Achtergrond verwijderen"],
+  "LL23 DIG 1 B.14":["Lettertype, grootte, vet en onderlijnen","Opsommingstekens en uitlijnen","Kop- en voettekst, paginanummers"],
+  "LL23 DIG 1 B.15":["Rekenmachine: cijfers en + − = × :","Natuurlijke getallen intikken en berekenen"],
+  "LL23 DIG 1 B.16":["Uitkomst van een bewerking controleren","Weten wanneer een rekentool zinvol is"],
+  "LL23 DIG 1 B.17":["E-mail: onderwerp, lay-out, handtekening","Formeel versus informeel communiceren","Chatafspraken toepassen"],
+  "LL23 DIG 1 B.18":["Presentatie volgens de 1-6-6-regel","Affiche of wenskaart ontwerpen","Infographic met grafieken en kleur","Stopmotion of filmpje maken"],
+  "LL23 DIG 1 B.19":["Structuur: titels, koppen en stijlen","Opmaak: vet/cursief, uitlijnen, opsomming","Documentoverzicht gebruiken"],
+  "LL23 DIG 1 B.20":["Zelfstandig oefenen op Bingel, Kabas, Scoodle Play of Quizlet","Correct gebruik van ICT-middelen"],
+  "LL23 DIG 1 B.21":["Trefwoord kiezen om info op te zoeken","Gepaste afbeeldingen zoeken (Creative Commons)","Info verwerken in een presentatie en bewaren"],
+  "LL23 DIG 1 B.22":["Winst, verlies en korting berekenen","Percentages en kommagetallen","Opeenvolgende bewerkingen met haakjes"],
+  "LL23 DIG 1 B.23":["Mappen en bestanden aanmaken en benoemen","Ordenen, verplaatsen en verwijderen"],
+  "LL23 DIG 1 B.24":["Bestand uploaden en terugvinden","Delen met een klasgenoot","Rechten instellen"],
+  "LL23 DIG 1 B.25":["Digitale toepassingen in ons dagelijks leven","Vergelijken met vroeger","Voor- en nadelen en de invloed van AI bespreken"],
   // Computationeel denken
-  "DIG 2 B.1":["Computers vergelijken: laptop, tablet, smartphone","Mogelijkheden benoemen: filmpje, spel, verhaal"],
-  "DIG 2 B.2":["Speurtocht: waar zie je computers in de buurt? (bakker, bib, supermarkt)","Hoe maken computers het leven makkelijker?"],
-  "DIG 2 B.3":["Herhaalknop bij liedjes","Bee-Bot of mTiny met herhaalde acties","Een patroon dat zich eindeloos herhaalt"],
-  "DIG 2 B.4":["Verhaalprenten in volgorde leggen","Foto's van een recept ordenen","Ochtendroutine in stappen"],
-  "DIG 2 B.5":["Puzzelstukken: deel en geheel","Onderdelen van een keukenset of speelgoedauto benoemen"],
-  "DIG 2 B.6":["Kralenpatroon verderzetten","Blokkenpatroon bouwen","Muzikaal patroon (klap-klap-tik) voortzetten"],
-  "DIG 2 B.7":["Speelgoed opruimen in deelstappen","Handen wassen in stappen","Gekende stappenplannen en routines"],
-  "DIG 2 B.8":["Herhaling in de dagplanning herkennen","Herhaling in een verhaal of knutselproject"],
-  "DIG 2 B.9":["Praten: welk probleem loste je op met een computer?","Spellingscorrector, digitaal woordenboek, oefenspel"],
-  "DIG 2 B.10":["Volgorde in dagelijkse routines","Volgorde bij een papieren vliegtuigje vouwen","Het belang van de juiste volgorde"],
-  "DIG 2 B.11":["Unplugged: levende robot met pictogrammen","Een route uittekenen voor een andere groep","Boterham smeren via instructies"],
-  "DIG 2 B.12":["Een recept volgen","Scratch Jr met blokjes","Unplugged programmeren met pijlen op de grond"],
-  "DIG 2 B.13":["Geautomatiseerde systemen opsommen: stoplicht, lift, kassa, broodautomaat","Mini-museum van automatische systemen"],
-  "DIG 2 B.14":["Een proces opdelen in hoofd- en deelstappen","Robot knutselen: ontwerp, knippen, monteren","Stappenplan schrijven (PCDA, Stop-denk-doe)"],
-  "DIG 2 B.15":["Unplugged een algoritme bouwen","Scratch, Lightbot of Hour of Code","Boterham smeren als 'programma'"],
-  "DIG 2 B.16":["Voor- en nadelen van automatisering","Resultaat van mens versus machine vergelijken","Wanneer schakel je een computer in?"],
-  "DIG 2 B.17":["Stap-voor-stap-instructies met een flowchart","Een gewandelde route in stappen verwoorden","Visueel stappenplan voor een dansje"],
-  "DIG 2 B.18":["Patronen in kunst, muziek en natuur","Wiskundige patronen (sprongen tellen)","Herhalingen in een verhaal"],
-  "DIG 2 B.19":["Als-dan-spel in groep","Oorzaak-gevolg-routines","Scratch: als de kat de rand raakt, keert hij om"],
-  "DIG 2 B.20":["Blokprogrammeertaal: Scratch, micro:bit, Code.org, Blockly","Een probleem oplossen met eigen code","Herhalingen, voorwaarden en debuggen"],
+  "LL23 DIG 2 B.1":["Computers vergelijken: laptop, tablet, smartphone","Mogelijkheden benoemen: filmpje, spel, verhaal"],
+  "LL23 DIG 2 B.2":["Speurtocht: waar zie je computers in de buurt? (bakker, bib, supermarkt)","Hoe maken computers het leven makkelijker?"],
+  "LL23 DIG 2 B.3":["Herhaalknop bij liedjes","Bee-Bot of mTiny met herhaalde acties","Een patroon dat zich eindeloos herhaalt"],
+  "LL23 DIG 2 B.4":["Verhaalprenten in volgorde leggen","Foto's van een recept ordenen","Ochtendroutine in stappen"],
+  "LL23 DIG 2 B.5":["Puzzelstukken: deel en geheel","Onderdelen van een keukenset of speelgoedauto benoemen"],
+  "LL23 DIG 2 B.6":["Kralenpatroon verderzetten","Blokkenpatroon bouwen","Muzikaal patroon (klap-klap-tik) voortzetten"],
+  "LL23 DIG 2 B.7":["Speelgoed opruimen in deelstappen","Handen wassen in stappen","Gekende stappenplannen en routines"],
+  "LL23 DIG 2 B.8":["Herhaling in de dagplanning herkennen","Herhaling in een verhaal of knutselproject"],
+  "LL23 DIG 2 B.9":["Praten: welk probleem loste je op met een computer?","Spellingscorrector, digitaal woordenboek, oefenspel"],
+  "LL23 DIG 2 B.10":["Volgorde in dagelijkse routines","Volgorde bij een papieren vliegtuigje vouwen","Het belang van de juiste volgorde"],
+  "LL23 DIG 2 B.11":["Unplugged: levende robot met pictogrammen","Een route uittekenen voor een andere groep","Boterham smeren via instructies"],
+  "LL23 DIG 2 B.12":["Een recept volgen","Scratch Jr met blokjes","Unplugged programmeren met pijlen op de grond"],
+  "LL23 DIG 2 B.13":["Geautomatiseerde systemen opsommen: stoplicht, lift, kassa, broodautomaat","Mini-museum van automatische systemen"],
+  "LL23 DIG 2 B.14":["Een proces opdelen in hoofd- en deelstappen","Robot knutselen: ontwerp, knippen, monteren","Stappenplan schrijven (PCDA, Stop-denk-doe)"],
+  "LL23 DIG 2 B.15":["Unplugged een algoritme bouwen","Scratch, Lightbot of Hour of Code","Boterham smeren als 'programma'"],
+  "LL23 DIG 2 B.16":["Voor- en nadelen van automatisering","Resultaat van mens versus machine vergelijken","Wanneer schakel je een computer in?"],
+  "LL23 DIG 2 B.17":["Stap-voor-stap-instructies met een flowchart","Een gewandelde route in stappen verwoorden","Visueel stappenplan voor een dansje"],
+  "LL23 DIG 2 B.18":["Patronen in kunst, muziek en natuur","Wiskundige patronen (sprongen tellen)","Herhalingen in een verhaal"],
+  "LL23 DIG 2 B.19":["Als-dan-spel in groep","Oorzaak-gevolg-routines","Scratch: als de kat de rand raakt, keert hij om"],
+  "LL23 DIG 2 B.20":["Blokprogrammeertaal: Scratch, micro:bit, Code.org, Blockly","Een probleem oplossen met eigen code","Herhalingen, voorwaarden en debuggen"],
   // Mediawijsheid
-  "DIG 3 B.1":["Mediavormen herkennen: tekst, foto, audio, video","Ook QR-codes en logo's","Mediaboodschappen benoemen: reclame, YouTube, podcast"],
-  "DIG 3 B.2":["Mijn mediadagboek","Eens/oneens-stelling: hoe gebruik jij media?","Schermtijd en afspraken thuis"],
-  "DIG 3 B.3":["Een sterk wachtwoord of wachtzin bouwen","Wachtwoordregels: afschermen, niet delen, uitloggen","Waarom is een wachtwoord persoonlijk?"],
-  "DIG 3 B.4":["Gemanipuleerde media herkennen","Clickbait ontmaskeren","Begrippen: fake news, factcheck, filterbubbel, deepfake"],
-  "DIG 3 B.5":["Catfishing en grooming herkennen","Alarmsignalen bij online profielen","Hoe gepast reageren bij twijfel?"],
-  "DIG 3 B.6":["Welke gegevens wel/niet delen?","Een nickname gebruiken in plaats van je echte naam","Gevaren: identiteitsdiefstal en phishing"],
-  "DIG 3 B.7":["E-mail: aanspreking, vorm en afsluiting","Nettiquette opstellen","(Blinde) kopie correct gebruiken","Chatafspraken en emoji-gebruik"],
-  "DIG 3 B.8":["Ongewenste of schokkende berichten herkennen","Melden aan een volwassene en een screenshot nemen","Wanneer roep je hulp in?"],
-  "DIG 3 B.9":["Cyberpesten herkennen (de 3 voorwaarden)","Gepast reageren op ongepast gedrag online","De effecten van pesten benoemen"],
-  "DIG 3 B.10":["Invloed op je zelfbeeld (positief en negatief)","Invloed van AI, nepnieuws, influencers en challenges"],
-  "DIG 3 B.11":["Wat is mediawijsheid? (weten, kunnen, willen)","Reflecteren op je eigen mediagebruik","Belang: digitale veiligheid en kritisch denken"],
-  "DIG 3 B.12":["Kansen én risico's van media","Privacy-instellingen en de filterbubbel","Beschermen: incognito, actief zoeken"],
-  "DIG 3 B.13":["Voor- en nadelen van sociale netwerken","Bereik, contacten, verslaving, schoonheidsidealen"],
-  "DIG 3 B.14":["Phishing en verdachte links herkennen","Deepfake en fake news bespreken","Cookies: enkel noodzakelijke accepteren"],
-  "DIG 3 B.15":["Vriendelijk en respectvol online","Geen foto's of gegevens delen zonder toestemming","Doxing bespreken"],
-  "DIG 3 B.16":["Digitale voetafdruk: wat deel ik?","Online permanentie: googel jezelf","De gevolgen inschatten"],
-  "DIG 3 B.17":["Auteurs- en portretrecht bespreken","Wanneer is sexting strafbaar?","Regels voor delen opzoeken en toepassen"]
+  "LL23 DIG 3 B.1":["Mediavormen herkennen: tekst, foto, audio, video","Ook QR-codes en logo's","Mediaboodschappen benoemen: reclame, YouTube, podcast"],
+  "LL23 DIG 3 B.2":["Mijn mediadagboek","Eens/oneens-stelling: hoe gebruik jij media?","Schermtijd en afspraken thuis"],
+  "LL23 DIG 3 B.3":["Een sterk wachtwoord of wachtzin bouwen","Wachtwoordregels: afschermen, niet delen, uitloggen","Waarom is een wachtwoord persoonlijk?"],
+  "LL23 DIG 3 B.4":["Gemanipuleerde media herkennen","Clickbait ontmaskeren","Begrippen: fake news, factcheck, filterbubbel, deepfake"],
+  "LL23 DIG 3 B.5":["Catfishing en grooming herkennen","Alarmsignalen bij online profielen","Hoe gepast reageren bij twijfel?"],
+  "LL23 DIG 3 B.6":["Welke gegevens wel/niet delen?","Een nickname gebruiken in plaats van je echte naam","Gevaren: identiteitsdiefstal en phishing"],
+  "LL23 DIG 3 B.7":["E-mail: aanspreking, vorm en afsluiting","Nettiquette opstellen","(Blinde) kopie correct gebruiken","Chatafspraken en emoji-gebruik"],
+  "LL23 DIG 3 B.8":["Ongewenste of schokkende berichten herkennen","Melden aan een volwassene en een screenshot nemen","Wanneer roep je hulp in?"],
+  "LL23 DIG 3 B.9":["Cyberpesten herkennen (de 3 voorwaarden)","Gepast reageren op ongepast gedrag online","De effecten van pesten benoemen"],
+  "LL23 DIG 3 B.10":["Invloed op je zelfbeeld (positief en negatief)","Invloed van AI, nepnieuws, influencers en challenges"],
+  "LL23 DIG 3 B.11":["Wat is mediawijsheid? (weten, kunnen, willen)","Reflecteren op je eigen mediagebruik","Belang: digitale veiligheid en kritisch denken"],
+  "LL23 DIG 3 B.12":["Kansen én risico's van media","Privacy-instellingen en de filterbubbel","Beschermen: incognito, actief zoeken"],
+  "LL23 DIG 3 B.13":["Voor- en nadelen van sociale netwerken","Bereik, contacten, verslaving, schoonheidsidealen"],
+  "LL23 DIG 3 B.14":["Phishing en verdachte links herkennen","Deepfake en fake news bespreken","Cookies: enkel noodzakelijke accepteren"],
+  "LL23 DIG 3 B.15":["Vriendelijk en respectvol online","Geen foto's of gegevens delen zonder toestemming","Doxing bespreken"],
+  "LL23 DIG 3 B.16":["Digitale voetafdruk: wat deel ik?","Online permanentie: googel jezelf","De gevolgen inschatten"],
+  "LL23 DIG 3 B.17":["Auteurs- en portretrecht bespreken","Wanneer is sexting strafbaar?","Regels voor delen opzoeken en toepassen"]
 };
 
 /* ════════════════════════════════════════════════════════════════
-   VERNIEUWDE LEERLIJN DIGITALE GELETTERDHEID (LeerLokaal/OVSG)
-   Conform de nieuwe minimumdoelen — versie "nog niet goedgekeurd".
-   Per doel: code (nieuw), oud (oude code of null = NIEUW doel),
-   age (vanaf-leeftijd), md (concordantie minimumdoelen),
-   onder (ondersteuningsleerlijn), verdiep (verdiepingsleerlijn).
+   LEERPLAN DIGITALE GELETTERDHEID (LeerLokaal/OVSG, exports 19-11-2026)
+   93 basisdoelen + 3 uitbreidingsdoelen. Per doel:
+   code, age (leeftijd; null = uitbreidingsfase), text, md (minimumdoelen),
+   onder/verdiep (ondersteunings- en verdiepingsleerlijn, O.1, O.2 … / V.1 …),
+   cursief (leerplandoel zonder minimumdoel),
+   ll23 (doel uit leerplan 2023 dat het volgens LeerLokaal vervangt),
+   vorig (code in de vorige versie van LeerLokaal, voor DIG 1 en DIG 3
+     volgens kettingen-data.js, voor DIG 2 enkel bij gelijke tekst),
+   les (lesideeën op betekenis gekoppeld door de school, niet officieel;
+     #lib = enkel LIBRARY, #rub = enkel RUBRIC_IDEAS).
    ════════════════════════════════════════════════════════════════ */
 const DATA = {
   ict:{label:"ICT-basisvaardigheden",icon:"💻",color:"#2563a8",colorLight:"#dbeafe",doelen:{
     1:[
-      {code:"DIG 1.1",oud:"DIG 1 B.1",age:2.5,md:"MD L4-8.2.2",text:"Spelenderwijs leren omgaan met digitale infrastructuur.",onder:"Spelenderwijs leren omgaan met digitale infrastructuur zoals een tablet, computer, laptop of digitaal speelgoed."},
-      {code:"DIG 1.2",oud:"DIG 1 B.2",age:3,md:"MD L4-8.2.2",text:"Vlot bewegen op een digitaal scherm.",onder:"Vlot bewegen op een digitaal scherm met een vinger.",verdiep:"Vlot bewegen op een digitaal scherm met een digitale pen, computermuis, touchpad of controller."},
-      {code:"DIG 1.3",oud:"DIG 1 B.3",age:3,md:"MD L4-8.2.2",text:"Met aangereikte en vertrouwde digitale tools oefenen.",onder:"Spelenderwijs met digitale tools oefenen binnen een veilige, afgeschermde omgeving."}
+      {code:"DIG 1 B.1",age:2.5,md:["MD L4 8.2.2"],text:"Spelenderwijs leren omgaan met digitale infrastructuur.",onder:["Spelenderwijs leren omgaan met digitale infrastructuur zoals een tablet, computer, laptop, digitaal speelgoed."],ll23:["DIG 1 B.1"],vorig:["DIG 1.1"]},
+      {code:"DIG 1 B.2",age:3,md:["MD L4 8.2.2"],text:"Vlot bewegen op een digitaal scherm.",onder:["Vlot bewegen op een digitaal scherm met een vinger."],verdiep:["Vlot bewegen op een digitaal scherm met een digitale pen, computermuis, touchpad, controller."],ll23:["DIG 1 B.2"],vorig:["DIG 1.2"]},
+      {code:"DIG 1 B.3",age:3,md:[],text:"Met aangereikte en vertrouwde digitale tools oefenen.",cursief:true,onder:["Spelenderwijs met digitale tools oefenen binnen een veilige, afgeschermde omgeving."],ll23:["DIG 1 B.3"],vorig:["DIG 1.3"]}
     ],
     2:[
-      {code:"DIG 1.4",oud:"DIG 1 B.6",age:5,md:"MD L4-8.2.2",text:"Toetsen op een toetsenbord gericht aantikken.",onder:"Toetsen op het toetsenbord van een tablet, computer of laptop gericht aantikken."},
-      {code:"DIG 1.5",oud:"DIG 1 B.7",age:6,md:"MD L4-8.2.2",text:"Foto's en video's maken met een digitaal apparaat."},
-      {code:"DIG 1.6",oud:"DIG 1 B.8",age:6,md:"MD L4-8.2.2",text:"Eenvoudige, functionele handelingen in een gekende tool begrijpen en correct uitvoeren.",onder:"Gericht eenvoudige handelingen uitvoeren zoals slepen, navigeren, selecteren, tools openen en sluiten, geluid regelen, inloggen met visuele codes."}
+      {code:"DIG 1 B.4",age:5,md:["MD L4 8.2.2"],text:"Toetsen op een toetsenbord gericht aantikken.",onder:["Toetsen op het toetsenbord van een tablet, computer, laptop gericht aantikken."],ll23:["DIG 1 B.6"],vorig:["DIG 1.4"]},
+      {code:"DIG 1 B.5",age:5,md:["MD L4 8.2.4"],text:"Verschillende digitale informatiebronnen herkennen en benoemen."},
+      {code:"DIG 1 B.6",age:6,md:["MD L4 8.2.2"],text:"Foto’s en video’s maken met een digitaal apparaat.",ll23:["DIG 1 B.7"],vorig:["DIG 1.5"]},
+      {code:"DIG 1 B.7",age:6,md:[],text:"Eenvoudige, functionele handelingen in een gekende tool begrijpen en correct uitvoeren.",cursief:true,onder:["Het gericht uitvoeren van eenvoudige functionele handelingen in een gekende tool zoals slepen, navigeren, selecteren, tools openen en sluiten, geluid aan-, afzetten of regelen, inloggen met visuele codes."],ll23:["DIG 1 B.8"],vorig:["DIG 1.6"]}
     ],
     3:[
-      {code:"DIG 1.7",oud:null,age:7,md:"MD L4-8.2.1",text:"Het begrip 'het bestand' kennen en gebruiken.",onder:"Het bestand kennen als tekst, beeld, geluid, video of programma dat je kunt opslaan, openen of bewerken."},
-      {code:"DIG 1.8",oud:"DIG 1 B.9",age:7,md:"MD L4-8.2.2",text:"Cijfers, letters en symbolen gericht aantikken op een toetsenbord."},
-      {code:"DIG 1.9",oud:"DIG 1 B.10",age:7,md:"MD L4-8.2.2",text:"Een aangereikte digitale tool gebruiken om eigen ideeën creatief vorm te geven.",verdiep:"Experimenteren met (nieuwe) digitale tools om eigen ideeën creatief vorm te geven."},
-      {code:"DIG 1.10",oud:"DIG 1 B.11",age:7,md:"MD L4-8.2.4",text:"Op internet digitale informatie opzoeken in een beveiligde omgeving."},
-      {code:"DIG 1.11",oud:"DIG 1 B.12",age:7,md:"MD L4-8.2.2",text:"Een aangereikt digitaal apparaat gebruiken om geluid op te nemen."},
-      {code:"DIG 1.12",oud:null,age:8,md:"MD L4-8.2.2",text:"Invoer- en uitvoerapparaten functioneel gebruiken met inbegrip van het basisgebruik van een toetsenbord.",onder:"Invoerapparaten zoals toetsenbord, muis en touchscreen en uitvoerapparaten zoals beeldscherm, koptelefoon en luidsprekers functioneel gebruiken."},
-      {code:"DIG 1.13",oud:null,age:8,md:"MD L4-8.2.4",text:"Een zoekvraag formuleren als zoekstrategie om in digitale bronnen informatie te vinden en te raadplegen."},
-      {code:"DIG 1.14",oud:null,age:8,md:"MD L4-8.2.4",text:"Een zoektool kiezen als zoekstrategie om in digitale bronnen informatie te vinden en te raadplegen."},
-      {code:"DIG 1.15",oud:null,age:8,md:"MD L4-8.2.4",text:"Een zoekopdracht formuleren als zoekstrategie om in digitale bronnen informatie te vinden en te raadplegen."},
-      {code:"DIG 1.16",oud:"DIG 1 B.13",age:8,md:"MD L4-8.2.2",text:"Met een aangereikte tool afbeeldingen of foto's bewerken om eigen ideeën creatief vorm te geven.",onder:"Met een eenvoudige tool bewerken: grootte wijzigen, bijsnijden, filters gebruiken, roteren, sepia- of zwart-witeffect toepassen."},
-      {code:"DIG 1.17",oud:"DIG 1 B.14",age:8,md:"MD L4-8.2.2",text:"Van een aangereikte tool basisfuncties gebruiken voor het schrijven en creatief opmaken van een tekst.",onder:"Een beperkt aantal aangeleerde basisfuncties gebruiken."},
-      {code:"DIG 1.18",oud:"DIG 1 B.17",age:8,md:"MD L6-8.4.1",text:"Een aangereikte tool gebruiken om op een veilige, verantwoorde en doelmatige manier te communiceren.",onder:"Met aandacht voor persoonsgegevens, paswoorden en het delen van foto's; de klas- en schoolafspraken rond digitale communicatie volgen."},
-      {code:"DIG 1.19",oud:"DIG 1 B.18",age:9,md:"MD L4-8.2.2",text:"Een aangereikte tool gebruiken om informatie aan anderen voor te stellen."},
-      {code:"DIG 1.20",oud:"DIG 1 B.19",age:9,md:"MD L4-8.2.2",text:"Met een aangereikte tool eenvoudige teksten digitaal schrijven.",onder:"Zoals digitale elfjes of gedichten schrijven, een dagelijkse waarneming bijhouden."},
-      {code:"DIG 1.21",oud:"DIG 1 B.20",age:9,md:"MD L4-8.2.2",text:"Met aangereikte digitale tools zelfstandig oefenen en leren."},
-      {code:"DIG 1.22",oud:null,age:9,md:"MD L4-8.2.3",text:"Bestanden gebruiken via de bestaande mappenstructuur van het systeem."}
+      {code:"DIG 1 B.8",age:7,md:["MD L4 8.2.1"],text:"Het begrip het bestand kennen en gebruiken.",onder:["Het begrip het bestand, zoals tekst, beeld, geluid, video of programma, dat je kunt opslaan, openen of bewerken, kennen en gebruiken."],vorig:["DIG 1.7"]},
+      {code:"DIG 1 B.9",age:7,md:["MD L4 8.1.1"],text:"De begrippen digitaal en het internet kennen en gebruiken.",onder:["Uitleggen dat het internet gebruikt wordt om informatie op te zoeken."],vorig:["DIG 2.12"]},
+      {code:"DIG 1 B.10",age:7,md:["MD L4 8.1.1"],text:"De begrippen de hardware, de software kennen en gebruiken.",onder:["Uitleggen dat een scherm en toetsenbord hardware zijn en een spelletje software is."],vorig:["DIG 2.13"]},
+      {code:"DIG 1 B.11",age:7,md:["MD L4 8.2.2"],text:"Cijfers, letters en symbolen gericht aantikken op een toetsenbord.",ll23:["DIG 1 B.9"],vorig:["DIG 1.8"]},
+      {code:"DIG 1 B.12",age:7,md:["MD L4 8.2.3", "MD L6 8.2.2"],text:"Het bestand een duidelijke, herkenbare bestandsnaam geven.",onder:["Volgens de klas- en schoolafspraken een bestandsnaam geven."]},
+      {code:"DIG 1 B.13",age:7,md:[],text:"Een aangereikte digitale tool gebruiken om eigen ideeën creatief vorm te geven.",cursief:true,verdiep:["Experimenteren met (nieuwe) digitale tools om eigen ideeën creatief vorm te geven."],ll23:["DIG 1 B.10"],vorig:["DIG 1.9"]},
+      {code:"DIG 1 B.14",age:7,md:["MD L4 8.2.4"],text:"Met aangereikte zoektermen een zoekopdracht in een aangereikte zoektool ingeven."},
+      {code:"DIG 1 B.15",age:7,md:["MD L4 8.2.4"],text:"Digitale informatiebronnen raadplegen binnen een veilige digitale omgeving.",ll23:["DIG 1 B.11"],vorig:["DIG 1.10"]},
+      {code:"DIG 1 B.16",age:7,md:["MD L4 8.2.2"],text:"Een aangereikt digitaal apparaat gebruiken om geluid op te nemen.",ll23:["DIG 1 B.12"],vorig:["DIG 1.11"]},
+      {code:"DIG 1 B.17",age:8,md:["MD L4 8.1.1", "MD L6 8.1.2"],text:"De begrippen de invoer, de verwerking, de uitvoer, de opslag kennen en gebruiken.",onder:["Bij het nemen van een foto met je smartphone benoemen dat het indrukken van de knop om de foto te nemen de invoer is, het nemen van het beeld door de smartphone de verwerking is, het tonen van de foto op het scherm de uitvoer is en het bewaren van de foto op de geheugenkaart de opslag."],vorig:["DIG 2.13", "DIG 2.25"]},
+      {code:"DIG 1 B.18",age:8,md:["MD L4 8.2.2"],text:"Invoer- en uitvoerapparaten functioneel gebruiken met inbegrip van het basisgebruik van een toetsenbord.",onder:["Invoerapparaten zoals toetsenbord, muis, touchscreen, en uitvoerapparaten zoals beeldscherm, koptelefoon, luidsprekers functioneel gebruiken."],vorig:["DIG 1.12"]},
+      {code:"DIG 1 B.19",age:8,md:["MD L4 8.2.4"],text:"Een zoekvraag formuleren als zoekstrategie om in digitale bronnen informatie te vinden en te raadplegen.",onder:["Onder begeleiding een zoekvraag formuleren als strategie om informatie te vinden in digitale bronnen."],vorig:["DIG 1.13"]},
+      {code:"DIG 1 B.20",age:8,md:["MD L4 8.2.4"],text:"Een zoektool kiezen als zoekstrategie om in digitale bronnen informatie te vinden en te raadplegen.",onder:["Onder begeleiding een zoektool zoals een zoekbalk, zoekmachine of een routeplanner gebruiken om informatie te vinden en te raadplegen."],vorig:["DIG 1.14"]},
+      {code:"DIG 1 B.21",age:8,md:["MD L4 8.2.4"],text:"Een zoekopdracht formuleren als zoekstrategie om in digitale bronnen informatie te vinden en te raadplegen.",onder:["Onder begeleiding een zoekopdracht met trefwoorden of afbeeldingen formuleren."],vorig:["DIG 1.15"]},
+      {code:"DIG 1 B.22",age:8,md:["MD L4 8.2.4", "MD L6 8.2.7"],text:"Aan de hand van aangereikte criteria de gevonden zoekresultaten in digitale bronnen beoordelen op bruikbaarheid.",onder:["Aan de hand van aangereikte criteria zoals ‘geeft het antwoord op de onderzoeksvraag’, ‘mag de informatie zomaar gebruikt worden’, beoordelen of de digitale bron bruikbaar is."],vorig:["DIG 1.33"]},
+      {code:"DIG 1 B.23",age:8,md:[],text:"Met een aangereikte tool afbeeldingen of foto’s bewerken om eigen ideeën creatief vorm te geven.",cursief:true,onder:["Met een eenvoudige aangereikte tool afbeeldingen of foto’s bewerken, zoals de grootte wijzigen, het formaat bijsnijden, filters gebruiken, roteren, sepia- of zwart-witeffecten toepassen, om eigen ideeën creatief vorm te geven."],ll23:["DIG 1 B.13"],vorig:["DIG 1.16"]},
+      {code:"DIG 1 B.24",age:8,md:["MD L6 8.4.1"],text:"Een aangereikte tool gebruiken om op een veilige, verantwoorde en doelmatige manier te communiceren.",onder:["De klas- en schoolafspraken rond digitale communicatie volgen.", "Aandacht geven aan bescherming van de persoonsgegevens, omgaan met paswoorden, het delen van foto’s en informatie …"],ll23:["DIG 1 B.17"],vorig:["DIG 1.18"]},
+      {code:"DIG 1 B.25",age:9,md:["MD L4 8.2.3", "MD L6 8.2.2"],text:"Bestanden openen om te bewerken en sluiten om te bewaren.",vorig:["DIG 1.23"]},
+      {code:"DIG 1 B.26",age:9,md:["MD L4 8.1.1"],text:"De begrippen verzenden, ontvangen, offline, online kennen en gebruiken.",onder:["Een bericht versturen gebeurt online en een foto bekijken die al op een toestel staat, kan ook offline."],vorig:["DIG 2.24"]},
+      {code:"DIG 1 B.27",age:9,md:[],text:"Een aangereikte tool gebruiken om informatie aan anderen voor te stellen.",cursief:true,ll23:["DIG 1 B.18"],vorig:["DIG 1.19"]},
+      {code:"DIG 1 B.28",age:9,md:[],text:"Met aangereikte digitale tools zelfstandig oefenen en leren.",cursief:true,ll23:["DIG 1 B.20"],vorig:["DIG 1.21"]},
+      {code:"DIG 1 B.29",age:9,md:["MD L4 8.2.3"],text:"Bestanden gebruiken via de bestaande mappenstructuur van het systeem.",onder:["Naar de juiste locatie navigeren.", "Het juiste bestand selecteren.", "Het bestand terugplaatsen in de juiste map."],vorig:["DIG 1.22"]}
     ],
     4:[
-      {code:"DIG 1.23",oud:null,age:10,md:"MD L6-8.2.2",text:"Bestanden openen om te bewerken en sluiten om te bewaren."},
-      {code:"DIG 1.24",oud:null,age:10,md:"MD L6-8.2.4",text:"Eenvoudige systeeminstellingen aanpassen.",onder:"Zoals de weergave- en taalinstellingen aanpassen, wifi aan- of uitzetten."},
-      {code:"DIG 1.25",oud:"DIG 1 B.21",age:10,md:"MD L6-8.2.2",text:"Zoekresultaten uit digitale bronnen verwerken en bewaren."},
-      {code:"DIG 1.26",oud:null,age:11,md:"MD L6-8.2.3",text:"Bestanden beheren via een aangereikte structuur."},
-      {code:"DIG 1.27",oud:"DIG 1 B.23",age:11,md:"MD L6-8.2.2",text:"Bestanden downloaden en opslaan op verschillende door hen gekende opslagmedia.",onder:"Bestanden downloaden en opslaan volgens de afgesproken criteria in de instructie."},
-      {code:"DIG 1.28",oud:"DIG 1 B.24",age:11,md:"MD L6-8.2.2",text:"Bestanden uploaden, terugvinden en delen met een klasgenoot in een door hen gekende digitale omgeving.",onder:"Bestanden uploaden, terugvinden en delen volgens de afgesproken criteria in de instructie."},
-      {code:"DIG 1.29",oud:null,age:11,md:"MD L6-8.2.1",text:"Invoer- en uitvoerapparaten doelgericht gebruiken en instellen, met inbegrip van vlot gebruik van een toetsenbord.",onder:"Invoerapparaten zoals toetsenbord, muis, touchscreen, microfoon en camera en uitvoerapparaten zoals beeldscherm, printer, luidspreker en projector doelgericht gebruiken en instellen."},
-      {code:"DIG 1.30",oud:null,age:11,md:"MD L6-8.4.1",text:"Mogelijkheden van digitale tools om te communiceren kennen.",onder:"Zoals berichten, e-mail, chat, reacties of videogesprekken."},
-      {code:"DIG 1.31",oud:null,age:11,md:"MD L6-8.2.5",text:"Het begrip artificiële intelligentie kennen.",onder:"AI kennen als een tool die taken uitvoert waarvoor normaal menselijke intelligentie nodig is, zoals taal begrijpen, beelden herkennen of beslissingen nemen."},
-      {code:"DIG 1.32",oud:null,age:11,md:"MD L6-8.2.8",text:"Voorbeelden geven van toepassingen waarin artificiële intelligentie (AI) gebruikt wordt.",onder:"Voorbeelden zoals spraakherkenning, vertaaltools, virtuele assistenten en gezichtsherkenning."},
-      {code:"DIG 1.33",oud:null,age:11,md:"MD L6-8.2.7",text:"Aan de hand van aangereikte criteria digitale bronnen beoordelen op bruikbaarheid, betrouwbaarheid en correctheid.",onder:"Criteria zoals: is de informatie verouderd, is er een bronnenlijst, van wie komt de informatie, dubbelchecken, geeft het antwoord op de onderzoeksvraag, mag de informatie zomaar gebruikt worden."},
-      {code:"DIG 1.34",oud:"DIG 1 B.25",age:11,md:"",text:"Reflecteren op de meerwaarde van het gebruik van digitale toepassingen.",verdiep:"Reflecteren op basis van vooraf bepaalde criteria over de meerwaarde van het gebruik van digitale toepassingen."}
+      {code:"DIG 1 B.30",age:10,md:["MD L6 8.2.7"],text:"Gebruikte digitale bronnen vermelden."},
+      {code:"DIG 1 B.31",age:10,md:["MD L6 8.2.4"],text:"Eenvoudige systeeminstellingen aanpassen.",onder:["Eenvoudige systeeminstellingen aanpassen zoals de weergave-, taalinstellingen, wifi aan- of uitzetten."],vorig:["DIG 1.24"]},
+      {code:"DIG 1 B.32",age:10,md:["MD L6 8.2.2"],text:"Zoekresultaten uit digitale bronnen verwerken en bewaren.",ll23:["DIG 1 B.21"],vorig:["DIG 1.25"]},
+      {code:"DIG 1 B.33",age:11,md:["MD L6 8.1.1"],text:"Begrijpen hoe invoer, verwerking, uitvoer en opslag samen een digitaal informatieverwerkingsproces vormen.",onder:["Begrijpen dat een tablet een bericht verwerkt: je typt iets (invoer), het toestel verwerkt dit en toont het bericht op het scherm (uitvoer).", "Bij een online rekenoefening:\n• wordt een antwoord ingevoerd (invoer);\n• controleert de computer het antwoord (verwerking);\n• toont een melding ‘goed’ of ‘fout’ (uitvoer);\n• bewaart het resultaat in het leerlingdossier (opslag)."],vorig:["DIG 2.26"]},
+      {code:"DIG 1 B.34",age:11,md:["MD L6 8.1.2"],text:"De begrippen het netwerk, de verbinding kennen en gebruiken.",onder:["Begrijpen dat de computers op school via een netwerk met elkaar verbonden zijn."],vorig:["DIG 2.27"]},
+      {code:"DIG 1 B.35",age:11,md:["MD L6 8.1.1"],text:"Begrijpen dat een verbinding nodig is om informatie te delen.",onder:["Bij het versturen van een e-mail reist die via verschillende netwerken naar de ontvanger."],vorig:["DIG 2.28"]},
+      {code:"DIG 1 B.36",age:11,md:["MD L6 8.1.1"],text:"Weten dat netwerktechnologieën, zoals kabel, wifi, mobiel netwerk, via netwerken met elkaar verbonden zijn en op die manier gegevens kunnen gedeeld worden.",onder:["Beschrijven hoe een foto die met een smartphone wordt genomen, via wifi of een mobiel netwerk naar een computer of naar de cloud kan worden gestuurd."],vorig:["DIG 2.29"]},
+      {code:"DIG 1 B.37",age:11,md:["MD L6 8.1.1"],text:"Weten dat gegevens op een andere locatie dan het eigen digitale apparaat kunnen worden verwerkt en worden opgeslagen.",onder:["Begrijpen dat bij online gamen meerdere spelers tegelijk in verbinding staan via het internet, zodat ze samen kunnen spelen en communiceren (realtime gegevensuitwisseling)."],vorig:["DIG 2.30"]},
+      {code:"DIG 1 B.38",age:11,md:["MD L6 8.2.3"],text:"Bestanden beheren via een aangereikte structuur.",onder:["Bestanden beheren via een aangereikte structuur zoals aanmaken, verwijderen en herbenoemen van mappen en bestanden, verwijderen van overbodige of foute bestanden, terughalen van verwijderde bestanden."],vorig:["DIG 1.26"]},
+      {code:"DIG 1 B.39",age:11,md:["MD L6 8.2.2"],text:"Bestanden downloaden en opslaan op verschillende door hen gekende opslagmedia.",onder:["Bestanden downloaden en opslaan volgens de afgesproken criteria in de instructie."],ll23:["DIG 1 B.23"],vorig:["DIG 1.27"]},
+      {code:"DIG 1 B.40",age:11,md:["MD L6 8.2.2"],text:"Bestanden uploaden, terugvinden en delen met een klasgenoot in een door hen gekende digitale omgeving.",onder:["Bestanden uploaden, terugvinden en delen volgens de afgesproken criteria in de instructie."],ll23:["DIG 1 B.24"],vorig:["DIG 1.28"]},
+      {code:"DIG 1 B.41",age:11,md:["MD L6 8.2.1"],text:"Invoer- en uitvoerapparaten doelgericht gebruiken en instellen met inbegrip van vlot gebruik van een toetsenbord.",onder:["Invoerapparaten zoals toetsenbord, muis, touchscreen, microfoon, camera, en uitvoerapparaten zoals beeldscherm, printer, luidspreker, projector doelgericht gebruiken en instellen."],vorig:["DIG 1.29"]},
+      {code:"DIG 1 B.42",age:11,md:["MD L6 8.4.1"],text:"De mogelijkheden van digitale tools om te communiceren kennen.",onder:["Mogelijkheden van digitale tools om te communiceren zoals berichten, e-mail, chat, reacties of videogesprekken kennen."],vorig:["DIG 1.30"]},
+      {code:"DIG 1 B.43",age:11,md:["MD L6 8.2.5"],text:"Het begrip artificiële intelligentie kennen.",onder:["Het begrip artificiële intelligentie kennen als een tool die taken uitvoert waarvoor normaal gesproken menselijke intelligentie nodig is, zoals taal begrijpen, beelden herkennen of beslissingen nemen."],vorig:["DIG 1.31"]},
+      {code:"DIG 1 B.44",age:11,md:["MD L6 8.2.8"],text:"Voorbeelden geven van toepassingen waarin artificiële intelligentie (AI) gebruikt wordt.",onder:["Voorbeelden van AI-toepassingen geven zoals spraakherkenning, vertaaltools, virtuele assistenten, gezichtsherkenning."],vorig:["DIG 1.32"]},
+      {code:"DIG 1 B.45",age:11,md:["MD L6 8.2.7"],text:"Aan de hand van aangereikte criteria de gevonden digitale bronnen beoordelen op betrouwbaarheid.",onder:["Aan de hand van aangereikte criteria zoals ‘van wie komt de informatie’, ‘is het een betrouwbare bron’, de informatie dubbelchecken om te beoordelen of de digitale bron betrouwbaar is."],vorig:["DIG 1.33"]},
+      {code:"DIG 1 B.46",age:11,md:["MD L6 8.2.7"],text:"Aan de hand van aangereikte criteria de gevonden digitale bronnen beoordelen op correctheid.",onder:["Aan de hand van aangereikte criteria zoals verouderde informatie, bronnenlijst, dubbelchecken, beoordelen of de digitale bron correct is."],vorig:["DIG 1.33"]},
+      {code:"DIG 1 B.47",age:11,md:[],text:"Reflecteren op de meerwaarde van het gebruik van digitale toepassingen.",cursief:true,onder:["Reflecteren op basis van vooraf bepaalde criteria over de meerwaarde van het gebruik van digitale toepassingen."],ll23:["DIG 1 B.25"],vorig:["DIG 1.34"]}
+    ],
+    U:[
+      {code:"DIG 1 U.1",age:null,md:[],text:"Andere digitale tools zoals lasermeter, fietscomputer, routeplanner, fotobewerkingsprogramma instellen, bedienen en gebruiken.",cursief:true},
+      {code:"DIG 1 U.2",age:null,md:[],text:"Exploreren van virtuele realiteit en artificiële intelligentie.",cursief:true},
+      {code:"DIG 1 U.3",age:null,md:[],text:"AI-gegenereerde informatie en andere digitale bronnen kritisch beoordelen.",cursief:true}
     ]
   }},
   comp:{label:"Computationeel denken",icon:"🧩",color:"#7C3AED",colorLight:"#F5F3FF",doelen:{
     1:[
-      {code:"DIG 2.1",oud:"DIG 2 B.2",age:3,md:"MD L4-8.1.1",text:"Onder begeleiding verwoorden waar computers in hun leefwereld te zien zijn en hoe ze het leven leuker of eenvoudiger kunnen maken."},
-      {code:"DIG 2.2",oud:"DIG 2 B.3",age:3,md:"MD L4-8.1.3",text:"Begrijpen dat een computer een opdracht eindeloos kan herhalen (patroonherkenning)."},
-      {code:"DIG 2.3",oud:"DIG 2 B.4",age:3,md:"MD L4-8.1.3",text:"In een logische volgorde plaatsen van prenten, foto's, deelopdrachten (patroonherkenning)."},
-      {code:"DIG 2.4",oud:"DIG 2 B.5",age:3,md:"MD L4-8.1.3",text:"Onderdelen van een voorwerp als delen van een groter geheel benoemen (abstractie)."},
-      {code:"DIG 2.5",oud:"DIG 2 B.6",age:5,md:"MD L4-8.1.3",text:"Vanuit een patroon een rij of een reeks verder zetten (patroonherkenning)."},
-      {code:"DIG 2.6",oud:"DIG 2 B.7",age:5,md:"MD L4-8.1.3",text:"Een eenvoudige opdracht in deelopdrachten opdelen (decompositie)."}
+      {code:"DIG 2 B.1",age:4,md:["MD L4 8.1.3"],text:"Onder begeleiding een eenvoudig stappenplan volgen om een opdracht of doel te bereiken.",onder:["Een stappenkaart volgen om een toren te bouwen met blokken."],les:["LL23 DIG 2 B.12"]}
     ],
     2:[
-      {code:"DIG 2.7",oud:"DIG 2 B.8",age:5,md:"MD L4-8.1.3",text:"De herhaling van opdrachten in verschillende situaties herkennen (patroonherkenning)."},
-      {code:"DIG 2.8",oud:"DIG 2 B.12",age:5,md:"MD L4-8.1.2",text:"Een opdracht uitvoeren door stap voor stap een reeks handelingen uit te voeren (algoritme)."},
-      {code:"DIG 2.9",oud:"DIG 2 B.11",age:6,md:"MD L4-8.1.2",text:"Eenvoudige reeksen van instructies aan een ander geven (mondeling of via symbolen) die leiden tot een bepaald doel (algoritme)."},
-      {code:"DIG 2.10",oud:"DIG 2 B.13",age:6,md:"MD L4-8.1.3",text:"Voorbeelden van geautomatiseerde systemen in het dagelijkse leven verwoorden."}
+      {code:"DIG 2 B.2",age:5,md:["MD L4 8.1.3"],text:"Onder begeleiding patronen en herhalingen herkennen in opdrachten, bewegingen en reeksen.",onder:["Een klap-stamp-klap-stampritme verderzetten."],verdiep:["Een digitaal patroonspel of een eenvoudige herhaalopdracht met een robot uitvoeren."],les:["LL23 DIG 2 B.6", "LL23 DIG 2 B.8", "LL23 DIG 2 B.3"]},
+      {code:"DIG 2 B.3",age:5,md:["MD L4 8.1.3"],text:"Onder begeleiding een eenvoudig stappenplan opstellen, uitvoeren en controleren.",onder:["Zelf de stappen bedenken om een plant water te geven en nagaan of niets vergeten is."],verdiep:["Een route uitstippelen voor een robot en aanpassen wanneer de robot verkeerd rijdt."],les:["LL23 DIG 2 B.7"]},
+      {code:"DIG 2 B.4",age:6,md:["MD L4 8.1.3"],text:"Belangrijke kenmerken onderscheiden en minder relevante details weglaten (abstractie).",onder:["Een maquette of plattegrond van de klas tekenen met alleen de belangrijke voorwerpen."],verdiep:["Een digitale kaart of tekening maken waarbij enkel noodzakelijke elementen worden toegevoegd."]},
+      {code:"DIG 2 B.5",age:6,md:["MD L4 8.1.3"],text:"Patronen herkennen in eenvoudige situaties (patroonherkenning).",onder:["Een reeks vormen, kleuren of bewegingen verderzetten."],verdiep:["Een patroonspel spelen in een leerapp of met een programmeerbare robot."],les:["LL23 DIG 2 B.6", "LL23 DIG 2 B.10#lib"]},
+      {code:"DIG 2 B.6",age:6,md:["MD L4 8.1.3"],text:"Stappen in een vaste volgorde plaatsen en uitvoeren (sequentie).",onder:["De stappen van tandenpoetsen in de juiste volgorde leggen."],verdiep:["Een reeks programmeerblokken in de juiste volgorde plaatsen om een personage te laten bewegen."],les:["LL23 DIG 2 B.4", "LL23 DIG 2 B.10#rub"]},
+      {code:"DIG 2 B.7",age:6,md:["MD L4 8.1.3"],text:"Onder begeleiding een lineair algoritme uitvoeren, testen en verbeteren.",onder:["Een klasgenoot via mondelinge instructies door een hindernissenparcours leiden en de instructies aanpassen wanneer iets fout loopt."],verdiep:["Een reeks programmeerblokken gebruiken om een robot of personage aan te sturen."],les:["LL23 DIG 2 B.11"]}
     ],
     3:[
-      {code:"DIG 2.11",oud:"DIG 2 B.14",age:7,md:"MD L4-8.1.3",text:"Een proces in verschillende stappen opdelen en waar mogelijk elke stap weer in deelstappen (decompositie)."},
-      {code:"DIG 2.12",oud:null,age:7,md:"MD L4-8.1.1",text:"De begrippen digitaal en het internet kennen en gebruiken."},
-      {code:"DIG 2.13",oud:null,age:7,md:"MD L4-8.1.1",text:"De begrippen hardware, software, invoer, verwerking, uitvoer en opslag kennen en gebruiken."},
-      {code:"DIG 2.14",oud:"DIG 2 B.15",age:8,md:"MD L4-8.1.2",text:"Het begrip algoritme kennen als een stappenplan of instructie om een specifiek probleem in een vaste volgorde op te lossen.",onder:"Zoals een kookrecept, een bouwplan, een routebeschrijving of de werking van een computer."},
-      {code:"DIG 2.15",oud:"DIG 2 B.16",age:8,md:"MD L4-8.1.3",text:"Voor- en nadelen van het geautomatiseerd uitvoeren van opdrachten verwoorden."},
-      {code:"DIG 2.16",oud:null,age:9,md:"MD L4-8.1.3",text:"Het principe 'abstractie' van computationeel denken herkennen als focussen op wat belangrijk is en het weglaten van overbodige details."},
-      {code:"DIG 2.17",oud:null,age:9,md:"MD L4-8.1.3",text:"Het principe 'decompositie' van computationeel denken herkennen als het opdelen van een groot probleem in kleinere, hanteerbare delen."},
-      {code:"DIG 2.18",oud:null,age:9,md:"MD L4-8.1.3",text:"Het principe 'patroonherkenning' van computationeel denken herkennen als het zien van gelijkenissen en herhalingen in gegevens of opdrachten."},
-      {code:"DIG 2.19",oud:null,age:9,md:"MD L4-8.1.3",text:"Het principe 'algoritme' van computationeel denken herkennen als een expliciete reeks eenduidige instructies die stapsgewijs worden uitgevoerd."},
-      {code:"DIG 2.20",oud:null,age:9,md:"MD L4-8.1.3",text:"Het principe 'sequentie' van computationeel denken herkennen als de vaste volgorde waarin de stappen of instructies worden uitgevoerd."},
-      {code:"DIG 2.21",oud:"A.6",age:9,md:"MD L4-8.1.3",text:"Onder begeleiding fouten in een stappenplan of instructie vinden en verbeteren (debuggen)."},
-      {code:"DIG 2.22",oud:null,age:9,md:"MD L4-8.1.3",text:"Onder begeleiding de principes van computationeel denken toepassen om een lineair algoritme te ontwerpen, testen en debuggen om tot een werkende oplossing te komen.",onder:"Onder begeleiding beschrijven wat een computerprogramma uitvoert; een instructie of stappenplan uitschrijven (algoritme), letterlijk uitvoeren (testen) en waar iets foutloopt aanpassen (debuggen).",verdiep:"Foutenanalyse van de computercode (instructie) maken als de uitvoer van de instructie fout loopt."},
-      {code:"DIG 2.23",oud:null,age:9,md:"MD L4-8.2.5",text:"Onder begeleiding een zoekstrategie uitwerken en toepassen vanuit de principes van computationeel denken."},
-      {code:"DIG 2.24",oud:null,age:9,md:"MD L4-8.1.1",text:"De begrippen verzenden, ontvangen, offline en online kennen en gebruiken."}
+      {code:"DIG 2 B.8",age:7,md:["MD L4 8.1.3"],text:"Een probleem opdelen in kleinere deelproblemen (decompositie).",onder:["Een probleem onder begeleiding ontleden (bv. een optelsom in wiskunde: eerst de tientallen en dan de eenheden samentellen om vervolgens de uitkomsten samen te tellen)."],verdiep:["Een groter programmeerproject opdelen in verschillende opdrachten of scènes."],les:["LL23 DIG 2 B.14"]},
+      {code:"DIG 2 B.9",age:7,md:["MD L4 8.1.3"],text:"Eenvoudige instructies formuleren met woorden, symbolen of visuele voorstellingen.",onder:["Een schatkaart maken met pijlen en symbolen waarmee een klasgenoot een voorwerp terugvindt."],les:["LL23 DIG 2 B.11"]},
+      {code:"DIG 2 B.10",age:8,md:["MD L4 8.1.3"],text:"Fouten opsporen en verbeteren in een stappenplan of eenvoudige computercode (debuggen).",onder:["Een fout zoeken in een recept of routebeschrijving en verbeteren."],les:["eigen:scratch-debuggen"]},
+      {code:"DIG 2 B.11",age:8,md:["MD L4 8.1.3"],text:"Onder begeleiding een lineair algoritme ontwerpen, uitvoeren, testen en debuggen om tot een werkende oplossing te komen.",onder:["Een papieren doolhof oplossen door een stappenplan te schrijven en fouten te verbeteren.", "Een spelinstructie ontwerpen waarbij het probleem eerst wordt opgesplitst en getest."],verdiep:["Een eenvoudige animatie of verhaal in een programmeertool ontwerpen en verbeteren."],les:["eigen:scratch-lineair"]},
+      {code:"DIG 2 B.12",age:8,md:["MD L4 8.2.5"],text:"Een eenvoudige zoekstrategie ontwikkelen en toepassen om informatie of een oplossing te vinden.",onder:["Zoekwoorden bedenken om betrouwbare informatie over een dier te vinden."],verdiep:["Zoekwoorden kiezen in een kindvriendelijke zoekmachine en de resultaten bekijken."]},
+      {code:"DIG 2 B.13",age:9,md:["MD L4 8.1.2"],text:"Het begrip algoritme kennen en gebruiken.",onder:["Een algoritme beschrijven als een duidelijke reeks instructies om een doel te bereiken, zoals een recept of routebeschrijving."],les:["LL23 DIG 2 B.15"]},
+      {code:"DIG 2 B.14",age:9,md:["MD L4 8.1.3"],text:"Problemen omzetten in een stappenplan, schema of andere passende visuele voorstelling (abstractie).",onder:["Een stappenplan maken voor het organiseren van een klasactiviteit."],verdiep:["Een digitaal stroomschema of storyboard maken."],les:["LL23 DIG 2 B.17"]},
+      {code:"DIG 2 B.15",age:9,md:["MD L4 8.2.5"],text:"Onder begeleiding een zoekstrategie uitwerken en toepassen vanuit de principes van computationeel denken.",onder:["Verschillende boeken, woordenlijsten of personen vergelijken om de beste informatiebron te kiezen."],verdiep:["Zoektermen aanpassen wanneer een zoekopdracht te veel of te weinig bruikbare resultaten geeft."],vorig:["DIG 2.23"]},
+      {code:"DIG 2 B.16",age:9,md:["MD L4 8.1.3"],text:"Onder begeleiding de principes van computationeel denken toepassen om een lineair algoritme te ontwerpen, testen en debuggen om tot een werkende oplossing te komen (opbouw sequentie).",onder:["De stappen uitwerken voor een klasactiviteit (bv. een spel organiseren), testen en verbeteren."],vorig:["DIG 2.22"],les:["eigen:scratch-lineair"]}
     ],
     4:[
-      {code:"DIG 2.25",oud:null,age:11,md:"MD L6-8.1.2",text:"De begrippen de invoer, de informatieverwerking, de uitvoer en de opslag kennen en gebruiken."},
-      {code:"DIG 2.26",oud:null,age:11,md:"MD L6-8.1.1",text:"Begrijpen hoe invoer, verwerking, uitvoer en opslag samen een digitaal informatieverwerkingsproces vormen."},
-      {code:"DIG 2.27",oud:null,age:11,md:"MD L6-8.1.2",text:"De begrippen het netwerk en de verbinding kennen en gebruiken."},
-      {code:"DIG 2.28",oud:null,age:11,md:"MD L6-8.1.1",text:"Begrijpen dat een verbinding nodig is om informatie te delen."},
-      {code:"DIG 2.29",oud:null,age:11,md:"MD L6-8.1.1",text:"Weten dat digitale systemen via netwerken (kabel, wifi, mobiel netwerk) met elkaar verbonden zijn en zo gegevens kunnen delen."},
-      {code:"DIG 2.30",oud:null,age:11,md:"MD L6-8.1.1",text:"Weten dat gegevens op een andere locatie dan het eigen digitale apparaat kunnen worden verwerkt en opgeslagen."},
-      {code:"DIG 2.31",oud:"DIG 2 B.17",age:11,md:"MD L6-8.1.3",text:"Een concreet probleem in een passende visuele weergave zoals een stappenplan omzetten (abstractie)."},
-      {code:"DIG 2.32",oud:"DIG 2 B.18",age:11,md:"MD L6-8.1.3",text:"Patronen in abstracte situaties herkennen en beschrijven (patroonherkenning)."},
-      {code:"DIG 2.33",oud:null,age:11,md:"MD L6-8.1.3",text:"Onder begeleiding de principes van computationeel denken toepassen om een algoritme te ontwerpen, testen en debuggen om tot een werkende oplossing te komen (combinatie van sequentie, herhaling, keuze).",onder:"Onder begeleiding ervaring opdoen met computercode: een parcours doorlopen (sequentie) met herhaling en ALS-DAN-ANDERS-keuzes, de stappen uitvoeren (testen) en voorwaarden aanpassen waar het foutloopt (debuggen).",verdiep:"Eigen computercode aanpassen op basis van foutenanalyse; de werking van computercode door logisch redeneren verklaren; onder begeleiding een eenvoudige computercode ontwikkelen."},
-      {code:"DIG 2.34",oud:null,age:11,md:"MD L6-8.2.6",text:"Een zoekstrategie uitwerken, toepassen en indien nodig bijsturen vanuit de principes van computationeel denken.",verdiep:"Een eenvoudige en effectieve prompt formuleren in een door de school beschikbaar gestelde AI-tool om content of informatie te verkrijgen."}
+      {code:"DIG 2 B.17",age:10,md:["MD L6 8.1.3"],text:"Onder begeleiding een algoritme ontwerpen, testen en debuggen met behulp van keuzes.",onder:["Een beslissingsspel maken met kaarten: ‘ALS je een rode kaart trekt, DAN ga je links, ANDERS ga je rechts.’"],les:["LL23 DIG 2 B.19"]},
+      {code:"DIG 2 B.18",age:10,md:["MD L6 8.1.3"],text:"Onder begeleiding een algoritme ontwerpen waarin herhalingen doelgericht worden toegepast.",onder:["Een dansreeks maken waarin dezelfde bewegingen meerdere keren worden herhaald."],verdiep:["Een herhaalblok gebruiken om een figuur meerdere keren een patroon te laten tekenen."],les:["LL23 DIG 2 B.20"]},
+      {code:"DIG 2 B.19",age:11,md:["MD L6 8.1.3"],text:"Patronen in abstracte situaties herkennen en beschrijven (patroonherkenning).",onder:["Regelmatigheden zoeken in tabellen, cijferreeksen of wetenschappelijke observaties."],verdiep:["Patronen ontdekken in digitale gegevens of simulaties."],ll23:["DIG 2 B.18"],vorig:["DIG 2.32"]},
+      {code:"DIG 2 B.20",age:11,md:["MD L6 8.1.3"],text:"Onder begeleiding de principes van computationeel denken toepassen om een algoritme te ontwerpen, testen en debuggen om tot een werkende oplossing te komen (combinatie van sequentie, herhaling, keuze).",verdiep:["Een spel programmeren waarin een personage blijft bewegen tot het een obstakel raakt en dan een andere richting kiest."],vorig:["DIG 2.33"],les:["LL23 DIG 2 B.20", "eigen:scratch-combinatie"]},
+      {code:"DIG 2 B.21",age:11,md:["MD L6 8.2.6"],text:"Een zoekstrategie uitwerken, toepassen en indien nodig bijsturen vanuit de principes van computationeel denken.",onder:["Een onderzoeksopdracht plannen: bepalen welke informatie nodig is, welke bronnen bruikbaar zijn, en de aanpak aanpassen wanneer de informatie onvoldoende is."],verdiep:["Een eenvoudige en effectieve prompt formuleren in een door de school beschikbaar gestelde AI-tool om content/informatie te verkrijgen."],vorig:["DIG 2.34"]}
     ]
   }},
   media:{label:"Mediawijsheid",icon:"📱",color:"#059669",colorLight:"#ECFDF5",doelen:{
     1:[
-      {code:"DIG 3.1",oud:"DIG 3 B.1",age:3,md:"MD L6-8.3.4",text:"Kennismaken met verschillende vormen van mediaboodschappen."}
+      {code:"DIG 3 B.1",age:3,md:["MD L6 8.3.4"],text:"Kennismaken met verschillende vormen van mediaboodschappen.",ll23:["DIG 3 B.1"],vorig:["DIG 3.1"]}
     ],
     2:[
-      {code:"DIG 3.2",oud:"DIG 3 B.2",age:5,md:"MD L6-8.3.4",text:"Reflecteren over hoe zij digitale media gebruiken in hun dagelijks leven."},
-      {code:"DIG 3.3",oud:"DIG 3 B.3",age:7,md:"MD L6-8.3.3 · MD L4-8.3.1",text:"Voor hen gekende login en wachtwoord gebruiken en hier veilig mee werken."}
+      {code:"DIG 3 B.2",age:5,md:["MD L6 8.3.4"],text:"Reflecteren over hoe zij digitale media gebruiken in hun dagelijks leven.",ll23:["DIG 3 B.2"],vorig:["DIG 3.2"]}
     ],
     3:[
-      {code:"DIG 3.4",oud:"DIG 3 B.4",age:7,md:"MD L6-8.3.4",text:"Weten dat veel informatie digitaal beschikbaar is en dat de wereld doordrongen is van audiovisuele boodschappen, maar dat wat online staat niet noodzakelijk waar is.",onder:"Onder begeleiding voorbeelden van gemanipuleerde media zoals reclameboodschappen en nepnieuws bekijken en de manipulatie benoemen."},
-      {code:"DIG 3.5",oud:"DIG 3 B.5",age:8,md:"MD L6-8.3.4",text:"Weten dat personen zich via digitale media anders kunnen voordoen dan in werkelijkheid en hier alert en gepast op reageren (veiligheidsaspecten).",onder:"Bij twijfel alert en gepast reageren door dit te melden aan een bekende volwassene."},
-      {code:"DIG 3.6",oud:"DIG 3 B.6",age:8,md:"MD L6-8.3.3 · MD L4-8.3.1",text:"Waakzaam zijn bij het doorgeven van persoonlijke gegevens.",onder:"Onder begeleiding reflecteren over de gevaren van het doorgeven van persoonlijke gegevens."},
-      {code:"DIG 3.7",oud:"DIG 3 B.7",age:8,md:"MD L6-8.3.4",text:"Elementaire regels en omgangsvormen bij digitale communicatie respecteren (ethische aspecten).",onder:"Een vooraf afgesproken en gekend communicatiekanaal gebruiken; de klas- en schoolafspraken rond digitale communicatie volgen."},
-      {code:"DIG 3.8",oud:"DIG 3 B.8",age:8,md:"MD L6-8.3.3",text:"Bij ongewenste boodschappen of schokkende informatie een bekende volwassene verwittigen.",onder:"Onder begeleiding bespreken in welke situaties je hulp inroept van een volwassene die je vertrouwt."},
-      {code:"DIG 3.9",oud:"DIG 3 B.9",age:8,md:"MD L6-8.3.4",text:"Inzien dat digitale media niet mogen gebruikt worden om anderen lastig te vallen of te pesten en dit toepassen (ethische aspecten).",verdiep:"De effecten van pesten via digitale media op anderen benoemen."},
-      {code:"DIG 3.10",oud:null,age:9,md:"MD L6-8.3.1",text:"De begrippen de online privacy, de persoonlijke gegevens en de/het account kennen en gebruiken."},
-      {code:"DIG 3.11",oud:"DIG 3 B.10",age:9,md:"MD L6-8.3.4",text:"De invloed van digitale media herkennen op je eigen mening en de mening van anderen (sociale aspecten).",onder:"Onder begeleiding ervaren dat onze keuzes beïnvloed worden door digitale media."}
+      {code:"DIG 3 B.3",age:7,md:["MD L4 8.3.1", "MD L6 8.3.3"],text:"Voor hen gekende login en wachtwoord gebruiken en hier veilig mee werken.",ll23:["DIG 3 B.3"],vorig:["DIG 3.3"]},
+      {code:"DIG 3 B.4",age:7,md:["MD L6 8.3.4"],text:"Weten dat veel informatie digitaal beschikbaar is en dat de wereld doordrongen is van audiovisuele boodschappen, maar dat wat online staat, niet noodzakelijk waar is.",onder:["Onder begeleiding voorbeelden van gemanipuleerde media zoals reclameboodschappen, nepnieuws bekijken en de manipulatie benoemen."],ll23:["DIG 3 B.4"],vorig:["DIG 3.4"]},
+      {code:"DIG 3 B.5",age:8,md:["MD L6 8.3.4"],text:"Weten dat personen zich via digitale media anders kunnen voordoen dan in werkelijkheid, en hier alert en gepast op reageren (veiligheidsaspecten).",onder:["Bij twijfel alert en gepast reageren door dit te melden aan een bekende volwassene."],ll23:["DIG 3 B.5"],vorig:["DIG 3.5"]},
+      {code:"DIG 3 B.6",age:8,md:["MD L4 8.3.1", "MD L6 8.3.3"],text:"Waakzaam zijn bij het doorgeven van persoonlijke gegevens.",onder:["Onder begeleiding reflecteren over de gevaren van het doorgeven van persoonlijke gegevens."],ll23:["DIG 3 B.6"],vorig:["DIG 3.6"]},
+      {code:"DIG 3 B.7",age:8,md:["MD L6 8.3.4"],text:"Elementaire regels en omgangsvormen bij digitale communicatie respecteren (ethische aspecten).",onder:["De klas- en schoolafspraken rond digitale communicatie volgen.", "Een vooraf afgesproken en gekend communicatiekanaal gebruiken."],ll23:["DIG 3 B.7"],vorig:["DIG 3.7"]},
+      {code:"DIG 3 B.8",age:8,md:["MD L6 8.3.3"],text:"Bij ongewenste boodschappen of schokkende informatie een bekende volwassene verwittigen.",onder:["Onder begeleiding bespreken in welke situaties je hulp inroept van een volwassene die je vertrouwt."],ll23:["DIG 3 B.8"],vorig:["DIG 3.8"]},
+      {code:"DIG 3 B.9",age:8,md:["MD L6 8.3.4"],text:"Inzien dat digitale media niet mogen gebruikt worden om anderen lastig te vallen of te pesten, en dit toepassen (ethische aspecten).",onder:["De effecten van pesten via digitale media op anderen benoemen."],ll23:["DIG 3 B.9"],vorig:["DIG 3.9"]},
+      {code:"DIG 3 B.10",age:9,md:["MD L4 8.3.1"],text:"De begrippen de online privacy, de persoonlijke gegevens, de/het account kennen en gebruiken.",vorig:["DIG 3.10"]},
+      {code:"DIG 3 B.11",age:9,md:["MD L6 8.3.4"],text:"De invloed van digitale media herkennen op je eigen mening en de mening van anderen (sociale aspecten).",onder:["Onder begeleiding ervaren dat onze keuzes beïnvloed worden door digitale media."],ll23:["DIG 3 B.10"],vorig:["DIG 3.11"]}
     ],
     4:[
-      {code:"DIG 3.12",oud:"A.9",age:10,md:"MD L6-8.3.4",text:"Weten dat hun gedrag kan beïnvloed worden door reclame en media."},
-      {code:"DIG 3.13",oud:"A.3",age:10,md:"MD L6-8.3.4",text:"ICT op een veilige, verantwoorde en doelmatige manier gebruiken."},
-      {code:"DIG 3.14",oud:"A.8",age:10,md:"MD L6-8.3.4",text:"Een kritische houding aannemen tegenover digitaal mediagebruik."},
-      {code:"DIG 3.15",oud:null,age:10,md:"MD L6-8.3.1",text:"De begrippen de online veiligheid en het nepnieuws kennen."},
-      {code:"DIG 3.16",oud:"DIG 3 B.13",age:10,md:"MD L6-8.3.4",text:"De voor- en nadelen verwoorden van het participeren aan een sociale digitale samenleving (sociale aspecten).",onder:"Beschrijven wat een sociale digitale samenleving is."},
-      {code:"DIG 3.17",oud:"DIG 3 B.14",age:10,md:"MD L6-8.3.3",text:"Niet of gepast reageren op dubieuze berichten of verzoeken met een onduidelijke herkomst (veiligheidsaspecten).",onder:"Uit aangereikte keuzemogelijkheden gepast reageren op dubieuze berichten of verzoeken."},
-      {code:"DIG 3.18",oud:"DIG 3 B.15",age:10,md:"MD L6-8.3.4",text:"Online vriendelijk en respectvol omgaan met anderen en hun privacy (ethische aspecten)."},
-      {code:"DIG 3.19",oud:"DIG 3 B.16",age:10,md:"MD L6-8.3.4",text:"Begrijpen dat alles wat je online deelt, online blijft staan en de gevolgen hiervan inschatten (veiligheidsaspecten)."},
-      {code:"DIG 3.20",oud:"DIG 3 B.17",age:10,md:"MD L6-8.3.4 · MD L6-8.3.3",text:"Begrijpen dat er regels bestaan over het plaatsen en delen van media en deze regels toepassen (regelgevende aspecten).",verdiep:"Regels zoals schoolafspraken, auteursrecht, portretrecht, GDPR en communityregels over het plaatsen en delen van media opzoeken."},
-      {code:"DIG 3.21",oud:null,age:10,md:"MD L6-8.3.4",text:"Zowel de fysieke als de mentale impact van digitale media op hun gezondheid verwoorden (gezondheidsaspecten).",onder:"Perfecte plaatjes van influencers of de angst om iets te missen (FOMO) kunnen je onzeker maken (mentaal); urenlang gamen kan leiden tot een 'tabletnek' en blauw schermlicht voor het slapengaan verstoort de slaap (fysiek)."},
-      {code:"DIG 3.22",oud:null,age:11,md:"MD L6-8.3.1",text:"De begrippen het auteursrecht en het portretrecht kennen en toepassen."},
-      {code:"DIG 3.23",oud:null,age:11,md:"MD L6-8.3.2",text:"Weten dat het basisprincipe van het auteursrecht inhoudt dat door anderen zelfgemaakte teksten, foto's of video's niet zonder toestemming gebruikt of gekopieerd mogen worden."},
-      {code:"DIG 3.24",oud:null,age:11,md:"MD L6-8.3.2",text:"Weten dat het basisprincipe van het portretrecht inhoudt dat iemand niet zonder expliciete goedkeuring gefotografeerd of gefilmd mag worden."},
-      {code:"DIG 3.25",oud:null,age:11,md:"MD L6-8.3.2",text:"Weten dat een foto of video waarop iemand herkenbaar afgebeeld staat enkel gepubliceerd of gedeeld mag worden als die persoon toestemming geeft."}
+      {code:"DIG 3 B.12",age:10,md:["MD L6 8.3.4"],text:"Weten dat hun gedrag kan beïnvloed worden door reclame en media.",ll23:["A.9"],vorig:["DIG 3.12"]},
+      {code:"DIG 3 B.13",age:10,md:["MD L6 8.3.4"],text:"ICT op een veilige, verantwoorde en doelmatige manier gebruiken.",ll23:["A.3"],vorig:["DIG 3.13"]},
+      {code:"DIG 3 B.14",age:10,md:["MD L6 8.3.4"],text:"Een kritische houding aannemen tegenover digitaal mediagebruik.",ll23:["A.8"],vorig:["DIG 3.14"]},
+      {code:"DIG 3 B.15",age:10,md:["MD L6 8.3.1"],text:"De begrippen de online veiligheid, het nepnieuws kennen.",vorig:["DIG 3.15"]},
+      {code:"DIG 3 B.16",age:10,md:["MD L6 8.3.4"],text:"De voor- en nadelen verwoorden van het participeren aan een sociale digitale samenleving (sociale aspecten).",onder:["Beschrijven wat een sociale digitale samenleving is."],ll23:["DIG 3 B.13"],vorig:["DIG 3.16"]},
+      {code:"DIG 3 B.17",age:10,md:["MD L6 8.3.3", "MD L6 8.3.4"],text:"Niet of gepast reageren op dubieuze berichten of verzoeken met een onduidelijke herkomst (veiligheidsaspecten).",onder:["Uit aangereikte keuzemogelijkheden gepast reageren op dubieuze berichten of verzoeken."],ll23:["DIG 3 B.14"],vorig:["DIG 3.17"]},
+      {code:"DIG 3 B.18",age:10,md:["MD L6 8.3.4"],text:"Online vriendelijk en respectvol omgaan met anderen en hun privacy (ethische aspecten).",ll23:["DIG 3 B.15"],vorig:["DIG 3.18"]},
+      {code:"DIG 3 B.19",age:10,md:["MD L6 8.3.4"],text:"Begrijpen dat alles wat je online deelt, online blijft staan, en de gevolgen hiervan inschatten (veiligheidsaspecten).",ll23:["DIG 3 B.16"],vorig:["DIG 3.19"]},
+      {code:"DIG 3 B.20",age:10,md:["MD L6 8.3.3", "MD L6 8.3.4"],text:"Begrijpen dat er regels bestaan over het plaatsen en delen van media, en deze regels toepassen (regelgevende aspecten).",onder:["Regels zoals schoolafspraken, auteursrechten, portretrecht, GDPR, communityregels over het plaatsen en delen van media opzoeken."],ll23:["DIG 3 B.17"],vorig:["DIG 3.20"]},
+      {code:"DIG 3 B.21",age:10,md:["MD L6 8.3.4"],text:"Zowel de fysieke als de mentale impact van digitale media op hun gezondheid verwoorden (gezondheidsaspecten).",onder:["Het urenlang gamen of tiktokken kan leiden tot een ‘tabletnek’ of pijnlijke duimen. Het blauwe licht van schermen vlak voor het slapengaan zorgt ervoor dat je hersenen denken dat het nog dag is, waardoor je moeilijker in slaap valt (fysieke gezondheid).", "Het zien van perfecte plaatjes van influencers op Instagram of de angst om iets te missen (fomo) kan ervoor zorgen dat je onzeker wordt over je eigen leven of uiterlijk (mentale gezondheid)."],vorig:["DIG 3.21"]},
+      {code:"DIG 3 B.22",age:11,md:["MD L6 8.3.1"],text:"De begrippen het auteursrecht, het portretrecht kennen en toepassen.",vorig:["DIG 3.22"]},
+      {code:"DIG 3 B.23",age:11,md:["MD L6 8.3.2"],text:"Weten dat het basisprincipe van het auteursrecht inhoudt dat door anderen zelfgemaakte teksten, foto’s of video’s niet zonder toestemming gebruikt of gekopieerd mogen worden.",vorig:["DIG 3.23"]},
+      {code:"DIG 3 B.24",age:11,md:["MD L6 8.3.2"],text:"Weten dat het basisprincipe van het portretrecht inhoudt dat iemand niet zonder expliciete goedkeuring gefotografeerd of gefilmd mag worden.",vorig:["DIG 3.24"]},
+      {code:"DIG 3 B.25",age:11,md:["MD L6 8.3.2"],text:"Weten dat een foto of video waarop iemand herkenbaar afgebeeld staat, enkel mag gepubliceerd of gedeeld worden als die persoon toestemming geeft.",vorig:["DIG 3.25"]}
     ]
   }}
 };
 
-const FASE_INFO={1:{label:"Kleuteronderwijs",age:"2,5–5 jaar"},2:{label:"Kleuter – begin lager",age:"5–7 jaar"},3:{label:"Lager onderwijs",age:"7–9 jaar"},4:{label:"Lager onderwijs",age:"10–12 jaar"}};
+/* Rubrics per doel: blad in rubrics_digitale_geletterdheid.html + soort koppeling.
+   "officieel" = het doel vervangt volgens LeerLokaal het 2023-doel van de rubric,
+   "verwant"   = door de school gekoppeld op inhoud (zie KOPPELING daar). */
+const RUBRICS_PER_DOEL = {
+  "DIG 1 B.1":[["BAS - B1", "officieel"]],
+  "DIG 1 B.2":[["BAS - B2", "officieel"]],
+  "DIG 1 B.3":[["BAS - B3", "officieel"]],
+  "DIG 1 B.4":[["BAS - B6", "officieel"]],
+  "DIG 1 B.6":[["BAS - B7", "officieel"]],
+  "DIG 1 B.7":[["BAS - B8", "officieel"]],
+  "DIG 1 B.11":[["BAS - B9", "officieel"]],
+  "DIG 1 B.13":[["BAS - B10", "officieel"]],
+  "DIG 1 B.15":[["BAS - B11", "officieel"]],
+  "DIG 1 B.16":[["BAS - B12", "officieel"]],
+  "DIG 1 B.23":[["BAS - B13", "officieel"]],
+  "DIG 1 B.24":[["BAS - B17", "officieel"]],
+  "DIG 1 B.27":[["BAS - B18", "officieel"]],
+  "DIG 1 B.28":[["BAS - B20", "officieel"]],
+  "DIG 1 B.32":[["BAS - B21", "officieel"]],
+  "DIG 1 B.39":[["BAS - B23", "officieel"]],
+  "DIG 1 B.40":[["BAS - B24", "officieel"]],
+  "DIG 1 B.47":[["BAS - B25", "officieel"]],
+  "DIG 2 B.1":[["COMP - B12", "verwant"]],
+  "DIG 2 B.2":[["COMP - B3", "verwant"], ["COMP - B6", "verwant"], ["COMP - B8", "verwant"]],
+  "DIG 2 B.5":[["COMP - B6", "verwant"]],
+  "DIG 2 B.6":[["COMP - B4", "verwant"], ["COMP - B10", "verwant"], ["COMP - B12", "verwant"]],
+  "DIG 2 B.8":[["COMP - B7", "verwant"], ["COMP - B14", "verwant"]],
+  "DIG 2 B.9":[["COMP - B11", "verwant"]],
+  "DIG 2 B.10":[["COMP - B15", "verwant"]],
+  "DIG 2 B.13":[["COMP - B15", "verwant"]],
+  "DIG 2 B.14":[["COMP - B17", "verwant"]],
+  "DIG 2 B.17":[["COMP - B19", "verwant"]],
+  "DIG 2 B.18":[["COMP - B20", "verwant"]],
+  "DIG 2 B.19":[["COMP - B18", "officieel"]],
+  "DIG 2 B.20":[["COMP - B20", "verwant"]],
+  "DIG 3 B.1":[["MEDIA - B1", "officieel"]],
+  "DIG 3 B.2":[["MEDIA - B2", "officieel"]],
+  "DIG 3 B.3":[["MEDIA - B3", "officieel"]],
+  "DIG 3 B.4":[["MEDIA - B4", "officieel"]],
+  "DIG 3 B.5":[["MEDIA - B5", "officieel"]],
+  "DIG 3 B.6":[["MEDIA - B6", "officieel"]],
+  "DIG 3 B.7":[["MEDIA - B7", "officieel"]],
+  "DIG 3 B.8":[["MEDIA - B8", "officieel"]],
+  "DIG 3 B.9":[["MEDIA - B9", "officieel"]],
+  "DIG 3 B.11":[["MEDIA - B10", "officieel"]],
+  "DIG 3 B.16":[["MEDIA - B13", "officieel"]],
+  "DIG 3 B.17":[["MEDIA - B14", "officieel"]],
+  "DIG 3 B.18":[["MEDIA - B15", "officieel"]],
+  "DIG 3 B.19":[["MEDIA - B16", "officieel"]],
+  "DIG 3 B.20":[["MEDIA - B17", "officieel"]]
+};
 
-// Koppeling leerjaar → startleeftijden uit de vernieuwde leerlijn.
+/* Fasen; "U" = uitbreidingsfase (geen leeftijd, geen minimumdoel) */
+const FASEN=[1,2,3,4,"U"];
+function faseNaam(f){return f==="U"?"Uitbreidingsfase":"Fase "+f;}
+function faseArg(f){return f==="U"?"'U'":f;}
+const FASE_INFO={1:{label:"Kleuteronderwijs",age:"2,5–4 jaar"},2:{label:"3e kleuter – 1e leerjaar",age:"5–6 jaar"},3:{label:"2e–4e leerjaar",age:"7–9 jaar"},4:{label:"5e–6e leerjaar",age:"10–11 jaar"},U:{label:"Uitbreiding",age:"geen vaste leeftijd"}};
+
+// Koppeling leerjaar → startleeftijden uit het leerplan.
 // Elk doel heeft een 'vanaf-leeftijd'; een leerjaar toont de doelen
 // waarvan die leeftijd in dat leerjaar valt (met bewuste overlap,
 // want kinderen verjaren doorheen het schooljaar).
 // Pas deze koppeling hier aan als de schoolindeling wijzigt.
 const JAREN=[
   {key:"K1",label:"1e kleuter",ages:[2.5,3]},
-  {key:"K2",label:"2e kleuter",ages:[2.5,3,5]},
+  {key:"K2",label:"2e kleuter",ages:[2.5,3,4,5]},
   {key:"K3",label:"3e kleuter",ages:[5,6]},
   {key:"L1",label:"1e leerjaar",ages:[6,7]},
   {key:"L2",label:"2e leerjaar",ages:[7,8]},
@@ -531,48 +603,164 @@ function leerjaarLabel(age){
    ════════════════════════════════════════════════════════════════ */
 const TOOL_MAP=[
   {name:"Word",uitleg:"tekstverwerking",aliases:["word","microsoft word","ms word","tekstverwerking","tekstverwerker"],
-   codes:["DIG 1.8","DIG 1.17","DIG 1.20","DIG 1.23"]},
+   codes:["DIG 1 B.11","DIG 1 B.13","DIG 1 B.12","DIG 1 B.25"]},
   {name:"PowerPoint",uitleg:"presentaties maken",aliases:["powerpoint","power point","ppt","presentatie","presenteren"],
-   codes:["DIG 1.19","DIG 1.9"]},
+   codes:["DIG 1 B.27","DIG 1 B.13"]},
   {name:"Teams",uitleg:"samenwerken, communiceren en bestanden delen",aliases:["teams","microsoft teams"],
-   codes:["DIG 1.28","DIG 1.30","DIG 1.18","DIG 3.7","DIG 1.26"]},
+   codes:["DIG 1 B.40","DIG 1 B.42","DIG 1 B.24","DIG 3 B.7","DIG 1 B.38"]},
   {name:"Outlook",uitleg:"e-mail en digitale communicatie",aliases:["outlook","mail","e-mail","email","mailen"],
-   codes:["DIG 1.18","DIG 1.30","DIG 3.7","DIG 3.17"]},
+   codes:["DIG 1 B.24","DIG 1 B.42","DIG 3 B.7","DIG 3 B.17"]},
   {name:"Microsoft Edge",uitleg:"internetbrowser — informatie opzoeken",aliases:["edge","microsoft edge","browser","internet","surfen"],
-   codes:["DIG 1.10","DIG 1.13","DIG 1.14","DIG 1.15","DIG 1.25","DIG 1.33","DIG 3.4","DIG 2.12"]},
+   codes:["DIG 1 B.15","DIG 1 B.14","DIG 1 B.19","DIG 1 B.20","DIG 1 B.21","DIG 1 B.22","DIG 1 B.32","DIG 1 B.45","DIG 1 B.46","DIG 3 B.4","DIG 1 B.9"]},
   {name:"Google Chrome",uitleg:"internetbrowser — informatie opzoeken",aliases:["chrome","google chrome","google","zoekmachine","googelen"],
-   codes:["DIG 1.10","DIG 1.13","DIG 1.14","DIG 1.15","DIG 1.25","DIG 1.33","DIG 3.4"]},
+   codes:["DIG 1 B.15","DIG 1 B.14","DIG 1 B.19","DIG 1 B.20","DIG 1 B.21","DIG 1 B.22","DIG 1 B.32","DIG 1 B.45","DIG 1 B.46","DIG 3 B.4"]},
   {name:"Scratch (Jr)",uitleg:"programmeren met blokjes",aliases:["scratch","scratch junior","scratch jr","programmeren","coderen","code","programmeertaal"],
-   codes:["DIG 2.22","DIG 2.33","DIG 2.21","DIG 2.19","DIG 2.20","DIG 2.14"]},
+   codes:["DIG 2 B.16","DIG 2 B.20","DIG 2 B.11","DIG 2 B.17","DIG 2 B.18","DIG 2 B.10","DIG 2 B.13","DIG 2 B.7","DIG 2 B.6"]},
   {name:"Bee-Bot",uitleg:"unplugged programmeren (kleuters)",aliases:["bee-bot","beebot","bee bot","robot"],
-   codes:["DIG 2.8","DIG 2.9","DIG 2.2","DIG 2.3"]},
+   codes:["DIG 2 B.1","DIG 2 B.3","DIG 2 B.9","DIG 2 B.7","DIG 2 B.2","DIG 2 B.6"]},
   {name:"Canva",uitleg:"creatief ontwerpen (affiches, presentaties)",aliases:["canva"],
-   codes:["DIG 1.9","DIG 1.16","DIG 1.19"]},
+   codes:["DIG 1 B.13","DIG 1 B.23","DIG 1 B.27"]},
   {name:"Bingel / Kabas",uitleg:"digitaal oefenplatform",aliases:["bingel","kabas","oefenplatform"],
-   codes:["DIG 1.21","DIG 1.3","DIG 3.3"]},
+   codes:["DIG 1 B.28","DIG 1 B.3","DIG 3 B.3"]},
   {name:"iPad / tablet",uitleg:"tabletgebruik",aliases:["ipad","tablet","tablets"],
-   codes:["DIG 1.1","DIG 1.2","DIG 1.4","DIG 1.5"]},
+   codes:["DIG 1 B.1","DIG 1 B.2","DIG 1 B.4","DIG 1 B.6"]},
   {name:"OneDrive / SharePoint",uitleg:"opslaan en delen in de cloud",aliases:["onedrive","one drive","sharepoint","cloud","drive"],
-   codes:["DIG 1.26","DIG 1.27","DIG 1.28","DIG 1.22","DIG 2.30"]},
+   codes:["DIG 1 B.38","DIG 1 B.39","DIG 1 B.40","DIG 1 B.29","DIG 1 B.37"]},
   {name:"Microsoft Copilot",uitleg:"artificiële intelligentie",aliases:["copilot","microsoft copilot","ai","artificiële intelligentie","kunstmatige intelligentie","prompt","prompts"],
-   codes:["DIG 1.31","DIG 1.32","DIG 1.33","DIG 2.34"]}
+   codes:["DIG 1 B.43","DIG 1 B.44","DIG 1 B.45","DIG 1 B.46","DIG 2 B.21","DIG 1 U.2","DIG 1 U.3"]}
 ];
 
-/* ── TEACHER PROGRESS (localStorage) ── */
-const PROG_KEY='teacherProgress_v1';
-let PROG=JSON.parse(localStorage.getItem(PROG_KEY)||'{}');
-function saveProgress(){localStorage.setItem(PROG_KEY,JSON.stringify(PROG));}
+/* ════════════════════════════════════════════════════════════════
+   VORIGE VERSIE → HUIDIG LEERPLAN (opgeslagen voortgang en zoeken)
+   Codes "DIG n.m" komen uit de vorige versie van LeerLokaal.
+   VORIG_AUTO: één-op-één vervangen (kettingen-data.js; DIG 2 tekstgelijk),
+     de status gaat automatisch mee.
+   VORIG_HERBEKIJK: gesplitst, samengevoegd, inhoudelijk gewijzigd of
+     geschrapt; de leerkracht kiest zelf (naar = suggesties).
+   ════════════════════════════════════════════════════════════════ */
+const VORIG_AUTO={
+  "DIG 1.1":"DIG 1 B.1", "DIG 1.2":"DIG 1 B.2", "DIG 1.3":"DIG 1 B.3", "DIG 1.4":"DIG 1 B.4",
+  "DIG 1.5":"DIG 1 B.6", "DIG 1.6":"DIG 1 B.7", "DIG 1.7":"DIG 1 B.8", "DIG 1.8":"DIG 1 B.11",
+  "DIG 1.9":"DIG 1 B.13", "DIG 1.10":"DIG 1 B.15", "DIG 1.11":"DIG 1 B.16", "DIG 1.12":"DIG 1 B.18",
+  "DIG 1.13":"DIG 1 B.19", "DIG 1.14":"DIG 1 B.20", "DIG 1.15":"DIG 1 B.21", "DIG 1.16":"DIG 1 B.23",
+  "DIG 1.18":"DIG 1 B.24", "DIG 1.19":"DIG 1 B.27", "DIG 1.21":"DIG 1 B.28", "DIG 1.22":"DIG 1 B.29",
+  "DIG 1.23":"DIG 1 B.25", "DIG 1.24":"DIG 1 B.31", "DIG 1.25":"DIG 1 B.32", "DIG 1.26":"DIG 1 B.38",
+  "DIG 1.27":"DIG 1 B.39", "DIG 1.28":"DIG 1 B.40", "DIG 1.29":"DIG 1 B.41", "DIG 1.30":"DIG 1 B.42",
+  "DIG 1.31":"DIG 1 B.43", "DIG 1.32":"DIG 1 B.44", "DIG 1.34":"DIG 1 B.47", "DIG 2.12":"DIG 1 B.9",
+  "DIG 2.22":"DIG 2 B.16", "DIG 2.23":"DIG 2 B.15", "DIG 2.24":"DIG 1 B.26", "DIG 2.26":"DIG 1 B.33",
+  "DIG 2.27":"DIG 1 B.34", "DIG 2.28":"DIG 1 B.35", "DIG 2.29":"DIG 1 B.36", "DIG 2.30":"DIG 1 B.37",
+  "DIG 2.32":"DIG 2 B.19", "DIG 2.33":"DIG 2 B.20", "DIG 2.34":"DIG 2 B.21", "DIG 3.1":"DIG 3 B.1",
+  "DIG 3.2":"DIG 3 B.2", "DIG 3.3":"DIG 3 B.3", "DIG 3.4":"DIG 3 B.4", "DIG 3.5":"DIG 3 B.5",
+  "DIG 3.6":"DIG 3 B.6", "DIG 3.7":"DIG 3 B.7", "DIG 3.8":"DIG 3 B.8", "DIG 3.9":"DIG 3 B.9",
+  "DIG 3.10":"DIG 3 B.10", "DIG 3.11":"DIG 3 B.11", "DIG 3.12":"DIG 3 B.12", "DIG 3.13":"DIG 3 B.13",
+  "DIG 3.14":"DIG 3 B.14", "DIG 3.15":"DIG 3 B.15", "DIG 3.16":"DIG 3 B.16", "DIG 3.17":"DIG 3 B.17",
+  "DIG 3.18":"DIG 3 B.18", "DIG 3.19":"DIG 3 B.19", "DIG 3.20":"DIG 3 B.20", "DIG 3.21":"DIG 3 B.21",
+  "DIG 3.22":"DIG 3 B.22", "DIG 3.23":"DIG 3 B.23", "DIG 3.24":"DIG 3 B.24", "DIG 3.25":"DIG 3 B.25"
+};
+const VORIG_HERBEKIJK={
+  "DIG 1.17":{text:"Van een aangereikte tool basisfuncties gebruiken voor het schrijven en creatief opmaken van een tekst.",naar:[]},
+  "DIG 1.20":{text:"Met een aangereikte tool eenvoudige teksten digitaal schrijven.",naar:[]},
+  "DIG 1.33":{text:"Aan de hand van aangereikte criteria digitale bronnen beoordelen op bruikbaarheid, betrouwbaarheid en correctheid.",naar:["DIG 1 B.22", "DIG 1 B.45", "DIG 1 B.46"]},
+  "DIG 2.1":{text:"Onder begeleiding verwoorden waar computers in hun leefwereld te zien zijn en hoe ze het leven leuker of eenvoudiger kunnen maken.",naar:[]},
+  "DIG 2.2":{text:"Begrijpen dat een computer een opdracht eindeloos kan herhalen (patroonherkenning).",naar:["DIG 2 B.2"]},
+  "DIG 2.3":{text:"In een logische volgorde plaatsen van prenten, foto's, deelopdrachten (patroonherkenning).",naar:["DIG 2 B.6"]},
+  "DIG 2.4":{text:"Onderdelen van een voorwerp als delen van een groter geheel benoemen (abstractie).",naar:[]},
+  "DIG 2.5":{text:"Vanuit een patroon een rij of een reeks verder zetten (patroonherkenning).",naar:["DIG 2 B.2", "DIG 2 B.5"]},
+  "DIG 2.6":{text:"Een eenvoudige opdracht in deelopdrachten opdelen (decompositie).",naar:["DIG 2 B.3", "DIG 2 B.8"]},
+  "DIG 2.7":{text:"De herhaling van opdrachten in verschillende situaties herkennen (patroonherkenning).",naar:["DIG 2 B.2"]},
+  "DIG 2.8":{text:"Een opdracht uitvoeren door stap voor stap een reeks handelingen uit te voeren (algoritme).",naar:["DIG 2 B.1", "DIG 2 B.6"]},
+  "DIG 2.9":{text:"Eenvoudige reeksen van instructies aan een ander geven (mondeling of via symbolen) die leiden tot een bepaald doel (algoritme).",naar:["DIG 2 B.9"]},
+  "DIG 2.10":{text:"Voorbeelden van geautomatiseerde systemen in het dagelijkse leven verwoorden.",naar:[]},
+  "DIG 2.11":{text:"Een proces in verschillende stappen opdelen en waar mogelijk elke stap weer in deelstappen (decompositie).",naar:["DIG 2 B.8"]},
+  "DIG 2.13":{text:"De begrippen hardware, software, invoer, verwerking, uitvoer en opslag kennen en gebruiken.",naar:["DIG 1 B.10", "DIG 1 B.17"]},
+  "DIG 2.14":{text:"Het begrip algoritme kennen als een stappenplan of instructie om een specifiek probleem in een vaste volgorde op te lossen.",naar:["DIG 2 B.13"]},
+  "DIG 2.15":{text:"Voor- en nadelen van het geautomatiseerd uitvoeren van opdrachten verwoorden.",naar:[]},
+  "DIG 2.16":{text:"Het principe 'abstractie' van computationeel denken herkennen als focussen op wat belangrijk is en het weglaten van overbodige details.",naar:["DIG 2 B.4"]},
+  "DIG 2.17":{text:"Het principe 'decompositie' van computationeel denken herkennen als het opdelen van een groot probleem in kleinere, hanteerbare delen.",naar:["DIG 2 B.8"]},
+  "DIG 2.18":{text:"Het principe 'patroonherkenning' van computationeel denken herkennen als het zien van gelijkenissen en herhalingen in gegevens of opdrachten.",naar:["DIG 2 B.5"]},
+  "DIG 2.19":{text:"Het principe 'algoritme' van computationeel denken herkennen als een expliciete reeks eenduidige instructies die stapsgewijs worden uitgevoerd.",naar:["DIG 2 B.13"]},
+  "DIG 2.20":{text:"Het principe 'sequentie' van computationeel denken herkennen als de vaste volgorde waarin de stappen of instructies worden uitgevoerd.",naar:["DIG 2 B.6"]},
+  "DIG 2.21":{text:"Onder begeleiding fouten in een stappenplan of instructie vinden en verbeteren (debuggen).",naar:["DIG 2 B.10"]},
+  "DIG 2.25":{text:"De begrippen de invoer, de informatieverwerking, de uitvoer en de opslag kennen en gebruiken.",naar:["DIG 1 B.17"]},
+  "DIG 2.31":{text:"Een concreet probleem in een passende visuele weergave zoals een stappenplan omzetten (abstractie).",naar:["DIG 2 B.14"]}
+};
+
+/* ── TEACHER PROGRESS (localStorage) ──
+   v2 bewaart codes van het huidige leerplan. v1 (vorige versie) wordt één keer
+   omgezet en blijft ongewijzigd staan als reservekopie. */
+const PROG_KEY_OUD='teacherProgress_v1';
+const PROG_KEY='teacherProgress_v2';
+const PROG_LEERPLAN='LL-2026-11-19';
+const STATUSSEN=['bezig','behandeld','geëvalueerd'];
+let PROG={};        // code → {status,updated,van?}
+let HERBEKIJK={};   // vorige code → {status,updated}
+
+/* Zet voortgang met codes uit een vorige versie om. Een code die niet met
+   zekerheid bij één huidig doel hoort, komt in "te herbekijken": nooit stil
+   op een doel dat toevallig dezelfde code draagt. */
+function zetVoortgangOm(oud){
+  const prog={},herbekijk={};
+  Object.entries(oud||{}).forEach(([c,v])=>{
+    if(!v||!STATUSSEN.includes(v.status))return;
+    if(VORIG_AUTO[c])prog[VORIG_AUTO[c]]={status:v.status,updated:v.updated,van:c};
+    else herbekijk[c]={status:v.status,updated:v.updated};
+  });
+  return{prog,herbekijk};
+}
+/* Enkel bestaande codes met een geldige status overnemen */
+function schoneVoortgang(p){
+  const r={},rest={};
+  Object.entries(p||{}).forEach(([c,v])=>{
+    if(!v||!STATUSSEN.includes(v.status))return;
+    if(findDoel(c))r[c]=v;else rest[c]={status:v.status,updated:v.updated};
+  });
+  return{r,rest};
+}
+function leesJson(k){try{return JSON.parse(localStorage.getItem(k)||'null');}catch(e){return null;}}
+function saveProgress(){localStorage.setItem(PROG_KEY,JSON.stringify({leerplan:PROG_LEERPLAN,progress:PROG,herbekijk:HERBEKIJK}));}
+/* Voortgang overnemen uit opslag of bestand. Zonder de huidige leerplanversie
+   gaat het om oudere codes en wordt er omgezet. */
+function neemVoortgang(d){
+  if(d.leerplan===PROG_LEERPLAN){
+    const{r,rest}=schoneVoortgang(d.progress);
+    PROG=r;const h=schoneVoortgang(d.herbekijk);
+    HERBEKIJK={...h.r,...h.rest,...rest};   // ook codes die op een huidige code lijken blijven hier staan
+  }else{
+    const o=zetVoortgangOm(d.progress||d);
+    PROG=o.prog;HERBEKIJK=o.herbekijk;
+  }
+}
+function laadVoortgang(){
+  const v2=leesJson(PROG_KEY);
+  if(v2&&v2.leerplan===PROG_LEERPLAN){neemVoortgang(v2);return;}
+  const v1=leesJson(PROG_KEY_OUD);
+  if(v1){neemVoortgang({progress:v1});saveProgress();}
+}
 function setProgress(code,status){
   if(!status){delete PROG[code];}else{PROG[code]={status,updated:new Date().toISOString()};}
   saveProgress();render();
 }
 function cycleProgress(code){
-  const cycle=[null,'bezig','behandeld','geëvalueerd'];
+  const cycle=[null,...STATUSSEN];
   const cur=PROG[code]?.status||null;
   setProgress(code,cycle[(cycle.indexOf(cur)+1)%cycle.length]);
 }
+/* Status van een te herbekijken code op een gekozen doel zetten. Een doel dat
+   al een status heeft, wordt niet aangeboden en dus nooit overschreven. */
+function neemOver(oud,code){
+  const h=HERBEKIJK[oud];
+  if(!h||!findDoel(code)||PROG[code])return;
+  PROG[code]={status:h.status,updated:h.updated,van:oud};
+  if((VORIG_HERBEKIJK[oud]?.naar||[]).every(c=>PROG[c]))delete HERBEKIJK[oud];
+  saveProgress();render();
+}
+function verwerpHerbekijk(i){delete HERBEKIJK[Object.keys(HERBEKIJK)[i]];saveProgress();render();}
+function wisVoortgang(){
+  if(!confirm('Alle voortgangstatussen wissen?'))return;
+  PROG={};HERBEKIJK={};saveProgress();render();
+}
 function exportProgress(){
-  const blob=new Blob([JSON.stringify({exported:new Date().toISOString(),progress:PROG},null,2)],{type:'application/json'});
+  const blob=new Blob([JSON.stringify({exported:new Date().toISOString(),leerplan:PROG_LEERPLAN,progress:PROG,herbekijk:HERBEKIJK},null,2)],{type:'application/json'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);
   a.download='voortgang_leerkracht_'+new Date().toISOString().slice(0,10)+'.json';a.click();
 }
@@ -581,26 +769,81 @@ function importProgress(){
   inp.onchange=e=>{
     const f=e.target.files[0];if(!f)return;
     const r=new FileReader();
-    r.onload=ev=>{try{const d=JSON.parse(ev.target.result);PROG=d.progress||d;saveProgress();render();}catch{alert('Ongeldig bestand.');}};
+    r.onload=ev=>{
+      try{
+        const d=JSON.parse(ev.target.result);
+        if(!d||typeof d!=='object'||Array.isArray(d))throw 0;
+        neemVoortgang(d);saveProgress();render();
+      }catch{alert('Ongeldig bestand.');}
+    };
     r.readAsText(f);
   };
   inp.click();
 }
-function oudToSheet(oud){
-  if(!oud)return null;
-  const m=oud.match(/^DIG (\d) B\.(\d+)$/);
-  if(!m)return null;
-  const p={'1':'BAS','2':'COMP','3':'MEDIA'}[m[1]];
-  return p?`${p} - B${m[2]}`:null;
+function herbekijkHtml(){
+  const codes=Object.keys(HERBEKIJK);
+  const van=Object.values(PROG).filter(p=>p.van).length;
+  let h="";
+  if(van)h+=`<div class="info-box">♻️ ${van} status${van===1?" is":"sen zijn"} overgenomen uit de vorige versie van het leerplan.</div>`;
+  if(!codes.length)return h;
+  h+=`<div class="ll-group"><div class="ll-group-header" style="background:#FEF3C7;color:#92400E;border-left:4px solid #d4820a">🔎 Te herbekijken — ${codes.length} status${codes.length===1?"":"sen"} uit een vorige versie</div>
+    <div class="info-box">Deze doelen zijn gesplitst, samengevoegd, gewijzigd of geschrapt. Hun status is daarom nergens automatisch ingevuld. Kies zelf op welk doel ze van toepassing is.</div>
+    <div class="goals-list">`;
+  codes.forEach((c,i)=>{
+    const v=VORIG_HERBEKIJK[c];
+    const naar=v?v.naar:[];
+    h+=`<div class="goal-card" style="cursor:default"><div class="goal-row"><span class="goal-code" style="color:#92400E">vorig: ${esc(c)}</span><span class="goal-text">${esc(v?v.text:"Code uit een ouder leerplan, niet te koppelen.")}</span><span class="tool-badge">${esc(HERBEKIJK[c].status)}</span></div>
+      <div class="goal-meta">${naar.map(n=>PROG[n]?`<span class="meta-pill mp-fase">${n}: ${PROG[n].status}</span>`:`<button type="button" class="diff-toggle" title="${esc(findDoel(n).d.text)}" onclick="neemOver('${c}','${n}')">→ ${n}</button>`).join("")}
+      ${v&&!naar.length?`<span class="meta-extra">Geen overeenkomstig doel meer.</span>`:""}
+      <button type="button" class="diff-toggle" onclick="verwerpHerbekijk(${i})">✓ Uit de lijst</button></div></div>`;
+  });
+  return h+`</div></div>`;
 }
 /* ──────────────────────────────────── */
 
 /* Vlakke index van alle doelen, met leerlijn en fase */
 const ALL_DOELEN=[];
 Object.entries(DATA).forEach(([ll,l])=>{
-  [1,2,3,4].forEach(f=>{(l.doelen[f]||[]).forEach(d=>ALL_DOELEN.push({ll,f,d}));});
+  FASEN.forEach(f=>{(l.doelen[f]||[]).forEach(d=>ALL_DOELEN.push({ll,f,d}));});
 });
 function findDoel(code){return ALL_DOELEN.find(x=>x.d.code===code);}
+laadVoortgang();
+
+/* ── LESIDEEËN BIJ EEN DOEL ──
+   officieel via d.ll23, op betekenis via d.les; nooit via gelijke code. */
+function ideeenVoor(d){
+  const bronnen=[...(d.ll23||[]).map(c=>"LL23 "+c),...(d.les||[])];
+  const uit=[],gezien=new Set();
+  const voegToe=lijst=>(lijst||[]).forEach(idee=>{
+    const k=idee.trim().toLowerCase();
+    if(!gezien.has(k)){gezien.add(k);uit.push(idee);}
+  });
+  bronnen.forEach(b=>{const[k,deel]=b.split("#");if(deel!=="rub")voegToe(LIBRARY[k]);});
+  bronnen.forEach(b=>{const[k,deel]=b.split("#");if(deel!=="lib")voegToe(RUBRIC_IDEAS[k]);});
+  return uit;
+}
+
+/* ── ZOEKTEKST ──
+   Codes uit leerplan 2023 zitten er bewust niet in: ze lijken op huidige codes. */
+function norm(t){return String(t).toLowerCase().replace(/[’‘]/g,"'");}
+function zoektekst(d){return norm([d.code,d.text,d.md.join(" "),(d.vorig||[]).join(" "),(d.onder||[]).join(" "),(d.verdiep||[]).join(" ")].join(" "));}
+/* "dig 1 b.6", "1 b6", "B.6", "u.2" → exact op de huidige code */
+function codeVraag(q){
+  const m=q.match(/^(?:dig\s*)?(?:([123])\s*)?([bu])\s*\.?\s*(\d+)$/i);
+  return m?{ll:m[1]||null,soort:m[2].toUpperCase(),nr:m[3]}:null;
+}
+function isCode(code,v){
+  const m=code.match(/^DIG (\d) ([BU])\.(\d+)$/);
+  return !!m&&(!v.ll||m[1]===v.ll)&&m[2]===v.soort&&m[3]===v.nr;
+}
+/* Vorige versie "dig 1.4": exact, zodat 1.3 niet ook 1.33 vindt */
+function vorigVraag(q){const m=q.match(/^(?:dig\s*)?([123]\.\d+)$/i);return m?"DIG "+m[1]:null;}
+function doelHit(d,q){
+  q=norm(q).trim();
+  const v=codeVraag(q);if(v)return isCode(d.code,v);
+  const o=vorigVraag(q);if(o)return(d.vorig||[]).includes(o);
+  return textHit(zoektekst(d),q);
+}
 
 function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
 function escRegex(s){return s.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");}
@@ -675,13 +918,13 @@ async function generateAiIdeas(){
   try{
     const fi=FASE_INFO[S.fase];
     const ll=DATA[S.ll];
-    const bestaande=[...(LIBRARY[S.doel.code]||(S.doel.oud?LIBRARY[S.doel.oud]:null)||[]),...((S.doel.oud?RUBRIC_IDEAS[S.doel.oud]:null)||RUBRIC_IDEAS[S.doel.code]||[])].join(", ");
-    const r=await callClaude(`Je bent een ervaren onderwijsexpert voor het Vlaamse basisonderwijs (OVSG-leerplan, vernieuwde leerlijn digitale competenties conform de nieuwe minimumdoelen).
+    const bestaande=ideeenVoor(S.doel).join(", ");
+    const r=await callClaude(`Je bent een ervaren onderwijsexpert voor het Vlaamse basisonderwijs (OVSG-leerplan Digitale geletterdheid, conform de nieuwe minimumdoelen).
 Genereer EXACT 3 creatieve, praktische lesideeën voor:
 Leerlijn: ${ll.label}
-Fase: Fase ${S.fase} (${fi.age}, ${fi.label}) — richtleeftijd vanaf ${ageLabel(S.doel.age)} jaar
-Leerplandoel: ${S.doel.code} – ${S.doel.text}${S.doel.md?`
-Concordantie minimumdoelen: ${S.doel.md}`:""}
+Fase: ${faseNaam(S.fase)} (${fi.age}, ${fi.label})${S.doel.age!=null?` — richtleeftijd vanaf ${ageLabel(S.doel.age)} jaar`:""}
+Leerplandoel: ${S.doel.code} – ${S.doel.text}${S.doel.md.length?`
+Concordantie minimumdoelen: ${S.doel.md.join(" · ")}`:""}
 Reeds bestaande ideeën (niet herhalen): ${bestaande}
 Antwoord UITSLUITEND als JSON-object, geen markdown:
 {"ideas":[{"title":"...","desc":"2 zinnen."},{"title":"...","desc":"2 zinnen."},{"title":"...","desc":"2 zinnen."}]}
@@ -699,11 +942,11 @@ async function generateFiche(idea){
 Maak een volledige lesfiche als JSON. Geen markdown, geen backticks, enkel JSON.
 Context:
 - Leerlijn: ${ll.label}
-- Fase: Fase ${S.fase} (${fi.age}, ${fi.label}) — richtleeftijd vanaf ${ageLabel(S.doel.age)} jaar
-- Leerplandoel: ${S.doel.code} – ${S.doel.text}${S.doel.md?`
-- Concordantie minimumdoelen: ${S.doel.md}`:""}${S.doel.onder?`
-- Ondersteuningsleerlijn (gebruik dit voor de vereenvoudigde differentiatie): ${S.doel.onder}`:""}${S.doel.verdiep?`
-- Verdiepingsleerlijn (gebruik dit voor de uitdagende differentiatie): ${S.doel.verdiep}`:""}
+- Fase: ${faseNaam(S.fase)} (${fi.age}, ${fi.label})${S.doel.age!=null?` — richtleeftijd vanaf ${ageLabel(S.doel.age)} jaar`:""}
+- Leerplandoel: ${S.doel.code} – ${S.doel.text}${S.doel.md.length?`
+- Concordantie minimumdoelen: ${S.doel.md.join(" · ")}`:""}${S.doel.onder?`
+- Ondersteuningsleerlijn (gebruik dit voor de vereenvoudigde differentiatie): ${S.doel.onder.join(" | ")}`:""}${S.doel.verdiep?`
+- Verdiepingsleerlijn (gebruik dit voor de uitdagende differentiatie): ${S.doel.verdiep.join(" | ")}`:""}
 - Lesidee: ${idea}
 
 JSON-structuur (vul alles in het Nederlands in):
@@ -729,32 +972,31 @@ function goalCardHtml(llKey,f,d,showFase,viaTool){
   const sel=S.doel?.code===d.code&&S.ll===llKey;
   const c=DATA[llKey].color;
   const pills=[
-    `<span class="meta-pill mp-age">👶 vanaf ${ageLabel(d.age)} j</span>`,
-    `<span class="meta-pill mp-fase">📍 Fase ${f}</span>`
+    `<span class="meta-pill mp-age">👶 ${d.age!=null?`vanaf ${ageLabel(d.age)} j`:"geen vaste leeftijd"}</span>`,
+    `<span class="meta-pill mp-fase">📍 ${faseNaam(f)}</span>`
   ];
-  const lj=leerjaarLabel(d.age);
+  const lj=d.age!=null?leerjaarLabel(d.age):"";
   if(lj)pills.push(`<span class="meta-pill mp-jaar">🎓 ${lj}</span>`);
   const extra=[];
-  if(d.md)extra.push(d.md);
-  if(d.oud)extra.push(`vroeger ${d.oud}`);
+  extra.push(d.md.length?d.md.join(" · "):"geen minimumdoel");
+  if(d.ll23)extra.push(`vervangt ${d.ll23.join(", ")} uit leerplan 2023`);
   const hasDiff=d.onder||d.verdiep;
   const progStatus=PROG[d.code]?.status||null;
   const pLabels={bezig:'🟡 Bezig',behandeld:'🟢 Behandeld','geëvalueerd':'🔵 Geëvalueerd'};
   const pColors={bezig:'prog-bezig',behandeld:'prog-behandeld','geëvalueerd':'prog-geval'};
   const progHtml=`<button type="button" class="prog-badge ${progStatus?pColors[progStatus]:'prog-none'}" onclick="cycleProgress('${d.code}');event.stopPropagation()" title="Klik om voortgang bij te houden: ➕ → Bezig → Behandeld → Geëvalueerd → wissen">${progStatus?pLabels[progStatus]:'➕ status'}</button>`;
-  const sheetKey=oudToSheet(d.oud);
-  const rubricHtml=sheetKey?`<a class="rubric-btn" href="rubrics_digitale_geletterdheid.html#sheet=${encodeURIComponent(sheetKey)}" target="_blank" onclick="event.stopPropagation()" title="Open rubric voor dit doel">📋 rubric</a>`:'';
+  const rubricHtml=(RUBRICS_PER_DOEL[d.code]||[]).map(([sheet,soort])=>`<a class="rubric-btn" href="rubrics_digitale_geletterdheid.html#sheet=${encodeURIComponent(sheet)}" target="_blank" onclick="event.stopPropagation()" title="${soort==="officieel"?"Open rubric voor dit doel":"Rubric uit leerplan 2023 met verwante inhoud"}">📋 rubric${soort==="verwant"?" (verwant)":""}</a>`).join("");
   return `<div class="goal-card${sel?" active":""}" data-ll="${llKey}" data-fase="${f}" data-code="${d.code}">
     <div class="goal-row">
       <span class="goal-code" style="color:${c}">${d.code}</span>
-      <span class="goal-text">${d.text}</span>
+      <span class="goal-text"${d.cursief?' style="font-style:italic" title="Leerplandoel zonder minimumdoel"':""}>${d.text}</span>
       ${viaTool?`<span class="tool-badge">🔗 via ${viaTool}</span>`:""}
-      ${d.oud?"":'<span class="badge-nieuw">NIEUW</span>'}
+      ${d.ll23?"":'<span class="badge-nieuw" title="Nieuw ten opzichte van leerplan 2023">NIEUW</span>'}
     </div>
     <div class="goal-meta">${pills.join("")}${extra.length?`<span class="meta-extra">${extra.join(" · ")}</span>`:""}${hasDiff?`<button type="button" class="diff-toggle" onclick="toggleDiff(this);event.stopPropagation()">⚖ differentiatie ▾</button>`:""}${progHtml}${rubricHtml}</div>
     ${hasDiff?`<div class="diff-panel" style="display:none" onclick="event.stopPropagation()">
-      ${d.onder?`<div class="diff-line"><span class="diff-tag dt-onder">Ondersteuning</span><span>${d.onder}</span></div>`:""}
-      ${d.verdiep?`<div class="diff-line"><span class="diff-tag dt-verdiep">Verdieping</span><span>${d.verdiep}</span></div>`:""}
+      ${(d.onder||[]).map((t,i)=>`<div class="diff-line"><span class="diff-tag dt-onder">Ondersteuning${d.onder.length>1?" "+(i+1):""}</span><span style="white-space:pre-line">${t}</span></div>`).join("")}
+      ${(d.verdiep||[]).map((t,i)=>`<div class="diff-line"><span class="diff-tag dt-verdiep">Verdieping${d.verdiep.length>1?" "+(i+1):""}</span><span style="white-space:pre-line">${t}</span></div>`).join("")}
     </div>`:""}
   </div>`;
 }
@@ -784,7 +1026,7 @@ function groupedGoalsByAges(ages){
   let h="";
   Object.entries(DATA).forEach(([key,l])=>{
     let cards="";
-    [1,2,3,4].forEach(f=>{
+    FASEN.forEach(f=>{
       (l.doelen[f]||[]).forEach(d=>{if(ages.includes(d.age))cards+=goalCardHtml(key,f,d,true);});
     });
     if(!cards)return;
@@ -797,7 +1039,7 @@ function groupedGoalsByAges(ages){
 }
 
 function searchBoxHtml(){
-  return `<input class="goal-search" type="text" placeholder="🔍 Zoek in de doelen (bv. wachtwoord, typen, B.6...)" value="${(S.q||"").replace(/"/g,"&quot;")}" oninput="filterGoals(this.value)">
+  return `<input class="goal-search" type="text" placeholder="🔍 Zoek in de doelen (bv. wachtwoord, toetsenbord, B.6...)" value="${(S.q||"").replace(/"/g,"&quot;")}" oninput="filterGoals(this.value)">
   <div class="no-results" id="noResults">Geen doelen gevonden voor deze zoekterm.</div>`;
 }
 
@@ -807,10 +1049,11 @@ function filterGoals(v){
 }
 function applyGoalFilter(){
   // Filtert enkel binnen de gewone weergaven, niet in de globale zoekresultaten
-  const q=(S.q||"").toLowerCase();
+  const q=norm(S.q||"").trim();
   let visible=0;
   document.querySelectorAll("#viewArea .goal-card").forEach(el=>{
-    const hit=!q||textHit(el.textContent.toLowerCase(),q);
+    const x=findDoel(el.dataset.code);
+    const hit=!q||!x||doelHit(x.d,q);
     el.style.display=hit?"":"none";
     if(hit)visible++;
   });
@@ -822,7 +1065,7 @@ function applyGoalFilter(){
   if(nr)nr.style.display=visible===0?"block":"none";
 }
 
-/* ── GLOBALE ZOEKFUNCTIE (alle 93 doelen + programmaherkenning) ── */
+/* ── GLOBALE ZOEKFUNCTIE (93 basis- en 3 uitbreidingsdoelen + programmaherkenning) ── */
 function globalSearch(v){
   S.gq=v; // geen volledige re-render: zo behoudt het zoekveld de focus
   renderGlobalResults();
@@ -837,7 +1080,7 @@ function renderGlobalResults(){
   const wrap=document.getElementById("globalResults");
   const viewArea=document.getElementById("viewArea");
   if(!wrap||!viewArea)return;
-  const q=(S.gq||"").trim().toLowerCase();
+  const q=norm(S.gq||"").trim();
   if(q.length<2){
     wrap.innerHTML="";
     viewArea.style.display="";
@@ -859,9 +1102,11 @@ function renderGlobalResults(){
 
   // 2. Tekstuele treffers in de doelen zelf
   const txt=ALL_DOELEN.filter(({d})=>
-    !shown.has(d.code)&&
-    textHit([d.code,d.text,d.md||"",d.oud||"",d.onder||"",d.verdiep||""].join(" ").toLowerCase(),q)
+    !shown.has(d.code)&&doelHit(d,q)
   );
+  // 3. Code uit leerplan 2023: apart tonen, want ze lijkt op een huidige code
+  const cv=codeVraag(q);
+  const oud23=cv&&cv.soort==="B"?ALL_DOELEN.filter(({d})=>(d.ll23||[]).some(c=>isCode(c,cv)&&c!==d.code)):[];
   if(txt.length){
     h+=`<div class="ll-group">
       <div class="ll-group-header" style="background:#f1f5f9;color:#475569;border-left:4px solid #94a3b8">📄 Doelen met "${esc(S.gq.trim())}"</div>
@@ -869,7 +1114,24 @@ function renderGlobalResults(){
     </div>`;
   }
 
-  if(shown.size===0&&txt.length===0){
+  if(oud23.length){
+    h+=`<div class="ll-group">
+      <div class="ll-group-header" style="background:#FEF3C7;color:#92400E;border-left:4px solid #d4820a">🕰 Zocht je de code uit leerplan 2023? Dat doel heeft nu een andere code</div>
+      <div class="goals-list">${oud23.map(({ll,f,d})=>goalCardHtml(ll,f,d,true)).join("")}</div>
+    </div>`;
+  }
+  // 4. Code uit de vorige LeerLokaal-versie zonder één-op-één-opvolger
+  const vv=vorigVraag(q);
+  const vh=vv&&VORIG_HERBEKIJK[vv];
+  if(vh){
+    const cards=vh.naar.filter(c=>!txt.some(x=>x.d.code===c)).map(findDoel).map(({ll,f,d})=>goalCardHtml(ll,f,d,true)).join("");
+    if(cards||!vh.naar.length)h+=`<div class="ll-group">
+      <div class="ll-group-header" style="background:#FEF3C7;color:#92400E;border-left:4px solid #d4820a">🕰 ${vv} uit de vorige versie: ${esc(vh.text)}</div>
+      <div class="goals-list">${cards||(vh.naar.length?"":`<div class="info-box">Geen overeenkomstig doel meer in het huidige leerplan.</div>`)}</div>
+    </div>`;
+  }
+
+  if(shown.size===0&&txt.length===0&&oud23.length===0&&!vh){
     h+=`<div class="no-results" style="display:block">Geen doelen gevonden voor "${esc(S.gq.trim())}".<br>Probeer een ander kernwoord (bv. typen, zoeken, algoritme, privacy) of een programmanaam (bv. Word, Scratch, Teams).</div>`;
   }
   wrap.innerHTML=h;
@@ -878,7 +1140,7 @@ function renderGlobalResults(){
 function attachGoalClicks(){
   document.querySelectorAll(".goal-card[data-code]").forEach(el=>{
     el.onclick=()=>{
-      const llKey=el.dataset.ll,f=+el.dataset.fase,code=el.dataset.code;
+      const llKey=el.dataset.ll,f=el.dataset.fase==="U"?"U":+el.dataset.fase,code=el.dataset.code;
       const d=(DATA[llKey].doelen[f]||[]).find(x=>x.code===code);
       if(d)set({ll:llKey,fase:f,doel:d,view:S.view==='voortgang'?'leerlijn':S.view,selectedLib:null,aiIdeas:null,error:null});
     };
@@ -890,7 +1152,7 @@ function renderSelect(app){
   let h="";
   if(S.error)h+=`<div class="err-box">⚠️ ${S.error}</div>`;
 
-  // Globale zoekbalk — zoekt door alle 93 doelen, incl. programmanamen
+  // Globale zoekbalk — zoekt door alle doelen, incl. programmanamen
   h+=`<div class="step-label">Zoek een doel</div>
   <input id="globalSearch" class="goal-search global-search" type="text"
          placeholder="🔍 Zoek op kernwoord of programma (bv. Word, Scratch, wachtwoord, algoritme...)"
@@ -918,11 +1180,11 @@ function renderSelect(app){
     h+=`</div>`;
     if(S.ll){
       h+=`<div class="step-label">Stap 2</div><div class="section-title">Kies een fase</div><div class="phase-row">`;
-      [1,2,3,4].forEach(f=>{
+      FASEN.forEach(f=>{
         const fi=FASE_INFO[f];
         if(!DATA[S.ll].doelen[f]?.length)return;
-        h+=`<div class="phase-btn${S.fase===f?" active":""}" onclick="set({fase:${f},doel:null,selectedLib:null,aiIdeas:null,error:null})">
-          <div>Fase ${f}</div><div class="phase-age">${fi.age} · ${fi.label}</div>
+        h+=`<div class="phase-btn${S.fase===f?" active":""}" onclick="set({fase:${faseArg(f)},doel:null,selectedLib:null,aiIdeas:null,error:null})">
+          <div>${faseNaam(f)}</div><div class="phase-age">${fi.age} · ${fi.label}</div>
         </div>`;
       });
       h+=`</div>`;
@@ -938,15 +1200,15 @@ function renderSelect(app){
 
   if(S.view==="fase"){
     h+=`<div class="step-label">Stap 1</div><div class="section-title">Kies een fase</div><div class="phase-row">`;
-    [1,2,3,4].forEach(f=>{
+    FASEN.forEach(f=>{
       const fi=FASE_INFO[f];
-      h+=`<div class="phase-btn${S.fase===f?" active":""}" onclick="set({fase:${f},doel:null,q:'',selectedLib:null,aiIdeas:null,error:null})">
-        <div>Fase ${f}</div><div class="phase-age">${fi.age} · ${fi.label}</div>
+      h+=`<div class="phase-btn${S.fase===f?" active":""}" onclick="set({fase:${faseArg(f)},doel:null,q:'',selectedLib:null,aiIdeas:null,error:null})">
+        <div>${faseNaam(f)}</div><div class="phase-age">${fi.age} · ${fi.label}</div>
       </div>`;
     });
     h+=`</div>`;
     if(S.fase){
-      h+=`<div class="step-label">Stap 2</div><div class="section-title">Alle doelen van fase ${S.fase} — per leerlijn</div>`;
+      h+=`<div class="step-label">Stap 2</div><div class="section-title">Alle doelen van ${S.fase==="U"?"de uitbreidingsfase":"fase "+S.fase} — per leerlijn</div>`;
       h+=searchBoxHtml();
       h+=groupedGoalsHtml([S.fase],false);
     }
@@ -977,11 +1239,12 @@ function renderSelect(app){
       <span class="prog-stat"><span class="prog-stat-dot" style="background:#FDE047"></span>${cnt.bezig||0} bezig</span>
       <span class="prog-stat"><span class="prog-stat-dot" style="background:#4ADE80"></span>${cnt.behandeld||0} behandeld</span>
       <span class="prog-stat"><span class="prog-stat-dot" style="background:#60A5FA"></span>${cnt['geëvalueerd']||0} geëvalueerd</span>
-      <span style="color:#94A3B8;font-size:12px">van ${total} doelen totaal</span>
+      <span style="color:#94A3B8;font-size:12px">van ${total} doelen (93 basis, 3 uitbreiding)</span>
       <button class="btn-ghost" style="padding:6px 14px;font-size:12px;margin-left:auto" onclick="exportProgress()">⬇ Exporteer</button>
       <button class="btn-ghost" style="padding:6px 14px;font-size:12px" onclick="importProgress()">⬆ Importeer</button>
-      <button class="btn-ghost" style="padding:6px 14px;font-size:12px;color:#dc2626;border-color:#fca5a5" onclick="if(confirm('Alle voortgangstatussen wissen?')){PROG={};saveProgress();render()}">🗑 Wis alles</button>
+      <button class="btn-ghost" style="padding:6px 14px;font-size:12px;color:#dc2626;border-color:#fca5a5" onclick="wisVoortgang()">🗑 Wis alles</button>
     </div>`;
+    h+=herbekijkHtml();
     if(progCodes.length===0){
       h+=`<div class="prog-empty">Je hebt nog geen doelen gemarkeerd.<br><br>Klik op <strong>➕ status</strong> bij een doel in de andere weergaven<br>om bij te houden aan welke doelen je al gewerkt hebt.</div>`;
     }else{
@@ -1022,29 +1285,18 @@ function renderSelect(app){
 function renderIdeas(app){
   const d=S.doel;
   const ll=DATA[S.ll];
-  // Bibliotheekideeën zijn gekoppeld aan de oude doelcodes;
-  // via d.oud blijven ze beschikbaar voor de vernieuwde leerlijn.
-  const libIdeas=LIBRARY[d.code]||(d.oud?LIBRARY[d.oud]:null)||[];
-  const rubricIdeas=(d.oud?RUBRIC_IDEAS[d.oud]:null)||RUBRIC_IDEAS[d.code]||[];
+  const allIdeas=ideeenVoor(d);
   let h=`<div class="crumb no-print">
     <span class="crumb-link" onclick="set({screen:'select',aiIdeas:null,selectedLib:null,error:null})">← Leerlijn & doel</span>
     <span class="crumb-sep">›</span><span>${ll.icon} ${ll.label}</span>
-    <span class="crumb-sep">›</span><span>Fase ${S.fase}</span>
+    <span class="crumb-sep">›</span><span>${faseNaam(S.fase)}</span>
     <span class="crumb-sep">›</span><span style="font-weight:700">${d.code}</span>
   </div>`;
   h+=`<div class="section-title">${d.text}</div>`;
   h+=`<div class="info-box">Selecteer een lessuggestie of laat AI extra suggesties genereren. Klik daarna op "Maak lesfiche" voor de volledige uitwerking.</div>`;
   if(S.error)h+=`<div class="err-box">⚠️ ${S.error}</div>`;
-  // Bibliotheek- en rubriekideeën samenvoegen tot één lijst met suggesties
-  // bij dit doel (ontdubbeld op exacte tekst).
-  const seen=new Set();
-  const allIdeas=[...libIdeas,...rubricIdeas].filter(idea=>{
-    const k=idea.trim().toLowerCase();
-    if(seen.has(k))return false;
-    seen.add(k);
-    return true;
-  });
   if(allIdeas.length){
+    if(!d.ll23&&(d.les||[]).some(k=>k.startsWith("LL23")))h+=`<div class="info-box">🔗 Deze suggesties komen (deels) uit een verwant doel van leerplan 2023. Ga na of ze bij de nieuwe formulering passen.</div>`;
     h+=`<div class="step-label" style="margin-bottom:8px">Lessuggesties bij dit doel</div><div class="lib-ideas">`;
     allIdeas.forEach(idea=>{
       const sel=S.selectedLib===idea;
@@ -1052,7 +1304,7 @@ function renderIdeas(app){
     });
     h+=`</div>`;
   }else{
-    h+=`<div class="info-box">✨ Dit is een <strong>nieuw doel</strong> in de vernieuwde leerlijn — er zijn nog geen lessuggesties. Gebruik de knop "Andere suggestie (AI)" hieronder om lesideeën te genereren.</div>`;
+    h+=`<div class="info-box">✨ Voor dit doel zijn er <strong>nog geen lessuggesties</strong>. Gebruik de knop "Andere suggestie (AI)" hieronder om lesideeën te genereren.</div>`;
   }
   if(S.aiIdeas){
     h+=`<div class="step-label" style="margin:14px 0 8px">Extra AI-suggesties</div><div class="ai-grid">`;
@@ -1093,7 +1345,7 @@ function renderFiche(app){
   // Header
   const ageBg=ll.color+"22";
   h+=`<div class="fiche-header">
-    <div class="fiche-age-badge" style="background:${ageBg};color:${ll.color}">${ll.icon} ${ll.label} · Fase ${S.fase} · ${fi.age} · ${fi.label}</div>
+    <div class="fiche-age-badge" style="background:${ageBg};color:${ll.color}">${ll.icon} ${ll.label} · ${faseNaam(S.fase)} · ${fi.age} · ${fi.label}</div>
     <div class="fiche-title-main">${f.titel||""}</div>
     <div class="fiche-subtitle">${d.code} – ${d.text}</div>
     <div class="fiche-meta">

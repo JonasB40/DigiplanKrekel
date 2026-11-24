@@ -49,7 +49,7 @@
   .scrollwrap{overflow-x:auto;padding:18px 26px 60px}
   .grid{display:grid;gap:6px;min-width:900px}
   .corner{position:sticky;left:0;z-index:5}
-  .head-cell{display:flex;flex-direction:column;justify-content:flex-end;gap:4px;padding:8px 10px;border-radius:10px 10px 0 0;cursor:pointer;color:#fff;min-height:62px;transition:.15s;position:relative}
+  .head-cell{display:flex;flex-direction:column;justify-content:flex-end;gap:4px;padding:30px 10px 8px;border-radius:10px 10px 0 0;cursor:pointer;color:#fff;min-height:62px;transition:.15s;position:relative}
   .head-cell:hover{filter:brightness(1.06)}
   .head-cell .h-name{font-weight:700;font-size:.84rem;line-height:1.2}
   .head-cell .h-info{position:absolute;top:6px;right:8px;font-size:.8rem;opacity:.85}
@@ -65,7 +65,7 @@
   .cell.inoef .in-lbl{font-size:.66rem;font-weight:600;color:#64748b;display:flex;align-items:center;gap:4px}
   .block{border-radius:7px;padding:5px 7px;color:#fff;font-size:.74rem;font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.12);cursor:default;position:relative}
   .block .code{font-family:'Space Grotesk',sans-serif;font-size:.66rem;opacity:.9;display:block}
-  .block .txt{font-weight:600;line-height:1.25;display:block;margin-top:1px}
+  .block .txt{font-weight:600;overflow-wrap:anywhere;hyphens:auto;line-height:1.25;display:block;margin-top:1px}
 
   .ec{display:none;gap:3px;margin-top:4px}
   body.editing .ec{display:flex;flex-wrap:wrap}
@@ -112,33 +112,51 @@
     <span class="lbl">Leerjaar</span>
     <span id="yearChips"></span>
   </div>
+  <div class="view-toggle">
+    <button class="view-btn on" id="viewDetail">📋 Doelen</button>
+    <button class="view-btn" id="viewKetting">🔗 Kettingen</button>
+  </div>
   <button class="chip" id="clearFilter">✕ Filters wissen</button>
 </div>
 
-<div class="legend">
+<div class="legend" id="legendDetail">
   <div class="item"><span class="swatch aan"></span> Nieuw aanbrengen</div>
   <div class="item"><span class="swatch in"></span> Inoefenen / onderhouden</div>
   <div class="item">↑ van onder (kleuter) naar boven (6de lj) opgebouwd — klik op een kolomtitel voor uitleg</div>
 </div>
 
-<div class="scrollwrap">
+<div class="legend hidden" id="legendKetting">
+  <div class="item">🔗 Een ketting verbindt doelen rond één thema, van onder (jong) naar boven (oud). Leeftijd en fase volgen LeerLokaal.</div>
+  <div class="item">🟢 Ondersteuning</div>
+  <div class="item">🔵 Verdieping</div>
+  <div class="item">Klik op een doel voor details</div>
+</div>
+
+<div class="scrollwrap" id="wrapDetail">
   <div class="grid" id="grid"></div>
 </div>
+
+<div class="hidden" id="wrapKetting"></div>
 
 <div class="overlay" id="overlay"><div class="modal" id="modal"></div></div>
 <div class="toast" id="toast"></div>
 <footer>Verticale leerlijn-tool · Computationeel denken · spiraalopbouw naar OVSG · wijzigingen bewaard in je browser tot je publiceert</footer>
 
+<script src="kettingen-data.js"></script>
+<script src="kettingen.js"></script>
 <script>
+const KETTING_PAGINA = ["1-1"]; // kettingen op deze pagina, zie kettingen-data.js
+window.KETTING_NOTA = 'Computationeel denken (DIG 2) heeft in LeerLokaal geen kettingen. Ter info staat hier de ketting over digitale systemen. Die doelen horen nu bij <a href="verticale-leerlijn.html">ICT-basisvaardigheden (DIG 1)</a>.';
 const ADMIN_CODE = "krekel";
-const STORE_KEY = "leerlijnViz_cd_v1";
+const STORE_KEY = "leerlijnViz_cd_v2";
 
+/* leerjaar → fase zoals in LeerLokaal (K3 = 5 jaar … L6 = 11 jaar) */
 const LEERJAREN = [
   {id:"K1", label:"1ste kleuter",   fase:1},
   {id:"K2", label:"2de kleuter",    fase:1},
-  {id:"K3", label:"3de kleuter",    fase:1},
+  {id:"K3", label:"3de kleuter",    fase:2},
   {id:"L1", label:"1ste leerjaar",  fase:2},
-  {id:"L2", label:"2de leerjaar",   fase:2},
+  {id:"L2", label:"2de leerjaar",   fase:3},
   {id:"L3", label:"3de leerjaar",   fase:3},
   {id:"L4", label:"4de leerjaar",   fase:3},
   {id:"L5", label:"5de leerjaar",   fase:4},
@@ -153,7 +171,6 @@ const FASES = {
 
 /* Tussenleerlijnen — pedagogische opbouw computationeel denken */
 const TL = [
-  {id:"systemen",  label:"Digitale wereld & systemen", kleur:"#475569", info:"Computers en digitale toestellen herkennen in de leefwereld. Begrijpen hoe hardware, software, invoer, verwerking, uitvoer en opslag samenwerken. Weten hoe netwerken en het internet werken om gegevens te delen."},
   {id:"patroon",   label:"Patroonherkenning",          kleur:"#7c3aed", info:"Gelijkenissen en herhalingen zien in reeksen, gegevens of situaties. Van een patroon een rij verder zetten. Patronen helpen om problemen sneller op te lossen zonder alles opnieuw te bedenken."},
   {id:"decom",     label:"Decompositie",               kleur:"#0891b2", info:"Een groot probleem opdelen in kleinere, hanteerbare deelproblemen. Stap voor stap aanpakken maakt complexe taken overzichtelijk. De basis voor elk algoritme en elk computerprogramma."},
   {id:"abstract",  label:"Abstractie",                 kleur:"#16a34a", info:"Focussen op wat belangrijk is en overbodige details weglaten. Onderdelen als deel van een groter geheel zien. Helpt om overzicht te bewaren bij het ontwerpen van oplossingen."},
@@ -163,53 +180,33 @@ const TL = [
 ];
 
 const DEFAULT_DOELEN = [
-  /* ── Digitale wereld & systemen ── */
-  {code:"DIG 2.1",  tl:"systemen", lj:"K1", text:"Onder begeleiding verwoorden waar computers in hun leefwereld te zien zijn en hoe ze het leven leuker of eenvoudiger kunnen maken."},
-  {code:"DIG 2.10", tl:"systemen", lj:"L1", text:"Voorbeelden van geautomatiseerde systemen in het dagelijkse leven verwoorden."},
-  {code:"DIG 2.12", tl:"systemen", lj:"L1", text:"De begrippen digitaal en het internet kennen en gebruiken."},
-  {code:"DIG 2.13", tl:"systemen", lj:"L1", text:"De begrippen hardware, software, invoer, verwerking, uitvoer en opslag kennen en gebruiken."},
-  {code:"DIG 2.15", tl:"systemen", lj:"L2", text:"Voor- en nadelen van het geautomatiseerd uitvoeren van opdrachten verwoorden."},
-  {code:"DIG 2.24", tl:"systemen", lj:"L3", text:"De begrippen verzenden, ontvangen, offline en online kennen en gebruiken."},
-  {code:"DIG 2.25", tl:"systemen", lj:"L5", text:"De begrippen invoer, informatieverwerking, uitvoer en opslag kennen en gebruiken."},
-  {code:"DIG 2.26", tl:"systemen", lj:"L5", text:"Begrijpen hoe invoer, verwerking, uitvoer en opslag samen een digitaal informatieverwerkingsproces vormen."},
-  {code:"DIG 2.27", tl:"systemen", lj:"L5", text:"De begrippen netwerk en verbinding kennen en gebruiken."},
-  {code:"DIG 2.28", tl:"systemen", lj:"L5", text:"Begrijpen dat een verbinding nodig is om informatie te delen."},
-  {code:"DIG 2.29", tl:"systemen", lj:"L5", text:"Weten dat digitale systemen via netwerken (kabel, wifi, mobiel netwerk) met elkaar verbonden zijn en zo gegevens kunnen delen."},
-  {code:"DIG 2.30", tl:"systemen", lj:"L5", text:"Weten dat gegevens op een andere locatie dan het eigen digitale apparaat kunnen worden verwerkt en opgeslagen."},
-
   /* ── Patroonherkenning ── */
-  {code:"DIG 2.2",  tl:"patroon",  lj:"K1", text:"Begrijpen dat een computer een opdracht eindeloos kan herhalen (patroonherkenning)."},
-  {code:"DIG 2.3",  tl:"patroon",  lj:"K1", text:"In een logische volgorde plaatsen van prenten, foto's, deelopdrachten (patroonherkenning)."},
-  {code:"DIG 2.5",  tl:"patroon",  lj:"K3", text:"Vanuit een patroon een rij of een reeks verder zetten (patroonherkenning)."},
-  {code:"DIG 2.7",  tl:"patroon",  lj:"K3", text:"De herhaling van opdrachten in verschillende situaties herkennen (patroonherkenning)."},
-  {code:"DIG 2.18", tl:"patroon",  lj:"L3", text:"Het principe 'patroonherkenning' van computationeel denken herkennen als het zien van gelijkenissen en herhalingen in gegevens of opdrachten."},
-  {code:"DIG 2.32", tl:"patroon",  lj:"L5", text:"Patronen in abstracte situaties herkennen en beschrijven (patroonherkenning)."},
-
+  {code:"DIG 2 B.2", tl:"patroon", lj:"K3", text:"Onder begeleiding patronen en herhalingen herkennen in opdrachten, bewegingen en reeksen.", onder:"Een klap-stamp-klap-stampritme verderzetten.", verdiep:"Een digitaal patroonspel of een eenvoudige herhaalopdracht met een robot uitvoeren.", md:"MD L4 8.1.3"},
+  {code:"DIG 2 B.5", tl:"patroon", lj:"L1", text:"Patronen herkennen in eenvoudige situaties (patroonherkenning).", onder:"Een reeks vormen, kleuren of bewegingen verderzetten.", verdiep:"Een patroonspel spelen in een leerapp of met een programmeerbare robot.", md:"MD L4 8.1.3"},
+  {code:"DIG 2 B.19", tl:"patroon", lj:"L6", text:"Patronen in abstracte situaties herkennen en beschrijven (patroonherkenning).", onder:"Regelmatigheden zoeken in tabellen, cijferreeksen of wetenschappelijke observaties.", verdiep:"Patronen ontdekken in digitale gegevens of simulaties.", md:"MD L6 8.1.3"},
   /* ── Decompositie ── */
-  {code:"DIG 2.6",  tl:"decom",   lj:"K3", text:"Een eenvoudige opdracht in deelopdrachten opdelen (decompositie)."},
-  {code:"DIG 2.11", tl:"decom",   lj:"L1", text:"Een proces in verschillende stappen opdelen en waar mogelijk elke stap weer in deelstappen (decompositie)."},
-  {code:"DIG 2.17", tl:"decom",   lj:"L3", text:"Het principe 'decompositie' van computationeel denken herkennen als het opdelen van een groot probleem in kleinere, hanteerbare delen."},
-
+  {code:"DIG 2 B.8", tl:"decom", lj:"L2", text:"Een probleem opdelen in kleinere deelproblemen (decompositie).", onder:"Een probleem onder begeleiding ontleden (bv. een optelsom in wiskunde: eerst de tientallen en dan de eenheden samentellen om vervolgens de uitkomsten samen te tellen).", verdiep:"Een groter programmeerproject opdelen in verschillende opdrachten of scènes.", md:"MD L4 8.1.3"},
   /* ── Abstractie ── */
-  {code:"DIG 2.4",  tl:"abstract", lj:"K1", text:"Onderdelen van een voorwerp als delen van een groter geheel benoemen (abstractie)."},
-  {code:"DIG 2.16", tl:"abstract", lj:"L3", text:"Het principe 'abstractie' van computationeel denken herkennen als focussen op wat belangrijk is en het weglaten van overbodige details."},
-  {code:"DIG 2.31", tl:"abstract", lj:"L5", text:"Een concreet probleem in een passende visuele weergave zoals een stappenplan omzetten (abstractie)."},
-
+  {code:"DIG 2 B.4", tl:"abstract", lj:"L1", text:"Belangrijke kenmerken onderscheiden en minder relevante details weglaten (abstractie).", onder:"Een maquette of plattegrond van de klas tekenen met alleen de belangrijke voorwerpen.", verdiep:"Een digitale kaart of tekening maken waarbij enkel noodzakelijke elementen worden toegevoegd.", md:"MD L4 8.1.3"},
+  {code:"DIG 2 B.14", tl:"abstract", lj:"L4", text:"Problemen omzetten in een stappenplan, schema of andere passende visuele voorstelling (abstractie).", onder:"Een stappenplan maken voor het organiseren van een klasactiviteit.", verdiep:"Een digitaal stroomschema of storyboard maken.", md:"MD L4 8.1.3"},
   /* ── Algoritme & sequentie ── */
-  {code:"DIG 2.8",  tl:"algo",    lj:"K3", text:"Een opdracht uitvoeren door stap voor stap een reeks handelingen uit te voeren (algoritme)."},
-  {code:"DIG 2.9",  tl:"algo",    lj:"L1", text:"Eenvoudige reeksen van instructies aan een ander geven (mondeling of via symbolen) die leiden tot een bepaald doel (algoritme)."},
-  {code:"DIG 2.14", tl:"algo",    lj:"L2", text:"Het begrip algoritme kennen als een stappenplan of instructie om een specifiek probleem in een vaste volgorde op te lossen.", onder:"Zoals een kookrecept, een bouwplan, een routebeschrijving of de werking van een computer."},
-  {code:"DIG 2.19", tl:"algo",    lj:"L3", text:"Het principe 'algoritme' van computationeel denken herkennen als een expliciete reeks eenduidige instructies die stapsgewijs worden uitgevoerd."},
-  {code:"DIG 2.20", tl:"algo",    lj:"L3", text:"Het principe 'sequentie' van computationeel denken herkennen als de vaste volgorde waarin de stappen of instructies worden uitgevoerd."},
-  {code:"DIG 2.23", tl:"algo",    lj:"L3", text:"Onder begeleiding een zoekstrategie uitwerken en toepassen vanuit de principes van computationeel denken."},
-  {code:"DIG 2.34", tl:"algo",    lj:"L5", text:"Een zoekstrategie uitwerken, toepassen en indien nodig bijsturen vanuit de principes van computationeel denken.", verdiep:"Een eenvoudige en effectieve prompt formuleren in een door de school beschikbaar gestelde AI-tool om content of informatie te verkrijgen."},
-
+  {code:"DIG 2 B.1", tl:"algo", lj:"K2", text:"Onder begeleiding een eenvoudig stappenplan volgen om een opdracht of doel te bereiken.", onder:"Een stappenkaart volgen om een toren te bouwen met blokken.", md:"MD L4 8.1.3"},
+  {code:"DIG 2 B.3", tl:"algo", lj:"K3", text:"Onder begeleiding een eenvoudig stappenplan opstellen, uitvoeren en controleren.", onder:"Zelf de stappen bedenken om een plant water te geven en nagaan of niets vergeten is.", verdiep:"Een route uitstippelen voor een robot en aanpassen wanneer de robot verkeerd rijdt.", md:"MD L4 8.1.3"},
+  {code:"DIG 2 B.6", tl:"algo", lj:"L1", text:"Stappen in een vaste volgorde plaatsen en uitvoeren (sequentie).", onder:"De stappen van tandenpoetsen in de juiste volgorde leggen.", verdiep:"Een reeks programmeerblokken in de juiste volgorde plaatsen om een personage te laten bewegen.", md:"MD L4 8.1.3"},
+  {code:"DIG 2 B.9", tl:"algo", lj:"L2", text:"Eenvoudige instructies formuleren met woorden, symbolen of visuele voorstellingen.", onder:"Een schatkaart maken met pijlen en symbolen waarmee een klasgenoot een voorwerp terugvindt.", md:"MD L4 8.1.3"},
+  {code:"DIG 2 B.12", tl:"algo", lj:"L3", text:"Een eenvoudige zoekstrategie ontwikkelen en toepassen om informatie of een oplossing te vinden.", onder:"Zoekwoorden bedenken om betrouwbare informatie over een dier te vinden.", verdiep:"Zoekwoorden kiezen in een kindvriendelijke zoekmachine en de resultaten bekijken.", md:"MD L4 8.2.5"},
+  {code:"DIG 2 B.13", tl:"algo", lj:"L4", text:"Het begrip algoritme kennen en gebruiken.", onder:"Een algoritme beschrijven als een duidelijke reeks instructies om een doel te bereiken, zoals een recept of routebeschrijving.", md:"MD L4 8.1.2"},
+  {code:"DIG 2 B.15", tl:"algo", lj:"L4", text:"Onder begeleiding een zoekstrategie uitwerken en toepassen vanuit de principes van computationeel denken.", onder:"Verschillende boeken, woordenlijsten of personen vergelijken om de beste informatiebron te kiezen.", verdiep:"Zoektermen aanpassen wanneer een zoekopdracht te veel of te weinig bruikbare resultaten geeft.", md:"MD L4 8.2.5"},
+  {code:"DIG 2 B.21", tl:"algo", lj:"L6", text:"Een zoekstrategie uitwerken, toepassen en indien nodig bijsturen vanuit de principes van computationeel denken.", onder:"Een onderzoeksopdracht plannen: bepalen welke informatie nodig is, welke bronnen bruikbaar zijn, en de aanpak aanpassen wanneer de informatie onvoldoende is.", verdiep:"Een eenvoudige en effectieve prompt formuleren in een door de school beschikbaar gestelde AI-tool om content/informatie te verkrijgen.", md:"MD L6 8.2.6"},
   /* ── Programmeren ── */
-  {code:"DIG 2.22", tl:"code",    lj:"L3", text:"Onder begeleiding de principes van computationeel denken toepassen om een lineair algoritme te ontwerpen, testen en debuggen om tot een werkende oplossing te komen.", onder:"Onder begeleiding beschrijven wat een computerprogramma uitvoert; een instructie uitschrijven (algoritme), letterlijk uitvoeren (testen) en waar iets foutloopt aanpassen (debuggen)."},
-  {code:"DIG 2.33", tl:"code",    lj:"L5", text:"Onder begeleiding de principes van computationeel denken toepassen om een algoritme te ontwerpen, testen en debuggen om tot een werkende oplossing te komen (combinatie van sequentie, herhaling, keuze).", onder:"Onder begeleiding ervaring opdoen met computercode: een parcours doorlopen (sequentie) met herhaling en ALS-DAN-ANDERS-keuzes, de stappen uitvoeren (testen) en voorwaarden aanpassen waar het foutloopt (debuggen)."},
-
+  {code:"DIG 2 B.7", tl:"code", lj:"L1", text:"Onder begeleiding een lineair algoritme uitvoeren, testen en verbeteren.", onder:"Een klasgenoot via mondelinge instructies door een hindernissenparcours leiden en de instructies aanpassen wanneer iets fout loopt.", verdiep:"Een reeks programmeerblokken gebruiken om een robot of personage aan te sturen.", md:"MD L4 8.1.3"},
+  {code:"DIG 2 B.11", tl:"code", lj:"L3", text:"Onder begeleiding een lineair algoritme ontwerpen, uitvoeren, testen en debuggen om tot een werkende oplossing te komen.", onder:"Een papieren doolhof oplossen door een stappenplan te schrijven en fouten te verbeteren.\nEen spelinstructie ontwerpen waarbij het probleem eerst wordt opgesplitst en getest.", verdiep:"Een eenvoudige animatie of verhaal in een programmeertool ontwerpen en verbeteren.", md:"MD L4 8.1.3"},
+  {code:"DIG 2 B.16", tl:"code", lj:"L4", text:"Onder begeleiding de principes van computationeel denken toepassen om een lineair algoritme te ontwerpen, testen en debuggen om tot een werkende oplossing te komen (opbouw sequentie).", onder:"De stappen uitwerken voor een klasactiviteit (bv. een spel organiseren), testen en verbeteren.", md:"MD L4 8.1.3"},
+  {code:"DIG 2 B.17", tl:"code", lj:"L5", text:"Onder begeleiding een algoritme ontwerpen, testen en debuggen met behulp van keuzes.", onder:"Een beslissingsspel maken met kaarten: ‘ALS je een rode kaart trekt, DAN ga je links, ANDERS ga je rechts.’", md:"MD L6 8.1.3"},
+  {code:"DIG 2 B.18", tl:"code", lj:"L5", text:"Onder begeleiding een algoritme ontwerpen waarin herhalingen doelgericht worden toegepast.", onder:"Een dansreeks maken waarin dezelfde bewegingen meerdere keren worden herhaald.", verdiep:"Een herhaalblok gebruiken om een figuur meerdere keren een patroon te laten tekenen.", md:"MD L6 8.1.3"},
+  {code:"DIG 2 B.20", tl:"code", lj:"L6", text:"Onder begeleiding de principes van computationeel denken toepassen om een algoritme te ontwerpen, testen en debuggen om tot een werkende oplossing te komen (combinatie van sequentie, herhaling, keuze).", verdiep:"Een spel programmeren waarin een personage blijft bewegen tot het een obstakel raakt en dan een andere richting kiest.", md:"MD L6 8.1.3"},
   /* ── Debuggen ── */
-  {code:"DIG 2.21", tl:"debug",   lj:"L3", text:"Onder begeleiding fouten in een stappenplan of instructie vinden en verbeteren (debuggen)."},
+  {code:"DIG 2 B.10", tl:"debug", lj:"L3", text:"Fouten opsporen en verbeteren in een stappenplan of eenvoudige computercode (debuggen).", onder:"Een fout zoeken in een recept of routebeschrijving en verbeteren.", md:"MD L4 8.1.3"},
 ];
 
 let doelen = load();
@@ -277,6 +274,7 @@ function blockHTML(d,t){
   return `<div class="block" style="background:${t.kleur}">
     <span class="code">${d.code}</span>
     <span class="txt">${esc(d.text)}</span>
+    ${kettingBadges(d.code)}
     <div class="ec">
       <button onclick="move('${d.code}',1)" title="Een leerjaar hoger">▲</button>
       <button onclick="move('${d.code}',-1)" title="Een leerjaar lager">▼</button>
@@ -314,7 +312,10 @@ function showInfo(tlId){
      <button class="btn btn-ghost close" style="background:#0f1f30;color:#fff" onclick="closeOverlay()">Sluiten</button>`;
   document.getElementById('overlay').classList.add('show');
 }
-function closeOverlay(){ document.getElementById('overlay').classList.remove('show'); }
+function closeOverlay(){
+  document.getElementById('overlay').classList.remove('show');
+  document.getElementById('modal').classList.remove('wide','kt');
+}
 
 document.getElementById('editBtn').onclick = ()=>{
   if(!editing){
@@ -355,8 +356,19 @@ function hex2rgba(h,a){ const n=parseInt(h.slice(1),16); return `rgba(${(n>>16)&
 let toastT;
 function toast(m){ const t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('show'),2600); }
 
+/* ── Weergave toggle ── */
+function switchView(v){
+  document.getElementById('wrapDetail').classList.toggle('hidden', v!=='detail');
+  document.getElementById('legendDetail').classList.toggle('hidden', v!=='detail');
+  document.getElementById('viewDetail').classList.toggle('on', v==='detail');
+  document.getElementById('editBtn').classList.toggle('hidden', v!=='detail');
+  toonKettingen(v==='ketting');
+}
+document.getElementById('viewDetail').onclick = ()=>switchView('detail');
+
 buildFilterChips();
 render();
+startKettingen();
 </script>
 </body>
 </html>

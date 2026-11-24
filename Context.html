@@ -176,7 +176,7 @@
 
 
       <div class="card" style="margin-top:16px;">
-        <strong>📚 Volledige leerlijn raadplegen?</strong> Alle 93 doelen van de vernieuwde leerlijn — met leeftijden, minimumdoelen-concordantie, differentiatie en lesfiches — vind je interactief terug in <a href="LeerLokaal.html" style="color:var(--accent);font-weight:600;">LeerLokaal · Verticale leerlijnen</a>.
+        <strong>📚 Volledige leerlijn raadplegen?</strong> Alle 93 basisdoelen en 3 uitbreidingsdoelen van het leerplan Digitale geletterdheid, met leeftijden, minimumdoelen, differentiatie en lesfiches, vind je interactief terug in <a href="LeerLokaal.html" style="color:var(--accent);font-weight:600;">LeerLokaal · Verticale leerlijnen</a>.
       </div>
     </section>
 
@@ -228,43 +228,49 @@
   ];
   const LJ_SPIRAL = {
     pk:"Het allereerste contact met digitale toestellen. → Leidt naar het 1e kleuter (bewegen op het scherm).",
-    k1:"Bouwt voort op de peuters (toestellen verkennen). → Leidt naar het 3e kleuter (toetsen &amp; patronen).",
-    k2:"Een jaar van inoefenen en herhalen. → Leidt naar het 3e kleuter.",
-    k3:"Bouwt voort op het 1e kleuter (volgorde &amp; patronen). → Leidt naar L1 (eerste handelingen &amp; Scratch Jr).",
+    k1:"Bouwt voort op de peuters (toestellen verkennen). → Leidt naar het 2e kleuter (eerste stappenplan).",
+    k2:"Een jaar van inoefenen en herhalen, met een eerste stappenplan. → Leidt naar het 3e kleuter (toetsen &amp; patronen).",
+    k3:"Bouwt voort op het 2e kleuter (stappenplan volgen). → Leidt naar L1 (eerste handelingen &amp; Scratch Jr).",
     l1:"Bouwt voort op de kleuterklas (scherm, unplugged). → Leidt naar L2 (typen, bestanden, opzoeken).",
-    l2:"Bouwt voort op L1 (inloggen, handelingen). → Leidt naar L3 (tekst, e-mail, zoekstrategie).",
-    l3:"Bouwt voort op L2 (typen &amp; opzoeken). → Leidt naar L4 (presenteren, mail met bijlage, debuggen).",
-    l4:"Bouwt voort op L3 (tekst &amp; e-mail). → Leidt naar L5 (bestanden bewerken, mediawijsheid verdiepen).",
+    l2:"Bouwt voort op L1 (inloggen, handelingen). → Leidt naar L3 (e-mail, zoekstrategie, debuggen).",
+    l3:"Bouwt voort op L2 (typen &amp; opzoeken). → Leidt naar L4 (presenteren, mail met bijlage, mappenstructuur).",
+    l4:"Bouwt voort op L3 (e-mail &amp; debuggen). → Leidt naar L5 (bronnen vermelden, keuzes &amp; herhalingen, mediawijsheid verdiepen).",
     l5:"Bouwt voort op L4 (programmeren, presenteren). → Leidt naar L6 (Teams, AI, netwerken, auteursrecht).",
     l6:"Bouwt voort op L5. → Sluit de basisschool af: klaar voor het secundair."
   };
+  /* Codes uit het leerplan Digitale geletterdheid (LeerLokaal, exports 19-11-2026);
+     "nieuw" = nieuw ten opzichte van leerplan 2023 */
   const LJ_DATA = {
-    pk:{ict:[{s:"Spelenderwijs omgaan met digitale toestellen",c:"1.1"}],comp:[],media:[]},
-    k1:{ict:[{s:"Vlot bewegen op een scherm (tikken, slepen)",c:"1.2"},{s:"Oefenen met vertrouwde tools",c:"1.3"}],
-        comp:[{s:"Computers in de leefwereld herkennen",c:"2.1"},{s:"Beseffen dat een computer eindeloos herhaalt",c:"2.2"},{s:"Prenten in logische volgorde leggen",c:"2.3"},{s:"Onderdelen van een geheel benoemen",c:"2.4"}],
-        media:[{s:"Kennismaken met soorten mediaboodschappen",c:"3.1"}]},
-    k2:{note:"Een jaar van inoefenen en herhalen — geen nieuwe minimumdoelen. De vaardigheden uit het 1e kleuter worden verder ingeoefend."},
-    k3:{ict:[{s:"Toetsen gericht aantikken (naam, symbolen)",c:"1.4"}],
-        comp:[{s:"Een patroon verderzetten",c:"2.5"},{s:"Een opdracht in deelopdrachten opdelen",c:"2.6"},{s:"Herhaling herkennen",c:"2.7"},{s:"Stap voor stap een opdracht uitvoeren",c:"2.8"}],
-        media:[{s:"Reflecteren over eigen mediagebruik",c:"3.2"}]},
-    l1:{ict:[{s:"Foto's en video's maken",c:"1.5"},{s:"Eenvoudige handelingen + inloggen (visuele code)",c:"1.6"}],
-        comp:[{s:"Stap-voor-stap instructies geven aan een klasgenoot",c:"2.9"},{s:"Vertellen welke machines automatisch werken (bv. stoplicht, kassa)",c:"2.10"}],
+    pk:{ict:[{s:"Spelenderwijs omgaan met digitale toestellen",c:"1 B.1"}],
+        comp:[],
         media:[]},
-    l2:{ict:[{s:"Het begrip 'bestand' kennen",c:"1.7",t:"n"},{s:"Cijfers, letters &amp; symbolen typen",c:"1.8"},{s:"Creatief vormgeven met een tool",c:"1.9"},{s:"Info opzoeken — browser verkennen",c:"1.10"},{s:"Geluid opnemen",c:"1.11"}],
-        comp:[{s:"Een taak opdelen in kleine stapjes (bv. een boterham smeren)",c:"2.11"},{s:"De woorden 'digitaal' en 'internet' leren kennen",c:"2.12",t:"n"},{s:"Hardware, software, invoer en uitvoer leren kennen (muis = invoer, scherm = uitvoer)",c:"2.13",t:"n"}],
-        media:[{s:"Login &amp; wachtwoord veilig gebruiken",c:"3.3"},{s:"Weten dat online niet altijd waar is",c:"3.4"}]},
-    l3:{ict:[{s:"Apparaten + toetsenbord functioneel gebruiken",c:"1.12",t:"n"},{s:"Zoekstrategie: zoekvraag &amp; zoektool",c:"1.13–1.15",t:"n"},{s:"Foto's bewerken",c:"1.16"},{s:"Tekst typen &amp; opmaken (vet, cursief)",c:"1.17"},{s:"E-mail versturen",c:"1.18"}],
-        comp:[{s:"Weten wat een algoritme is: een stappenplan (bv. een recept)",c:"2.14"},{s:"Voor- en nadelen bespreken als een machine iets automatisch doet",c:"2.15"}],
-        media:[{s:"Alert zijn voor catfish",c:"3.5"},{s:"Waakzaam met persoonlijke gegevens",c:"3.6"},{s:"Nettiquette respecteren",c:"3.7"},{s:"Een volwassene verwittigen bij nare berichten",c:"3.8"},{s:"Cyberpesten herkennen en vermijden",c:"3.9"}]},
-    l4:{ict:[{s:"Informatie presenteren",c:"1.19"},{s:"Eenvoudige teksten digitaal schrijven",c:"1.20"},{s:"Tekst verder opmaken: lijsten, afbeeldingen",c:"1.17",t:"v"},{s:"E-mail met bijlage, e-mails ordenen",c:"1.18",t:"v"},{s:"Bestanden in een mappenstructuur",c:"1.22",t:"n"}],
-        comp:[{s:"Een probleem aanpakken: opdelen in stappen, patronen zien, hoofdzaken kiezen (de basis van programmeren)",c:"2.16–2.20",t:"n"},{s:"Fouten in een stappenplan opsporen en verbeteren (debuggen)",c:"2.21"},{s:"Een eenvoudig stappenplan (algoritme) maken, testen en verbeteren — bv. in Scratch",c:"2.22",t:"n"},{s:"Weten wat online en offline betekent, en hoe je iets verzendt en ontvangt",c:"2.24",t:"n"}],
-        media:[{s:"Begrippen privacy, gegevens, account",c:"3.10",t:"n"},{s:"Invloed van sociale media en influencers op je mening",c:"3.11"}]},
-    l5:{ict:[{s:"Bestanden openen, bewerken &amp; bewaren",c:"1.23"},{s:"Systeeminstellingen aanpassen",c:"1.24",t:"n"},{s:"Zoekresultaten verwerken &amp; bewaren",c:"1.25"}],
-        comp:[{s:"Programmeren &amp; algoritmes verder inoefenen",t:"v"}],
-        media:[{s:"Kritisch tegenover reclame &amp; media",c:"3.12–3.14"},{s:"Begrippen online veiligheid &amp; nepnieuws",c:"3.15",t:"n"},{s:"Gepast reageren op phishing",c:"3.16–3.17"},{s:"Digitale voetafdruk — alles blijft online",c:"3.18–3.19"},{s:"Regels &amp; impact op gezondheid",c:"3.20–3.21",t:"n"}]},
-    l6:{ict:[{s:"Bestanden beheren, opslaan &amp; delen in Teams",c:"1.26–1.28",t:"n"},{s:"Apparaten instellen + vlot typen",c:"1.29",t:"n"},{s:"Communicatietools kennen",c:"1.30",t:"n"},{s:"Begrip AI + voorbeelden",c:"1.31–1.32",t:"n"},{s:"Bronnen beoordelen (betrouwbaar?)",c:"1.33",t:"n"},{s:"Reflecteren op meerwaarde",c:"1.34"}],
-        comp:[{s:"Begrijpen hoe een computer werkt: invoer → verwerking → uitvoer → opslag (toetsenbord → typen → scherm → bestand)",c:"2.25–2.26",t:"n"},{s:"Begrijpen hoe toestellen via wifi/internet verbonden zijn en bestanden in de cloud bewaard worden",c:"2.27–2.30",t:"n"},{s:"Een probleem omzetten in een visueel stappenplan",c:"2.31–2.32"},{s:"Een programma maken met herhaling en keuzes (als…dan) — bv. een spel in Scratch",c:"2.33",t:"n"},{s:"Een effectieve AI-prompt formuleren",c:"2.34",t:"n"}],
-        media:[{s:"Auteursrecht &amp; portretrecht toepassen",c:"3.22–3.25",t:"n"}]}
+    k1:{ict:[{s:"Vlot bewegen op een scherm (tikken, slepen)",c:"1 B.2"},{s:"Oefenen met vertrouwde tools",c:"1 B.3"}],
+        comp:[],
+        media:[{s:"Kennismaken met soorten mediaboodschappen",c:"3 B.1"}]},
+    k2:{ict:[],
+        comp:[{s:"Een eenvoudig stappenplan volgen (bv. een stappenkaart)",c:"2 B.1",t:"n"}],
+        media:[]},
+    k3:{ict:[{s:"Toetsen gericht aantikken (naam, symbolen)",c:"1 B.4"},{s:"Digitale informatiebronnen herkennen en benoemen",c:"1 B.5",t:"n"}],
+        comp:[{s:"Patronen en herhalingen herkennen",c:"2 B.2",t:"n"},{s:"Een eenvoudig stappenplan opstellen, uitvoeren en controleren",c:"2 B.3",t:"n"}],
+        media:[{s:"Reflecteren over eigen mediagebruik",c:"3 B.2"}]},
+    l1:{ict:[{s:"Foto's en video's maken",c:"1 B.6"},{s:"Eenvoudige handelingen + inloggen (visuele code)",c:"1 B.7"}],
+        comp:[{s:"Hoofdzaken onderscheiden en details weglaten (abstractie)",c:"2 B.4",t:"n"},{s:"Patronen herkennen in eenvoudige situaties",c:"2 B.5",t:"n"},{s:"Stappen in een vaste volgorde plaatsen en uitvoeren",c:"2 B.6",t:"n"},{s:"Een lineair algoritme uitvoeren, testen en verbeteren",c:"2 B.7",t:"n"}],
+        media:[]},
+    l2:{ict:[{s:"Het begrip 'bestand' kennen",c:"1 B.8",t:"n"},{s:"De woorden 'digitaal' en 'internet' leren kennen",c:"1 B.9",t:"n"},{s:"Hardware en software leren kennen",c:"1 B.10",t:"n"},{s:"Cijfers, letters &amp; symbolen typen",c:"1 B.11"},{s:"Een duidelijke bestandsnaam geven",c:"1 B.12",t:"n"},{s:"Creatief vormgeven met een tool",c:"1 B.13"},{s:"Een zoekopdracht ingeven met aangereikte zoektermen",c:"1 B.14",t:"n"},{s:"Digitale bronnen raadplegen in een veilige omgeving",c:"1 B.15"},{s:"Geluid opnemen",c:"1 B.16"}],
+        comp:[{s:"Een probleem opdelen in kleinere deelproblemen",c:"2 B.8",t:"n"},{s:"Eenvoudige instructies formuleren met woorden of symbolen",c:"2 B.9",t:"n"}],
+        media:[{s:"Login &amp; wachtwoord veilig gebruiken",c:"3 B.3"},{s:"Weten dat online niet altijd waar is",c:"3 B.4"}]},
+    l3:{ict:[{s:"Invoer, verwerking, uitvoer en opslag leren kennen",c:"1 B.17",t:"n"},{s:"Apparaten + toetsenbord functioneel gebruiken",c:"1 B.18",t:"n"},{s:"Zoekstrategie: zoekvraag, zoektool &amp; zoekopdracht",c:"1 B.19–B.21",t:"n"},{s:"Zoekresultaten beoordelen op bruikbaarheid",c:"1 B.22",t:"n"},{s:"Foto's bewerken",c:"1 B.23"},{s:"E-mail versturen",c:"1 B.24"}],
+        comp:[{s:"Fouten in een stappenplan of eenvoudige code opsporen (debuggen)",c:"2 B.10",t:"n"},{s:"Een lineair algoritme ontwerpen, testen en debuggen",c:"2 B.11",t:"n"},{s:"Een eenvoudige zoekstrategie ontwikkelen",c:"2 B.12",t:"n"}],
+        media:[{s:"Alert zijn voor catfish",c:"3 B.5"},{s:"Waakzaam met persoonlijke gegevens",c:"3 B.6"},{s:"Nettiquette respecteren",c:"3 B.7"},{s:"Een volwassene verwittigen bij nare berichten",c:"3 B.8"},{s:"Cyberpesten herkennen en vermijden",c:"3 B.9"}]},
+    l4:{ict:[{s:"Bestanden openen, bewerken &amp; bewaren",c:"1 B.25",t:"n"},{s:"Verzenden, ontvangen, online en offline kennen",c:"1 B.26",t:"n"},{s:"Informatie presenteren",c:"1 B.27"},{s:"Zelfstandig oefenen met digitale tools",c:"1 B.28"},{s:"Bestanden in een mappenstructuur",c:"1 B.29",t:"n"},{s:"E-mail met bijlage, e-mails ordenen",c:"1 B.24",t:"v"}],
+        comp:[{s:"Weten wat een algoritme is: een stappenplan (bv. een recept)",c:"2 B.13",t:"n"},{s:"Een probleem omzetten in een stappenplan of schema",c:"2 B.14",t:"n"},{s:"Een zoekstrategie uitwerken en toepassen",c:"2 B.15",t:"n"},{s:"Een stappenplan (algoritme) ontwerpen, testen en debuggen — bv. in Scratch",c:"2 B.16",t:"n"}],
+        media:[{s:"Begrippen privacy, gegevens, account",c:"3 B.10",t:"n"},{s:"Invloed van sociale media en influencers op je mening",c:"3 B.11"}]},
+    l5:{ict:[{s:"Gebruikte bronnen vermelden",c:"1 B.30",t:"n"},{s:"Systeeminstellingen aanpassen",c:"1 B.31",t:"n"},{s:"Zoekresultaten verwerken &amp; bewaren",c:"1 B.32"}],
+        comp:[{s:"Een algoritme maken met keuzes (als…dan)",c:"2 B.17",t:"n"},{s:"Een algoritme maken met herhalingen",c:"2 B.18",t:"n"}],
+        media:[{s:"Kritisch tegenover reclame &amp; media",c:"3 B.12–B.14"},{s:"Begrippen online veiligheid &amp; nepnieuws",c:"3 B.15",t:"n"},{s:"Voor- en nadelen van de sociale digitale samenleving",c:"3 B.16"},{s:"Gepast reageren op phishing",c:"3 B.17"},{s:"Online vriendelijk en respectvol omgaan met anderen",c:"3 B.18"},{s:"Digitale voetafdruk — alles blijft online",c:"3 B.19"},{s:"Regels voor het plaatsen en delen van media",c:"3 B.20"},{s:"Impact op gezondheid",c:"3 B.21",t:"n"}]},
+    l6:{ict:[{s:"Begrijpen hoe invoer, verwerking, uitvoer en opslag samenhangen",c:"1 B.33",t:"n"},{s:"Begrijpen hoe toestellen via netwerken verbonden zijn en gegevens elders bewaard worden",c:"1 B.34–B.37",t:"n"},{s:"Bestanden beheren volgens een aangereikte structuur",c:"1 B.38",t:"n"},{s:"Bestanden opslaan &amp; delen in Teams",c:"1 B.39–B.40"},{s:"Apparaten instellen + vlot typen",c:"1 B.41",t:"n"},{s:"Communicatietools kennen",c:"1 B.42",t:"n"},{s:"Begrip AI + voorbeelden",c:"1 B.43–B.44",t:"n"},{s:"Bronnen beoordelen op betrouwbaarheid en correctheid",c:"1 B.45–B.46",t:"n"},{s:"Reflecteren op meerwaarde",c:"1 B.47"}],
+        comp:[{s:"Patronen herkennen in abstracte situaties",c:"2 B.19"},{s:"Een programma maken met herhaling en keuzes (als…dan) — bv. een spel in Scratch",c:"2 B.20",t:"n"},{s:"Een zoekstrategie uitwerken en bijsturen (verdieping: een AI-prompt formuleren)",c:"2 B.21",t:"n"}],
+        media:[{s:"Auteursrecht &amp; portretrecht toepassen",c:"3 B.22–B.25",t:"n"}]}
   };
   let ljActive = "l3";
   function ljBadge(t){

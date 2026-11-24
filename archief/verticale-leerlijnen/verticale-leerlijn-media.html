@@ -49,7 +49,7 @@
   .scrollwrap{overflow-x:auto;padding:18px 26px 60px}
   .grid{display:grid;gap:6px;min-width:900px}
   .corner{position:sticky;left:0;z-index:5}
-  .head-cell{display:flex;flex-direction:column;justify-content:flex-end;gap:4px;padding:8px 10px;border-radius:10px 10px 0 0;cursor:pointer;color:#fff;min-height:62px;transition:.15s;position:relative}
+  .head-cell{display:flex;flex-direction:column;justify-content:flex-end;gap:4px;padding:30px 10px 8px;border-radius:10px 10px 0 0;cursor:pointer;color:#fff;min-height:62px;transition:.15s;position:relative}
   .head-cell:hover{filter:brightness(1.06)}
   .head-cell .h-name{font-weight:700;font-size:.84rem;line-height:1.2}
   .head-cell .h-info{position:absolute;top:6px;right:8px;font-size:.8rem;opacity:.85}
@@ -65,7 +65,7 @@
   .cell.inoef .in-lbl{font-size:.66rem;font-weight:600;color:#64748b;display:flex;align-items:center;gap:4px}
   .block{border-radius:7px;padding:5px 7px;color:#fff;font-size:.74rem;font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.12);cursor:default;position:relative}
   .block .code{font-family:'Space Grotesk',sans-serif;font-size:.66rem;opacity:.9;display:block}
-  .block .txt{font-weight:600;line-height:1.25;display:block;margin-top:1px}
+  .block .txt{font-weight:600;overflow-wrap:anywhere;hyphens:auto;line-height:1.25;display:block;margin-top:1px}
 
   .ec{display:none;gap:3px;margin-top:4px}
   body.editing .ec{display:flex;flex-wrap:wrap}
@@ -112,33 +112,50 @@
     <span class="lbl">Leerjaar</span>
     <span id="yearChips"></span>
   </div>
+  <div class="view-toggle">
+    <button class="view-btn on" id="viewDetail">📋 Doelen</button>
+    <button class="view-btn" id="viewKetting">🔗 Kettingen</button>
+  </div>
   <button class="chip" id="clearFilter">✕ Filters wissen</button>
 </div>
 
-<div class="legend">
+<div class="legend" id="legendDetail">
   <div class="item"><span class="swatch aan"></span> Nieuw aanbrengen</div>
   <div class="item"><span class="swatch in"></span> Inoefenen / onderhouden</div>
   <div class="item">↑ van onder (kleuter) naar boven (6de lj) opgebouwd — klik op een kolomtitel voor uitleg</div>
 </div>
 
-<div class="scrollwrap">
+<div class="legend hidden" id="legendKetting">
+  <div class="item">🔗 Een ketting verbindt doelen rond één thema, van onder (jong) naar boven (oud). Leeftijd en fase volgen LeerLokaal.</div>
+  <div class="item">🟢 Ondersteuning</div>
+  <div class="item">🔵 Verdieping</div>
+  <div class="item">Klik op een doel voor details</div>
+</div>
+
+<div class="scrollwrap" id="wrapDetail">
   <div class="grid" id="grid"></div>
 </div>
+
+<div class="hidden" id="wrapKetting"></div>
 
 <div class="overlay" id="overlay"><div class="modal" id="modal"></div></div>
 <div class="toast" id="toast"></div>
 <footer>Verticale leerlijn-tool · Mediawijsheid · spiraalopbouw naar OVSG · wijzigingen bewaard in je browser tot je publiceert</footer>
 
+<script src="kettingen-data.js"></script>
+<script src="kettingen.js"></script>
 <script>
+const KETTING_PAGINA = ["3-1","3-2","3-3"]; // kettingen op deze pagina, zie kettingen-data.js
 const ADMIN_CODE = "krekel";
-const STORE_KEY = "leerlijnViz_media_v2";
+const STORE_KEY = "leerlijnViz_media_v3";
 
+/* leerjaar → fase zoals in LeerLokaal (K3 = 5 jaar … L6 = 11 jaar) */
 const LEERJAREN = [
   {id:"K1", label:"1ste kleuter",   fase:1},
   {id:"K2", label:"2de kleuter",    fase:1},
-  {id:"K3", label:"3de kleuter",    fase:1},
+  {id:"K3", label:"3de kleuter",    fase:2},
   {id:"L1", label:"1ste leerjaar",  fase:2},
-  {id:"L2", label:"2de leerjaar",   fase:2},
+  {id:"L2", label:"2de leerjaar",   fase:3},
   {id:"L3", label:"3de leerjaar",   fase:3},
   {id:"L4", label:"4de leerjaar",   fase:3},
   {id:"L5", label:"5de leerjaar",   fase:4},
@@ -164,43 +181,37 @@ const TL = [
 
 const DEFAULT_DOELEN = [
   /* ── Mediaboodschappen kennen ── */
-  {code:"DIG 3.1",  tl:"media",     lj:"K1", text:"Kennismaken met verschillende vormen van mediaboodschappen."},
-  {code:"DIG 3.2",  tl:"media",     lj:"K3", text:"Reflecteren over hoe zij digitale media gebruiken in hun dagelijks leven."},
-  {code:"DIG 3.4",  tl:"media",     lj:"L1", text:"Weten dat veel informatie digitaal beschikbaar is en dat de wereld doordrongen is van audiovisuele boodschappen, maar dat wat online staat niet noodzakelijk waar is.", onder:"Onder begeleiding voorbeelden van gemanipuleerde media zoals reclameboodschappen en nepnieuws bekijken en de manipulatie benoemen."},
-  {code:"DIG 3.11", tl:"media",     lj:"L3", text:"De invloed van digitale media herkennen op je eigen mening en de mening van anderen (sociale aspecten).", onder:"Onder begeleiding ervaren dat onze keuzes beïnvloed worden door digitale media."},
-  {code:"DIG 3.16", tl:"media",     lj:"L4", text:"De voor- en nadelen verwoorden van het participeren aan een sociale digitale samenleving (sociale aspecten).", onder:"Beschrijven wat een sociale digitale samenleving is."},
-
+  {code:"DIG 3 B.1", tl:"media", lj:"K1", text:"Kennismaken met verschillende vormen van mediaboodschappen.", md:"MD L6 8.3.4"},
+  {code:"DIG 3 B.2", tl:"media", lj:"K3", text:"Reflecteren over hoe zij digitale media gebruiken in hun dagelijks leven.", md:"MD L6 8.3.4"},
+  {code:"DIG 3 B.4", tl:"media", lj:"L2", text:"Weten dat veel informatie digitaal beschikbaar is en dat de wereld doordrongen is van audiovisuele boodschappen, maar dat wat online staat, niet noodzakelijk waar is.", onder:"Onder begeleiding voorbeelden van gemanipuleerde media zoals reclameboodschappen, nepnieuws bekijken en de manipulatie benoemen.", md:"MD L6 8.3.4"},
+  {code:"DIG 3 B.11", tl:"media", lj:"L4", text:"De invloed van digitale media herkennen op je eigen mening en de mening van anderen (sociale aspecten).", onder:"Onder begeleiding ervaren dat onze keuzes beïnvloed worden door digitale media.", md:"MD L6 8.3.4"},
+  {code:"DIG 3 B.16", tl:"media", lj:"L5", text:"De voor- en nadelen verwoorden van het participeren aan een sociale digitale samenleving (sociale aspecten).", onder:"Beschrijven wat een sociale digitale samenleving is.", md:"MD L6 8.3.4"},
   /* ── Online veiligheid ── */
-  {code:"DIG 3.3",  tl:"veilig",    lj:"L1", text:"Voor hen gekende login en wachtwoord gebruiken en hier veilig mee werken."},
-  {code:"DIG 3.5",  tl:"veilig",    lj:"L2", text:"Weten dat personen zich via digitale media anders kunnen voordoen dan in werkelijkheid en hier alert en gepast op reageren (veiligheidsaspecten).", onder:"Bij twijfel alert en gepast reageren door dit te melden aan een bekende volwassene."},
-  {code:"DIG 3.8",  tl:"veilig",    lj:"L2", text:"Bij ongewenste boodschappen of schokkende informatie een bekende volwassene verwittigen.", onder:"Onder begeleiding bespreken in welke situaties je hulp inroept van een volwassene die je vertrouwt."},
-  {code:"DIG 3.17", tl:"veilig",    lj:"L4", text:"Niet of gepast reageren op dubieuze berichten of verzoeken met een onduidelijke herkomst (veiligheidsaspecten).", onder:"Uit aangereikte keuzemogelijkheden gepast reageren op dubieuze berichten of verzoeken."},
-
+  {code:"DIG 3 B.3", tl:"veilig", lj:"L2", text:"Voor hen gekende login en wachtwoord gebruiken en hier veilig mee werken.", md:"MD L4 8.3.1 · MD L6 8.3.3"},
+  {code:"DIG 3 B.5", tl:"veilig", lj:"L3", text:"Weten dat personen zich via digitale media anders kunnen voordoen dan in werkelijkheid, en hier alert en gepast op reageren (veiligheidsaspecten).", onder:"Bij twijfel alert en gepast reageren door dit te melden aan een bekende volwassene.", md:"MD L6 8.3.4"},
+  {code:"DIG 3 B.8", tl:"veilig", lj:"L3", text:"Bij ongewenste boodschappen of schokkende informatie een bekende volwassene verwittigen.", onder:"Onder begeleiding bespreken in welke situaties je hulp inroept van een volwassene die je vertrouwt.", md:"MD L6 8.3.3"},
+  {code:"DIG 3 B.17", tl:"veilig", lj:"L5", text:"Niet of gepast reageren op dubieuze berichten of verzoeken met een onduidelijke herkomst (veiligheidsaspecten).", onder:"Uit aangereikte keuzemogelijkheden gepast reageren op dubieuze berichten of verzoeken.", md:"MD L6 8.3.3 · MD L6 8.3.4"},
   /* ── Privacy & persoonsgegevens ── */
-  {code:"DIG 3.6",  tl:"privacy",   lj:"L2", text:"Waakzaam zijn bij het doorgeven van persoonlijke gegevens.", onder:"Onder begeleiding reflecteren over de gevaren van het doorgeven van persoonlijke gegevens."},
-  {code:"DIG 3.10", tl:"privacy",   lj:"L3", text:"De begrippen online privacy, persoonlijke gegevens en account kennen en gebruiken."},
-  {code:"DIG 3.15", tl:"privacy",   lj:"L4", text:"De begrippen online veiligheid en nepnieuws kennen."},
-  {code:"DIG 3.19", tl:"privacy",   lj:"L4", text:"Begrijpen dat alles wat je online deelt, online blijft staan en de gevolgen hiervan inschatten (veiligheidsaspecten)."},
-
+  {code:"DIG 3 B.6", tl:"privacy", lj:"L3", text:"Waakzaam zijn bij het doorgeven van persoonlijke gegevens.", onder:"Onder begeleiding reflecteren over de gevaren van het doorgeven van persoonlijke gegevens.", md:"MD L4 8.3.1 · MD L6 8.3.3"},
+  {code:"DIG 3 B.10", tl:"privacy", lj:"L4", text:"De begrippen de online privacy, de persoonlijke gegevens, de/het account kennen en gebruiken.", md:"MD L4 8.3.1"},
+  {code:"DIG 3 B.15", tl:"privacy", lj:"L5", text:"De begrippen de online veiligheid, het nepnieuws kennen.", md:"MD L6 8.3.1"},
+  {code:"DIG 3 B.19", tl:"privacy", lj:"L5", text:"Begrijpen dat alles wat je online deelt, online blijft staan, en de gevolgen hiervan inschatten (veiligheidsaspecten).", md:"MD L6 8.3.4"},
   /* ── Digitale etiquette ── */
-  {code:"DIG 3.7",  tl:"etiquette", lj:"L2", text:"Elementaire regels en omgangsvormen bij digitale communicatie respecteren (ethische aspecten).", onder:"Een vooraf afgesproken en gekend communicatiekanaal gebruiken; de klas- en schoolafspraken rond digitale communicatie volgen."},
-  {code:"DIG 3.9",  tl:"etiquette", lj:"L2", text:"Inzien dat digitale media niet mogen gebruikt worden om anderen lastig te vallen of te pesten en dit toepassen (ethische aspecten).", verdiep:"De effecten van pesten via digitale media op anderen benoemen."},
-  {code:"DIG 3.18", tl:"etiquette", lj:"L4", text:"Online vriendelijk en respectvol omgaan met anderen en hun privacy (ethische aspecten)."},
-
+  {code:"DIG 3 B.7", tl:"etiquette", lj:"L3", text:"Elementaire regels en omgangsvormen bij digitale communicatie respecteren (ethische aspecten).", onder:"De klas- en schoolafspraken rond digitale communicatie volgen.\nEen vooraf afgesproken en gekend communicatiekanaal gebruiken.", md:"MD L6 8.3.4"},
+  {code:"DIG 3 B.9", tl:"etiquette", lj:"L3", text:"Inzien dat digitale media niet mogen gebruikt worden om anderen lastig te vallen of te pesten, en dit toepassen (ethische aspecten).", onder:"De effecten van pesten via digitale media op anderen benoemen.", md:"MD L6 8.3.4"},
+  {code:"DIG 3 B.18", tl:"etiquette", lj:"L5", text:"Online vriendelijk en respectvol omgaan met anderen en hun privacy (ethische aspecten).", md:"MD L6 8.3.4"},
   /* ── Kritisch mediagebruik ── */
-  {code:"DIG 3.12", tl:"kritisch",  lj:"L4", text:"Weten dat hun gedrag kan beïnvloed worden door reclame en media."},
-  {code:"DIG 3.13", tl:"kritisch",  lj:"L4", text:"ICT op een veilige, verantwoorde en doelmatige manier gebruiken."},
-  {code:"DIG 3.14", tl:"kritisch",  lj:"L4", text:"Een kritische houding aannemen tegenover digitaal mediagebruik."},
-
+  {code:"DIG 3 B.12", tl:"kritisch", lj:"L5", text:"Weten dat hun gedrag kan beïnvloed worden door reclame en media.", md:"MD L6 8.3.4"},
+  {code:"DIG 3 B.13", tl:"kritisch", lj:"L5", text:"ICT op een veilige, verantwoorde en doelmatige manier gebruiken.", md:"MD L6 8.3.4"},
+  {code:"DIG 3 B.14", tl:"kritisch", lj:"L5", text:"Een kritische houding aannemen tegenover digitaal mediagebruik.", md:"MD L6 8.3.4"},
   /* ── Gezondheid & welzijn ── */
-  {code:"DIG 3.21", tl:"gezond",    lj:"L4", text:"Zowel de fysieke als de mentale impact van digitale media op hun gezondheid verwoorden (gezondheidsaspecten).", onder:"Perfecte plaatjes van influencers of de angst om iets te missen (FOMO) kunnen je onzeker maken (mentaal); urenlang gamen kan leiden tot een 'tabletnek' en blauw schermlicht voor het slapengaan verstoort de slaap (fysiek)."},
-
+  {code:"DIG 3 B.21", tl:"gezond", lj:"L5", text:"Zowel de fysieke als de mentale impact van digitale media op hun gezondheid verwoorden (gezondheidsaspecten).", onder:"Het urenlang gamen of tiktokken kan leiden tot een ‘tabletnek’ of pijnlijke duimen. Het blauwe licht van schermen vlak voor het slapengaan zorgt ervoor dat je hersenen denken dat het nog dag is, waardoor je moeilijker in slaap valt (fysieke gezondheid).\nHet zien van perfecte plaatjes van influencers op Instagram of de angst om iets te missen (fomo) kan ervoor zorgen dat je onzeker wordt over je eigen leven of uiterlijk (mentale gezondheid).", md:"MD L6 8.3.4"},
   /* ── Regelgeving & rechten ── */
-  {code:"DIG 3.20", tl:"regelgeving",lj:"L4", text:"Begrijpen dat er regels bestaan over het plaatsen en delen van media en deze regels toepassen (regelgevende aspecten).", verdiep:"Regels zoals schoolafspraken, auteursrecht, portretrecht, GDPR en communityregels over het plaatsen en delen van media opzoeken."},
-  {code:"DIG 3.22", tl:"regelgeving",lj:"L5", text:"De begrippen auteursrecht en portretrecht kennen en toepassen."},
-  {code:"DIG 3.23", tl:"regelgeving",lj:"L5", text:"Weten dat het basisprincipe van het auteursrecht inhoudt dat door anderen zelfgemaakte teksten, foto's of video's niet zonder toestemming gebruikt of gekopieerd mogen worden."},
-  {code:"DIG 3.24", tl:"regelgeving",lj:"L5", text:"Weten dat het basisprincipe van het portretrecht inhoudt dat iemand niet zonder expliciete goedkeuring gefotografeerd of gefilmd mag worden."},
-  {code:"DIG 3.25", tl:"regelgeving",lj:"L5", text:"Weten dat een foto of video waarop iemand herkenbaar afgebeeld staat enkel gepubliceerd of gedeeld mag worden als die persoon toestemming geeft."},
+  {code:"DIG 3 B.20", tl:"regelgeving", lj:"L5", text:"Begrijpen dat er regels bestaan over het plaatsen en delen van media, en deze regels toepassen (regelgevende aspecten).", onder:"Regels zoals schoolafspraken, auteursrechten, portretrecht, GDPR, communityregels over het plaatsen en delen van media opzoeken.", md:"MD L6 8.3.3 · MD L6 8.3.4"},
+  {code:"DIG 3 B.22", tl:"regelgeving", lj:"L6", text:"De begrippen het auteursrecht, het portretrecht kennen en toepassen.", md:"MD L6 8.3.1"},
+  {code:"DIG 3 B.23", tl:"regelgeving", lj:"L6", text:"Weten dat het basisprincipe van het auteursrecht inhoudt dat door anderen zelfgemaakte teksten, foto’s of video’s niet zonder toestemming gebruikt of gekopieerd mogen worden.", md:"MD L6 8.3.2"},
+  {code:"DIG 3 B.24", tl:"regelgeving", lj:"L6", text:"Weten dat het basisprincipe van het portretrecht inhoudt dat iemand niet zonder expliciete goedkeuring gefotografeerd of gefilmd mag worden.", md:"MD L6 8.3.2"},
+  {code:"DIG 3 B.25", tl:"regelgeving", lj:"L6", text:"Weten dat een foto of video waarop iemand herkenbaar afgebeeld staat, enkel mag gepubliceerd of gedeeld worden als die persoon toestemming geeft.", md:"MD L6 8.3.2"},
 ];
 
 let doelen = load();
@@ -268,6 +279,7 @@ function blockHTML(d,t){
   return `<div class="block" style="background:${t.kleur}">
     <span class="code">${d.code}</span>
     <span class="txt">${esc(d.text)}</span>
+    ${kettingBadges(d.code)}
     <div class="ec">
       <button onclick="move('${d.code}',1)" title="Een leerjaar hoger">▲</button>
       <button onclick="move('${d.code}',-1)" title="Een leerjaar lager">▼</button>
@@ -305,7 +317,10 @@ function showInfo(tlId){
      <button class="btn btn-ghost close" style="background:#0f1f30;color:#fff" onclick="closeOverlay()">Sluiten</button>`;
   document.getElementById('overlay').classList.add('show');
 }
-function closeOverlay(){ document.getElementById('overlay').classList.remove('show'); }
+function closeOverlay(){
+  document.getElementById('overlay').classList.remove('show');
+  document.getElementById('modal').classList.remove('wide','kt');
+}
 
 document.getElementById('editBtn').onclick = ()=>{
   if(!editing){
@@ -346,8 +361,19 @@ function hex2rgba(h,a){ const n=parseInt(h.slice(1),16); return `rgba(${(n>>16)&
 let toastT;
 function toast(m){ const t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('show'),2600); }
 
+/* ── Weergave toggle ── */
+function switchView(v){
+  document.getElementById('wrapDetail').classList.toggle('hidden', v!=='detail');
+  document.getElementById('legendDetail').classList.toggle('hidden', v!=='detail');
+  document.getElementById('viewDetail').classList.toggle('on', v==='detail');
+  document.getElementById('editBtn').classList.toggle('hidden', v!=='detail');
+  toonKettingen(v==='ketting');
+}
+document.getElementById('viewDetail').onclick = ()=>switchView('detail');
+
 buildFilterChips();
 render();
+startKettingen();
 </script>
 </body>
 </html>

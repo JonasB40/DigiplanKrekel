@@ -52,7 +52,7 @@
   .scrollwrap{overflow-x:auto;padding:18px 26px 60px}
   .grid{display:grid;gap:6px;min-width:980px}
   .corner{position:sticky;left:0;z-index:5}
-  .head-cell{display:flex;flex-direction:column;justify-content:flex-end;gap:4px;padding:8px 10px;border-radius:10px 10px 0 0;cursor:pointer;color:#fff;min-height:62px;transition:.15s;position:relative}
+  .head-cell{display:flex;flex-direction:column;justify-content:flex-end;gap:4px;padding:30px 10px 8px;border-radius:10px 10px 0 0;cursor:pointer;color:#fff;min-height:62px;transition:.15s;position:relative}
   .head-cell:hover{filter:brightness(1.06)}
   .head-cell .h-name{font-weight:700;font-size:.84rem;line-height:1.2}
   .head-cell .h-info{position:absolute;top:6px;right:8px;font-size:.8rem;opacity:.85}
@@ -68,7 +68,12 @@
   .cell.inoef .in-lbl{font-size:.66rem;font-weight:600;color:#64748b;display:flex;align-items:center;gap:4px}
   .block{border-radius:7px;padding:5px 7px;color:#fff;font-size:.74rem;font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.12);cursor:default;position:relative}
   .block .code{font-family:'Space Grotesk',sans-serif;font-size:.66rem;opacity:.9;display:block}
-  .block .txt{font-weight:600;line-height:1.25;display:block;margin-top:1px}
+  .block .txt{font-weight:600;overflow-wrap:anywhere;hyphens:auto;line-height:1.25;display:block;margin-top:1px}
+
+  .uitbreiding{margin-top:18px;padding:14px 16px;background:#fff;border:1px solid var(--border);border-radius:10px;font-size:.84rem;color:#334155;max-width:900px}
+  .uitbreiding b{font-family:'Space Grotesk',sans-serif}
+  .uitbreiding div{margin-top:6px}
+  .head-cell .h-leeg{font-size:.66rem;font-weight:600;opacity:.95}
 
   /* edit controls */
   .ec{display:none;gap:3px;margin-top:4px}
@@ -154,6 +159,7 @@
   <div class="view-toggle">
     <button class="view-btn on" id="viewDetail">📋 Doelen</button>
     <button class="view-btn" id="viewOverview">🌀 Spiraalcurriculum</button>
+    <button class="view-btn" id="viewKetting">🔗 Kettingen</button>
   </div>
   <button class="chip" id="clearFilter">✕ Filters wissen</button>
 </div>
@@ -169,8 +175,16 @@
   <div class="item">Klik op een blok voor details en bewerkmogelijkheid</div>
 </div>
 
+<div class="legend hidden" id="legendKetting">
+  <div class="item">🔗 Een ketting verbindt doelen rond één thema, van onder (jong) naar boven (oud). Leeftijd en fase volgen LeerLokaal.</div>
+  <div class="item">🟢 Ondersteuning</div>
+  <div class="item">🔵 Verdieping</div>
+  <div class="item">Klik op een doel voor details</div>
+</div>
+
 <div class="scrollwrap" id="wrapDetail">
   <div class="grid" id="grid"></div>
+  <div class="uitbreiding" id="uitbreiding"></div>
 </div>
 <div class="hidden" id="wrapOverview">
   <div class="sp-wrap">
@@ -181,21 +195,27 @@
   </div>
 </div>
 
+<div class="hidden" id="wrapKetting"></div>
+
 <div class="overlay" id="overlay"><div class="modal" id="modal"></div></div>
 <div class="toast" id="toast"></div>
 <footer>Verticale leerlijn-tool · spiraalopbouw naar OVSG · wijzigingen bewaard in je browser tot je publiceert</footer>
 
+<script src="kettingen-data.js"></script>
+<script src="kettingen.js"></script>
 <script>
+const KETTING_PAGINA = ["1-1","1-2","1-3","1-4","1-5","1-6"]; // kettingen op deze pagina, zie kettingen-data.js
 const ADMIN_CODE = "krekel"; // eenvoudige drempel, geen echte beveiliging
-const STORE_KEY = "leerlijnViz_ict_v2";
+const STORE_KEY = "leerlijnViz_ict_v3";
 
 /* Leerjaren van onder (index 0) naar boven. Render = omgekeerd (L6 bovenaan). */
+/* leerjaar → fase zoals in LeerLokaal (K3 = 5 jaar … L6 = 11 jaar) */
 const LEERJAREN = [
   {id:"K1", label:"1ste kleuter", fase:1},
   {id:"K2", label:"2de kleuter",  fase:1},
-  {id:"K3", label:"3de kleuter",  fase:1},
+  {id:"K3", label:"3de kleuter",  fase:2},
   {id:"L1", label:"1ste leerjaar", fase:2},
-  {id:"L2", label:"2de leerjaar", fase:2},
+  {id:"L2", label:"2de leerjaar", fase:3},
   {id:"L3", label:"3de leerjaar", fase:3},
   {id:"L4", label:"4de leerjaar", fase:3},
   {id:"L5", label:"5de leerjaar", fase:4},
@@ -211,10 +231,11 @@ const FASES = {
 /* Tussenleerlijnen (kolommen) — volgorde = pedagogische opbouw */
 const TL = [
   {id:"basis",       label:"Basisvaardigheden",                  kleur:"#64748b", info:"De bediening van toestellen: bewegen op het scherm, klikken en slepen, het toetsenbord en in- en uitvoerapparaten. De technische basis waarop alle andere vaardigheden voortbouwen."},
+  {id:"digisys",     label:"Digitale wereld & systemen",         kleur:"#7c2d12", info:"Begrijpen hoe hardware, software, invoer, verwerking, uitvoer en opslag samenwerken, en hoe netwerken en het internet dienen om gegevens te delen. Deze doelen stonden vroeger bij computationeel denken (DIG 2)."},
   {id:"systeem",     label:"Systeem & instellingen",             kleur:"#8b5cf6", info:"Inloggen op een toestel en schoolplatform (Office 365), eenvoudige systeeminstellingen aanpassen, zoals weergave, taal en het aan- of uitzetten van wifi."},
   {id:"info",        label:"Informatievaardig worden",           kleur:"#0d9488", info:"Gericht zoeken in digitale bronnen, zoekresultaten verwerken en bronnen kritisch beoordelen — met een eerste kennismaking met artificiële intelligentie."},
   {id:"communiceren",label:"Online communiceren",                kleur:"#06b6d4", info:"Veilig en respectvol digitaal communiceren en de mogelijkheden van communicatietools leren kennen, waaronder e-mail en videogesprekken."},
-  {id:"tekst",       label:"Tekstverwerking",                    kleur:"#2563eb", info:"Opgezochte informatie verwerken: tekst digitaal schrijven en opmaken, samenvatten en structureren in een tekstverwerker."},
+  {id:"tekst",       label:"Tekstverwerking",                    kleur:"#2563eb", info:"Opgezochte informatie verwerken: tekst digitaal schrijven en opmaken, samenvatten en structureren in een tekstverwerker. LeerLokaal heeft in DIG 1 geen apart doel voor tekstverwerking meer; de opbouw staat in het spiraalcurriculum."},
   {id:"foto",        label:"Experimenteren met foto/video/geluid",kleur:"#16a34a", info:"Beeld en geluid leren vastleggen en bewerken: foto's en video's maken, geluid opnemen en eenvoudige bewerkingen om eigen ideeën creatief vorm te geven."},
   {id:"presenteren", label:"Presenteren",                        kleur:"#f59e0b", info:"Verwerkte informatie aan anderen voorstellen met presentatiesoftware: dia's opmaken, structureren en presenteren voor een publiek."},
   {id:"bestanden",   label:"Bestanden organiseren & delen",      kleur:"#0ea5e9", info:"Samenwerken en bestanden delen via de cloud: opslaan, ordenen, downloaden, uploaden en delen in gedeelde mappen."},
@@ -385,40 +406,69 @@ const DEFAULT_SPIRAAL = [
 
 /* Standaarddoelen — gebootstrapt uit de OVSG-leerlijn (LeerLokaal). leerjaar afgeleid uit leeftijd. */
 const DEFAULT_DOELEN = [
-  {code:"DIG 1.1", tl:"basis", lj:"K1", text:"Spelenderwijs leren omgaan met digitale infrastructuur.", onder:"Zoals een tablet, computer, laptop of digitaal speelgoed."},
-  {code:"DIG 1.2", tl:"basis", lj:"K1", text:"Vlot bewegen op een digitaal scherm.", onder:"Met een vinger; later met pen, muis, touchpad of controller."},
-  {code:"DIG 1.3", tl:"basis", lj:"K2", text:"Met aangereikte en vertrouwde digitale tools oefenen.", onder:"Spelenderwijs binnen een veilige, afgeschermde omgeving."},
-  {code:"DIG 1.4", tl:"basis", lj:"K3", text:"Toetsen op een toetsenbord gericht aantikken."},
-  {code:"DIG 1.5", tl:"foto", lj:"L1", text:"Foto's en video's maken met een digitaal apparaat."},
-  {code:"DIG 1.6", tl:"basis", lj:"L1", text:"Eenvoudige, functionele handelingen in een gekende tool begrijpen en correct uitvoeren.", onder:"Slepen, navigeren, selecteren, tools openen/sluiten, geluid regelen, inloggen met visuele codes."},
-  {code:"DIG 1.7", tl:"bestanden", lj:"L2", text:"Het begrip 'het bestand' kennen en gebruiken.", onder:"Tekst, beeld, geluid, video of programma dat je kunt opslaan, openen of bewerken."},
-  {code:"DIG 1.8", tl:"basis", lj:"L2", text:"Cijfers, letters en symbolen gericht aantikken op een toetsenbord."},
-  {code:"DIG 1.9", tl:"foto", lj:"L2", text:"Een aangereikte digitale tool gebruiken om eigen ideeën creatief vorm te geven."},
-  {code:"DIG 1.10", tl:"info", lj:"L2", text:"Op internet digitale informatie opzoeken in een beveiligde omgeving."},
-  {code:"DIG 1.11", tl:"foto", lj:"L2", text:"Een aangereikt digitaal apparaat gebruiken om geluid op te nemen."},
-  {code:"DIG 1.12", tl:"basis", lj:"L3", text:"Invoer- en uitvoerapparaten functioneel gebruiken, met basisgebruik van een toetsenbord.", onder:"Toetsenbord, muis, touchscreen, beeldscherm, koptelefoon, luidsprekers."},
-  {code:"DIG 1.13", tl:"info", lj:"L3", text:"Een zoekvraag formuleren als zoekstrategie."},
-  {code:"DIG 1.14", tl:"info", lj:"L3", text:"Een zoektool kiezen als zoekstrategie."},
-  {code:"DIG 1.15", tl:"info", lj:"L3", text:"Een zoekopdracht formuleren als zoekstrategie."},
-  {code:"DIG 1.16", tl:"foto", lj:"L3", text:"Met een aangereikte tool afbeeldingen of foto's bewerken.", onder:"Grootte wijzigen, bijsnijden, filters, roteren, sepia/zwart-wit."},
-  {code:"DIG 1.17", tl:"tekst", lj:"L3", text:"Basisfuncties gebruiken voor het schrijven en creatief opmaken van een tekst."},
-  {code:"DIG 1.18", tl:"communiceren", lj:"L3", text:"Een aangereikte tool gebruiken om veilig en verantwoord te communiceren.", onder:"Met aandacht voor persoonsgegevens, paswoorden en het delen van foto's."},
-  {code:"DIG 1.19", tl:"presenteren", lj:"L4", text:"Een aangereikte tool gebruiken om informatie aan anderen voor te stellen."},
-  {code:"DIG 1.20", tl:"tekst", lj:"L4", text:"Met een aangereikte tool eenvoudige teksten digitaal schrijven.", onder:"Zoals digitale elfjes of gedichten, een dagelijkse waarneming."},
-  {code:"DIG 1.21", tl:"zelf", lj:"L4", text:"Met aangereikte digitale tools zelfstandig oefenen en leren."},
-  {code:"DIG 1.22", tl:"bestanden", lj:"L4", text:"Bestanden gebruiken via de bestaande mappenstructuur van het systeem."},
-  {code:"DIG 1.23", tl:"bestanden", lj:"L5", text:"Bestanden openen om te bewerken en sluiten om te bewaren."},
-  {code:"DIG 1.24", tl:"systeem", lj:"L5", text:"Eenvoudige systeeminstellingen aanpassen.", onder:"Weergave- en taalinstellingen, wifi aan/uit."},
-  {code:"DIG 1.25", tl:"info", lj:"L5", text:"Zoekresultaten uit digitale bronnen verwerken en bewaren."},
-  {code:"DIG 1.26", tl:"bestanden", lj:"L6", text:"Bestanden beheren via een aangereikte structuur."},
-  {code:"DIG 1.27", tl:"bestanden", lj:"L6", text:"Bestanden downloaden en opslaan op verschillende opslagmedia."},
-  {code:"DIG 1.28", tl:"bestanden", lj:"L6", text:"Bestanden uploaden, terugvinden en delen met een klasgenoot."},
-  {code:"DIG 1.29", tl:"basis", lj:"L6", text:"Invoer- en uitvoerapparaten doelgericht gebruiken en instellen, met vlot gebruik van een toetsenbord."},
-  {code:"DIG 1.30", tl:"communiceren", lj:"L6", text:"Mogelijkheden van digitale tools om te communiceren kennen.", onder:"Berichten, e-mail, chat, reacties of videogesprekken."},
-  {code:"DIG 1.31", tl:"info", lj:"L6", text:"Het begrip artificiële intelligentie kennen."},
-  {code:"DIG 1.32", tl:"info", lj:"L6", text:"Voorbeelden geven van toepassingen waarin AI gebruikt wordt."},
-  {code:"DIG 1.33", tl:"info", lj:"L6", text:"Digitale bronnen beoordelen op bruikbaarheid, betrouwbaarheid en correctheid."},
-  {code:"DIG 1.34", tl:"zelf", lj:"L6", text:"Reflecteren op de meerwaarde van het gebruik van digitale toepassingen."},
+  /* ── Basisvaardigheden ── */
+  {code:"DIG 1 B.1", tl:"basis", lj:"K1", text:"Spelenderwijs leren omgaan met digitale infrastructuur.", onder:"Spelenderwijs leren omgaan met digitale infrastructuur zoals een tablet, computer, laptop, digitaal speelgoed.", md:"MD L4 8.2.2"},
+  {code:"DIG 1 B.2", tl:"basis", lj:"K1", text:"Vlot bewegen op een digitaal scherm.", onder:"Vlot bewegen op een digitaal scherm met een vinger.", verdiep:"Vlot bewegen op een digitaal scherm met een digitale pen, computermuis, touchpad, controller.", md:"MD L4 8.2.2"},
+  {code:"DIG 1 B.3", tl:"basis", lj:"K1", text:"Met aangereikte en vertrouwde digitale tools oefenen.", onder:"Spelenderwijs met digitale tools oefenen binnen een veilige, afgeschermde omgeving."},
+  {code:"DIG 1 B.4", tl:"basis", lj:"K3", text:"Toetsen op een toetsenbord gericht aantikken.", onder:"Toetsen op het toetsenbord van een tablet, computer, laptop gericht aantikken.", md:"MD L4 8.2.2"},
+  {code:"DIG 1 B.7", tl:"basis", lj:"L1", text:"Eenvoudige, functionele handelingen in een gekende tool begrijpen en correct uitvoeren.", onder:"Het gericht uitvoeren van eenvoudige functionele handelingen in een gekende tool zoals slepen, navigeren, selecteren, tools openen en sluiten, geluid aan-, afzetten of regelen, inloggen met visuele codes."},
+  {code:"DIG 1 B.11", tl:"basis", lj:"L2", text:"Cijfers, letters en symbolen gericht aantikken op een toetsenbord.", md:"MD L4 8.2.2"},
+  {code:"DIG 1 B.18", tl:"basis", lj:"L3", text:"Invoer- en uitvoerapparaten functioneel gebruiken met inbegrip van het basisgebruik van een toetsenbord.", onder:"Invoerapparaten zoals toetsenbord, muis, touchscreen, en uitvoerapparaten zoals beeldscherm, koptelefoon, luidsprekers functioneel gebruiken.", md:"MD L4 8.2.2"},
+  {code:"DIG 1 B.41", tl:"basis", lj:"L6", text:"Invoer- en uitvoerapparaten doelgericht gebruiken en instellen met inbegrip van vlot gebruik van een toetsenbord.", onder:"Invoerapparaten zoals toetsenbord, muis, touchscreen, microfoon, camera, en uitvoerapparaten zoals beeldscherm, printer, luidspreker, projector doelgericht gebruiken en instellen.", md:"MD L6 8.2.1"},
+  /* ── Digitale wereld & systemen ── */
+  {code:"DIG 1 B.9", tl:"digisys", lj:"L2", text:"De begrippen digitaal en het internet kennen en gebruiken.", onder:"Uitleggen dat het internet gebruikt wordt om informatie op te zoeken.", md:"MD L4 8.1.1"},
+  {code:"DIG 1 B.10", tl:"digisys", lj:"L2", text:"De begrippen de hardware, de software kennen en gebruiken.", onder:"Uitleggen dat een scherm en toetsenbord hardware zijn en een spelletje software is.", md:"MD L4 8.1.1"},
+  {code:"DIG 1 B.17", tl:"digisys", lj:"L3", text:"De begrippen de invoer, de verwerking, de uitvoer, de opslag kennen en gebruiken.", onder:"Bij het nemen van een foto met je smartphone benoemen dat het indrukken van de knop om de foto te nemen de invoer is, het nemen van het beeld door de smartphone de verwerking is, het tonen van de foto op het scherm de uitvoer is en het bewaren van de foto op de geheugenkaart de opslag.", md:"MD L4 8.1.1 · MD L6 8.1.2"},
+  {code:"DIG 1 B.26", tl:"digisys", lj:"L4", text:"De begrippen verzenden, ontvangen, offline, online kennen en gebruiken.", onder:"Een bericht versturen gebeurt online en een foto bekijken die al op een toestel staat, kan ook offline.", md:"MD L4 8.1.1"},
+  {code:"DIG 1 B.33", tl:"digisys", lj:"L6", text:"Begrijpen hoe invoer, verwerking, uitvoer en opslag samen een digitaal informatieverwerkingsproces vormen.", onder:"Begrijpen dat een tablet een bericht verwerkt: je typt iets (invoer), het toestel verwerkt dit en toont het bericht op het scherm (uitvoer).\nBij een online rekenoefening:\n• wordt een antwoord ingevoerd (invoer);\n• controleert de computer het antwoord (verwerking);\n• toont een melding ‘goed’ of ‘fout’ (uitvoer);\n• bewaart het resultaat in het leerlingdossier (opslag).", md:"MD L6 8.1.1"},
+  {code:"DIG 1 B.34", tl:"digisys", lj:"L6", text:"De begrippen het netwerk, de verbinding kennen en gebruiken.", onder:"Begrijpen dat de computers op school via een netwerk met elkaar verbonden zijn.", md:"MD L6 8.1.2"},
+  {code:"DIG 1 B.35", tl:"digisys", lj:"L6", text:"Begrijpen dat een verbinding nodig is om informatie te delen.", onder:"Bij het versturen van een e-mail reist die via verschillende netwerken naar de ontvanger.", md:"MD L6 8.1.1"},
+  {code:"DIG 1 B.36", tl:"digisys", lj:"L6", text:"Weten dat netwerktechnologieën, zoals kabel, wifi, mobiel netwerk, via netwerken met elkaar verbonden zijn en op die manier gegevens kunnen gedeeld worden.", onder:"Beschrijven hoe een foto die met een smartphone wordt genomen, via wifi of een mobiel netwerk naar een computer of naar de cloud kan worden gestuurd.", md:"MD L6 8.1.1"},
+  {code:"DIG 1 B.37", tl:"digisys", lj:"L6", text:"Weten dat gegevens op een andere locatie dan het eigen digitale apparaat kunnen worden verwerkt en worden opgeslagen.", onder:"Begrijpen dat bij online gamen meerdere spelers tegelijk in verbinding staan via het internet, zodat ze samen kunnen spelen en communiceren (realtime gegevensuitwisseling).", md:"MD L6 8.1.1"},
+  /* ── Systeem & instellingen ── */
+  {code:"DIG 1 B.31", tl:"systeem", lj:"L5", text:"Eenvoudige systeeminstellingen aanpassen.", onder:"Eenvoudige systeeminstellingen aanpassen zoals de weergave-, taalinstellingen, wifi aan- of uitzetten.", md:"MD L6 8.2.4"},
+  /* ── Informatievaardig worden ── */
+  {code:"DIG 1 B.5", tl:"info", lj:"K3", text:"Verschillende digitale informatiebronnen herkennen en benoemen.", md:"MD L4 8.2.4"},
+  {code:"DIG 1 B.14", tl:"info", lj:"L2", text:"Met aangereikte zoektermen een zoekopdracht in een aangereikte zoektool ingeven.", md:"MD L4 8.2.4"},
+  {code:"DIG 1 B.15", tl:"info", lj:"L2", text:"Digitale informatiebronnen raadplegen binnen een veilige digitale omgeving.", md:"MD L4 8.2.4"},
+  {code:"DIG 1 B.19", tl:"info", lj:"L3", text:"Een zoekvraag formuleren als zoekstrategie om in digitale bronnen informatie te vinden en te raadplegen.", onder:"Onder begeleiding een zoekvraag formuleren als strategie om informatie te vinden in digitale bronnen.", md:"MD L4 8.2.4"},
+  {code:"DIG 1 B.20", tl:"info", lj:"L3", text:"Een zoektool kiezen als zoekstrategie om in digitale bronnen informatie te vinden en te raadplegen.", onder:"Onder begeleiding een zoektool zoals een zoekbalk, zoekmachine of een routeplanner gebruiken om informatie te vinden en te raadplegen.", md:"MD L4 8.2.4"},
+  {code:"DIG 1 B.21", tl:"info", lj:"L3", text:"Een zoekopdracht formuleren als zoekstrategie om in digitale bronnen informatie te vinden en te raadplegen.", onder:"Onder begeleiding een zoekopdracht met trefwoorden of afbeeldingen formuleren.", md:"MD L4 8.2.4"},
+  {code:"DIG 1 B.22", tl:"info", lj:"L3", text:"Aan de hand van aangereikte criteria de gevonden zoekresultaten in digitale bronnen beoordelen op bruikbaarheid.", onder:"Aan de hand van aangereikte criteria zoals ‘geeft het antwoord op de onderzoeksvraag’, ‘mag de informatie zomaar gebruikt worden’, beoordelen of de digitale bron bruikbaar is.", md:"MD L4 8.2.4 · MD L6 8.2.7"},
+  {code:"DIG 1 B.30", tl:"info", lj:"L5", text:"Gebruikte digitale bronnen vermelden.", md:"MD L6 8.2.7"},
+  {code:"DIG 1 B.32", tl:"info", lj:"L5", text:"Zoekresultaten uit digitale bronnen verwerken en bewaren.", md:"MD L6 8.2.2"},
+  {code:"DIG 1 B.43", tl:"info", lj:"L6", text:"Het begrip artificiële intelligentie kennen.", onder:"Het begrip artificiële intelligentie kennen als een tool die taken uitvoert waarvoor normaal gesproken menselijke intelligentie nodig is, zoals taal begrijpen, beelden herkennen of beslissingen nemen.", md:"MD L6 8.2.5"},
+  {code:"DIG 1 B.44", tl:"info", lj:"L6", text:"Voorbeelden geven van toepassingen waarin artificiële intelligentie (AI) gebruikt wordt.", onder:"Voorbeelden van AI-toepassingen geven zoals spraakherkenning, vertaaltools, virtuele assistenten, gezichtsherkenning.", md:"MD L6 8.2.8"},
+  {code:"DIG 1 B.45", tl:"info", lj:"L6", text:"Aan de hand van aangereikte criteria de gevonden digitale bronnen beoordelen op betrouwbaarheid.", onder:"Aan de hand van aangereikte criteria zoals ‘van wie komt de informatie’, ‘is het een betrouwbare bron’, de informatie dubbelchecken om te beoordelen of de digitale bron betrouwbaar is.", md:"MD L6 8.2.7"},
+  {code:"DIG 1 B.46", tl:"info", lj:"L6", text:"Aan de hand van aangereikte criteria de gevonden digitale bronnen beoordelen op correctheid.", onder:"Aan de hand van aangereikte criteria zoals verouderde informatie, bronnenlijst, dubbelchecken, beoordelen of de digitale bron correct is.", md:"MD L6 8.2.7"},
+  /* ── Online communiceren ── */
+  {code:"DIG 1 B.24", tl:"communiceren", lj:"L3", text:"Een aangereikte tool gebruiken om op een veilige, verantwoorde en doelmatige manier te communiceren.", onder:"De klas- en schoolafspraken rond digitale communicatie volgen.\nAandacht geven aan bescherming van de persoonsgegevens, omgaan met paswoorden, het delen van foto’s en informatie …", md:"MD L6 8.4.1"},
+  {code:"DIG 1 B.42", tl:"communiceren", lj:"L6", text:"De mogelijkheden van digitale tools om te communiceren kennen.", onder:"Mogelijkheden van digitale tools om te communiceren zoals berichten, e-mail, chat, reacties of videogesprekken kennen.", md:"MD L6 8.4.1"},
+  /* ── Experimenteren met foto/video/geluid ── */
+  {code:"DIG 1 B.6", tl:"foto", lj:"L1", text:"Foto’s en video’s maken met een digitaal apparaat.", md:"MD L4 8.2.2"},
+  {code:"DIG 1 B.13", tl:"foto", lj:"L2", text:"Een aangereikte digitale tool gebruiken om eigen ideeën creatief vorm te geven.", verdiep:"Experimenteren met (nieuwe) digitale tools om eigen ideeën creatief vorm te geven."},
+  {code:"DIG 1 B.16", tl:"foto", lj:"L2", text:"Een aangereikt digitaal apparaat gebruiken om geluid op te nemen.", md:"MD L4 8.2.2"},
+  {code:"DIG 1 B.23", tl:"foto", lj:"L3", text:"Met een aangereikte tool afbeeldingen of foto’s bewerken om eigen ideeën creatief vorm te geven.", onder:"Met een eenvoudige aangereikte tool afbeeldingen of foto’s bewerken, zoals de grootte wijzigen, het formaat bijsnijden, filters gebruiken, roteren, sepia- of zwart-witeffecten toepassen, om eigen ideeën creatief vorm te geven."},
+  /* ── Presenteren ── */
+  {code:"DIG 1 B.27", tl:"presenteren", lj:"L4", text:"Een aangereikte tool gebruiken om informatie aan anderen voor te stellen."},
+  /* ── Bestanden organiseren & delen ── */
+  {code:"DIG 1 B.8", tl:"bestanden", lj:"L2", text:"Het begrip het bestand kennen en gebruiken.", onder:"Het begrip het bestand, zoals tekst, beeld, geluid, video of programma, dat je kunt opslaan, openen of bewerken, kennen en gebruiken.", md:"MD L4 8.2.1"},
+  {code:"DIG 1 B.12", tl:"bestanden", lj:"L2", text:"Het bestand een duidelijke, herkenbare bestandsnaam geven.", onder:"Volgens de klas- en schoolafspraken een bestandsnaam geven.", md:"MD L4 8.2.3 · MD L6 8.2.2"},
+  {code:"DIG 1 B.25", tl:"bestanden", lj:"L4", text:"Bestanden openen om te bewerken en sluiten om te bewaren.", md:"MD L4 8.2.3 · MD L6 8.2.2"},
+  {code:"DIG 1 B.29", tl:"bestanden", lj:"L4", text:"Bestanden gebruiken via de bestaande mappenstructuur van het systeem.", onder:"Naar de juiste locatie navigeren.\nHet juiste bestand selecteren.\nHet bestand terugplaatsen in de juiste map.", md:"MD L4 8.2.3"},
+  {code:"DIG 1 B.38", tl:"bestanden", lj:"L6", text:"Bestanden beheren via een aangereikte structuur.", onder:"Bestanden beheren via een aangereikte structuur zoals aanmaken, verwijderen en herbenoemen van mappen en bestanden, verwijderen van overbodige of foute bestanden, terughalen van verwijderde bestanden.", md:"MD L6 8.2.3"},
+  {code:"DIG 1 B.39", tl:"bestanden", lj:"L6", text:"Bestanden downloaden en opslaan op verschillende door hen gekende opslagmedia.", onder:"Bestanden downloaden en opslaan volgens de afgesproken criteria in de instructie.", md:"MD L6 8.2.2"},
+  {code:"DIG 1 B.40", tl:"bestanden", lj:"L6", text:"Bestanden uploaden, terugvinden en delen met een klasgenoot in een door hen gekende digitale omgeving.", onder:"Bestanden uploaden, terugvinden en delen volgens de afgesproken criteria in de instructie.", md:"MD L6 8.2.2"},
+  /* ── Zelfstandig leren & reflectie ── */
+  {code:"DIG 1 B.28", tl:"zelf", lj:"L4", text:"Met aangereikte digitale tools zelfstandig oefenen en leren."},
+  {code:"DIG 1 B.47", tl:"zelf", lj:"L6", text:"Reflecteren op de meerwaarde van het gebruik van digitale toepassingen.", onder:"Reflecteren op basis van vooraf bepaalde criteria over de meerwaarde van het gebruik van digitale toepassingen."},
+];
+
+/* Uitbreidingsfase: geen leeftijd of minimumdoel, staat onder het rooster */
+const UITBREIDING = [
+  {code:"DIG 1 U.1", text:"Andere digitale tools zoals lasermeter, fietscomputer, routeplanner, fotobewerkingsprogramma instellen, bedienen en gebruiken."},
+  {code:"DIG 1 U.2", text:"Exploreren van virtuele realiteit en artificiële intelligentie."},
+  {code:"DIG 1 U.3", text:"AI-gegenereerde informatie en andere digitale bronnen kritisch beoordelen."},
 ];
 
 /* ── State ── */
@@ -461,7 +511,7 @@ function render(){
     html += `<div class="head-cell" style="background:${t.kleur}" onclick="showInfo('${t.id}')">
       <span class="h-info">ⓘ</span>
       <span class="h-step">${i+1}</span>
-      <span class="h-name">${t.label}</span></div>`;
+      <span class="h-name">${t.label}</span>${doelen.some(d=>d.tl===t.id)?'':'<span class="h-leeg">geen doel in LeerLokaal</span>'}</div>`;
   });
 
   // precompute lane spans (over all data, not filtered)
@@ -493,6 +543,8 @@ function render(){
   });
 
   grid.innerHTML = html;
+  document.getElementById('uitbreiding').innerHTML = `<b>Uitbreidingsfase</b> · geen vaste leeftijd` +
+    UITBREIDING.map(u=>`<div><b>${u.code}</b> ${esc(u.text)}</div>`).join('');
 }
 
 function blockHTML(d,t){
@@ -500,6 +552,7 @@ function blockHTML(d,t){
   return `<div class="block" style="background:${t.kleur}">
     <span class="code">${d.code}</span>
     <span class="txt">${esc(d.text)}</span>
+    ${kettingBadges(d.code)}
     <div class="ec">
       <button onclick="move('${d.code}',1)" title="Een leerjaar hoger">▲</button>
       <button onclick="move('${d.code}',-1)" title="Een leerjaar lager">▼</button>
@@ -542,7 +595,7 @@ function showInfo(tlId){
 }
 function closeOverlay(){
   document.getElementById('overlay').classList.remove('show');
-  document.getElementById('modal').classList.remove('wide');
+  document.getElementById('modal').classList.remove('wide','kt');
 }
 
 /* ── Bewerkmodus ── */
@@ -596,10 +649,11 @@ function switchView(v){
   document.getElementById('wrapOverview').classList.toggle('hidden', v!=='overview');
   document.getElementById('viewDetail').classList.toggle('on', v==='detail');
   document.getElementById('viewOverview').classList.toggle('on', v==='overview');
-  document.getElementById('editBtn').classList.toggle('hidden', v==='overview');
-  document.getElementById('beheerBtn').classList.toggle('hidden', v==='detail');
-  document.getElementById('legendDetail').classList.toggle('hidden', v==='overview');
-  document.getElementById('legendSpiraal').classList.toggle('hidden', v==='detail');
+  document.getElementById('editBtn').classList.toggle('hidden', v!=='detail');
+  document.getElementById('beheerBtn').classList.toggle('hidden', v!=='overview');
+  document.getElementById('legendDetail').classList.toggle('hidden', v!=='detail');
+  document.getElementById('legendSpiraal').classList.toggle('hidden', v!=='overview');
+  toonKettingen(v==='ketting');
   if(v==='overview') renderSpiraal();
 }
 document.getElementById('viewDetail').onclick   = ()=>switchView('detail');
@@ -827,6 +881,7 @@ function addBeheerEntry(themaId){
 
 buildFilterChips();
 render();
+startKettingen();
 </script>
 </body>
 </html>
