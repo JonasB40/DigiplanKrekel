@@ -1,12 +1,13 @@
 /* Eigen kettingen van de school, naast de kettingen van LeerLokaal.
-   s-toets: selectie van doelen en minimumdoelen uit Doc1.docx (digitaal toetsen en lezen).
+   s-toets: selectie van doelen en minimumdoelen uit Doc1.docx (digitaal toetsen en lezen), samen met de leesdoelen uit leesdoelen-data.js.
    s-ai:    doelen uit AI-leerlijn.html; de verankering gebruikt de nieuwe LeerLokaal-codes. */
 
 const SCHOOLKETTINGEN = [
   {id:"s-ai",    lijn:"school", label:"Artificiële intelligentie (AI)", info:"Eigen AI-leerlijn, als aanvulling op LeerLokaal. Elk doel is verankerd in een of meer leerplandoelen."},
-  {id:"s-toets", lijn:"school", label:"Digitale toetsen", info:"Wat leerlingen nodig hebben om digitaal te toetsen en te lezen, gekozen uit DIG 1.",
+  {id:"s-toets", lijn:"school", label:"Digitale toetsen", info:"Wat leerlingen nodig hebben om digitaal te toetsen en te lezen: ICT-doelen uit DIG 1 en leesdoelen uit NED stv 2.",
    codes:["DIG 1 B.1", "DIG 1 B.2", "DIG 1 B.3", "DIG 1 B.4", "DIG 1 B.5", "DIG 1 B.7", "DIG 1 B.11", "DIG 1 B.15", "DIG 1 B.28"],
-   mijlpalen:[{md:"MD L4 8.2.2", lj:"L4"}, {md:"MD L6 8.2.1", lj:"L6"}]},
+   mijlpalen:[{md:"MD L4 8.2.2", lj:"L4"}, {md:"MD L4 1.1.5", lj:"L4", lees:true}, {md:"MD L4 1.1.6", lj:"L4", lees:true},
+     {md:"MD L6 8.2.1", lj:"L6"}, {md:"MD L6 1.1.3", lj:"L6", lees:true}, {md:"MD L6 1.1.8", lj:"L6", lees:true}]},
 ];
 
 const AI_FASES = [

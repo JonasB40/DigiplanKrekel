@@ -1,5 +1,5 @@
 'use strict';
-/* Leerplandoelen: vier weergaven op dezelfde data (doelen-data.js, schoolkettingen-data.js en spiraal-data.js). */
+/* Leerplandoelen: drie weergaven op dezelfde data (doelen-data.js, namen-data.js, schoolkettingen-data.js, leesdoelen-data.js en spiraal-data.js). */
 
 const SLEUTEL = 'leerplandoelen_aanpassingen_v1';
 const SLEUTEL_SPIRAAL = 'leerlijnViz_spiraal_v4'; // zelfde sleutel als de vroegere leerlijnpagina, zo blijven aanpassingen bewaard
@@ -12,14 +12,14 @@ function lees(sleutel, anders){ try{ const s = localStorage.getItem(sleutel); re
 function bewaar(sleutel, waarde){ try{ localStorage.setItem(sleutel, JSON.stringify(waarde)); }catch(e){ meld('Bewaren in deze browser lukt niet.'); } }
 
 /* Lange woorden netjes laten afbreken in smalle kolommen */
-const AFBREKEN = ['informatie|verwerkings|proces','informatie|verwerking','netwerk|technologieën','systeem|instellingen','informatie|bronnen','patroon|herkenning','communicatie|kanaal','reclame|boodschappen','media|boodschappen','gezondheids|aspecten','veiligheids|aspecten','zoek|resultaten','mappen|structuur','uitvoer|apparaten','invoer|apparaten','computer|code','bestands|naam','basis|principe','basis|vaardigheden','informatie|vaardig','tekst|verwerking','persoons|gegevens','mogelijk|heden','verant|woorde','toe|passingen','zelf|standig','communi|ceren','voor|stelling','Experimen|teren'];
+const AFBREKEN = ['communi|catie|mogelijk|heden','voor|oor|delen','informatie|verwerkings|proces','informatie|verwerking','netwerk|technologieën','systeem|instellingen','informatie|bronnen','patroon|herkenning','communicatie|kanaal','reclame|boodschappen','media|boodschappen','gezondheids|aspecten','veiligheids|aspecten','zoek|resultaten','mappen|structuur','uitvoer|apparaten','invoer|apparaten','computer|code','bestands|naam','basis|principe','basis|vaardigheden','informatie|vaardig','tekst|verwerking','persoons|gegevens','mogelijk|heden','verant|woorde','toe|passingen','zelf|standig','communi|ceren','voor|stelling','Experimen|teren','toetsenbord|gebruik','geluids|fragmenten','bron|vermelding','tekst|verwerking','inhouds|opgave','pagina|opmaak','persoon|lijke','zoek|strategie','bruikbaar|heid','betrouwbaar|heid','professio|neel','apparaat|bediening','samen|werken','school|platform','wacht|woord','touch|screen','media|gebruik','omgangs|vormen','lastig|vallen','stappen|plan','ontwik|kelen','formu|leren','kennis|maken','beoor|delen','presen|tatie','multi|media','struc|tureren','informa|tie','vorm|geven','raad|plegen'];
 const zacht = s => AFBREKEN.reduce((t,w) => t.replace(new RegExp(w.replaceAll('|',''),'gi'), m => {
   let i = 0; return w.split('|').map(d => m.slice(i, i += d.length)).join('­');
 }), s);
 
 /* ── Toestand ── */
-const WEERGAVEN = {leerjaar:'Per leerjaar', opbouw:'Verticale opbouw', kettingen:'Kettingen', spiraal:'Spiraalcurriculum'};
-const st = {view:'leerjaar', lj:lees(SLEUTEL_LJ,'L1'), lijn:'alle', ketting:'1-1', fases:new Set(), vol:true, extra:false, ai:true, q:'', groep:null, aiThema:null, open:null, beheer:false};
+const WEERGAVEN = {leerjaar:'Per leerjaar', opbouw:'Opbouw', kettingen:'Kettingen'};
+const st = {view:'leerjaar', lj:lees(SLEUTEL_LJ,'L1'), lijn:'alle', ketting:'1-1', klas:null, bron:'stappen', rijen:new Set(), stap:null, extra:false, ai:true, q:'', aiThema:null, toets:null, open:null, beheer:false};
 let aanpassingen = lees(SLEUTEL, {});
 let spiraal = lees(SLEUTEL_SPIRAAL, null) || kopie(SPIRAAL);
 let doelen = [];
@@ -27,11 +27,18 @@ let doelen = [];
 const ljIdx = id => LEERJAREN.findIndex(l => l.id === id);
 const lj = id => LEERJAREN[ljIdx(id)];
 const lijn = id => LEERLIJNEN.find(l => l.id === id);
+const AI_LEERLIJN = {id:'ai', dig:'AI', label:'AI-leerlijn van de school', kort:'AI', icoon:'🤖'};
+const balk = id => id === 'ai' ? AI_LEERLIJN : lijn(id);
 const thema = (l,id) => THEMAS[l].find(t => t.id === id);
 const doel = code => doelen.find(d => d.code === code);
 const KETTINGLIJST = [...KETTINGEN, ...SCHOOLKETTINGEN];
 const ketting = id => KETTINGLIJST.find(k => k.id === id);
 const inKetting = id => id === 's-ai' ? AI_DOELEN : doelen.filter(d => (d.kettingen||[]).includes(id));
+/* alles wat in een ketting zit, ook de leesdoelen bij Digitale toetsen */
+const alInKetting = id => id === 's-toets' ? [...inKetting(id), ...LEESDOELEN] : inKetting(id);
+const leesDoel = code => LEESDOELEN.find(d => d.code === code);
+const leesBij = code => LEESDOELEN.filter(d => d.bij.includes(code));
+const mdTekst = m => MINIMUMDOELEN[m] || LEES_MINIMUMDOELEN[m] || '';
 const aiDoel = code => AI_DOELEN.find(d => d.code === code);
 const aiThema = id => AI_THEMAS.find(t => t.id === id);
 const aiFase = id => AI_FASES.find(f => f.id === id);
@@ -51,6 +58,9 @@ const inThema = (l,id) => doelen.filter(d => d.lijn === l && d.thema === id).sor
 const groepVan = tl => SPIRAAL_GROEPEN.find(g => g.tls.includes(tl));
 const spThema = id => SPIRAAL_THEMAS.find(t => t.id === id);
 const aantal = n => n === 1 ? '1 doel' : n + ' doelen';
+const naam = code => aanpassingen[code]?.naam || KORTE_NAMEN[code] || code;
+/* eerder gestart en nu geen nieuwe stap: blijven oefenen */
+const oefent = (ix,i) => ix.length > 0 && i > Math.min(...ix) && !ix.includes(i);
 
 function herbouw(){
   doelen = DOELEN.map(d => {
@@ -59,51 +69,60 @@ function herbouw(){
   });
 }
 
-/* ── Adres: #leerjaar/L3/ict · #opbouw/cd · #kettingen/1-2 · #spiraal ── */
+/* ── Adres: #leerjaar/L3/ict · #opbouw/cd · #opbouw/ictdoelen/L3 (klas) · #opbouw/cd/algo (thema open) · #kettingen/1-2 ── */
 function leesAdres(){
-  const [v,a,b] = decodeURIComponent(location.hash.slice(1)).split('/');
+  let [v,a,b] = decodeURIComponent(location.hash.slice(1)).split('/');
+  if(v === 'spiraal') v = 'opbouw'; // oude naam
   if(!WEERGAVEN[v]) return;
   st.view = v;
   if(v === 'leerjaar'){ if(lj(a)) st.lj = a; st.lijn = lijn(b) ? b : 'alle'; }
-  if(v === 'opbouw') st.lijn = lijn(a) ? a : 'ict';
+  if(v === 'opbouw'){
+    st.bron = a === 'ictdoelen' ? 'doelen' : 'stappen';
+    st.lijn = balk(a) ? a : 'ict';
+    st.klas = lj(b) ? b : null;
+    if(b && !st.klas) st.rijen.add(bronNaam() + '-' + b);
+  }
   if(v === 'kettingen' && ketting(a)) st.ketting = a;
 }
 function adres(){
   if(st.view === 'leerjaar') return `#leerjaar/${st.lj}` + (st.lijn === 'alle' ? '' : '/' + st.lijn);
-  if(st.view === 'opbouw') return `#opbouw/${st.lijn}`;
-  if(st.view === 'kettingen') return `#kettingen/${st.ketting}`;
-  return '#spiraal';
+  if(st.view === 'opbouw') return `#opbouw/${bronNaam()}` + (st.klas ? '/' + st.klas : '');
+  return `#kettingen/${st.ketting}`;
 }
 function ga(wijziging){
   const andereView = wijziging.view && wijziging.view !== st.view;
   Object.assign(st, wijziging);
   if(st.view === 'opbouw' && st.lijn === 'alle') st.lijn = 'ict';
+  if(st.view === 'leerjaar' && st.lijn === 'ai') st.lijn = 'alle';
   if(wijziging.lj) bewaar(SLEUTEL_LJ, st.lj);
   if(st.q){ st.q = ''; $('#zoek').value = ''; }
   if(adres() !== location.hash) history.pushState(null, '', adres());
   toon();
-  if(andereView || wijziging.lj || wijziging.ketting || wijziging.lijn) $('#inhoud').scrollTo(0,0);
+  if(andereView || wijziging.lj || wijziging.ketting || wijziging.lijn || 'klas' in wijziging) $('#inhoud').scrollTo(0,0);
   // op een smal scherm staat de lijst met kettingen boven de ketting zelf
   if(wijziging.ketting && innerWidth <= 860) $('.ketting').scrollIntoView();
 }
 
 /* ── Tekenen ── */
 function toon(){
+  const focus = document.activeElement?.dataset; // na het hertekenen terug naar dezelfde knop
+  document.body.dataset.view = st.q ? 'zoek' : st.view;
   $('#tabs').innerHTML = Object.entries(WEERGAVEN).map(([id,label]) =>
     `<button type="button" data-act="view" data-id="${id}" ${!st.q && st.view === id ? 'aria-current="page"' : ''}>${label}</button>`).join('');
 
-  const keuze = st.view === 'leerjaar' ? ['alle', ...LEERLIJNEN.map(l => l.id)] : st.view === 'opbouw' ? LEERLIJNEN.map(l => l.id) : [];
+  const keuze = st.view === 'leerjaar' ? ['alle', ...LEERLIJNEN.map(l => l.id)] : st.view === 'opbouw' ? [...LEERLIJNEN.map(l => l.id), 'ai'] : [];
   $('#lijnen').innerHTML = st.q ? '' : keuze.map(id =>
-    `<button type="button" class="${id === 'alle' ? '' : 'l-' + id}" data-act="lijn" data-id="${id}" aria-pressed="${st.lijn === id}">${id === 'alle' ? 'Alle leerlijnen' : lijn(id).icoon + ' ' + lijn(id).kort}</button>`).join('');
+    `<button type="button" class="${id === 'alle' ? '' : 'l-' + id}" data-act="lijn" data-id="${id}" aria-pressed="${st.lijn === id}">${id === 'alle' ? 'Alle leerlijnen' : balk(id).icoon + ' ' + balk(id).kort}</button>`).join('');
 
   const n = Object.keys(aanpassingen).length;
   $('#beheerBalk').hidden = !st.beheer;
-  $('#beheerBalk').innerHTML = st.beheer ? `<p><b>Beheer staat aan.</b> Open een doel of spiraalblok om het aan te passen. Wijzigingen blijven in deze browser tot je ze publiceert. ${n ? aantal(n) + ' verplaatst.' : ''}</p>
+  $('#beheerBalk').innerHTML = st.beheer ? `<p><b>Beheer staat aan.</b> Open een doel of stap om het aan te passen. Wijzigingen blijven in deze browser tot je ze publiceert. ${n ? aantal(n) + ' aangepast.' : ''}</p>
     <button type="button" class="knop" data-act="download">Aanpassingen downloaden</button>
     <button type="button" class="knop weg" data-act="herstel">Alles herstellen</button>` : '';
 
-  $('#inhoud').innerHTML = st.q ? vZoek() : {leerjaar:vLeerjaar, opbouw:vOpbouw, kettingen:vKettingen, spiraal:vSpiraal}[st.view]();
+  $('#inhoud').innerHTML = st.q ? vZoek() : {leerjaar:vLeerjaar, opbouw:vOpbouw, kettingen:vKettingen}[st.view]();
   markeer();
+  if(focus?.act && !document.activeElement?.dataset.act) [...document.querySelectorAll(`[data-act="${focus.act}"]`)].find(b => b.dataset.id === focus.id)?.focus({preventScroll:true});
   if(innerWidth <= 860) $('.stapper [aria-pressed=true]')?.scrollIntoView({block:'nearest', inline:'center'});
 }
 
@@ -127,16 +146,28 @@ function kaartAi(d, {wanneer = false, zoek = null} = {}){
     <span class="meta">${[...new Set(d.verankering.map(v => v.relatie))].map(r => r.charAt(0).toUpperCase() + r.slice(1) + ' ' + d.verankering.filter(v => v.relatie === r).map(v => v.code).join(', ')).join(' · ')}</span></button>`;
 }
 
+/* een leesdoel uit de leerlijn Nederlands */
+function kaartLees(d, {wanneer = false, zoek = null} = {}){
+  return `<button type="button" class="kaart l-lees" data-act="lees" data-id="${d.code}">
+    <span class="code">${d.code}${wanneer ? ` <i>· ${lj(d.lj).label}</i>` : ''}<span class="ai-label">Lezen</span></span>
+    <span class="tekst">${zoek ? zoek(d.text) : zacht(esc(d.text))}</span>
+    <span class="extra"><b>Bij digitaal toetsen:</b> ${esc(d.waarom)}</span>
+    <span class="meta">${[d.bij.length ? 'Samen met ' + d.bij.join(', ') : '', d.drager ? 'LeerLokaal: ' + d.drager : '', (d.md||[]).join(', ')].filter(Boolean).join(' · ')}</span></button>`;
+}
+
+/* klassen per fase, met het aantal doelen of stappen */
+function stapper(act, gekozen, telt, noem = aantal){
+  return `<div class="stapper">${[1,2,3,4].map(f => {
+    const js = LEERJAREN.filter(l => l.fase === f);
+    return `<fieldset style="--n:${js.length}"><legend>Fase ${f}</legend>${js.map(l =>
+      `<button type="button" data-act="${act}" data-id="${l.id}" aria-pressed="${l.id === gekozen}" aria-label="${l.label}, ${noem(telt(l.id))}" title="${l.label}"><b>${l.id}</b><small>${telt(l.id)}</small></button>`).join('')}</fieldset>`;
+  }).join('')}</div>`;
+}
+
 /* ── Weergave 1: per leerjaar ── */
 function vLeerjaar(){
   const lijnen = st.lijn === 'alle' ? LEERLIJNEN : [lijn(st.lijn)];
   const telt = id => doelen.filter(d => d.lj === id && (st.lijn === 'alle' || d.lijn === st.lijn)).length;
-  const stapper = [1,2,3,4].map(f => {
-    const js = LEERJAREN.filter(l => l.fase === f);
-    return `<fieldset style="--n:${js.length}"><legend>Fase ${f}</legend>${js.map(l =>
-      `<button type="button" data-act="lj" data-id="${l.id}" aria-pressed="${l.id === st.lj}" aria-label="${l.label}, ${aantal(telt(l.id))}" title="${l.label}"><b>${l.id}</b><small>${telt(l.id)}</small></button>`).join('')}</fieldset>`;
-  }).join('');
-
   const L = lj(st.lj);
   const vakken = lijnen.map(li => {
     const hier = doelen.filter(d => d.lj === st.lj && d.lijn === li.id);
@@ -144,69 +175,148 @@ function vLeerjaar(){
       const ds = hier.filter(d => d.thema === t.id);
       return ds.length ? `<div class="groep"><h4><button type="button" data-act="thema" data-lijn="${li.id}" data-id="${t.id}" title="Toon de opbouw van dit thema">${esc(t.label)}</button></h4><div class="stapel">${ds.map(d => kaart(d,{extra:st.extra})).join('')}</div></div>` : '';
     }).join('');
-    // zelfde regel als de lijn in de verticale opbouw: eerder gestart, later nog een doel, nu niets nieuws
-    const loopt = THEMAS[li.id].filter(t => {
-      const ix = inThema(li.id,t.id).map(d => ljIdx(d.lj)), i = ljIdx(st.lj);
-      return ix.length && i > Math.min(...ix) && i < Math.max(...ix) && !ix.includes(i);
-    });
+    const loopt = THEMAS[li.id].filter(t => oefent(inThema(li.id,t.id).map(d => ljIdx(d.lj)), ljIdx(st.lj)));
     const ai = st.ai ? AI_DOELEN.filter(d => aiInLijn(d,li.id) && (d.fase === String(L.fase) || (d.fase === 'U' && L.fase === 4))) : [];
     const volgende = doelen.filter(d => d.lijn === li.id && ljIdx(d.lj) > ljIdx(st.lj)).sort((a,b) => ljIdx(a.lj) - ljIdx(b.lj))[0];
     return `<section class="l-${li.id}"><div class="vak-kop"><span class="icoon" aria-hidden="true">${li.icoon}</span><span class="label">${li.dig} · ${aantal(hier.length)}</span><h3>${li.label}</h3></div>
       ${groepen || `<p class="leeg">Geen doelen die in dit leerjaar starten.${volgende ? ` Eerstvolgende doel: <button type="button" data-act="lj" data-id="${volgende.lj}">${volgende.code} in ${lj(volgende.lj).label}</button>` : ''}</p>`}
       ${ai.length ? `<div class="groep ai-groep"><h4><button type="button" data-act="ketting" data-id="s-ai" title="Open de ketting AI">AI-leerlijn van de school, fase ${L.fase}</button></h4><div class="stapel">${ai.map(d => kaartAi(d,{wanneer:d.fase === 'U'})).join('')}</div></div>` : ''}
-      ${loopt.length ? `<p class="leeg loopt">Blijven inoefenen: ${loopt.map(t => `<button type="button" data-act="thema" data-lijn="${li.id}" data-id="${t.id}">${esc(t.label)}</button>`).join(', ')}</p>` : ''}</section>`;
+      ${loopt.length ? `<p class="leeg loopt">Blijven oefenen: ${loopt.map(t => `<button type="button" data-act="thema" data-lijn="${li.id}" data-id="${t.id}">${esc(t.label)}</button>`).join(', ')}</p>` : ''}</section>`;
   }).join('');
 
-  return `<div class="stapper">${stapper}</div>
+  return `${stapper('lj', st.lj, telt)}
     <div class="lj-kop"><div><h2>${L.label}</h2><p>${L.leeftijd} · fase ${L.fase} · ${aantal(telt(L.id))}</p></div>
       <div class="lj-opties"><label class="vink"><input type="checkbox" data-act="extra" ${st.extra ? 'checked' : ''}> Ondersteuning en verdieping</label>
       <label class="vink"><input type="checkbox" data-act="aiToon" ${st.ai ? 'checked' : ''}> AI-leerlijn</label>${AI_LEGENDE}</div></div>
     <div class="kolommen ${lijnen.length === 1 ? 'een' : ''}" style="--k:${lijnen.length}">${vakken}</div>`;
 }
 
-/* ── Weergave 2: verticale opbouw, van onder (jong) naar boven ── */
+/* ── Weergave 2: opbouw ──
+   Een raster per leerlijn: rijen zijn thema's, kolommen de klassen van jong naar oud.
+   Klik op een thema: de trap van dat thema. Klik op een klas: kennen ze al, dit jaar, daarna. */
+const UIT = LEERJAREN.length; // kolom na het 6de leerjaar, voor de uitbreiding van de AI-leerlijn
+const bronNaam = () => st.lijn + (st.lijn === 'ict' && st.bron === 'doelen' ? 'doelen' : '');
+const doelenBijStap = s => doelen.filter(d => d.lj === s.lj && (SPIRAAL_DOELEN[s.thema]||[]).includes(d.code));
+
+/* rijen: {id, label, info, groep, stappen:[{van, tot, soort, naam, en blok | doel | ai}]} */
+function rijenVan(){
+  const rij = (t, groep, stappen) => {
+    stappen.sort((a,b) => a.van - b.van);
+    stappen.forEach(x => { x.soort = x.soort || (x.van === stappen[0].van ? 'nieuw' : 'bouw'); });
+    return {id:bronNaam() + '-' + t.id, thema:t.id, label:t.label, info:t.info, groep, stappen};
+  };
+  if(st.lijn === 'ai') return AI_THEMAS.map(t => rij(t, '', t.doelen.map(aiDoel).map(d => {
+    const ix = LEERJAREN.flatMap((l,i) => String(l.fase) === d.fase ? [i] : []);
+    return {van:ix.length ? ix[0] : UIT, tot:ix.length ? ix.at(-1) : UIT, naam:naam(d.code), ai:d};
+  })));
+  if(bronNaam() === 'ict') return SPIRAAL_THEMAS.map(t => rij(t, groepVan(t.tl).label, spiraal.flatMap((s,i) =>
+    s.thema === t.id ? [{van:ljIdx(s.lj), tot:ljIdx(s.lj), soort:s.type === 'aan' ? 'nieuw' : 'bouw', naam:s.label, blok:i}] : [])));
+  return THEMAS[st.lijn].map(t => rij(t, '', inThema(st.lijn,t.id).map(d => ({van:ljIdx(d.lj), tot:ljIdx(d.lj), naam:naam(d.code), doel:d}))));
+}
+const wanneer = (x,kort) => x.van === UIT ? 'Uitbreiding' : x.van === x.tot ? LEERJAREN[x.van][kort ? 'id' : 'label'] : `Fase ${LEERJAREN[x.van].fase} · ${LEERJAREN[x.van].id} ${x.tot - x.van > 1 ? 'tot' : 'en'} ${LEERJAREN[x.tot].id}`;
+const stapKlas = x => `stap ${x.soort}${x.ai ? ' ai-' + aiSoort(x.ai) : ''}`;
+const stapTekst = x => `${x.soort === 'nieuw' ? '<i>Nieuw</i>' : ''}${zacht(esc(x.naam))}${x.doel ? aiTeken(x.doel.code) : ''}`;
+/* het detail van een stap openen in het zijpaneel */
+const stapOpent = x => x.ai ? `data-act="ai" data-id="${x.ai.code}"` : x.doel ? `data-act="doel" data-id="${x.doel.code}"` : `data-act="blok" data-id="${x.blok}"`;
+/* de volledige inhoud van een stap, in de trap en in de klasweergave */
+function stapInhoud(x){
+  if(x.ai) return kaartAi(x.ai);
+  if(x.doel) return kaart(x.doel);
+  const s = spiraal[x.blok], ds = doelenBijStap(s);
+  return `${s.detail ? `<p class="pre">${esc(s.detail)}</p>` : ''}
+    ${ds.length ? `<p class="codes">${ds.map(d => `<button type="button" data-act="doel" data-id="${d.code}" title="${esc(d.text)}">${d.code}</button>`).join('')}</p>` : ''}
+    ${st.beheer ? `<button type="button" class="knop" data-act="blok" data-id="${x.blok}">Aanpassen</button>` : ''}`;
+}
+
 function vOpbouw(){
-  const li = lijn(st.lijn);
-  const eigen = doelen.filter(d => d.lijn === li.id);
-  const ts = THEMAS[li.id].filter(t => st.beheer || eigen.some(d => d.thema === t.id));
-  const zonder = THEMAS[li.id].filter(t => !eigen.some(d => d.thema === t.id));
-  const rijen = LEERJAREN.filter(l => !st.fases.size || st.fases.has(l.fase)).reverse();
-  const bereik = Object.fromEntries(ts.map(t => {
-    const ix = eigen.filter(d => d.thema === t.id).map(d => ljIdx(d.lj));
-    return [t.id, [Math.min(...ix), Math.max(...ix)]];
-  }));
+  const li = balk(st.lijn), ict = st.lijn === 'ict', stappen = bronNaam() === 'ict';
+  const rijen = rijenVan(), gevuld = rijen.filter(r => r.stappen.length || (st.beheer && stappen));
+  const ctx = `<div class="ctx">
+      ${ict ? `<div class="keuze" role="group" aria-label="Wat toont het raster?"><button type="button" data-act="bron" data-id="stappen" aria-pressed="${stappen}">Stappen van de school</button><button type="button" data-act="bron" data-id="doelen" aria-pressed="${!stappen}">Leerplandoelen</button></div>` : ''}
+      <span class="leg nieuw">nieuw</span><span class="leg">verder bouwen</span><span class="leg oefen">blijven oefenen</span>${stappen ? '' : AI_LEGENDE}</div>`;
+  return `<div class="opbouw l-${st.lijn}">${st.klas ? klasKop(gevuld) : ''}${ctx}${st.klas ? vKlas(gevuld) : vRaster(gevuld)}${onderOpbouw(li, rijen, stappen)}</div>`;
+}
 
-  // thema's met veel doelen krijgen een bredere kolom
-  const maten = ts.map(t => {
-    const n = inThema(li.id,t.id), drukst = Math.max(0, ...LEERJAREN.map(l => n.filter(d => d.lj === l.id).length));
-    const min = n.length > 5 ? 158 : n.length > 2 ? 142 : 124;
-    return {min, fr:drukst > 3 ? min * 1.8 : min};
+/* ── Raster ── */
+function vRaster(rijen){
+  const ai = st.lijn === 'ai';
+  const vakken = ai ? AI_FASES.map(f => { const ix = LEERJAREN.flatMap((l,i) => String(l.fase) === f.id ? [i] : []); return {van:ix.length ? ix[0] : UIT, n:ix.length || 1}; }) : LEERJAREN.map((l,i) => ({van:i, n:1}));
+  const grens = i => i === UIT || i === 0 || LEERJAREN[i].fase !== LEERJAREN[i-1].fase ? ' grens' : '';
+  const breed = UIT + (ai ? 2 : 1);
+  const kop = `<thead><tr class="fasen"><td></td>${[1,2,3,4].map(f => `<th class="grens" scope="colgroup" colspan="${LEERJAREN.filter(l => l.fase === f).length}">Fase ${f}</th>`).join('')}${ai ? '<th class="grens" scope="col" rowspan="2">Uitbreiding<small>5de en 6de leerjaar</small></th>' : ''}</tr>
+    <tr><th class="hoek" scope="col">Thema</th>${LEERJAREN.map((l,i) => `<th class="klaskop${grens(i)}" scope="col"><button type="button" data-act="klas" data-id="${l.id}" aria-label="${l.label}" title="${l.label}: kennen ze al, dit jaar en daarna"><b>${l.id}</b><small>${l.leeftijd}</small></button></th>`).join('')}</tr></thead>`;
+  let groep = '';
+  const lijf = rijen.map(r => {
+    const groepRij = r.groep && r.groep !== groep ? `<tr class="groep-rij"><th scope="rowgroup" colspan="${breed}"><span>${esc(r.groep)}</span></th></tr>` : '';
+    groep = r.groep;
+    const open = st.rijen.has(r.id), eerste = r.stappen.length ? r.stappen[0].van : Infinity;
+    const cellen = vakken.map(v => {
+      const hier = r.stappen.map((x,k) => ({x,k})).filter(({x}) => x.van === v.van);
+      const oefen = v.van > eerste && !hier.length && v.van !== UIT;
+      const spoor = v.van === eerste ? (v.van + v.n < UIT ? ' van' : '') : v.van > eerste && (hier.length || oefen) ? (oefen ? ' door oefen' : v.van + v.n >= UIT ? ' tot' : ' door') : '';
+      return `<td class="${(grens(v.van) + spoor).trim()}" colspan="${v.n}">${hier.map(({x,k}) =>
+        `<button type="button" class="${stapKlas(x)}" data-act="stap" data-id="${r.id}:${k}" aria-pressed="${st.stap === r.id + ':' + k}">${stapTekst(x)}</button>`).join('')}${oefen ? '<span class="sr">blijven oefenen</span>' : ''}</td>`;
+    }).join('');
+    return `${groepRij}<tr class="thema-rij${open ? ' open' : ''}"><th scope="row"><button type="button" data-act="rij" data-id="${r.id}" aria-expanded="${open}"><span>${zacht(esc(r.label))}</span></button></th>${cellen}</tr>` +
+      (open ? `<tr class="trap-rij"><td colspan="${breed}">${trap(r)}</td></tr>` : '');
+  }).join('');
+  const alles = rijen.every(r => st.rijen.has(r.id));
+  return `<div class="op-uitleg"><p>Van jong (links) naar oud (rechts). Klik op een <b>thema</b> of <b>stap</b> voor de uitleg, of op een <b>klas</b> om te zien wat ze al kennen, dit jaar leren en daarna doen.</p>
+      <button type="button" class="knop" data-act="alles" data-id="${alles ? '' : 'open'}">${alles ? 'Alle thema’s sluiten' : 'Alle thema’s openen'}</button></div>
+    <table class="raster${ai ? ' met-u' : ''}"><colgroup><col class="thema">${'<col>'.repeat(breed - 1)}</colgroup>${kop}<tbody>${lijf}</tbody></table>`;
+}
+
+/* ── Trap: elke trede is een leerjaar, van links (jong) naar rechts (oud) ── */
+function trap(r){
+  const treden = [];
+  r.stappen.forEach((x,k) => {
+    if(treden.at(-1)?.van !== x.van) treden.push({van:x.van, x, stappen:[]});
+    treden.at(-1).stappen.push({x,k});
   });
+  return `<div class="trap">${r.info ? `<p class="trap-info">${esc(r.info)}</p>` : ''}
+    <ol style="--n:${treden.length}">${treden.map((t,i) => `<li class="${t.x.soort}" style="--k:${i}"><h4>${wanneer(t.x)}${t.x.soort === 'nieuw' ? ' <i>Nieuw</i>' : ''}</h4>${t.stappen.map(({x,k}) =>
+      `<div class="tr-stap${st.stap === r.id + ':' + k ? ' gekozen' : ''}"><b>${esc(x.naam)}</b>${stapInhoud(x)}</div>`).join('')}</li>`).join('')}</ol>
+    ${st.beheer && bronNaam() === 'ict' ? `<button type="button" class="knop" data-act="blokNieuw" data-id="${r.thema}">+ Stap toevoegen</button>` : ''}</div>`;
+}
 
-  let h = `<div class="mx-kop mx-hoek"></div>` + ts.map(t =>
-    `<div class="mx-kop"><button type="button" data-act="thema" data-lijn="${li.id}" data-id="${t.id}"><span>${zacht(esc(t.label))}</span><small>${aantal(inThema(li.id,t.id).length)}</small></button></div>`).join('');
-  rijen.forEach((l,r) => {
-    const grens = r > 0 && rijen[r-1].fase !== l.fase ? ' fasegrens' : '';
-    h += `<div class="mx-rij${grens}"><div><b>${l.label}</b><span>${l.leeftijd}</span><span>Fase ${l.fase}</span></div></div>`;
-    ts.forEach((t,c) => {
-      const i = ljIdx(l.id), [min,max] = bereik[t.id];
-      const ds = eigen.filter(d => d.thema === t.id && d.lj === l.id);
-      const spoor = i >= min && i <= max && min !== max ? ' spoor' + (i === max ? ' top' : '') + (i === min ? ' voet' : '') : '';
-      h += `<div class="mx-cel${spoor}${grens}${c % 2 ? ' even' : ''}">${ds.length ? `<div class="mx-stapel${ds.length > 2 ? ' veel' : ''}">${ds.map(d => kaart(d,{meta:false})).join('')}</div>` : ''}</div>`;
-    });
-  });
+/* ── Klas: kennen ze al, dit jaar, daarna ── */
+function verdeel(rijen){
+  const i = ljIdx(st.klas);
+  return rijen.map(r => ({r, eerder:r.stappen.filter(x => x.tot < i), nu:r.stappen.filter(x => x.van <= i && x.tot >= i), later:r.stappen.filter(x => x.van > i)}));
+}
+function klasKop(rijen){
+  const L = lj(st.klas), nu = verdeel(rijen).flatMap(x => x.nu), nieuw = nu.filter(x => x.soort === 'nieuw').length;
+  const telt = id => { const i = ljIdx(id); return rijen.flatMap(r => r.stappen).filter(x => x.van <= i && x.tot >= i).length; };
+  return `${stapper('klas', st.klas, telt, st.lijn === 'ai' || bronNaam() !== 'ict' ? aantal : n => n === 1 ? '1 stap' : n + ' stappen')}
+    <div class="lj-kop"><div><h2>${L.label}</h2><p>${L.leeftijd} · fase ${L.fase} · ${nu.length ? `${nieuw ? nieuw + ' nieuw, ' : ''}${nu.length - nieuw} verder bouwen` : 'geen nieuwe stap dit jaar'}</p></div>
+      <button type="button" class="knop" data-act="klas" data-id="">← Terug naar het raster</button></div>`;
+}
+function vKlas(rijen){
+  const L = lj(st.klas), per = verdeel(rijen);
+  const mini = xs => xs.map(x => `<button type="button" class="${stapKlas(x)} mini" ${stapOpent(x)}><em>${wanneer(x,true)}</em>${zacht(esc(x.naam))}</button>`).join('');
+  const rij = ({r,eerder,nu,later}) => {
+    const laatste = eerder.filter(x => x.tot === eerder.at(-1).tot), eerst = later.filter(x => x.van === later[0].van);
+    const meer = eerder.length - laatste.length;
+    return `<tr><th scope="row"><button type="button" data-act="naarRij" data-id="${r.id}" title="Toon de trap van dit thema">${zacht(esc(r.label))}</button></th>
+      <td data-kop="Kennen ze al">${mini(laatste)}${meer ? `<button type="button" class="tekstknop" data-act="naarRij" data-id="${r.id}">+ ${meer} eerder</button>` : ''}${eerder.length ? '' : '<span class="niets">Nog niets</span>'}</td>
+      <td class="nu" data-kop="Dit jaar">${nu.map(x => `<div class="tr-stap ${x.soort}"><b>${x.soort === 'nieuw' ? '<i>Nieuw</i>' : ''}${esc(x.naam)}</b>${stapInhoud(x)}</div>`).join('')}${nu.length ? '' : eerder.length ? '<span class="oefenen">Blijven oefenen</span>' : '<span class="niets">Start later</span>'}</td>
+      <td data-kop="Daarna">${mini(eerst)}${later.length ? '' : `<span class="niets">${st.klas === LEERJAREN.at(-1).id ? 'Geen volgende stap' : 'Blijven oefenen'}</span>`}</td></tr>`;
+  };
+  const deel = (titel, lijst) => lijst.length ? `<tbody><tr class="groep-rij"><th scope="rowgroup" colspan="4"><span>${titel}</span></th></tr>${lijst.map(rij).join('')}</tbody>` : '';
+  return `<table class="klas"><thead><tr><th scope="col">Thema</th><th scope="col">Kennen ze al</th><th scope="col">Dit jaar, ${L.label}</th><th scope="col">Daarna</th></tr></thead>
+    ${deel('Dit jaar aan bod', per.filter(x => x.nu.length))}${deel('Blijven oefenen', per.filter(x => !x.nu.length && x.eerder.length))}${deel('Start later', per.filter(x => !x.nu.length && !x.eerder.length))}</table>`;
+}
 
-  const uit = UITBREIDING.filter(u => u.lijn === li.id);
-  return `<div class="ctx l-${li.id}">
-      <div class="fasekeuze" role="group" aria-label="Fase">${[1,2,3,4].map(f => `<button type="button" data-act="fase" data-id="${f}" aria-pressed="${st.fases.has(f)}">Fase ${f}</button>`).join('')}</div>
-      <label class="vink"><input type="checkbox" data-act="vol" ${st.vol ? 'checked' : ''}> Volledige tekst</label>
-      <span>Lees van onder (jong) naar boven. Klik op een thema om het apart te volgen.</span><span class="sleutel">lijn = blijven inoefenen</span>${AI_LEGENDE}
-    </div>
-    <div class="matrix l-${li.id} ${st.vol ? '' : 'kort'}" style="grid-template-columns:104px ${maten.map(m => `minmax(${m.min}px,${m.fr}fr)`).join(' ')};min-width:${maten.reduce((a,m) => a + m.min, 104)}px">${h}</div>
-    <div class="onderaan l-${li.id}">
-      ${uit.length ? `<h3>Uitbreiding, zonder vaste leeftijd</h3><div class="stapel">${uit.map(u => `<div class="kaart l-${u.lijn}"><span class="code">${u.code}</span><span class="tekst">${esc(u.text)}</span></div>`).join('')}</div>` : ''}
-      ${zonder.length ? `<p class="leeg">${zonder.map(t => esc(t.label)).join(', ')}: geen eigen leerplandoel in ${li.dig}. De opbouw staat in het <button type="button" data-act="view" data-id="spiraal">spiraalcurriculum</button>.</p>` : ''}
-    </div>`;
+function onderOpbouw(li, rijen, stappen){
+  const uit = stappen ? [] : UITBREIDING.filter(u => u.lijn === li.id);
+  const zonder = stappen ? [] : rijen.filter(r => !r.stappen.length);
+  const gedekt = new Set(spiraal.flatMap(s => doelenBijStap(s).map(d => d.code)));
+  const los = stappen ? doelen.filter(d => d.lijn === 'ict' && !gedekt.has(d.code)) : [];
+  if(!uit.length && !zonder.length && !los.length) return '';
+  return `<div class="onderaan l-${li.id}">
+    ${los.length ? `<h3>Leerplandoelen zonder eigen stap van de school</h3><p class="codes">${los.map(d => `<button type="button" data-act="doel" data-id="${d.code}" title="${esc(d.text)}">${d.code} <small>${esc(naam(d.code))} (${d.lj})</small></button>`).join('')}</p>` : ''}
+    ${uit.length ? `<h3>Uitbreiding, zonder vaste leeftijd</h3><div class="stapel">${uit.map(u => `<div class="kaart l-${u.lijn}"><span class="code">${u.code}</span><span class="tekst">${esc(u.text)}</span></div>`).join('')}</div>` : ''}
+    ${zonder.length ? `<p class="leeg">${zonder.map(r => esc(r.label)).join(', ')}: geen eigen leerplandoel in ${li.dig}. De opbouw staat bij <button type="button" data-act="bron" data-id="stappen">Stappen van de school</button>.</p>` : ''}</div>`;
 }
 
 /* ── Weergave 3: kettingen ── */
@@ -214,74 +324,62 @@ function vOpbouw(){
 function schakelsVan(k){
   if(k.id === 's-ai')
     return AI_DOELEN.filter(d => !st.aiThema || d.themas.includes(st.aiThema)).map(d => ({wie:aiFase(d.fase).label, leeftijd:aiFase(d.fase).leeftijd, html:kaartAi(d)}));
-  const rij = inKetting(k.id).map(d => ({wie:lj(d.lj).label, leeftijd:lj(d.lj).leeftijd, html:kaart(d,{extra:true}) +
+  const toets = k.id === 's-toets' ? st.toets : null;
+  const rij = (toets === 'lees' ? [] : inKetting(k.id)).map(d => ({i:ljIdx(d.lj), wie:lj(d.lj).label, leeftijd:lj(d.lj).leeftijd, html:kaart(d,{extra:true}) +
     (d.kettingen||[]).filter(x => x !== k.id).map(x => `<button type="button" class="knop ook" data-act="ketting" data-id="${x}">Ook in: ${esc(ketting(x).label)}</button>`).join('')}));
-  (k.mijlpalen||[]).forEach(m => rij.push({wie:'Einde ' + lj(m.lj).label, leeftijd:'minimumdoel', mijlpaal:true, html:mijlpaal(m)}));
-  return rij;
+  if(k.id === 's-toets' && toets !== 'ict') LEESDOELEN.forEach(d => rij.push({i:ljIdx(d.lj), lees:true, wie:lj(d.lj).label, leeftijd:lj(d.lj).leeftijd, html:kaartLees(d)}));
+  (k.mijlpalen||[]).filter(m => !toets || !!m.lees === (toets === 'lees')).forEach(m => rij.push({i:ljIdx(m.lj) + .5, lees:m.lees, wie:'Einde ' + lj(m.lj).label, leeftijd:'minimumdoel', mijlpaal:true, html:mijlpaal(m)}));
+  return rij.sort((a,b) => a.i - b.i);
 }
 function mijlpaal(m){
-  const ds = doelen.filter(d => (d.md||[]).includes(m.md));
-  return `<div class="mijlpaal"><span class="code">${m.md}</span><span class="pre">${esc(MINIMUMDOELEN[m.md])}</span>
-    <span class="meta">Leerplandoelen: ${ds.map(d => `<button type="button" data-act="doel" data-id="${d.code}">${d.code.replace('DIG 1 ','')}</button>`).join(', ')}</span></div>`;
+  const ds = (m.lees ? LEESDOELEN : doelen).filter(d => (d.md||[]).includes(m.md));
+  return `<div class="mijlpaal${m.lees ? ' l-lees' : ''}"><span class="code">${m.md}${m.lees ? '<span class="ai-label">Lezen</span>' : ''}</span><span class="pre">${esc(mdTekst(m.md))}</span>
+    <span class="meta">${m.lees ? 'Leesdoelen in deze ketting' : 'Leerplandoelen'}: ${ds.map(d => `<button type="button" data-act="${m.lees ? 'lees' : 'doel'}" data-id="${d.code}">${d.code.replace(/^(DIG 1|NED stv 2) /,'')}</button>`).join(', ')}</span></div>`;
 }
 function vKettingen(){
-  const k = ketting(st.ketting), school = k.lijn === 'school', ds = inKetting(k.id);
-  const railKnop = x => `<button type="button" data-act="ketting" data-id="${x.id}" ${x.id === k.id ? 'aria-current="true"' : ''}>${esc(x.label)}<span>${inKetting(x.id).length}</span></button>`;
+  const k = ketting(st.ketting), school = k.lijn === 'school', ds = alInKetting(k.id);
+  const railKnop = x => `<button type="button" data-act="ketting" data-id="${x.id}" ${x.id === k.id ? 'aria-current="true"' : ''}>${esc(x.label)}<span>${alInKetting(x.id).length}</span></button>`;
   const rail = `<div class="l-school"><h3>🏫 Van de school</h3>${SCHOOLKETTINGEN.map(railKnop).join('')}</div>` + LEERLIJNEN.map(li => {
     const ks = KETTINGEN.filter(x => x.lijn === li.id);
     return `<div class="l-${li.id}"><h3>${li.icoon} ${li.label}</h3>${ks.length ? ks.map(railKnop).join('')
-      : `<p>${li.dig} heeft in LeerLokaal geen kettingen. Bekijk de <button type="button" class="tekstknop" data-act="opbouw" data-id="${li.id}">verticale opbouw</button>.</p>`}</div>`;
+      : `<p>${li.dig} heeft in LeerLokaal geen kettingen. Bekijk de <button type="button" class="tekstknop" data-act="opbouw" data-id="${li.id}">opbouw</button>.</p>`}</div>`;
   }).join('');
 
-  let vorige = null;
-  const schakels = schakelsVan(k).map((x,i) => {
+  let vorige = null, nr = 0;
+  const schakels = schakelsVan(k).map(x => {
     const w = vorige === x.wie ? '' : `<b>${x.wie}</b><span>${x.leeftijd}</span>`;
     vorige = x.wie;
-    return `<li class="${x.mijlpaal ? 'is-mijlpaal' : ''}"><div class="wanneer">${w}</div><div class="nr">${x.mijlpaal ? '★' : i+1}</div><div>${x.html}</div></li>`;
+    return `<li class="${x.mijlpaal ? 'is-mijlpaal' : ''}${x.lees ? ' l-lees' : ''}"><div class="wanneer">${w}</div><div class="nr">${x.mijlpaal ? '★' : ++nr}</div><div>${x.html}</div></li>`;
   }).join('');
   const inleiding = school
-    ? `${esc(k.info)} ${aantal(ds.length)}${k.id === 's-ai' ? `, waarvan ${ds.filter(d => d.eigen).length} zelf toegevoegd` : ''}${k.mijlpalen ? ` en ${k.mijlpalen.length} minimumdoelen` : ''}, van jong naar oud.`
+    ? `${esc(k.info)} ${k.id === 's-toets' ? `${inKetting(k.id).length} ICT-doelen, ${LEESDOELEN.length} leesdoelen` : aantal(ds.length)}${k.id === 's-ai' ? `, waarvan ${ds.filter(d => d.eigen).length} zelf toegevoegd` : ''}${k.mijlpalen ? ` en ${k.mijlpalen.length} minimumdoelen` : ''}, van jong naar oud.`
     : `${lijn(k.lijn).dig}, ketting ${k.nr} · ${aantal(ds.length)} van jong naar oud · <a href="${k.url}" target="_blank" rel="noopener">openen in LeerLokaal</a>`;
   const themas = k.id === 's-ai' ? `<p class="ai-legendes">${AI_LEGENDE}</p><div class="ai-themas" role="group" aria-label="AI-thema">
       <button type="button" data-act="aiThema" data-id="" aria-pressed="${!st.aiThema}">Alle thema's</button>${AI_THEMAS.map(t =>
-      `<button type="button" data-act="aiThema" data-id="${t.id}" aria-pressed="${st.aiThema === t.id}">${esc(t.label)}</button>`).join('')}</div>` : '';
+      `<button type="button" data-act="aiThema" data-id="${t.id}" aria-pressed="${st.aiThema === t.id}">${esc(t.label)}</button>`).join('')}</div>`
+    : k.id === 's-toets' ? `<div class="ai-themas" role="group" aria-label="Wat toont de ketting?">${[['','Alles'],['ict','💻 ICT-doelen'],['lees','📖 Leesdoelen']].map(([id,t]) =>
+      `<button type="button" class="${id === 'ict' ? 'l-ict' : id === 'lees' ? 'l-lees' : ''}" data-act="toets" data-id="${id}" aria-pressed="${(st.toets||'') === id}">${t}</button>`).join('')}</div>` : '';
   return `<div class="ketting-wrap"><div class="rail">${rail}</div>
     <div class="ketting l-${k.lijn}"><h2>${esc(k.label)}</h2><p class="inl">${inleiding}</p>${themas}
       <ol class="schakels">${schakels}</ol></div></div>`;
-}
-
-/* ── Weergave 4: spiraalcurriculum ── */
-function vSpiraal(){
-  const rijen = [...LEERJAREN].reverse();
-  return `<div class="ctx"><div class="sp-groepen" role="group" aria-label="Thema uitlichten">${SPIRAAL_GROEPEN.map((g,i) =>
-      `<button type="button" style="--g:${g.kleur}" data-act="groep" data-id="${i}" aria-pressed="${st.groep === i}">${esc(g.label)}</button>`).join('')}</div>
-      <span class="sp-voorbeeld aan">nieuw aanbrengen</span><span class="sp-voorbeeld">verder bouwen</span></div>` +
-    rijen.map((l,r) => {
-      const blokken = spiraal.map((s,i) => ({...s,i})).filter(s => s.lj === l.id && spThema(s.thema))
-        .sort((a,b) => SPIRAAL_THEMAS.indexOf(spThema(a.thema)) - SPIRAAL_THEMAS.indexOf(spThema(b.thema)));
-      return `<div class="sp-rij${r > 0 && rijen[r-1].fase !== l.fase ? ' fasegrens' : ''}"><div><b>${l.label}</b><span>Fase ${l.fase}</span></div><div class="sp-blokken">${blokken.map(s => {
-        const g = groepVan(spThema(s.thema).tl);
-        const dof = st.groep !== null && SPIRAAL_GROEPEN[st.groep] !== g;
-        return `<button type="button" class="sp-blok ${s.type}${dof ? ' dof' : ''}" style="--g:${g.kleur}" data-act="blok" data-id="${s.i}">${esc(s.label)}</button>`;
-      }).join('')}${st.beheer ? `<button type="button" class="knop" data-act="blokNieuw" data-id="${l.id}">+ Blok</button>` : ''}</div></div>`;
-    }).join('');
 }
 
 /* ── Zoeken ── */
 const kaal = s => s.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
 function vZoek(){
   const woorden = kaal(st.q).split(/\s+/).filter(Boolean);
-  const raak = d => { const t = kaal([d.code, d.text, ...(d.onder||[]), ...(d.verdiep||[]), ...(d.md||[]), d.thema ? thema(d.lijn,d.thema).label : '', ...(d.oud||[])].join(' ')); return woorden.every(w => t.includes(w)); };
+  const raak = d => { const t = kaal([d.code, d.text, naam(d.code), ...(d.onder||[]), ...(d.verdiep||[]), ...(d.md||[]), d.thema ? thema(d.lijn,d.thema).label : '', ...(d.oud||[])].join(' ')); return woorden.every(w => t.includes(w)); };
   const gevonden = doelen.filter(raak), uit = UITBREIDING.filter(raak);
-  const ai = AI_DOELEN.filter(d => { const t = kaal([d.code, d.text, d.leerlijn, ...d.themas.map(x => aiThema(x).label), ...d.activiteiten, ...d.verankering.map(v => v.code)].join(' ')); return woorden.every(w => t.includes(w)); });
+  const ai = AI_DOELEN.filter(d => { const t = kaal([d.code, d.text, naam(d.code), d.leerlijn, ...d.themas.map(x => aiThema(x).label), ...d.activiteiten, ...d.verankering.map(v => v.code)].join(' ')); return woorden.every(w => t.includes(w)); });
+  const lezen = LEESDOELEN.filter(d => { const t = kaal([d.code, d.text, d.waarom, LEES_ROLLEN[d.rol], ...(d.md||[]), ...d.bij].join(' ')); return woorden.every(w => t.includes(w)); });
   const patroon = new RegExp('(' + woorden.map(w => w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|') + ')','gi');
   const kleur = t => t.split(patroon).map((x,i) => i % 2 ? `<mark>${esc(x)}</mark>` : esc(x)).join('');
-  const n = gevonden.length + uit.length + ai.length;
+  const n = gevonden.length + uit.length + ai.length + lezen.length;
   return `<div class="zoek-kop"><h2>${n ? aantal(n) + ' gevonden' : 'Niets gevonden'}</h2><p>${n ? 'Er is ook gezocht in ondersteuning, verdieping en minimumdoelen.' : 'Probeer een ander woord of een code zoals B.12.'}</p></div>
     <div class="kolommen" style="--k:3">${LEERLIJNEN.map(li => {
       const ds = gevonden.filter(d => d.lijn === li.id), us = uit.filter(u => u.lijn === li.id);
       return ds.length + us.length ? `<section class="l-${li.id}"><div class="vak-kop"><span class="icoon" aria-hidden="true">${li.icoon}</span><span class="label">${li.dig} · ${aantal(ds.length + us.length)}</span><h3>${li.label}</h3></div><div class="stapel" style="margin-top:12px">${ds.map(d => kaart(d,{wanneer:true,zoek:kleur})).join('')}${us.map(u => `<div class="kaart l-${u.lijn}"><span class="code">${u.code} <i>· uitbreiding</i></span><span class="tekst">${kleur(u.text)}</span></div>`).join('')}</div></section>` : '';
-    }).join('')}${ai.length ? `<section class="l-school"><div class="vak-kop"><span class="icoon" aria-hidden="true">🏫</span><span class="label">Van de school · ${aantal(ai.length)}</span><h3>AI-leerlijn</h3></div><div class="stapel" style="margin-top:12px">${ai.map(d => kaartAi(d,{wanneer:true,zoek:kleur})).join('')}</div></section>` : ''}</div>`;
+    }).join('')}${ai.length ? `<section class="l-school"><div class="vak-kop"><span class="icoon" aria-hidden="true">🏫</span><span class="label">Van de school · ${aantal(ai.length)}</span><h3>AI-leerlijn</h3></div><div class="stapel" style="margin-top:12px">${ai.map(d => kaartAi(d,{wanneer:true,zoek:kleur})).join('')}</div></section>` : ''}${lezen.length ? `<section class="l-lees"><div class="vak-kop"><span class="icoon" aria-hidden="true">📖</span><span class="label">Nederlands · ${aantal(lezen.length)}</span><h3>Lezen bij digitaal toetsen</h3></div><div class="stapel" style="margin-top:12px">${lezen.map(d => kaartLees(d,{wanneer:true,zoek:kleur})).join('')}</div></section>` : ''}</div>`;
 }
 
 /* ── Detailpaneel ── */
@@ -291,11 +389,11 @@ function open(wat, vanaf){
   st.open = wat;
   const p = $('#paneel');
   p.className = wat.lijn ? 'l-' + wat.lijn : '';
-  p.innerHTML = {doel:pDoel, thema:pThema, blok:pBlok, ai:pAi}[wat.soort](wat);
+  p.innerHTML = {doel:pDoel, thema:pThema, blok:pBlok, ai:pAi, lees:pLees}[wat.soort](wat);
   p.hidden = false;
   p.scrollTop = 0;
   markeer();
-  if(vanaf?.closest('#paneel')) document.querySelector('#inhoud [aria-current=true]:is(.kaart,.sp-blok)')?.scrollIntoView({block:'nearest', inline:'nearest'});
+  if(vanaf?.closest('#paneel')) document.querySelector('#inhoud [aria-current=true]:is(.kaart,.stap)')?.scrollIntoView({block:'nearest', inline:'nearest'});
   const kop = p.querySelector('h2'); if(kop) kop.focus({preventScroll:true});
 }
 function sluit(){
@@ -307,8 +405,8 @@ function sluit(){
 }
 function markeer(){
   const o = st.open;
-  document.querySelectorAll('#inhoud .kaart[data-id]').forEach(b => b.toggleAttribute('aria-current', false) || ((o?.soort === 'doel' || o?.soort === 'ai') && b.dataset.id === o.code && b.setAttribute('aria-current','true')));
-  document.querySelectorAll('#inhoud .sp-blok').forEach(b => b.toggleAttribute('aria-current', false) || (o?.soort === 'blok' && +b.dataset.id === o.i && b.setAttribute('aria-current','true')));
+  document.querySelectorAll('#inhoud .kaart[data-id]').forEach(b => b.toggleAttribute('aria-current', false) || (['doel','ai','lees'].includes(o?.soort) && b.dataset.id === o.code && b.setAttribute('aria-current','true')));
+  document.querySelectorAll('#inhoud .stap:not([data-act=stap])').forEach(b => b.toggleAttribute('aria-current', false) || (b.dataset.act === o?.soort && b.dataset.id === String(o.soort === 'blok' ? o.i : o.code) && b.setAttribute('aria-current','true')));
 }
 const pKop = t => `<div class="pn-kop"><h2 tabindex="-1">${t}</h2><button type="button" class="sluit" data-act="sluit">Sluiten</button></div>`;
 const pLijst = (titel,items) => items && items.length ? `<section><h3>${titel}</h3><ul>${items.map(x => `<li class="pre">${esc(x)}</li>`).join('')}</ul></section>` : '';
@@ -318,12 +416,13 @@ const opties = (lijst,gekozen) => lijst.map(x => `<option value="${x.id}" ${x.id
 function pDoel({code}){
   const d = doel(code), li = lijn(d.lijn), t = thema(d.lijn,d.thema), L = lj(d.lj);
   const basis = DOELEN.find(x => x.code === code);
-  const blokken = d.lijn === 'ict' ? spiraal.map((s,i) => ({...s,i})).filter(s => s.lj === d.lj && spThema(s.thema)?.tl === d.thema) : [];
+  const blokken = spiraal.map((s,i) => ({...s,i})).filter(s => s.lj === d.lj && (SPIRAAL_DOELEN[s.thema]||[]).includes(code));
   return pKop(d.code) + `<p class="pn-tekst">${esc(d.text)}</p>
     ${d.lj !== basis.lj ? `<span class="tag">Door de school verplaatst, in LeerLokaal: ${lj(basis.lj).label}</span>` : ''}
     <dl class="pn-feiten"><dt>Leerlijn</dt><dd>${li.label}</dd><dt>Thema</dt><dd>${esc(t.label)}</dd><dt>Start in</dt><dd>${L.label} (${basis.leeftijd} jaar, fase ${L.fase})</dd>${d.samenhang ? `<dt>Samenhang</dt><dd>${esc(d.samenhang)}</dd>` : ''}${d.oud ? `<dt>Vervangt</dt><dd>${esc(d.oud.join(' en '))}</dd>` : ''}</dl>
     <div class="pn-acties"><button type="button" class="knop" data-act="kopieer" data-id="${d.code}">Tekst kopiëren</button></div>
     ${st.beheer ? `<section><h3>Aanpassen</h3>
+      <label class="veld">Korte naam<input id="bwNaam" value="${esc(naam(code))}"></label>
       <label class="veld">Leerjaar<select id="bwLj">${opties(LEERJAREN,d.lj)}</select></label>
       <label class="veld">Thema<select id="bwThema">${opties(THEMAS[d.lijn],d.thema)}</select></label>
       <div class="pn-acties"><button type="button" class="knop vol" data-act="doelBewaar" data-id="${d.code}">Bewaren</button>${aanpassingen[d.code] ? `<button type="button" class="knop" data-act="doelHerstel" data-id="${d.code}">Terug naar LeerLokaal</button>` : ''}</div></section>` : ''}
@@ -331,8 +430,9 @@ function pDoel({code}){
     <section><h3>Minimumdoelen</h3>${d.md ? d.md.map(m => `<div class="md"><b>${m}</b><span class="pre">${esc(MINIMUMDOELEN[m]||'')}</span></div>`).join('') : '<p>Aan dit doel hangt geen minimumdoel.</p>'}</section>
     ${(d.kettingen||[]).map(id => `<section><h3>Ketting: ${esc(ketting(id).label)}</h3>${pReeks(inKetting(id),code)}<div class="pn-acties"><button type="button" class="knop" data-act="ketting" data-id="${id}">Ketting openen</button></div></section>`).join('')}
     ${[false,true].map(eigen => { const ds = aiBij(code).filter(x => x.eigen === eigen); return ds.length ? `<section class="l-${eigen ? 'school' : 'ailink'}"><h3><span class="ai-teken ai-${eigen ? 'eigen' : 'link'}">AI</span> ${eigen ? 'Eigen AI-doelen die hierop verder bouwen' : 'In de AI-leerlijn'}</h3>${pReeksAi(ds)}</section>` : ''; }).join('')}
-    <section><h3>Opbouw in thema ${esc(t.label)}</h3>${pReeks(inThema(d.lijn,d.thema),code)}</section>
-    ${blokken.length ? `<section><h3>In het spiraalcurriculum</h3><div class="sp-blokken">${blokken.map(s => `<button type="button" class="sp-blok ${s.type}" style="--g:${groepVan(spThema(s.thema).tl).kleur}" data-act="blok" data-id="${s.i}">${esc(s.label)}</button>`).join('')}</div></section>` : ''}`;
+    ${leesBij(code).length ? `<section class="l-lees"><h3>📖 Lezen bij digitaal toetsen</h3>${pReeksLees(leesBij(code))}</section>` : ''}
+    <section><h3>Opbouw in thema ${esc(t.label)}</h3>${pReeks(inThema(d.lijn,d.thema),code)}<div class="pn-acties"><button type="button" class="knop" data-act="naarRij" data-id="${d.lijn === 'ict' ? 'ictdoelen' : d.lijn}-${d.thema}">Trap van dit thema</button></div></section>
+    ${blokken.length ? `<section><h3>Stappen van de school</h3><div class="stapel">${blokken.map(s => `<button type="button" class="stap ${s.type === 'aan' ? 'nieuw' : 'bouw'}" data-act="blok" data-id="${s.i}"><em>${esc(spThema(s.thema).label)}</em>${esc(s.label)}</button>`).join('')}</div></section>` : ''}`;
 }
 
 const pReeksAi = (ds,code) => `<ul class="reeks ai">${ds.map(d => `<li><button type="button" class="l-${d.eigen ? 'school' : 'ailink'}" data-act="ai" data-id="${d.code}" ${d.code === code ? 'aria-current="true"' : ''}><b>${d.code}</b><span>${esc(d.text)}</span></button></li>`).join('')}</ul>`;
@@ -343,32 +443,45 @@ function pAi({code}){
     <span class="tag ai-${aiSoort(d)}">${d.eigen ? 'Eigen doel, door de school toegevoegd' : 'Link met een bestaand leerplandoel'}</span>
     <dl class="pn-feiten"><dt>Wanneer</dt><dd>${f.label} (${f.leeftijd})</dd><dt>Leerlijn</dt><dd>${esc(d.leerlijn)}</dd>${d.samenhang ? `<dt>Samenhang</dt><dd>${esc(d.samenhang)}</dd>` : ''}</dl>
     <div class="pn-acties"><button type="button" class="knop" data-act="kopieer" data-id="${d.code}">Tekst kopiëren</button></div>
+    ${st.beheer ? `<section><h3>Aanpassen</h3><label class="veld">Korte naam<input id="bwNaam" value="${esc(naam(code))}"></label><div class="pn-acties"><button type="button" class="knop vol" data-act="aiBewaar" data-id="${d.code}">Bewaren</button></div></section>` : ''}
     ${perRelatie.map(r => `<section><h3>${r.charAt(0).toUpperCase() + r.slice(1)}</h3>${pReeks(d.verankering.filter(v => v.relatie === r).map(v => doel(v.code)), null, true)}</section>`).join('')}
     ${pLijst('Activiteiten in de AI-leerlijn', d.activiteiten)}
     ${d.themas.map(t => `<section><h3>Opbouw: ${esc(aiThema(t).label)}</h3>${pReeksAi(aiThema(t).doelen.map(aiDoel),code)}</section>`).join('')}`;
 }
 
+const pReeksLees = (ds,code) => `<ul class="reeks lang">${ds.map(d => `<li><button type="button" class="l-lees" data-act="lees" data-id="${d.code}" ${d.code === code ? 'aria-current="true"' : ''}><b>${d.code.replace('NED ','')}</b><span>${esc(d.text)}</span></button></li>`).join('')}</ul>`;
+function pLees({code}){
+  const d = leesDoel(code), L = lj(d.lj);
+  return pKop(d.code) + `<p class="pn-tekst">${esc(d.text)}</p>
+    <dl class="pn-feiten"><dt>Leerlijn</dt><dd>Nederlands, NED stv 2: rijke en gevarieerde teksten lezen en begrijpen</dd><dt>Start in</dt><dd>${L.label} (${d.leeftijd} jaar, fase ${L.fase})</dd><dt>Soort</dt><dd>${LEES_ROLLEN[d.rol]}</dd>${d.drager ? `<dt>LeerLokaal</dt><dd>${d.drager}</dd>` : ''}</dl>
+    <div class="pn-acties"><button type="button" class="knop" data-act="kopieer" data-id="${d.code}">Tekst kopiëren</button></div>
+    <section><h3>Waarom in de ketting Digitale toetsen</h3><p>${esc(d.waarom)}</p></section>
+    ${d.bij.length ? `<section class="l-ict"><h3>Samen met deze ICT-doelen</h3>${pReeks(d.bij.map(doel), null, true)}</section>` : ''}
+    ${pLijst('Ondersteuning',d.onder)}${pLijst('Verdieping',d.verdiep)}
+    <section><h3>Minimumdoelen</h3>${(d.md||[]).map(m => `<div class="md"><b>${m}</b><span class="pre">${esc(mdTekst(m))}</span></div>`).join('')}</section>
+    <section><h3>${LEES_ROLLEN[d.rol]}, van jong naar oud</h3>${pReeksLees(LEESDOELEN.filter(x => x.rol === d.rol),code)}<div class="pn-acties"><button type="button" class="knop" data-act="ketting" data-id="s-toets">Ketting openen</button></div></section>`;
+}
+
 function pThema({lijn:l,id}){
   const t = thema(l,id), ds = inThema(l,id);
-  return pKop(esc(t.label)) + `<p>${esc(t.info)}</p><section><h3>Opbouw van jong naar oud</h3>${ds.length ? pReeks(ds) : '<p>Dit thema heeft geen eigen leerplandoel.</p>'}</section>`;
+  return pKop(esc(t.label)) + `<p>${esc(t.info)}</p><section><h3>Opbouw van jong naar oud</h3>${ds.length ? pReeks(ds) + `<div class="pn-acties"><button type="button" class="knop" data-act="naarRij" data-id="${l === 'ict' ? 'ictdoelen' : l}-${id}">Trap van dit thema</button></div>` : '<p>Dit thema heeft geen eigen leerplandoel.</p>'}</section>`;
 }
 
 function pBlok({i, nieuw}){
-  const s = nieuw || spiraal[i], t = spThema(s.thema), g = groepVan(t.tl);
-  const gekoppeld = doelen.filter(d => d.lijn === 'ict' && d.thema === t.tl && d.lj === s.lj);
+  const s = nieuw || spiraal[i], t = spThema(s.thema), gekoppeld = doelenBijStap(s);
   const zelfde = spiraal.map((x,n) => ({...x,n})).filter(x => x.thema === s.thema).sort((a,b) => ljIdx(a.lj) - ljIdx(b.lj));
-  const form = st.beheer ? `<section><h3>${nieuw ? 'Nieuw blok' : 'Aanpassen'}</h3>
+  const form = st.beheer ? `<section><h3>${nieuw ? 'Nieuwe stap' : 'Aanpassen'}</h3>
     <label class="veld">Korte naam<input id="sbLabel" value="${esc(s.label)}"></label>
     <label class="veld">Thema<select id="sbThema">${opties(SPIRAAL_THEMAS,s.thema)}</select></label>
     <label class="veld">Leerjaar<select id="sbLj">${opties(LEERJAREN,s.lj)}</select></label>
     <label class="veld">Soort<select id="sbType"><option value="aan" ${s.type === 'aan' ? 'selected' : ''}>Nieuw aanbrengen</option><option value="bouw" ${s.type === 'bouw' ? 'selected' : ''}>Verder bouwen</option></select></label>
     <label class="veld">Uitleg<textarea id="sbDetail">${esc(s.detail||'')}</textarea></label>
     <div class="pn-acties"><button type="button" class="knop vol" data-act="blokBewaar">Bewaren</button>${nieuw ? '' : '<button type="button" class="knop weg" data-act="blokWeg">Verwijderen</button>'}</div></section>` : '';
-  if(nieuw) return pKop('Nieuw blok') + form;
+  if(nieuw) return pKop('Nieuwe stap') + form;
   return pKop(esc(s.label)) + `<dl class="pn-feiten"><dt>Thema</dt><dd>${esc(t.label)}</dd><dt>Leerjaar</dt><dd>${lj(s.lj).label}</dd><dt>Soort</dt><dd>${s.type === 'aan' ? 'Nieuw aanbrengen' : 'Verder bouwen'}</dd></dl>
     ${s.detail ? `<p class="pre" style="margin-top:14px">${esc(s.detail)}</p>` : ''}${form}
     ${gekoppeld.length ? `<section class="l-ict"><h3>Gekoppelde leerplandoelen</h3>${pReeks(gekoppeld)}</section>` : ''}
-    <section><h3>Opbouw ${esc(t.label)}</h3><ul class="reeks" style="--l:${g.kleur}">${zelfde.map(x => `<li><button type="button" data-act="blok" data-id="${x.n}" ${x.n === i ? 'aria-current="true"' : ''}><b>${x.lj}</b><span>${esc(x.label)}</span></button></li>`).join('')}</ul></section>`;
+    <section><h3>Opbouw ${esc(t.label)}</h3><ul class="reeks l-ict">${zelfde.map(x => `<li><button type="button" data-act="blok" data-id="${x.n}" ${x.n === i ? 'aria-current="true"' : ''}><b>${x.lj}</b><span>${esc(x.label)}</span></button></li>`).join('')}</ul></section>`;
 }
 
 /* ── Handelingen ── */
@@ -381,34 +494,54 @@ const acties = {
   lijn: b => ga({lijn:b.dataset.id}),
   lj: b => ga({lj:b.dataset.id}),
   ketting: b => ga({view:'kettingen', ketting:b.dataset.id}),
-  opbouw: b => ga({view:'opbouw', lijn:b.dataset.id}),
-  fase: b => { const f = +b.dataset.id; st.fases.has(f) ? st.fases.delete(f) : st.fases.add(f); toon(); },
-  groep: b => { const g = +b.dataset.id; st.groep = st.groep === g ? null : g; toon(); },
-  vol: b => { st.vol = b.checked; toon(); },
+  opbouw: b => ga({view:'opbouw', lijn:b.dataset.id, klas:null}),
+  bron: b => { sluit(); ga({bron:b.dataset.id, stap:null}); },
+  klas: b => { const id = b.dataset.id; sluit(); ga(id && id !== st.klas ? {klas:id, lj:id} : {klas:null}); },
+  rij: b => { const id = b.dataset.id; st.rijen.has(id) ? st.rijen.delete(id) : st.rijen.add(id); st.stap = null; hertekenRij(id); },
+  stap: b => {
+    const id = b.dataset.id, rij = id.split(':')[0];
+    if(st.rijen.has(rij) && st.stap === id){ st.rijen.delete(rij); st.stap = null; }
+    else { st.rijen.add(rij); st.stap = id; }
+    hertekenRij(rij);
+  },
+  alles: b => { rijenVan().forEach(r => b.dataset.id ? st.rijen.add(r.id) : st.rijen.delete(r.id)); st.stap = null; toon(); },
+  naarRij: b => {
+    const id = b.dataset.id, l = id.split('-')[0];
+    sluit(); st.rijen.add(id); st.stap = null;
+    ga({view:'opbouw', lijn:l.replace('doelen',''), bron:l === 'ictdoelen' ? 'doelen' : 'stappen', klas:null});
+    hertekenRij(id);
+  },
   extra: b => { st.extra = b.checked; toon(); },
   aiToon: b => { st.ai = b.checked; toon(); },
   sluit: () => sluit(),
   doel: b => st.open?.soort === 'doel' && st.open.code === b.dataset.id && !b.closest('#paneel') ? sluit() : open({soort:'doel', code:b.dataset.id, lijn:doel(b.dataset.id).lijn}, b),
   ai: b => st.open?.soort === 'ai' && st.open.code === b.dataset.id && !b.closest('#paneel') ? sluit() : open({soort:'ai', code:b.dataset.id, lijn:aiDoel(b.dataset.id).eigen ? 'school' : 'ailink'}, b),
+  lees: b => st.open?.soort === 'lees' && st.open.code === b.dataset.id && !b.closest('#paneel') ? sluit() : open({soort:'lees', code:b.dataset.id, lijn:'lees'}, b),
   aiThema: b => { st.aiThema = b.dataset.id || null; toon(); },
+  toets: b => { st.toets = b.dataset.id || null; toon(); },
   thema: b => open({soort:'thema', lijn:b.dataset.lijn, id:b.dataset.id}, b),
   blok: b => open({soort:'blok', i:+b.dataset.id}, b),
-  blokNieuw: b => open({soort:'blok', nieuw:{thema:'t_apparaat', lj:b.dataset.id, type:'aan', label:'', detail:''}}, b),
-  kopieer: b => { const d = doel(b.dataset.id) || aiDoel(b.dataset.id); navigator.clipboard.writeText(`${d.code} ${d.text}`).then(() => meld('Gekopieerd.'), () => meld('Kopiëren lukt niet in deze browser.')); },
+  blokNieuw: b => open({soort:'blok', nieuw:{thema:b.dataset.id, lj:'K1', type:'bouw', label:'', detail:''}}, b),
+  kopieer: b => { const d = doel(b.dataset.id) || aiDoel(b.dataset.id) || leesDoel(b.dataset.id); navigator.clipboard.writeText(`${d.code} ${d.text}`).then(() => meld('Gekopieerd.'), () => meld('Kopiëren lukt niet in deze browser.')); },
   doelBewaar: b => {
-    const basis = DOELEN.find(x => x.code === b.dataset.id), n = {lj:$('#bwLj').value, thema:$('#bwThema').value};
-    if(n.lj === basis.lj && n.thema === basis.thema) delete aanpassingen[basis.code]; else aanpassingen[basis.code] = n;
+    const basis = DOELEN.find(x => x.code === b.dataset.id), n = {lj:$('#bwLj').value, thema:$('#bwThema').value, ...eigenNaam(b.dataset.id)};
+    if(n.lj === basis.lj && n.thema === basis.thema && !n.naam) delete aanpassingen[basis.code]; else aanpassingen[basis.code] = n;
+    naDoelWijziging('Bewaard in deze browser.');
+  },
+  aiBewaar: b => {
+    const n = eigenNaam(b.dataset.id);
+    if(n.naam) aanpassingen[b.dataset.id] = n; else delete aanpassingen[b.dataset.id];
     naDoelWijziging('Bewaard in deze browser.');
   },
   doelHerstel: b => { delete aanpassingen[b.dataset.id]; naDoelWijziging('Teruggezet naar LeerLokaal.'); },
   blokBewaar: () => {
     const n = {thema:$('#sbThema').value, lj:$('#sbLj').value, type:$('#sbType').value, label:$('#sbLabel').value.trim(), detail:$('#sbDetail').value.trim()};
-    if(!n.label){ meld('Geef het blok een korte naam.'); $('#sbLabel').focus(); return; }
+    if(!n.label){ meld('Geef de stap een korte naam.'); $('#sbLabel').focus(); return; }
     const i = st.open.nieuw ? spiraal.push(n) - 1 : (spiraal[st.open.i] = n, st.open.i);
     bewaarSpiraal(); toon(); open({soort:'blok', i}); meld('Bewaard in deze browser.');
   },
   blokWeg: () => {
-    if(!confirm(`Het blok "${spiraal[st.open.i].label}" verwijderen?`)) return;
+    if(!confirm(`De stap "${spiraal[st.open.i].label}" verwijderen?`)) return;
     spiraal.splice(st.open.i,1); bewaarSpiraal(); sluit(); toon(); meld('Verwijderd.');
   },
   download: () => {
@@ -419,12 +552,25 @@ const acties = {
     meld('Bestand gedownload. Stuur het door zodat het op GitHub komt.');
   },
   herstel: () => {
-    if(!confirm('Alle aanpassingen aan doelen én spiraalblokken in deze browser wissen?')) return;
+    if(!confirm('Alle aanpassingen aan doelen én stappen in deze browser wissen?')) return;
     aanpassingen = {}; spiraal = kopie(SPIRAAL);
     try{ localStorage.removeItem(SLEUTEL); localStorage.removeItem(SLEUTEL_SPIRAAL); }catch(e){}
     sluit(); herbouw(); toon(); meld('Standaardversie hersteld.');
   },
 };
+/* een andere korte naam dan de standaard, uit het veld in het paneel */
+function eigenNaam(code){ const n = $('#bwNaam').value.trim(); return n && n !== KORTE_NAMEN[code] ? {naam:n} : {}; }
+/* hertekenen zonder dat de rij van plaats verspringt, en de open trap in beeld brengen */
+function hertekenRij(id){
+  const knop = () => [...document.querySelectorAll('#inhoud [data-act=rij]')].find(b => b.dataset.id === id);
+  const y = knop()?.getBoundingClientRect().top;
+  toon();
+  if(!knop()) return;
+  if(y !== undefined) $('#inhoud').scrollTop += knop().getBoundingClientRect().top - y;
+  const t = knop().closest('tr').nextElementSibling;
+  if(t?.matches('.trap-rij')) t.scrollIntoView({block:'nearest'});
+  knop().closest('tr').scrollIntoView({block:'nearest'});
+}
 function naDoelWijziging(t){ bewaar(SLEUTEL, aanpassingen); herbouw(); toon(); if(st.open) open(st.open); meld(t); }
 
 document.addEventListener('click', e => {

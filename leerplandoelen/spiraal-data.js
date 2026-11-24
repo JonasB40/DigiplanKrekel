@@ -1,4 +1,4 @@
-/* Spiraalcurriculum ICT: eigen invulling van de school per thema en leerjaar.
+/* Stappen van de school voor ICT: eigen invulling per thema en leerjaar.
    type aan = nieuw aanbrengen, bouw = verder bouwen. tl verwijst naar een thema in doelen-data.js. */
 const SPIRAAL_THEMAS = [
   {id:"t_apparaat", tl:"basis",        label:"Apparaatbediening"},
@@ -20,7 +20,7 @@ const SPIRAAL_THEMAS = [
 ];
 
 const SPIRAAL_GROEPEN = [
-  {label:"Basisvaardigheden & Systeem", kleur:"#475569", tls:["basis","systeem"]},
+  {label:"Basisvaardigheden & Systeem", tls:["basis","systeem"]},
   {label:"Informatievaardig worden",    kleur:"#0f766e", tls:["info"]},
   {label:"Online communiceren",         kleur:"#0e7490", tls:["communiceren"]},
   {label:"Tekstverwerking",             kleur:"#1d4ed8", tls:["tekst"]},
@@ -29,6 +29,22 @@ const SPIRAAL_GROEPEN = [
   {label:"Bestanden",                   kleur:"#6d28d9", tls:["bestanden"]},
   {label:"Zelfstandig leren",           kleur:"#be185d", tls:["zelf"]},
 ];
+
+/* Leerplandoelen per thema van de school. Een doel staat bij de stap van hetzelfde leerjaar. */
+const SPIRAAL_DOELEN = {
+  t_apparaat:["DIG 1 B.1", "DIG 1 B.2", "DIG 1 B.3", "DIG 1 B.7", "DIG 1 B.18", "DIG 1 B.41"],
+  t_toets:   ["DIG 1 B.4", "DIG 1 B.11", "DIG 1 B.18", "DIG 1 B.41"],
+  t_login:   ["DIG 1 B.31"],
+  t_zoek:    ["DIG 1 B.5", "DIG 1 B.14", "DIG 1 B.15", "DIG 1 B.19", "DIG 1 B.20", "DIG 1 B.21", "DIG 1 B.32"],
+  t_kritisch:["DIG 1 B.22", "DIG 1 B.30", "DIG 1 B.43", "DIG 1 B.44", "DIG 1 B.45", "DIG 1 B.46"],
+  t_mail:    ["DIG 1 B.24", "DIG 1 B.42"],
+  t_foto:    ["DIG 1 B.6", "DIG 1 B.13", "DIG 1 B.23"],
+  t_geluid:  ["DIG 1 B.16"],
+  t_pres1:   ["DIG 1 B.27"],
+  t_best1:   ["DIG 1 B.8", "DIG 1 B.12", "DIG 1 B.25", "DIG 1 B.29"],
+  t_best2:   ["DIG 1 B.38", "DIG 1 B.39", "DIG 1 B.40"],
+  t_zelf:    ["DIG 1 B.28", "DIG 1 B.47"],
+};
 
 const SPIRAAL = [
   // Apparaatbediening
