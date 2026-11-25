@@ -4,29 +4,43 @@
   const BEHEERCODE = 'krekel'; // eenvoudige drempel, geen echte beveiliging
   const SLEUTEL = 'digiplan_beheer';
   const basis = new URL('.', document.currentScript.src);
-  /* [pagina, naam, icoon van de tegel, bijschrift] */
+  /* Groepen van het menu. De kleur per groep staat in digiplan.css bij [data-groep].
+     items: [pagina, naam, icoon van de tegel, uitleg, label] */
   const GROEPEN = [
-    {label:'Beleidsplan', items:[
-      ['visie.html','Visie','🔭','Fase 1'], ['Context.html','Context','🏫','Fase 2'], ['analyse.html','Analyse','🔍','Fase 3'], ['actieplan.html','Actieplan','🚀','Fase 4'],
-      ['digitale-inclusie.html','Digitale inclusie','🤝'], ['Pedagogisch project.html','Pedagogisch project','🌱']]},
-    {label:'Leerplan', items:[
-      ['leerplandoelen/index.html','Leerplandoelen','📚'], ['LeerLokaal.html','Lesfiches','📝'], ['rubrics_digitale_geletterdheid.html','Rubrics','📋'], ['woordenlijst.html','Woordenlijst','📖']]},
-    {label:'Team en AI', items:[
-      ['professionalisering.html','Professionalisering','🎓'], ['rolverdeling.html','Rolverdeling','👥'], ['AI-good_practices.html','AI op school','🤖']]},
-    {label:'Middelen', items:[
-      ['inventaris.html','Inventaris toestellen','💻','Beveiligd'], ['budget.html','Budget en planning','💰','Beveiligd']]},
+    {id:'beleid', label:'Beleidsplan', icoon:'🧭', info:'van visie tot actie', items:[
+      ['visie.html','Visie','🔭','ICT-ambitie en MoSCoW-analyse','Fase 1'],
+      ['Context.html','Context','🏫','Schoolpopulatie en omgeving','Fase 2'],
+      ['analyse.html','Analyse','🔍','Inventaris, middelen en SWOT','Fase 3'],
+      ['actieplan.html','Actieplan','🚀','Doelen, trekkers en deadlines','Fase 4'],
+      ['digitale-inclusie.html','Digitale inclusie','🤝','Gelijke digitale kansen voor elk kind'],
+      ['Pedagogisch project.html','Pedagogisch project','🌱','Kernwaarden, missie en identiteit']]},
+    {id:'leerplan', label:'Leerplan', icoon:'📚', info:'wat leerlingen leren', items:[
+      ['leerplandoelen/index.html','Leerplandoelen','📚','Per leerjaar, als opbouw en in kettingen'],
+      ['LeerLokaal.html','Lesfiches','📝','Een uitgewerkte les bij elk leerplandoel'],
+      ['rubrics_digitale_geletterdheid.html','Rubrics','📋','Beoordelen per leerplandoel'],
+      ['woordenlijst.html','Woordenlijst','📖','Begrippen voor leerkracht en kind']]},
+    {id:'team', label:'Team en AI', icoon:'👥', info:'wie doet wat', items:[
+      ['professionalisering.html','Professionalisering','🎓','Groeiplan van het team'],
+      ['rolverdeling.html','Rolverdeling','👥','Rollen en taken in het ICT-team'],
+      ['AI-good_practices.html','AI op school','🤖','Richtlijnen voor verantwoord AI-gebruik']]},
+    {id:'middelen', label:'Middelen', icoon:'🧰', info:'toestellen en budget', items:[
+      ['inventaris.html','Inventaris toestellen','💻','Overzicht van de toestellen','Beveiligd'],
+      ['budget.html','Budget en planning','💰','Meerjarenplanning','Beveiligd']]},
   ];
   const HUIS = '<svg viewBox="0 0 20 20" width="17" height="17" aria-hidden="true"><path d="M2.5 9.5 10 3l7.5 6.5M5 8v8.5h3.6v-5h2.8v5H15V8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/></svg>';
   const adres = p => new URL(encodeURI(p), basis).href;
   const hier = decodeURIComponent(location.pathname).replace(/\/$/,'/index.html');
   const isHier = p => hier.endsWith('/' + p);
+  const hierGroep = GROEPEN.find(g => g.items.some(x => isHier(x[0])));
+  if(hierGroep) document.documentElement.dataset.groep = hierGroep.id;
   const bewaard = () => { try{ return sessionStorage.getItem(SLEUTEL) === '1'; }catch(e){ return false; } };
 
   const Digiplan = window.Digiplan = {
     beheer: bewaard(),
     /* vraagt de code als dat nodig is; luister naar het event digiplan:beheer */
     vraagBeheer(){ Digiplan.beheer ? zetBeheer(false) : dialoog(); },
-    meld,
+    meld, venster, druk,
+    drukKeuze:null, // een pagina kan hier een eigen keuzevenster voor Afdrukken zetten
   };
 
   /* ── Menubalk ── */
@@ -38,9 +52,10 @@
       <a class="mb-thuis" href="${adres('Digiplan.html')}"${isHier('Digiplan.html') ? ' aria-current="page"' : ''}>${HUIS} Digiplan</a>
       <button type="button" class="mb-knop" aria-expanded="false" aria-controls="mbLijst">Menu</button>
       <nav class="mb-lijst" id="mbLijst" aria-label="Onderdelen van het Digiplan">${GROEPEN.map((g,i) => `
-        <div class="mb-groep${g.items.some(x => isHier(x[0])) ? ' actief' : ''}">
-          <button type="button" aria-expanded="false" aria-controls="mbg${i}">${g.label}</button>
-          <ul id="mbg${i}">${g.items.map(x => `<li><a href="${adres(x[0])}"${isHier(x[0]) ? ' aria-current="page"' : ''}><span class="mb-icoon" aria-hidden="true">${x[2]}</span>${x[1]}${x[3] ? ` <small>${x[3]}</small>` : ''}</a></li>`).join('')}</ul>
+        <div class="mb-groep${g === hierGroep ? ' actief' : ''}" data-groep="${g.id}">
+          <button type="button" aria-expanded="false" aria-controls="mbg${i}"><span aria-hidden="true">${g.icoon}</span>${g.label}${g === hierGroep ? `<span class="mb-hier">› ${g.items.find(x => isHier(x[0]))[1]}</span>` : ''}</button>
+          <div class="mb-paneel" id="mbg${i}"><p class="mb-kop"><span aria-hidden="true">${g.icoon}</span><b>${g.label}</b> ${g.info}</p>
+          <ul>${g.items.map(x => `<li><a href="${adres(x[0])}"${isHier(x[0]) ? ' aria-current="page"' : ''}><span class="mb-icoon" aria-hidden="true">${x[2]}</span><b>${x[1]}</b>${x[4] ? `<small>${x[4]}</small>` : ''}<span class="mb-uitleg">${x[3]}</span></a></li>`).join('')}</ul></div>
         </div>`).join('')}</nav>
       ${isHier('Digiplan.html') ? '' : `<span class="mb-school"><img src="${adres('logo-krekel.png')}" alt="GBS De Krekel"></span>`}`;
     const groepen = [...balk.querySelectorAll('.mb-groep')], knop = balk.querySelector('.mb-knop');
@@ -70,16 +85,16 @@
     const kop = document.querySelector('.page-header-inner');
     if(!kop) return;
     const pagina = GROEPEN.flatMap(g => g.items).find(x => isHier(x[0]));
-    if(pagina) kop.insertAdjacentHTML('afterbegin', `<div class="kop-tegel${/^Fase/.test(pagina[3]||'') ? ' fase' : ''}" aria-hidden="true">${pagina[2]}</div>`);
+    if(pagina) kop.insertAdjacentHTML('afterbegin', `<div class="kop-tegel" aria-hidden="true">${pagina[2]}</div>`);
     let acties = kop.querySelector('.kop-acties');
     if(!acties){ acties = document.createElement('div'); acties.className = 'kop-acties'; kop.append(acties); }
     if(!document.body.hasAttribute('data-geen-afdruk'))
-      acties.insertAdjacentHTML('beforeend','<button type="button" class="kop-knop" data-dp="afdruk">Afdrukken</button>');
+      acties.insertAdjacentHTML('beforeend','<button type="button" class="kop-knop i-druk" data-dp="afdruk">Afdrukken</button>');
     if(document.body.hasAttribute('data-beheer'))
-      acties.insertAdjacentHTML('beforeend','<button type="button" class="kop-knop" data-dp="beheer" aria-pressed="false">Beheer</button>');
+      acties.insertAdjacentHTML('beforeend','<button type="button" class="kop-knop i-beheer" data-dp="beheer" aria-pressed="false">Beheer</button>');
     acties.addEventListener('click', e => {
       const b = e.target.closest('[data-dp]');
-      if(b) b.dataset.dp === 'afdruk' ? window.print() : Digiplan.vraagBeheer();
+      if(b) b.dataset.dp === 'beheer' ? Digiplan.vraagBeheer() : Digiplan.drukKeuze ? Digiplan.drukKeuze() : window.print();
     });
     if(!acties.children.length) acties.remove();
   }
@@ -126,6 +141,40 @@
     }
     d.querySelector('input').value = ''; d.querySelector('.dp-fout').textContent = '';
     d.showModal();
+  }
+
+  /* Keuzevenster: titel, velden (html) en een knop. klaar(formulier) geeft een foutmelding terug of niets. */
+  function venster({titel, html, knop = 'Afdrukken', extra = '', klaar, wijzig}){
+    document.getElementById('dpVenster')?.remove();
+    const d = document.createElement('dialog'); d.id = 'dpVenster'; d.className = 'dp-dialoog breed';
+    d.innerHTML = `<form method="dialog"><h2>${titel}</h2>${html}<p class="dp-fout" role="alert"></p>
+      <div class="dp-rij"><button type="button" class="dp-knop" data-venster="sluit">Annuleren</button>${extra}<button type="submit" class="dp-knop vol">${knop}</button></div></form>`;
+    document.body.append(d);
+    const f = d.querySelector('form');
+    d.querySelector('[data-venster=sluit]').addEventListener('click', () => d.close());
+    f.addEventListener('change', () => { d.querySelector('.dp-fout').textContent = ''; if(wijzig) wijzig(f); });
+    f.addEventListener('submit', e => {
+      e.preventDefault();
+      const fout = klaar(f);
+      if(fout) d.querySelector('.dp-fout').textContent = fout; else d.close();
+    });
+    d.addEventListener('close', () => d.remove());
+    if(wijzig) wijzig(f);
+    d.showModal();
+    return d;
+  }
+
+  /* Drukt enkel deze bladen af. papier: a4 of a3, liggend. pas(doos) kan de bladen eerst op maat zetten. */
+  async function druk(html, {papier = 'a4', pas} = {}){
+    const oud = document.getElementById('dpDruk'); if(oud) oud.remove();
+    const doos = document.createElement('div'); doos.id = 'dpDruk'; doos.className = papier; doos.innerHTML = html;
+    document.body.append(doos);
+    await Promise.all([document.fonts?.ready, ...[...doos.querySelectorAll('img')].map(i => i.decode().catch(() => i.remove()))]);
+    if(pas) pas(doos);
+    const kl = ['dp-drukt', 'dp-' + papier];
+    document.body.classList.add(...kl);
+    window.addEventListener('afterprint', () => { document.body.classList.remove(...kl); doos.remove(); }, {once:true});
+    if(!Digiplan.geenPrint) window.print();
   }
 
   let meldT;

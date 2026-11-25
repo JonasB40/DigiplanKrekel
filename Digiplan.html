@@ -6,8 +6,8 @@
   <title>Digiplan – GBS De Krekel</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="digiplan.css?v=4">
-  <script src="digiplan.js?v=3" defer></script>
+  <link rel="stylesheet" href="digiplan.css?v=5">
+  <script src="digiplan.js?v=4" defer></script>
   <style>
     :root { --dark: var(--dp-blauw2); --gold: #d4820a; --cream: var(--dp-vlak); --border: #d3dde8; --inkt: var(--dp-inkt); --stil: var(--dp-stil); }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -28,13 +28,12 @@
       display: grid; grid-template-columns: 1.28fr repeat(4, 1fr) 1.28fr; grid-template-rows: 1fr 1fr; gap: 14px;
     }
     .tile {
-      background: var(--dp-tegel); border: 1px solid var(--dp-tegel-rand); border-left: 6px solid var(--c);
+      background: var(--g); border: 1px solid var(--gr); border-left: 6px solid var(--c);
       border-radius: var(--dp-rond); padding: 20px 18px;
       color: inherit; text-decoration: none; position: relative;
       display: flex; flex-direction: column; justify-content: flex-start;
       transition: transform 0.18s, box-shadow 0.18s;
     }
-    .tile-pictos { background: var(--dp-munt); border-color: var(--dp-munt-rand); border-left-color: var(--c); }
     .tile:hover { transform: translateY(-3px); box-shadow: 0 12px 28px rgba(15,31,48,0.14); }
     .tile-icon { font-size: 2.1rem; line-height: 1; margin-bottom: 12px; }
     .tile-badge { font-size: 0.95rem; font-weight: 700; color: var(--c); }
@@ -42,13 +41,13 @@
     .tile p { font-size: 1rem; color: var(--stil); }
 
     /* hoge tegels: titel brengt je naar de pagina, links eronder naar een onderdeel */
-    .tile-featured { grid-row: span 2; border-left-width: 1px; border-left-color: var(--dp-tegel-rand); border-top: 6px solid var(--c); padding: 24px 20px 18px; }
+    .tile-featured { grid-row: span 2; border-left-width: 1px; border-left-color: var(--gr); border-top: 6px solid var(--c); padding: 24px 20px 18px; }
     .tile-featured h2 { font-size: 1.32rem; }
     .tile-featured h2 a { color: inherit; text-decoration: none; }
     .tile-featured h2 a::after { content: ''; position: absolute; inset: 0; border-radius: 18px; }
     .tile-links { list-style: none; margin-top: 18px; display: grid; gap: 7px; position: relative; z-index: 1; }
     .tile-links a {
-      display: block; background: rgba(255,255,255,0.72); border: 1px solid var(--dp-tegel-rand); border-radius: 10px;
+      display: block; background: rgba(255,255,255,0.72); border: 1px solid var(--gr); border-radius: 10px;
       padding: 10px 14px; color: var(--inkt); text-decoration: none; font-weight: 600; line-height: 1.3;
     }
     .tile-links a:hover { background: white; border-color: var(--c); color: var(--c); }
@@ -57,11 +56,11 @@
     .beheer-strip { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
     .beheer-strip a {
       display: inline-flex; align-items: center; gap: 9px; padding: 10px 18px;
-      background: white; border: 1px solid var(--border); border-radius: 999px;
+      background: var(--g); border: 1px solid var(--gr); border-radius: 999px;
       text-decoration: none; color: var(--inkt); font-weight: 600;
     }
     .beheer-strip a:hover { border-color: var(--dark); }
-    .beheer-strip .lock { font-size: 0.88rem; background: #fef3c7; color: #7a3d0a; padding: 2px 9px; border-radius: 999px; font-weight: 600; }
+    .beheer-strip .lock { font-size: 0.88rem; background: rgba(255,255,255,0.72); color: var(--gd); padding: 2px 9px; border-radius: 999px; font-weight: 600; }
     footer { text-align: center; padding: 12px; font-size: 0.92rem; color: var(--stil); border-top: 1px solid var(--border); background: white; }
 
     @media (max-width: 1180px) {
@@ -94,11 +93,11 @@
   <div class="tile-grid">
 
     <!-- COL 1 (tall) — Leerplandoelen -->
-    <div class="tile tile-featured" style="--c:#1f5c9e; grid-column:1; grid-row:1/span 2;">
+    <div class="tile tile-featured" data-groep="leerplan" style="--c:#1f5c9e; grid-column:1; grid-row:1/span 2;">
       <div class="tile-icon" aria-hidden="true">📚</div>
       <div class="tile-badge">Leerplan</div>
       <h2><a href="https://jonasb40.github.io/DigiplanKrekel/leerplandoelen/index.html">Leerplandoelen</a></h2>
-      <p>Digitale geletterdheid per leerjaar, in verticale leerlijnen en kettingen</p>
+      <p>Digitale geletterdheid per leerjaar, als opbouw van jong naar oud en in kettingen</p>
       <ul class="tile-links">
         <li><a href="https://jonasb40.github.io/DigiplanKrekel/LeerLokaal.html">Lesfiches</a></li>
         <li><a href="https://jonasb40.github.io/DigiplanKrekel/rubrics_digitale_geletterdheid.html">Rubrics</a></li>
@@ -107,21 +106,21 @@
     </div>
 
     <!-- ROW 1 — cols 2-4 -->
-    <a class="tile tile-pictos" href="https://jonasb40.github.io/DigiplanKrekel/visie.html" style="--c:#1d4f91;">
+    <a class="tile" data-groep="beleid" href="https://jonasb40.github.io/DigiplanKrekel/visie.html" style="--c:#1d4f91;">
       <div class="tile-icon" aria-hidden="true">🔭</div>
       <div class="tile-badge">Fase 1</div>
       <h2>Visie</h2>
       <p>ICT-ambitie en MoSCoW-analyse voor het onderwijs</p>
     </a>
 
-    <a class="tile tile-pictos" href="https://jonasb40.github.io/DigiplanKrekel/Context.html" style="--c:#0b5e57;">
+    <a class="tile" data-groep="beleid" href="https://jonasb40.github.io/DigiplanKrekel/Context.html" style="--c:#0b5e57;">
       <div class="tile-icon" aria-hidden="true">🏫</div>
       <div class="tile-badge">Fase 2</div>
       <h2>Context</h2>
       <p>Schoolpopulatie en omgevingsanalyse</p>
     </a>
 
-    <a class="tile tile-pictos" href="https://jonasb40.github.io/DigiplanKrekel/analyse.html" style="--c:#5b21b6;">
+    <a class="tile" data-groep="beleid" href="https://jonasb40.github.io/DigiplanKrekel/analyse.html" style="--c:#5b21b6;">
       <div class="tile-icon" aria-hidden="true">🔍</div>
       <div class="tile-badge">Fase 3</div>
       <h2>Analyse</h2>
@@ -129,35 +128,35 @@
     </a>
 
     <!-- ROW 2 — cols 2-4 -->
-    <a class="tile tile-pictos" href="https://jonasb40.github.io/DigiplanKrekel/actieplan.html" style="--c:#8a4b00;">
+    <a class="tile" data-groep="beleid" href="https://jonasb40.github.io/DigiplanKrekel/actieplan.html" style="--c:#8a4b00;">
       <div class="tile-icon" aria-hidden="true">🚀</div>
       <div class="tile-badge">Fase 4</div>
       <h2>Actieplan</h2>
       <p>Concrete doelen, trekkers en deadlines</p>
     </a>
 
-    <a class="tile tile-regular" href="https://jonasb40.github.io/DigiplanKrekel/digitale-inclusie.html" style="--c:#166534; grid-column:2; grid-row:2;">
+    <a class="tile" data-groep="beleid" href="https://jonasb40.github.io/DigiplanKrekel/digitale-inclusie.html" style="--c:#166534; grid-column:2; grid-row:2;">
       <div class="tile-icon" aria-hidden="true">🤝</div>
       <div class="tile-badge">Inclusie</div>
       <h2>Digitale inclusie</h2>
       <p>Gelijke digitale kansen voor elk kind</p>
     </a>
 
-    <a class="tile tile-regular" href="https://jonasb40.github.io/DigiplanKrekel/professionalisering.html" style="--c:#166534; grid-column:3; grid-row:2;">
+    <a class="tile" data-groep="team" href="https://jonasb40.github.io/DigiplanKrekel/professionalisering.html" style="--c:#166534; grid-column:3; grid-row:2;">
       <div class="tile-icon" aria-hidden="true">🎓</div>
       <div class="tile-badge">Team</div>
       <h2>Professio&shy;nalisering</h2>
       <p>Groeiplan van het team op basis van DigCompEdu</p>
     </a>
 
-    <a class="tile tile-regular" href="https://jonasb40.github.io/DigiplanKrekel/rolverdeling.html" style="--c:#5b21b6; grid-column:4; grid-row:2;">
+    <a class="tile" data-groep="team" href="https://jonasb40.github.io/DigiplanKrekel/rolverdeling.html" style="--c:#5b21b6; grid-column:4; grid-row:2;">
       <div class="tile-icon" aria-hidden="true">👥</div>
       <div class="tile-badge">ICT-team</div>
       <h2>Rolverdeling</h2>
       <p>Wie doet wat: rollen en taken in het ICT-team</p>
     </a>
 
-    <a class="tile tile-regular" href="https://jonasb40.github.io/DigiplanKrekel/AI-good_practices.html" style="--c:#0b5566; grid-column:5; grid-row:2;">
+    <a class="tile" data-groep="team" href="https://jonasb40.github.io/DigiplanKrekel/AI-good_practices.html" style="--c:#0b5566; grid-column:5; grid-row:2;">
       <div class="tile-icon" aria-hidden="true">🤖</div>
       <div class="tile-badge">AI</div>
       <h2>AI op school</h2>
@@ -165,7 +164,7 @@
     </a>
 
     <!-- COL 6 (tall) — Pedagogisch Project -->
-    <div class="tile tile-featured" style="--c:#1e293b; grid-column:6; grid-row:1/span 2;">
+    <div class="tile tile-featured" data-groep="beleid" style="--c:#045c43; grid-column:6; grid-row:1/span 2;">
       <div class="tile-icon" aria-hidden="true">🌱</div>
       <div class="tile-badge">Fundament</div>
       <h2><a href="https://jonasb40.github.io/DigiplanKrekel/Pedagogisch%20project.html">Pedagogisch project</a></h2>
@@ -179,7 +178,7 @@
   </div>
 
   <!-- ── BEHEER (BEVEILIGD) ── -->
-  <div class="beheer-strip">
+  <div class="beheer-strip" data-groep="middelen">
     <a href="https://jonasb40.github.io/DigiplanKrekel/inventaris.html">
       <span>📋</span>
       <span>Inventaris toestellen</span>

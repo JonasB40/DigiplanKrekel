@@ -12,14 +12,14 @@ function lees(sleutel, anders){ try{ const s = localStorage.getItem(sleutel); re
 function bewaar(sleutel, waarde){ try{ localStorage.setItem(sleutel, JSON.stringify(waarde)); }catch(e){ meld('Bewaren in deze browser lukt niet.'); } }
 
 /* Lange woorden netjes laten afbreken in smalle kolommen */
-const AFBREKEN = ['communi|catie|mogelijk|heden','voor|oor|delen','informatie|verwerkings|proces','informatie|verwerking','netwerk|technologieën','systeem|instellingen','informatie|bronnen','patroon|herkenning','communicatie|kanaal','reclame|boodschappen','media|boodschappen','gezondheids|aspecten','veiligheids|aspecten','zoek|resultaten','mappen|structuur','uitvoer|apparaten','invoer|apparaten','computer|code','bestands|naam','basis|principe','basis|vaardigheden','informatie|vaardig','tekst|verwerking','persoons|gegevens','mogelijk|heden','verant|woorde','toe|passingen','zelf|standig','communi|ceren','voor|stelling','Experimen|teren','toetsenbord|gebruik','geluids|fragmenten','bron|vermelding','tekst|verwerking','inhouds|opgave','pagina|opmaak','persoon|lijke','zoek|strategie','bruikbaar|heid','betrouwbaar|heid','professio|neel','apparaat|bediening','samen|werken','school|platform','wacht|woord','touch|screen','media|gebruik','omgangs|vormen','lastig|vallen','stappen|plan','ontwik|kelen','formu|leren','kennis|maken','beoor|delen','presen|tatie','multi|media','struc|tureren','informa|tie','vorm|geven','raad|plegen'];
+const AFBREKEN = ['communi|catie|mogelijk|heden','voor|oor|delen','informatie|verwerkings|proces','informatie|verwerking','netwerk|technologieën','systeem|instellingen','informatie|bronnen','patroon|herkenning','communicatie|kanaal','reclame|boodschappen','media|boodschappen','gezondheids|aspecten','veiligheids|aspecten','zoek|resultaten','mappen|structuur','uitvoer|apparaten','invoer|apparaten','computer|code','bestands|naam','basis|principe','basis|vaardigheden','informatie|vaardig','tekst|verwerking','persoons|gegevens','mogelijk|heden','verant|woorde','toe|passingen','zelf|standig','communi|ceren','voor|stelling','Experimen|teren','toetsenbord|gebruik','geluids|fragmenten','bron|vermelding','tekst|verwerking','inhouds|opgave','pagina|opmaak','persoon|lijke','zoek|strategie','bruikbaar|heid','betrouwbaar|heid','professio|neel','apparaat|bediening','samen|werken','school|platform','wacht|woord','touch|screen','media|gebruik','omgangs|vormen','lastig|vallen','stappen|plan','ontwik|kelen','formu|leren','kennis|maken','beoor|delen','presen|tatie','multi|media','struc|tureren','informa|tie','vorm|geven','raad|plegen','hallu|cinatie','genera|tieve','opbou|wen','denk|werk','uit|breiding'];
 const zacht = s => AFBREKEN.reduce((t,w) => t.replace(new RegExp(w.replaceAll('|',''),'gi'), m => {
   let i = 0; return w.split('|').map(d => m.slice(i, i += d.length)).join('­');
 }), s);
 
 /* ── Toestand ── */
 const WEERGAVEN = {leerjaar:'Per leerjaar', opbouw:'Opbouw', kettingen:'Kettingen'};
-const st = {view:'leerjaar', lj:lees(SLEUTEL_LJ,'L1'), lijn:'alle', ketting:'1-1', klas:null, bron:'stappen', rijen:new Set(), stap:null, extra:false, ai:true, q:'', aiThema:null, toets:null, open:null, beheer:false};
+const st = {view:'leerjaar', lj:lees(SLEUTEL_LJ,'L1'), lijn:'alle', ketting:'1-1', klas:null, bron:'stappen', jaren:new Set(), rijen:new Set(), stap:null, extra:false, ai:true, q:'', aiThema:null, toets:null, open:null, beheer:false};
 let aanpassingen = lees(SLEUTEL, {});
 let spiraal = lees(SLEUTEL_SPIRAAL, null) || kopie(SPIRAAL);
 let doelen = [];
@@ -69,7 +69,7 @@ function herbouw(){
   });
 }
 
-/* ── Adres: #leerjaar/L3/ict · #opbouw/cd · #opbouw/ictdoelen/L3 (klas) · #opbouw/cd/algo (thema open) · #kettingen/1-2 ── */
+/* ── Adres: #leerjaar/L3/ict · #opbouw/cd · #opbouw/ictdoelen/L3 (klas) · #opbouw/alle · #opbouw/cd/algo (thema open) · #kettingen/1-2 ── */
 function leesAdres(){
   let [v,a,b] = decodeURIComponent(location.hash.slice(1)).split('/');
   if(v === 'spiraal') v = 'opbouw'; // oude naam
@@ -77,8 +77,9 @@ function leesAdres(){
   st.view = v;
   if(v === 'leerjaar'){ if(lj(a)) st.lj = a; st.lijn = lijn(b) ? b : 'alle'; }
   if(v === 'opbouw'){
-    st.bron = a === 'ictdoelen' ? 'doelen' : 'stappen';
-    st.lijn = balk(a) ? a : 'ict';
+    const l = (a || '').replace(/doelen$/, '');
+    st.bron = l === a ? 'stappen' : 'doelen';
+    st.lijn = l === 'alle' || balk(l) ? l : 'ict';
     st.klas = lj(b) ? b : null;
     if(b && !st.klas) st.rijen.add(bronNaam() + '-' + b);
   }
@@ -92,7 +93,7 @@ function adres(){
 function ga(wijziging){
   const andereView = wijziging.view && wijziging.view !== st.view;
   Object.assign(st, wijziging);
-  if(st.view === 'opbouw' && st.lijn === 'alle') st.lijn = 'ict';
+  if(andereView && st.view === 'opbouw' && st.lijn === 'alle') st.lijn = 'ict';
   if(st.view === 'leerjaar' && st.lijn === 'ai') st.lijn = 'alle';
   if(wijziging.lj) bewaar(SLEUTEL_LJ, st.lj);
   if(st.q){ st.q = ''; $('#zoek').value = ''; }
@@ -110,7 +111,7 @@ function toon(){
   $('#tabs').innerHTML = Object.entries(WEERGAVEN).map(([id,label]) =>
     `<button type="button" data-act="view" data-id="${id}" ${!st.q && st.view === id ? 'aria-current="page"' : ''}>${label}</button>`).join('');
 
-  const keuze = st.view === 'leerjaar' ? ['alle', ...LEERLIJNEN.map(l => l.id)] : st.view === 'opbouw' ? [...LEERLIJNEN.map(l => l.id), 'ai'] : [];
+  const keuze = st.view === 'leerjaar' ? ['alle', ...LEERLIJNEN.map(l => l.id)] : st.view === 'opbouw' ? ['alle', ...LEERLIJNEN.map(l => l.id), 'ai'] : [];
   $('#lijnen').innerHTML = st.q ? '' : keuze.map(id =>
     `<button type="button" class="${id === 'alle' ? '' : 'l-' + id}" data-act="lijn" data-id="${id}" aria-pressed="${st.lijn === id}">${id === 'alle' ? 'Alle leerlijnen' : balk(id).icoon + ' ' + balk(id).kort}</button>`).join('');
 
@@ -199,23 +200,30 @@ const UIT = LEERJAREN.length; // kolom na het 6de leerjaar, voor de uitbreiding 
 const KLEUR = {basis:'blauw', systeem:'blauw', digisys:'bruin', info:'groen', communiceren:'paars', tekst:'turkoois', foto:'koraal', presenteren:'goud', bestanden:'limoen', zelf:'pruim',
   patroon:'paars', decom:'koraal', abstract:'turkoois', algo:'blauw', code:'groen', debug:'goud',
   media:'turkoois', veilig:'koraal', privacy:'paars', etiquette:'goud', kritisch:'blauw', gezond:'groen', regelgeving:'pruim'};
-const bronNaam = () => st.lijn + (st.lijn === 'ict' && st.bron === 'doelen' ? 'doelen' : '');
+const bronNaam = (l = st.lijn) => l + (['ict','alle'].includes(l) && st.bron === 'doelen' ? 'doelen' : '');
+/* de gekozen leerjaren als kolomnummers; niets gekozen is alles */
+const kolommen = () => LEERJAREN.flatMap((l,i) => !st.jaren.size || st.jaren.has(l.id) ? [i] : []);
+const metUitbreiding = () => !st.jaren.size || kolommen().some(i => LEERJAREN[i].fase === 4);
+const inBeeld = x => x.van === UIT ? metUitbreiding() : kolommen().some(i => i >= x.van && i <= x.tot);
+/* een thema staat in het raster zodra het in de gekozen leerjaren gestart is */
+const gestart = r => !r.stappen.length || r.stappen[0].van <= kolommen().at(-1);
 const doelenBijStap = s => doelen.filter(d => d.lj === s.lj && (SPIRAAL_DOELEN[s.thema]||[]).includes(d.code));
 
-/* rijen: {id, label, info, groep, stappen:[{van, tot, soort, naam, en blok | doel | ai}]} */
-function rijenVan(){
+/* rijen: {id, lijn, label, info, groep, stappen:[{van, tot, soort, naam, en blok | doel | ai}]} */
+function rijenVan(l = st.lijn){
+  if(l === 'alle') return ['ict','cd','media','ai'].flatMap(x => rijenVan(x));
   const rij = (t, groep, stappen) => {
     stappen.sort((a,b) => a.van - b.van);
     stappen.forEach(x => { x.soort = x.soort || (x.van === stappen[0].van ? 'nieuw' : 'bouw'); });
-    return {id:bronNaam() + '-' + t.id, thema:t.id, label:t.label, info:t.info, groep, stappen, kleur:st.lijn === 'ai' ? '' : 'k-' + KLEUR[t.tl || t.id]};
+    return {id:bronNaam(l) + '-' + t.id, lijn:l, thema:t.id, label:t.label, info:t.info, groep, stappen, kleur:l === 'ai' ? 'l-ai' : 'k-' + KLEUR[t.tl || t.id]};
   };
-  if(st.lijn === 'ai') return AI_THEMAS.map(t => rij(t, '', t.doelen.map(aiDoel).map(d => {
-    const ix = LEERJAREN.flatMap((l,i) => String(l.fase) === d.fase ? [i] : []);
+  if(l === 'ai') return AI_THEMAS.map(t => rij(t, '', t.doelen.map(aiDoel).map(d => {
+    const ix = LEERJAREN.flatMap((x,i) => String(x.fase) === d.fase ? [i] : []);
     return {van:ix.length ? ix[0] : UIT, tot:ix.length ? ix.at(-1) : UIT, naam:naam(d.code), ai:d};
   })));
-  if(bronNaam() === 'ict') return SPIRAAL_THEMAS.map(t => rij(t, groepVan(t.tl).label, spiraal.flatMap((s,i) =>
+  if(bronNaam(l) === 'ict') return SPIRAAL_THEMAS.map(t => rij(t, groepVan(t.tl).label, spiraal.flatMap((s,i) =>
     s.thema === t.id ? [{van:ljIdx(s.lj), tot:ljIdx(s.lj), soort:s.type === 'aan' ? 'nieuw' : 'bouw', naam:s.label, blok:i}] : [])));
-  return THEMAS[st.lijn].map(t => rij(t, '', inThema(st.lijn,t.id).map(d => ({van:ljIdx(d.lj), tot:ljIdx(d.lj), naam:naam(d.code), doel:d}))));
+  return THEMAS[l].map(t => rij(t, '', inThema(l,t.id).map(d => ({van:ljIdx(d.lj), tot:ljIdx(d.lj), naam:naam(d.code), doel:d}))));
 }
 const wanneer = (x,kort) => x.van === UIT ? 'Uitbreiding' : x.van === x.tot ? LEERJAREN[x.van][kort ? 'id' : 'label'] : `Fase ${LEERJAREN[x.van].fase} · ${LEERJAREN[x.van].id} ${x.tot - x.van > 1 ? 'tot' : 'en'} ${LEERJAREN[x.tot].id}`;
 const stapKlas = x => `stap ${x.soort}${x.ai ? ' ai-' + aiSoort(x.ai) : ''}`;
@@ -232,55 +240,80 @@ function stapInhoud(x){
     ${st.beheer ? `<button type="button" class="knop" data-act="blok" data-id="${x.blok}">Aanpassen</button>` : ''}`;
 }
 
+const legende = () => `<span class="leg nieuw">nieuw</span><span class="leg">verder bouwen</span><span class="leg oefen">blijven oefenen</span>${bronNaam() === 'ict' ? '' : AI_LEGENDE}`;
 function vOpbouw(){
-  const li = balk(st.lijn), ict = st.lijn === 'ict', stappen = bronNaam() === 'ict';
-  const rijen = rijenVan(), gevuld = rijen.filter(r => r.stappen.length || (st.beheer && stappen));
-  const ctx = `<div class="ctx">
-      ${ict ? `<div class="keuze" role="group" aria-label="Wat toont het raster?"><button type="button" data-act="bron" data-id="stappen" aria-pressed="${stappen}">Stappen van de school</button><button type="button" data-act="bron" data-id="doelen" aria-pressed="${!stappen}">Leerplandoelen</button></div>` : ''}
-      <span class="leg nieuw">nieuw</span><span class="leg">verder bouwen</span><span class="leg oefen">blijven oefenen</span>${stappen ? '' : AI_LEGENDE}</div>`;
-  return `<div class="opbouw l-${st.lijn}">${st.klas ? klasKop(gevuld) : ''}${ctx}${st.klas ? vKlas(gevuld) : vRaster(gevuld)}${onderOpbouw(li, rijen, stappen)}</div>`;
+  const ict = ['ict','alle'].includes(st.lijn), stappen = st.bron === 'stappen';
+  const rijen = rijenVan(), gevuld = rijen.filter(r => r.stappen.length || (st.beheer && r.id.startsWith('ict-')));
+  const bron = ict ? `<div class="keuze" role="group" aria-label="Wat toont het raster voor ICT?"><button type="button" data-act="bron" data-id="stappen" aria-pressed="${stappen}">Stappen van de school</button><button type="button" data-act="bron" data-id="doelen" aria-pressed="${!stappen}">Leerplandoelen</button></div>` : '';
+  if(st.klas) return `<div class="opbouw l-${st.lijn}">${klasKop(gevuld)}<div class="ctx">${bron}${legende()}</div>${vKlas(gevuld)}</div>`;
+  return `<div class="opbouw l-${st.lijn}"><div class="ctx">${bron}${filterBalk()}</div>${vRaster(gevuld)}${onderOpbouw(rijen)}</div>`;
+}
+
+/* ── Filter op fase en leerjaar ── */
+function filterBalk(){
+  return `<div class="op-filter" role="group" aria-label="Toon enkel deze fases of leerjaren">
+    <button type="button" data-act="filter" data-id="" aria-pressed="${!st.jaren.size}">Alles</button>${[1,2,3,4].map(f => {
+      const js = LEERJAREN.filter(l => l.fase === f);
+      return `<span class="of-fase"><button type="button" data-act="filter" data-id="${f}" aria-pressed="${js.every(l => st.jaren.has(l.id))}">Fase ${f}</button>${js.map(l =>
+        `<button type="button" data-act="filter" data-id="${l.id}" aria-pressed="${st.jaren.has(l.id)}" title="${l.label}">${l.id}</button>`).join('')}</span>`;
+    }).join('')}</div>`;
+}
+/* de gekozen leerjaren in woorden: "fase 3" of "L2 en L3" */
+function filterNaam(){
+  const fases = [1,2,3,4].filter(f => LEERJAREN.filter(l => l.fase === f).every(l => st.jaren.has(l.id)));
+  const los = LEERJAREN.filter(l => st.jaren.has(l.id) && !fases.includes(l.fase)).map(l => l.id);
+  return [...fases.map(f => 'fase ' + f), ...los].join(', ').replace(/, ([^,]*)$/, ' en $1');
 }
 
 /* ── Raster ── */
 function vRaster(rijen){
-  const ai = st.lijn === 'ai';
-  const vakken = ai ? AI_FASES.map(f => { const ix = LEERJAREN.flatMap((l,i) => String(l.fase) === f.id ? [i] : []); return {van:ix.length ? ix[0] : UIT, n:ix.length || 1}; }) : LEERJAREN.map((l,i) => ({van:i, n:1}));
-  const grens = i => i === UIT || i === 0 || LEERJAREN[i].fase !== LEERJAREN[i-1].fase ? ' grens' : '';
-  const breed = UIT + (ai ? 2 : 1);
-  const kop = `<thead><tr class="fasen"><td></td>${[1,2,3,4].map(f => `<th class="grens" scope="colgroup" colspan="${LEERJAREN.filter(l => l.fase === f).length}">Fase ${f}</th>`).join('')}${ai ? '<th class="grens" scope="col" rowspan="2">Uitbreiding<small>5de en 6de leerjaar</small></th>' : ''}</tr>
-    <tr><th class="hoek" scope="col">Thema</th>${LEERJAREN.map((l,i) => `<th class="klaskop${grens(i)}" scope="col"><button type="button" data-act="klas" data-id="${l.id}" aria-label="${l.label}" title="${l.label}: kennen ze al, dit jaar en daarna"><b>${l.id}</b><small>${l.leeftijd}</small></button></th>`).join('')}</tr></thead>`;
-  let groep = '';
+  const zicht = rijen.filter(gestart), straks = rijen.filter(r => !gestart(r)), alles = zicht.every(r => st.rijen.has(r.id));
+  const wat = {ict:'<b>Stappen van de school</b>: onze eigen invulling met concrete voorbeelden, gekoppeld aan het leerplan.', ictdoelen:'<b>Leerplandoelen</b>: de officiële doelen van LeerLokaal, met hun code en minimumdoelen.',
+    alle:'<b>Alle leerlijnen</b>, met de stappen van de school bij ICT.', alledoelen:'<b>Alle leerlijnen</b>, met de leerplandoelen bij ICT.'}[bronNaam()];
+  return `<div class="op-uitleg"><p>${wat ? wat + '<br>' : ''}Klik op een <b>thema</b> of <b>stap</b> voor de uitleg, of op een <b>klas</b> voor kennen ze al, dit jaar en daarna.</p>
+      <div class="op-rechts">${legende()}<button type="button" class="knop" data-act="alles" data-id="${alles ? '' : 'open'}">${alles ? 'Alle thema’s sluiten' : 'Alle thema’s openen'}</button></div></div>
+    ${rasterTabel(zicht)}
+    ${straks.length && straks.length <= 10 ? `<p class="op-straks"><b>Nog niet gestart in ${filterNaam()}:</b> ${straks.map(r => `${esc(r.label)} <span>(vanaf ${wanneer(r.stappen[0],true)})</span>`).join(', ')}</p>` : ''}`;
+}
+function rasterTabel(rijen){
+  const kol = kolommen(), metU = rijen.some(r => r.lijn === 'ai') && metUitbreiding(), cols = metU ? [...kol, UIT] : kol, breed = cols.length + 1;
+  const grens = i => i === UIT || i === cols[0] || LEERJAREN[i].fase !== LEERJAREN[cols[cols.indexOf(i) - 1]].fase ? ' grens' : '';
+  const fases = [1,2,3,4].map(f => ({van:LEERJAREN.findIndex(l => l.fase === f), f, cols:kol.filter(i => LEERJAREN[i].fase === f)})).filter(v => v.cols.length);
+  const perJaar = cols.map(i => ({van:i, cols:[i]})), perFase = [...fases, ...(metU ? [{van:UIT, cols:[UIT]}] : [])];
+  const kop = `<thead><tr class="fasen"><td></td>${fases.map(v => `<th class="grens" scope="colgroup" colspan="${v.cols.length}">Fase ${v.f}</th>`).join('')}${metU ? '<th class="grens" scope="col" rowspan="2">Uit&shy;breiding<small>5de en 6de leerjaar</small></th>' : ''}</tr>
+    <tr><th class="hoek" scope="col">Thema</th>${kol.map(i => { const l = LEERJAREN[i]; return `<th class="klaskop${grens(i)}" scope="col"><button type="button" data-act="klas" data-id="${l.id}" aria-label="${l.label}" title="${l.label}: kennen ze al, dit jaar en daarna"><b>${l.id}</b><small>${l.leeftijd}</small></button></th>`; }).join('')}</tr></thead>`;
+  let groep = '', vorige = '';
   const lijf = rijen.map(r => {
+    const lijnRij = st.lijn === 'alle' && r.lijn !== vorige ? `<tr class="lijn-rij l-${r.lijn}"><th scope="rowgroup" colspan="${breed}"><span><i aria-hidden="true">${balk(r.lijn).icoon}</i>${balk(r.lijn).label}${r.lijn === 'ict' ? ` <small>${st.bron === 'doelen' ? 'leerplandoelen' : 'stappen van de school'}</small>` : ''}</span></th></tr>` : '';
     const groepRij = r.groep && r.groep !== groep ? `<tr class="groep-rij ${r.kleur}"><th scope="rowgroup" colspan="${breed}"><span>${esc(r.groep)}</span></th></tr>` : '';
-    groep = r.groep;
+    groep = r.groep; vorige = r.lijn;
     const open = st.rijen.has(r.id), eerste = r.stappen.length ? r.stappen[0].van : Infinity;
-    const cellen = vakken.map(v => {
+    const einde = metU && r.stappen.some(x => x.van === UIT) ? UIT : kol.at(-1);
+    const cellen = (r.lijn === 'ai' ? perFase : perJaar).map(v => {
       const hier = r.stappen.map((x,k) => ({x,k})).filter(({x}) => x.van === v.van);
-      const oefen = v.van > eerste && !hier.length && v.van !== UIT;
-      const spoor = v.van === eerste ? (v.van + v.n < UIT ? ' van' : '') : v.van > eerste && (hier.length || oefen) ? (oefen ? ' door oefen' : v.van + v.n >= UIT ? ' tot' : ' door') : '';
-      return `<td class="${(grens(v.van) + spoor).trim()}" colspan="${v.n}">${hier.map(({x,k}) =>
+      const oefen = v.van > eerste && !hier.length && v.van !== UIT, slot = v.cols.includes(einde);
+      const spoor = v.van === eerste ? (slot ? '' : ' van') : oefen ? ' door oefen' : v.van > eerste && hier.length ? (slot ? ' tot' : ' door') : '';
+      return `<td class="${(grens(v.cols[0]) + spoor).trim()}" colspan="${v.cols.length}">${hier.map(({x,k}) =>
         `<button type="button" class="${stapKlas(x)}" data-act="stap" data-id="${r.id}:${k}" aria-pressed="${st.stap === r.id + ':' + k}">${stapTekst(x)}</button>`).join('')}${oefen ? '<span class="sr">blijven oefenen</span>' : ''}</td>`;
     }).join('');
-    return `${groepRij}<tr class="thema-rij ${r.kleur}${open ? ' open' : ''}"><th scope="row"><button type="button" data-act="rij" data-id="${r.id}" aria-expanded="${open}"><span>${zacht(esc(r.label))}</span></button></th>${cellen}</tr>` +
+    return `${lijnRij}${groepRij}<tr class="thema-rij ${r.kleur}${open ? ' open' : ''}"><th scope="row"><button type="button" data-act="rij" data-id="${r.id}" aria-expanded="${open}"><span>${groepRij ? `<small class="th-groep">${esc(r.groep)}</small>` : ''}${zacht(esc(r.label))}</span></button></th>${cellen}</tr>` +
       (open ? `<tr class="trap-rij ${r.kleur}"><td colspan="${breed}">${trap(r)}</td></tr>` : '');
   }).join('');
-  const alles = rijen.every(r => st.rijen.has(r.id));
-  return `<div class="op-uitleg"><p>Van jong (links) naar oud (rechts)${ai ? '' : ', elk thema in een eigen kleur'}. Klik op een <b>thema</b> of <b>stap</b> voor de uitleg, of op een <b>klas</b> voor kennen ze al, dit jaar en daarna.</p>
-      <button type="button" class="knop" data-act="alles" data-id="${alles ? '' : 'open'}">${alles ? 'Alle thema’s sluiten' : 'Alle thema’s openen'}</button></div>
-    <table class="raster${ai ? ' met-u' : ''}"><colgroup><col class="thema">${'<col>'.repeat(breed - 1)}</colgroup>${kop}<tbody>${lijf}</tbody></table>`;
+  return `<table class="raster" style="min-width:${172 + cols.length * 106}px;max-width:${Math.max(720, 172 + cols.length * 400)}px"><colgroup><col class="thema">${'<col>'.repeat(breed - 1)}</colgroup>${kop}<tbody>${lijf}</tbody></table>`;
 }
 
 /* ── Trap: elke trede is een leerjaar, van links (jong) naar rechts (oud) ── */
 function trap(r){
-  const treden = [];
+  const treden = [], zicht = r.stappen.filter(inBeeld); // met een filter enkel de gekozen jaren, tenzij daar niets nieuws is
   r.stappen.forEach((x,k) => {
+    if(zicht.length && !zicht.includes(x)) return;
     if(treden.at(-1)?.van !== x.van) treden.push({van:x.van, x, stappen:[]});
     treden.at(-1).stappen.push({x,k});
   });
   return `<div class="trap">${r.info ? `<p class="trap-info">${esc(r.info)}</p>` : ''}
     <ol style="--n:${treden.length}">${treden.map((t,i) => `<li class="${t.x.soort}" style="--k:${i}"><h4>${wanneer(t.x)}${t.x.soort === 'nieuw' ? ' <i>Nieuw</i>' : ''}</h4>${t.stappen.map(({x,k}) =>
       `<div class="tr-stap${st.stap === r.id + ':' + k ? ' gekozen' : ''}"><b>${esc(x.naam)}</b>${stapInhoud(x)}</div>`).join('')}</li>`).join('')}</ol>
-    ${st.beheer && bronNaam() === 'ict' ? `<button type="button" class="knop" data-act="blokNieuw" data-id="${r.thema}">+ Stap toevoegen</button>` : ''}</div>`;
+    ${st.beheer && r.id.startsWith('ict-') ? `<button type="button" class="knop" data-act="blokNieuw" data-id="${r.thema}">+ Stap toevoegen</button>` : ''}</div>`;
 }
 
 /* ── Klas: kennen ze al, dit jaar, daarna ── */
@@ -291,7 +324,7 @@ function verdeel(rijen){
 function klasKop(rijen){
   const L = lj(st.klas), nu = verdeel(rijen).flatMap(x => x.nu), nieuw = nu.filter(x => x.soort === 'nieuw').length;
   const telt = id => { const i = ljIdx(id); return rijen.flatMap(r => r.stappen).filter(x => x.van <= i && x.tot >= i).length; };
-  return `${stapper('klas', st.klas, telt, st.lijn === 'ai' || bronNaam() !== 'ict' ? aantal : n => n === 1 ? '1 stap' : n + ' stappen')}
+  return `${stapper('klas', st.klas, telt, bronNaam() === 'ict' || st.lijn === 'alle' ? n => n === 1 ? '1 stap' : n + ' stappen' : aantal)}
     <div class="lj-kop"><div><h2>${L.label}</h2><p>${L.leeftijd} · fase ${L.fase} · ${nu.length ? `${nieuw ? nieuw + ' nieuw, ' : ''}${nu.length - nieuw} verder bouwen` : 'geen nieuwe stap dit jaar'}</p></div>
       <button type="button" class="knop" data-act="klas" data-id="">← Terug naar het raster</button></div>`;
 }
@@ -301,7 +334,7 @@ function vKlas(rijen){
   const rij = ({r,eerder,nu,later}) => {
     const laatste = eerder.filter(x => x.tot === eerder.at(-1).tot), eerst = later.filter(x => x.van === later[0].van);
     const meer = eerder.length - laatste.length;
-    return `<tr class="klas-rij ${r.kleur}"><th scope="row"><button type="button" data-act="naarRij" data-id="${r.id}" title="Toon de trap van dit thema">${zacht(esc(r.label))}</button></th>
+    return `<tr class="klas-rij ${r.kleur}"><th scope="row"><button type="button" data-act="naarRij" data-id="${r.id}" title="Toon de trap van dit thema">${zacht(esc(r.label))}${st.lijn === 'alle' ? `<small>${balk(r.lijn).kort}</small>` : ''}</button></th>
       <td data-kop="Kennen ze al">${mini(laatste)}${meer ? `<button type="button" class="tekstknop" data-act="naarRij" data-id="${r.id}">+ ${meer} eerder</button>` : ''}${eerder.length ? '' : '<span class="niets">Nog niets</span>'}</td>
       <td class="nu" data-kop="Dit jaar">${nu.map(x => `<div class="tr-stap ${x.soort}"><b>${x.soort === 'nieuw' ? '<i>Nieuw</i>' : ''}${esc(x.naam)}</b>${stapInhoud(x)}</div>`).join('')}${nu.length ? '' : eerder.length ? '<span class="oefenen">Blijven oefenen</span>' : '<span class="niets">Start later</span>'}</td>
       <td data-kop="Daarna">${mini(eerst)}${later.length ? '' : `<span class="niets">${st.klas === LEERJAREN.at(-1).id ? 'Geen volgende stap' : 'Blijven oefenen'}</span>`}</td></tr>`;
@@ -311,7 +344,9 @@ function vKlas(rijen){
     ${deel('Dit jaar aan bod', per.filter(x => x.nu.length))}${deel('Blijven oefenen', per.filter(x => !x.nu.length && x.eerder.length))}${deel('Start later', per.filter(x => !x.nu.length && !x.eerder.length))}</table>`;
 }
 
-function onderOpbouw(li, rijen, stappen){
+function onderOpbouw(rijen){
+  if(st.lijn === 'alle' || st.jaren.size) return '';
+  const li = balk(st.lijn), stappen = bronNaam() === 'ict';
   const uit = stappen ? [] : UITBREIDING.filter(u => u.lijn === li.id);
   const zonder = stappen ? [] : rijen.filter(r => !r.stappen.length);
   const gedekt = new Set(spiraal.flatMap(s => doelenBijStap(s).map(d => d.code)));
@@ -508,11 +543,18 @@ const acties = {
     else { st.rijen.add(rij); st.stap = id; }
     hertekenRij(rij);
   },
+  filter: b => {
+    const id = b.dataset.id, ids = /^\d$/.test(id) ? LEERJAREN.filter(l => l.fase === +id).map(l => l.id) : id ? [id] : [];
+    const alle = ids.every(x => st.jaren.has(x));
+    if(!ids.length) st.jaren = new Set(); else ids.forEach(x => alle ? st.jaren.delete(x) : st.jaren.add(x));
+    if(st.jaren.size === LEERJAREN.length) st.jaren = new Set();
+    toon();
+  },
   alles: b => { rijenVan().forEach(r => b.dataset.id ? st.rijen.add(r.id) : st.rijen.delete(r.id)); st.stap = null; toon(); },
   naarRij: b => {
     const id = b.dataset.id, l = id.split('-')[0];
     sluit(); st.rijen.add(id); st.stap = null;
-    ga({view:'opbouw', lijn:l.replace('doelen',''), bron:l === 'ictdoelen' ? 'doelen' : 'stappen', klas:null});
+    ga({view:'opbouw', lijn:l.replace('doelen',''), ...(l.startsWith('ict') ? {bron:l === 'ictdoelen' ? 'doelen' : 'stappen'} : {}), klas:null, jaren:new Set()});
     hertekenRij(id);
   },
   extra: b => { st.extra = b.checked; toon(); },

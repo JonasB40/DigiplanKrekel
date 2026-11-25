@@ -7,8 +7,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="shared.css?v=3">
-  <link rel="stylesheet" href="digiplan.css?v=4">
-  <script src="digiplan.js?v=3" defer></script>
+  <link rel="stylesheet" href="digiplan.css?v=5">
+  <script src="digiplan.js?v=4" defer></script>
   <style>
     :root { --accent: #0f766e; --accent-light: #ccfbf1; }
 
@@ -49,6 +49,18 @@
     .lj-badge-new { font-size:0.82rem; font-weight:700; color:var(--accent); border:1px solid var(--accent); border-radius:5px; padding:0 5px; margin-left:5px; }
     .lj-badge-v { font-size:0.82rem; color:var(--muted); margin-left:5px; }
     .lj-empty { color:var(--muted); font-size:0.9rem; padding:6px 0; }
+    .lj-druk { display:none; }
+    .lj-tabel { break-inside:auto !important; width:100%; border-collapse:collapse; table-layout:fixed; font-size:8.5pt; line-height:1.35; color:#14283a; }
+    .lj-tabel :is(th,td) { border:1px solid #cbd6e1; padding:4px 6px; text-align:left; vertical-align:top; }
+    .lj-tabel thead th { font-family:'Poppins',sans-serif; font-weight:600; font-size:1.1em; }
+    .lj-tabel thead th:first-child { width:20%; background:#edf0f4; }
+    .lj-tabel tbody th { background:#edf0f4; font-weight:700; }
+    .lj-tabel tbody th small { display:block; font-weight:400; font-size:.9em; color:#475a6d; margin-top:2px; }
+    .lj-tabel td p { margin:0 0 2px; }
+    .lj-tabel td em { font-style:normal; color:#475a6d; white-space:nowrap; }
+    .lj-tabel tr { break-inside:avoid; }
+    .lj-tabel .lj-badge-new { font-size:.88em; }
+    @media print { #ljNav, #ljTitle, #ljSpiral, #ljCols, .lj-kies { display:none !important; } .lj-druk { display:block; } }
     .lj-note { background:#f8fafc; border:1px solid var(--border); border-radius:10px; padding:12px 14px; font-size:0.96rem; color:var(--muted); line-height:1.6; }
 
     /* --- VIER IN BALANS VISUAL --- */
@@ -164,12 +176,13 @@
     <section class="section" id="leerlijnen">
       <div class="section-label">B4 · Onderwijsaanpak</div>
       <h2>Onze verticale opbouw</h2>
-      <p>Kies een leerjaar op de tijdlijn. Je ziet meteen wat de leerlingen dat jaar leren voor elk van de 3 leerlijnen — met de opbouw doorheen de jaren (het spiraalcurriculum).</p>
+      <p class="lj-kies">Kies een leerjaar op de tijdlijn. Je ziet meteen wat de leerlingen dat jaar leren voor elk van de 3 leerlijnen — met de opbouw doorheen de jaren (het spiraalcurriculum).</p>
 
       <div class="lj-nav" id="ljNav"></div>
       <div class="lj-year-title" id="ljTitle"></div>
       <div class="lj-spiral" id="ljSpiral"></div>
       <div class="lj-cols" id="ljCols"></div>
+      <div class="lj-druk" id="ljDruk"></div>
 
 
       <div class="card" style="margin-top:16px;">
@@ -304,6 +317,30 @@
   }
   function ljSelect(k){ ljActive = k; ljRender(); }
   ljRender();
+
+  /* Op papier: alle leerjaren samen in één tabel */
+  function ljTabel(){
+    return `<table class="lj-tabel"><thead><tr><th>Leerjaar</th>${["ict","comp","media"].map(k=>`<th class="${LJC[k].c}">${LJC[k].l}</th>`).join("")}</tr></thead><tbody>${LJ_YEARS.map(y=>{
+      const d = LJ_DATA[y.k];
+      return `<tr><th>${y.l}<small>${y.a}</small><small>${LJ_SPIRAL[y.k]||""}</small></th>${["ict","comp","media"].map(k=>`<td>${(d[k]||[]).map(it=>`<p>${it.s} ${it.c?`<em>DIG ${it.c}</em>`:''}${ljBadge(it.t)}</p>`).join("")||"—"}</td>`).join("")}</tr>`;
+    }).join("")}</tbody></table>`;
+  }
+  document.getElementById("ljDruk").innerHTML = ljTabel();
+  document.addEventListener("DOMContentLoaded", () => {
+    const keuze = (id,label,uitleg,aan) => `<label class="dp-keuze"><input type="radio" name="wat" value="${id}" ${aan?'checked':''}><div><b>${label}</b><span>${uitleg}</span></div></label>`;
+    Digiplan.drukKeuze = () => Digiplan.venster({
+      titel:"Wat wil je afdrukken?",
+      html:`<fieldset>${keuze("pagina","De hele pagina","Context, partners, de opbouw van alle leerjaren en vier in balans.",true)}${keuze("a4","Enkel de verticale opbouw, A4","Alle leerjaren in één tabel, op twee liggende bladen.",false)}${keuze("a3","Enkel de verticale opbouw, A3","Dezelfde tabel als poster, op één blad.",false)}</fieldset>`,
+      klaar: f => {
+        const wat = f.querySelector("[name=wat]:checked").value;
+        setTimeout(() => wat === "pagina" ? window.print() : Digiplan.druk(`<section class="blad"><header class="bl-kop"><div><h1>Onze verticale opbouw</h1><p>Digitale geletterdheid, van de peuters tot het 6de leerjaar</p></div><img src="logo-krekel.png" alt=""></header>${ljTabel()}</section>`, {papier:wat, pas: doos => {
+          // zo groot mogelijk: op A3 één blad, op A4 twee
+          const t = doos.querySelector(".lj-tabel");
+          for(let p = 13; p > 6; p -= .25){ t.style.fontSize = p + "pt"; if(doos.offsetHeight <= (wat === "a3" ? 1035 : 1330)) break; }
+        }}), 60);
+      },
+    });
+  });
 
   // Sidebar highlight logic
   const sections = document.querySelectorAll('section[id]');
