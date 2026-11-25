@@ -119,6 +119,18 @@ section h3 .ai-teken,.ai-legende .ai-teken{margin-left:0;margin-right:3px}
 
 /* ── Opbouw ── */
 .ctx{position:sticky;left:0;display:flex;align-items:center;gap:8px 26px;flex-wrap:wrap;padding:12px 0;font-size:14px;color:var(--stil);width:100%}
+/* kleur per thema: --l donker, --lt licht, --tg tegel, --tr rand */
+.k-blauw{--l:#1b4f94; --lt:#dfeafa; --tg:#cfe0f6; --tr:#a9c6ec}
+.k-groen{--l:#1f6b3a; --lt:#ddf2e0; --tg:#cbead1; --tr:#9fd3ac}
+.k-paars{--l:#5d33a6; --lt:#ebe3fb; --tg:#dfd3f8; --tr:#c3afee}
+.k-turkoois{--l:#07656f; --lt:#d8f1f2; --tg:#c2e8ea; --tr:#8dcdd2}
+.k-koraal{--l:#ab3323; --lt:#fde4de; --tg:#fbd3c9; --tr:#f0ab9c}
+.k-goud{--l:#7d5300; --lt:#fcefcb; --tg:#f9e3a8; --tr:#e3c264}
+.k-limoen{--l:#4c6200; --lt:#eaf4c9; --tg:#dcecaa; --tr:#b6ce66}
+.k-pruim{--l:#86257d; --lt:#f8e1f5; --tg:#f2cfee; --tr:#dfa6d8}
+.k-bruin{--l:#74452a; --lt:#f4e6dc; --tg:#ebd5c5; --tr:#d3af96}
+tr[class*="k-"] .kaart:is(.l-ict,.l-cd,.l-media){--l:inherit;--lt:inherit;--tg:inherit;--tr:inherit}
+.opbouw .ctx{--l:#3b4e66; --lt:#edf0f4; --tr:#bfcad6}
 .keuze{display:inline-flex;gap:2px;border:1px solid var(--lijn);border-radius:999px;background:#fff;padding:3px}
 .keuze button{border:none;background:none;border-radius:999px;padding:6px 15px;font-size:14.5px;font-weight:600;color:var(--inkt)}
 .keuze button:hover{background:var(--lt)}
@@ -165,11 +177,13 @@ section h3 .ai-teken,.ai-legende .ai-teken{margin-left:0;margin-right:3px}
 .klaskop button:hover :is(b,small){color:#fff}
 .raster tbody td{position:relative;padding:5px 3px;border-top:1px solid var(--lijn);height:46px}
 .raster .grens{border-left:2px solid var(--lijn-sterk)}
+.klaskop button{--tg:#e4eaf1; --tr:#cbd6e1; --l:var(--dp-blauw2)}
 .raster tbody th[scope=row]{background:var(--vlak);padding:5px 8px 5px 0;border-top:1px solid var(--lijn)}
 .thema-rij th button{display:flex;align-items:center;gap:10px;width:100%;min-height:36px;text-align:left;background:none;border:1px solid transparent;border-radius:10px;padding:5px 8px;font-weight:700;font-size:14.5px;line-height:1.25;color:var(--inkt)}
 .thema-rij th button::before{content:"";flex:none;width:8px;height:8px;border-right:2.5px solid var(--l);border-bottom:2.5px solid var(--l);transform:rotate(-45deg);transition:transform .12s}
 .thema-rij th button[aria-expanded=true]::before{transform:rotate(45deg)}
-.thema-rij th button:hover,.thema-rij.open th button{background:var(--tg);border-color:var(--tr)}
+.thema-rij[class*="k-"] th button{background:var(--lt);border-color:var(--tr);border-left:5px solid var(--l)}
+.thema-rij th button:hover,.thema-rij.open th button{background:var(--tg);border-color:var(--l)}
 .raster td .stap{position:relative;z-index:1}
 .raster td .stap+.stap{margin-top:5px}
 /* de lijn door de rij: vol tussen stappen, gestippeld als er enkel geoefend wordt */
@@ -179,6 +193,7 @@ section h3 .ai-teken,.ai-legende .ai-teken{margin-left:0;margin-right:3px}
 .raster td.oefen::before{border-top-style:dotted;opacity:.6}
 .groep-rij th{text-align:left;padding:16px 0 5px;background:none}
 .groep-rij span{position:sticky;left:0;font-family:'Poppins',sans-serif;font-weight:600;font-size:15px;color:var(--l)}
+.groep-rij[class*="k-"] span{display:inline-block;background:var(--l);color:#fff;border-radius:999px;padding:3px 15px}
 .raster tbody tr:first-child.groep-rij th{padding-top:6px}
 
 /* de trap */
@@ -216,6 +231,7 @@ section h3 .ai-teken,.ai-legende .ai-teken{margin-left:0;margin-right:3px}
 .klas td:first-of-type{border-radius:14px 0 0 14px}
 .klas td:last-child{border-right:1px solid var(--tr);border-radius:0 14px 14px 0}
 .klas td.nu{background:var(--tg)}
+.klas-rij[class*="k-"] th button{background:var(--lt);border:1px solid var(--tr);border-left:5px solid var(--l);border-radius:10px;padding:6px 9px;width:100%}
 .klas .nu .kaart{background:rgba(255,255,255,.82)}
 .klas .stap+.stap{margin-top:6px}
 .klas .tekstknop{margin-top:7px;font-size:14px}

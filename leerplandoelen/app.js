@@ -195,6 +195,10 @@ function vLeerjaar(){
    Een raster per leerlijn: rijen zijn thema's, kolommen de klassen van jong naar oud.
    Klik op een thema: de trap van dat thema. Klik op een klas: kennen ze al, dit jaar, daarna. */
 const UIT = LEERJAREN.length; // kolom na het 6de leerjaar, voor de uitbreiding van de AI-leerlijn
+/* kleur per thema in de opbouw; de AI-leerlijn houdt roze (link) en oranje (eigen doel) */
+const KLEUR = {basis:'blauw', systeem:'blauw', digisys:'bruin', info:'groen', communiceren:'paars', tekst:'turkoois', foto:'koraal', presenteren:'goud', bestanden:'limoen', zelf:'pruim',
+  patroon:'paars', decom:'koraal', abstract:'turkoois', algo:'blauw', code:'groen', debug:'goud',
+  media:'turkoois', veilig:'koraal', privacy:'paars', etiquette:'goud', kritisch:'blauw', gezond:'groen', regelgeving:'pruim'};
 const bronNaam = () => st.lijn + (st.lijn === 'ict' && st.bron === 'doelen' ? 'doelen' : '');
 const doelenBijStap = s => doelen.filter(d => d.lj === s.lj && (SPIRAAL_DOELEN[s.thema]||[]).includes(d.code));
 
@@ -203,7 +207,7 @@ function rijenVan(){
   const rij = (t, groep, stappen) => {
     stappen.sort((a,b) => a.van - b.van);
     stappen.forEach(x => { x.soort = x.soort || (x.van === stappen[0].van ? 'nieuw' : 'bouw'); });
-    return {id:bronNaam() + '-' + t.id, thema:t.id, label:t.label, info:t.info, groep, stappen};
+    return {id:bronNaam() + '-' + t.id, thema:t.id, label:t.label, info:t.info, groep, stappen, kleur:st.lijn === 'ai' ? '' : 'k-' + KLEUR[t.tl || t.id]};
   };
   if(st.lijn === 'ai') return AI_THEMAS.map(t => rij(t, '', t.doelen.map(aiDoel).map(d => {
     const ix = LEERJAREN.flatMap((l,i) => String(l.fase) === d.fase ? [i] : []);
@@ -247,7 +251,7 @@ function vRaster(rijen){
     <tr><th class="hoek" scope="col">Thema</th>${LEERJAREN.map((l,i) => `<th class="klaskop${grens(i)}" scope="col"><button type="button" data-act="klas" data-id="${l.id}" aria-label="${l.label}" title="${l.label}: kennen ze al, dit jaar en daarna"><b>${l.id}</b><small>${l.leeftijd}</small></button></th>`).join('')}</tr></thead>`;
   let groep = '';
   const lijf = rijen.map(r => {
-    const groepRij = r.groep && r.groep !== groep ? `<tr class="groep-rij"><th scope="rowgroup" colspan="${breed}"><span>${esc(r.groep)}</span></th></tr>` : '';
+    const groepRij = r.groep && r.groep !== groep ? `<tr class="groep-rij ${r.kleur}"><th scope="rowgroup" colspan="${breed}"><span>${esc(r.groep)}</span></th></tr>` : '';
     groep = r.groep;
     const open = st.rijen.has(r.id), eerste = r.stappen.length ? r.stappen[0].van : Infinity;
     const cellen = vakken.map(v => {
@@ -257,11 +261,11 @@ function vRaster(rijen){
       return `<td class="${(grens(v.van) + spoor).trim()}" colspan="${v.n}">${hier.map(({x,k}) =>
         `<button type="button" class="${stapKlas(x)}" data-act="stap" data-id="${r.id}:${k}" aria-pressed="${st.stap === r.id + ':' + k}">${stapTekst(x)}</button>`).join('')}${oefen ? '<span class="sr">blijven oefenen</span>' : ''}</td>`;
     }).join('');
-    return `${groepRij}<tr class="thema-rij${open ? ' open' : ''}"><th scope="row"><button type="button" data-act="rij" data-id="${r.id}" aria-expanded="${open}"><span>${zacht(esc(r.label))}</span></button></th>${cellen}</tr>` +
-      (open ? `<tr class="trap-rij"><td colspan="${breed}">${trap(r)}</td></tr>` : '');
+    return `${groepRij}<tr class="thema-rij ${r.kleur}${open ? ' open' : ''}"><th scope="row"><button type="button" data-act="rij" data-id="${r.id}" aria-expanded="${open}"><span>${zacht(esc(r.label))}</span></button></th>${cellen}</tr>` +
+      (open ? `<tr class="trap-rij ${r.kleur}"><td colspan="${breed}">${trap(r)}</td></tr>` : '');
   }).join('');
   const alles = rijen.every(r => st.rijen.has(r.id));
-  return `<div class="op-uitleg"><p>Van jong (links) naar oud (rechts). Klik op een <b>thema</b> of <b>stap</b> voor de uitleg, of op een <b>klas</b> om te zien wat ze al kennen, dit jaar leren en daarna doen.</p>
+  return `<div class="op-uitleg"><p>Van jong (links) naar oud (rechts)${ai ? '' : ', elk thema in een eigen kleur'}. Klik op een <b>thema</b> of <b>stap</b> voor de uitleg, of op een <b>klas</b> voor kennen ze al, dit jaar en daarna.</p>
       <button type="button" class="knop" data-act="alles" data-id="${alles ? '' : 'open'}">${alles ? 'Alle thema’s sluiten' : 'Alle thema’s openen'}</button></div>
     <table class="raster${ai ? ' met-u' : ''}"><colgroup><col class="thema">${'<col>'.repeat(breed - 1)}</colgroup>${kop}<tbody>${lijf}</tbody></table>`;
 }
@@ -297,7 +301,7 @@ function vKlas(rijen){
   const rij = ({r,eerder,nu,later}) => {
     const laatste = eerder.filter(x => x.tot === eerder.at(-1).tot), eerst = later.filter(x => x.van === later[0].van);
     const meer = eerder.length - laatste.length;
-    return `<tr><th scope="row"><button type="button" data-act="naarRij" data-id="${r.id}" title="Toon de trap van dit thema">${zacht(esc(r.label))}</button></th>
+    return `<tr class="klas-rij ${r.kleur}"><th scope="row"><button type="button" data-act="naarRij" data-id="${r.id}" title="Toon de trap van dit thema">${zacht(esc(r.label))}</button></th>
       <td data-kop="Kennen ze al">${mini(laatste)}${meer ? `<button type="button" class="tekstknop" data-act="naarRij" data-id="${r.id}">+ ${meer} eerder</button>` : ''}${eerder.length ? '' : '<span class="niets">Nog niets</span>'}</td>
       <td class="nu" data-kop="Dit jaar">${nu.map(x => `<div class="tr-stap ${x.soort}"><b>${x.soort === 'nieuw' ? '<i>Nieuw</i>' : ''}${esc(x.naam)}</b>${stapInhoud(x)}</div>`).join('')}${nu.length ? '' : eerder.length ? '<span class="oefenen">Blijven oefenen</span>' : '<span class="niets">Start later</span>'}</td>
       <td data-kop="Daarna">${mini(eerst)}${later.length ? '' : `<span class="niets">${st.klas === LEERJAREN.at(-1).id ? 'Geen volgende stap' : 'Blijven oefenen'}</span>`}</td></tr>`;
