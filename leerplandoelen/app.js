@@ -81,7 +81,9 @@ const oefent = (ix,i) => ix.length > 0 && i > Math.min(...ix) && !ix.includes(i)
 function herbouw(){
   doelen = DOELEN.map(d => {
     const school = SCHOOLKETTINGEN.filter(k => (k.codes||[]).includes(d.code)).map(k => k.id);
-    return {...d, ...(aanpassingen[d.code]||{}), ...(school.length ? {kettingen:[...(d.kettingen||[]), ...school]} : {})};
+    const eigen = {...(aanpassingen[d.code]||{})};
+    if(eigen.thema && !thema(d.lijn, eigen.thema)) delete eigen.thema; // thema dat niet meer bestaat
+    return {...d, ...eigen, ...(school.length ? {kettingen:[...(d.kettingen||[]), ...school]} : {})};
   });
 }
 
@@ -215,7 +217,7 @@ const UIT = LEERJAREN.length; // kolom na het 6de leerjaar, voor de uitbreiding 
 /* kleur per thema in de opbouw; de AI-leerlijn houdt roze (link) en oranje (eigen doel) */
 const KLEUR = {basis:'blauw', systeem:'blauw', digisys:'bruin', info:'groen', communiceren:'paars', tekst:'turkoois', foto:'koraal', presenteren:'goud', bestanden:'limoen', zelf:'pruim',
   patroon:'paars', decom:'koraal', abstract:'turkoois', algo:'blauw', code:'groen', debug:'goud',
-  media:'turkoois', veilig:'koraal', privacy:'paars', etiquette:'goud', kritisch:'blauw', gezond:'groen', regelgeving:'pruim'};
+  media:'turkoois', gezond:'groen', veilig:'koraal', privacy:'paars', etiquette:'goud', regelgeving:'pruim'};
 const bronNaam = (l = st.lijn) => l + (['ict','alle'].includes(l) && st.bron === 'doelen' ? 'doelen' : '');
 /* de gekozen leerjaren als kolomnummers; niets gekozen is alles */
 const kolommen = () => LEERJAREN.flatMap((l,i) => !st.jaren.size || st.jaren.has(l.id) ? [i] : []);
@@ -301,7 +303,7 @@ function rasterTabel(rijen){
   let groep = '', vorige = '';
   const lijf = rijen.map(r => {
     const lijnRij = st.lijn === 'alle' && r.lijn !== vorige ? `<tr class="lijn-rij l-${r.lijn}"><th scope="rowgroup" colspan="${breed}"><span><i aria-hidden="true">${balk(r.lijn).icoon}</i>${balk(r.lijn).label}${r.lijn === 'ict' ? ` <small>${st.bron === 'doelen' ? 'leerplandoelen' : 'stappen van de school'}</small>` : ''}</span></th></tr>` : '';
-    const groepRij = r.groep && r.groep !== groep && r.groep !== r.label ? `<tr class="groep-rij ${r.kleur}"><th scope="rowgroup" colspan="${breed}"><span>${esc(r.groep)}</span></th></tr>` : '';
+    const groepRij = r.groep && r.groep !== groep ? `<tr class="groep-rij ${r.kleur}"><th scope="rowgroup" colspan="${breed}"><span>${esc(r.groep)}</span></th></tr>` : '';
     groep = r.groep; vorige = r.lijn;
     const open = st.rijen.has(r.id), eerste = r.stappen.length ? r.stappen[0].van : Infinity;
     const einde = metU && r.stappen.some(x => x.van === UIT) ? UIT : kol.at(-1);

@@ -11,26 +11,24 @@ const SPIRAAL_THEMAS = [
   {id:"t_login",   tl:"systeem",     label:"Inloggen & instellingen"},
   {id:"t_zoek",    tl:"info",        label:"Informatie opzoeken"},
   {id:"t_kritisch",tl:"info",        label:"Bronnen beoordelen & vermelden"},
-  {id:"t_mail",    tl:"communiceren",label:"Digitaal communiceren"},
-  {id:"t_samen",   tl:"communiceren",label:"Samenwerken & tools"},
-  {id:"t_netwerk", tl:"communiceren",label:"Netwerken & de cloud"},
   {id:"t_tekst1",  tl:"tekst",       label:"Tekstverwerking"},
+  {id:"t_best1",   tl:"bestanden",   label:"Bestanden"},
   {id:"t_foto",    tl:"foto",        label:"Foto & video"},
   {id:"t_geluid",  tl:"foto",        label:"Geluid opnemen"},
   {id:"t_pres1",   tl:"presenteren", label:"Presenteren"},
-  {id:"t_best1",   tl:"bestanden",   label:"Bestanden"},
+  {id:"t_mail",    tl:"communiceren",label:"Digitaal communiceren"},
+  {id:"t_samen",   tl:"communiceren",label:"Samenwerken & tools"},
+  {id:"t_netwerk", tl:"communiceren",label:"Netwerken & de cloud"},
   {id:"t_zelf",    tl:"zelf",        label:"Zelfstandig leren"},
 ];
 
+/* Groepen volgens de leerlijn van de school: bedienen, informatie zoeken, verwerken, presenteren en samenwerken. */
 const SPIRAAL_GROEPEN = [
-  {label:"Basisvaardigheden & Systeem", tls:["basis","systeem"]},
-  {label:"Informatievaardig worden", tls:["info"]},
-  {label:"Online communiceren", tls:["communiceren"]},
-  {label:"Tekstverwerking", tls:["tekst"]},
-  {label:"Foto, video & geluid", tls:["foto"]},
-  {label:"Presenteren", tls:["presenteren"]},
-  {label:"Bestanden", tls:["bestanden"]},
-  {label:"Zelfstandig leren", tls:["zelf"]},
+  {label:"Toestellen bedienen",               tls:["basis","systeem"]},
+  {label:"Informatie zoeken en beoordelen",   tls:["info"]},
+  {label:"Informatie verwerken",              tls:["tekst","bestanden","foto"]},
+  {label:"Presenteren, delen en samenwerken", tls:["presenteren","communiceren"]},
+  {label:"Leren leren",                       tls:["zelf"]},
 ];
 
 /* Leerplandoelen per thema van de school. Een doel staat bij de stap van hetzelfde leerjaar. */
