@@ -22,12 +22,20 @@ const WEERGAVEN = {leerjaar:'Per leerjaar', opbouw:'Opbouw', kettingen:'Kettinge
 const st = {view:'leerjaar', lj:lees(SLEUTEL_LJ,'L1'), lijn:'alle', ketting:'1-1', klas:null, bron:'stappen', jaren:new Set(), rijen:new Set(), stap:null, extra:false, ai:true, q:'', aiThema:null, toets:null, open:null, beheer:false};
 let aanpassingen = lees(SLEUTEL, {});
 let spiraal = lees(SLEUTEL_SPIRAAL, null) || kopie(SPIRAAL);
-/* staan de stappen al in deze browser, zet dan de nieuwe standaardstappen erbij */
+/* stappen die al in deze browser bewaard staan, bijwerken naar een nieuwe versie van de opbouw */
 (() => {
-  const was = lees(SLEUTEL_SPIRAAL + '_versie', 1);
+  const was = lees(SLEUTEL_SPIRAAL + '_versie', 1), eigen = lees(SLEUTEL_SPIRAAL, null);
   if(was >= SPIRAAL_VERSIE) return;
-  SPIRAAL.filter(s => (s.v || 1) > was && !spiraal.some(x => x.thema === s.thema && x.label === s.label)).forEach(s => spiraal.push(kopie(s)));
-  if(lees(SLEUTEL_SPIRAAL, null)) bewaar(SLEUTEL_SPIRAAL, spiraal);
+  if(eigen && was < 3){
+    // versie 3 herschikte de opbouw: de eigen stappen apart bewaren en de nieuwe opbouw tonen
+    bewaar(SLEUTEL_SPIRAAL + '_reserve', eigen);
+    try{ localStorage.removeItem(SLEUTEL_SPIRAAL); }catch(e){}
+    spiraal = kopie(SPIRAAL);
+    setTimeout(() => meld('De stappen van de school zijn vernieuwd. Je eigen aanpassingen staan in een reservekopie (Beheer, Aanpassingen downloaden).'), 900);
+  } else if(eigen){
+    SPIRAAL.filter(s => (s.v || 1) > was && !spiraal.some(x => x.thema === s.thema && x.label === s.label)).forEach(s => spiraal.push(kopie(s)));
+    bewaar(SLEUTEL_SPIRAAL, spiraal);
+  }
   bewaar(SLEUTEL_SPIRAAL + '_versie', SPIRAAL_VERSIE);
 })();
 let doelen = [];
@@ -293,7 +301,7 @@ function rasterTabel(rijen){
   let groep = '', vorige = '';
   const lijf = rijen.map(r => {
     const lijnRij = st.lijn === 'alle' && r.lijn !== vorige ? `<tr class="lijn-rij l-${r.lijn}"><th scope="rowgroup" colspan="${breed}"><span><i aria-hidden="true">${balk(r.lijn).icoon}</i>${balk(r.lijn).label}${r.lijn === 'ict' ? ` <small>${st.bron === 'doelen' ? 'leerplandoelen' : 'stappen van de school'}</small>` : ''}</span></th></tr>` : '';
-    const groepRij = r.groep && r.groep !== groep ? `<tr class="groep-rij ${r.kleur}"><th scope="rowgroup" colspan="${breed}"><span>${esc(r.groep)}</span></th></tr>` : '';
+    const groepRij = r.groep && r.groep !== groep && r.groep !== r.label ? `<tr class="groep-rij ${r.kleur}"><th scope="rowgroup" colspan="${breed}"><span>${esc(r.groep)}</span></th></tr>` : '';
     groep = r.groep; vorige = r.lijn;
     const open = st.rijen.has(r.id), eerste = r.stappen.length ? r.stappen[0].van : Infinity;
     const einde = metU && r.stappen.some(x => x.van === UIT) ? UIT : kol.at(-1);
@@ -602,7 +610,7 @@ const acties = {
   },
   download: () => {
     const a = document.createElement('a');
-    a.href = URL.createObjectURL(new Blob([JSON.stringify({doelen:aanpassingen, spiraal}, null, 2)], {type:'application/json'}));
+    a.href = URL.createObjectURL(new Blob([JSON.stringify({doelen:aanpassingen, spiraal, ...(lees(SLEUTEL_SPIRAAL + '_reserve', null) ? {reserve:lees(SLEUTEL_SPIRAAL + '_reserve', null)} : {})}, null, 2)], {type:'application/json'}));
     a.download = 'leerplandoelen-aanpassingen.json'; a.click();
     setTimeout(() => URL.revokeObjectURL(a.href), 1000);
     meld('Bestand gedownload. Stuur het door zodat het op GitHub komt.');
