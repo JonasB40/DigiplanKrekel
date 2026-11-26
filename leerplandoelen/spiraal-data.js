@@ -1,5 +1,8 @@
 /* Stappen van de school voor ICT: eigen invulling per thema en leerjaar.
-   type aan = nieuw aanbrengen, bouw = verder bouwen. tl verwijst naar een thema in doelen-data.js. */
+   type aan = nieuw aanbrengen, bouw = verder bouwen. tl verwijst naar een thema in doelen-data.js.
+   doelen = de leerplandoelen van één stap, als die preciezer zijn dan die van het thema.
+   v = versie waarin de stap is toegevoegd; app.js zet nieuwe stappen ook bij in een bewaarde versie. */
+const SPIRAAL_VERSIE = 2;
 const SPIRAAL_THEMAS = [
   {id:"t_apparaat", tl:"basis",        label:"Apparaatbediening"},
   {id:"t_toets",    tl:"basis",        label:"Toetsenbord"},
@@ -8,6 +11,7 @@ const SPIRAAL_THEMAS = [
   {id:"t_kritisch", tl:"info",         label:"Kritisch & gevorderd"},
   {id:"t_mail",     tl:"communiceren", label:"Digitaal communiceren"},
   {id:"t_samen",    tl:"communiceren", label:"Samenwerken & tools"},
+  {id:"t_netwerk",  tl:"communiceren", label:"Netwerken & de cloud"},
   {id:"t_tekst1",   tl:"tekst",        label:"Basis tekstverwerking"},
   {id:"t_tekst2",   tl:"tekst",        label:"Gevorderd tekstverwerking"},
   {id:"t_foto",     tl:"foto",         label:"Foto & video"},
@@ -32,17 +36,18 @@ const SPIRAAL_GROEPEN = [
 
 /* Leerplandoelen per thema van de school. Een doel staat bij de stap van hetzelfde leerjaar. */
 const SPIRAAL_DOELEN = {
-  t_apparaat:["DIG 1 B.1", "DIG 1 B.2", "DIG 1 B.3", "DIG 1 B.7", "DIG 1 B.18", "DIG 1 B.41"],
+  t_apparaat:["DIG 1 B.1", "DIG 1 B.2", "DIG 1 B.3", "DIG 1 B.7", "DIG 1 B.10", "DIG 1 B.17", "DIG 1 B.18", "DIG 1 B.33", "DIG 1 B.41"],
   t_toets:   ["DIG 1 B.4", "DIG 1 B.11", "DIG 1 B.18", "DIG 1 B.41"],
   t_login:   ["DIG 1 B.31"],
-  t_zoek:    ["DIG 1 B.5", "DIG 1 B.14", "DIG 1 B.15", "DIG 1 B.19", "DIG 1 B.20", "DIG 1 B.21", "DIG 1 B.32"],
+  t_zoek:    ["DIG 1 B.5", "DIG 1 B.9", "DIG 1 B.14", "DIG 1 B.15", "DIG 1 B.19", "DIG 1 B.20", "DIG 1 B.21", "DIG 1 B.32"],
   t_kritisch:["DIG 1 B.22", "DIG 1 B.30", "DIG 1 B.43", "DIG 1 B.44", "DIG 1 B.45", "DIG 1 B.46"],
-  t_mail:    ["DIG 1 B.24", "DIG 1 B.42"],
+  t_mail:    ["DIG 1 B.24", "DIG 1 B.26", "DIG 1 B.42"],
+  t_netwerk: ["DIG 1 B.34", "DIG 1 B.35", "DIG 1 B.36", "DIG 1 B.37"],
   t_foto:    ["DIG 1 B.6", "DIG 1 B.13", "DIG 1 B.23"],
   t_geluid:  ["DIG 1 B.16"],
   t_pres1:   ["DIG 1 B.27"],
   t_best1:   ["DIG 1 B.8", "DIG 1 B.12", "DIG 1 B.25", "DIG 1 B.29"],
-  t_best2:   ["DIG 1 B.38", "DIG 1 B.39", "DIG 1 B.40"],
+  t_best2:   ["DIG 1 B.37", "DIG 1 B.38", "DIG 1 B.39", "DIG 1 B.40"],
   t_zelf:    ["DIG 1 B.28", "DIG 1 B.47"],
 };
 
@@ -57,9 +62,11 @@ const SPIRAAL = [
   {thema:"t_apparaat",lj:"L1",type:"bouw",label:"Zelfstandig opstarten",
    detail:"De computer zelfstandig opstarten en correct afsluiten. Muis en touchpad vlot en nauwkeurig gebruiken. Voorbeeld: de cursor precies op een kleine knop plaatsen om erop te klikken."},
   {thema:"t_apparaat",lj:"L2",type:"bouw",label:"Invoer- en uitvoerapparaten",
-   detail:"Invoerapparaten sturen informatie naar de computer: toetsenbord (typen), muis of touchpad (bewegen), touchscreen (tikken), microfoon (geluid). Uitvoerapparaten tonen of spelen het resultaat af: beeldscherm (beeld), luidsprekers of koptelefoon (geluid), printer (papier). Leerlingen leren de koptelefoon aansluiten en het volume instellen."},
+   detail:"Invoerapparaten sturen informatie naar de computer: toetsenbord (typen), muis of touchpad (bewegen), touchscreen (tikken), microfoon (geluid). Uitvoerapparaten tonen of spelen het resultaat af: beeldscherm (beeld), luidsprekers of koptelefoon (geluid), printer (papier). Leerlingen leren de koptelefoon aansluiten en het volume instellen. Het verschil kennen tussen hardware (het toestel zelf, zoals een scherm of toetsenbord) en software (de programma's en apps die erop draaien, zoals een spelletje)."},
   {thema:"t_apparaat",lj:"L3",type:"bouw",label:"Apparaten doelgericht kiezen",
-   detail:"Alle apparaten functioneel inzetten: toetsenbord voor typen, muis voor navigeren, touchscreen voor tikken en vegen, beeldscherm aflezen, koptelefoon of luidsprekers instellen naargelang de situatie. Leerlingen kiezen zelfstandig het juiste apparaat voor de taak — bijv. koptelefoon bij een luisteroefening, toetsenbord bij een schrijftaak."},
+   detail:"Alle apparaten functioneel inzetten: toetsenbord voor typen, muis voor navigeren, touchscreen voor tikken en vegen, beeldscherm aflezen, koptelefoon of luidsprekers instellen naargelang de situatie. Leerlingen kiezen zelfstandig het juiste apparaat voor de taak — bijv. koptelefoon bij een luisteroefening, toetsenbord bij een schrijftaak. De begrippen invoer, verwerking, uitvoer en opslag gebruiken. Voorbeeld: bij een foto nemen met de tablet is op de knop drukken de invoer, het beeld maken de verwerking, de foto op het scherm de uitvoer en de foto bewaren de opslag."},
+  {thema:"t_apparaat",lj:"L6",type:"bouw",label:"Van invoer tot opslag", v:2,
+   detail:"Uitleggen hoe invoer, verwerking, uitvoer en opslag samen één proces vormen. Voorbeeld: bij een online rekenoefening typ je een antwoord (invoer), de computer controleert het (verwerking), je ziet ‘goed’ of ‘fout’ (uitvoer) en je score wordt bewaard (opslag)."},
   // Toetsenbord
   {thema:"t_toets",   lj:"K3",type:"aan", label:"Toetsen aantikken",
    detail:"Letters en cijfers herkennen op het toetsenbord. Met één vinger gericht een toets aantikken. Backspace gebruiken om een fout te verwijderen. Voorbeeld: de eigen naam intypen."},
@@ -83,8 +90,10 @@ const SPIRAAL = [
   {thema:"t_login",   lj:"L5",type:"bouw",label:"Wachtwoord & instellingen",
    detail:"Het eigen wachtwoord wijzigen via de accountinstellingen (en begrijpen waarom een sterk wachtwoord belangrijk is). De weergave aanpassen: lettergrootte, nachtmodus, schermresolutie. Taalinstelling controleren en wifi aan- en uitzetten."},
   // Informatie opzoeken
-  {thema:"t_zoek",    lj:"L2",type:"aan", label:"Opzoeken in beveiligde omgeving",
-   detail:"Via een veilige zoekmachine (bijv. Kiddle of Google SafeSearch) informatie opzoeken over een klasonderwerp. De leerkracht stelt de beveiligde omgeving in. Voorbeeld: plaatjes van dieren zoeken voor een spreekbeurt."},
+  {thema:"t_zoek",    lj:"K3",type:"aan", label:"Bronnen herkennen", v:2,
+   detail:"Ontdekken dat je op verschillende digitale plaatsen informatie vindt: een website, een filmpje, een digitaal prentenboek of een leerapp, en benoemen waar de informatie vandaan komt. Voorbeeld: bij een klasthema samen een filmpje en een website over egels bekijken en zeggen wat wat is."},
+  {thema:"t_zoek",    lj:"L2",type:"bouw",label:"Opzoeken in beveiligde omgeving",
+   detail:"Via een veilige zoekmachine (bijv. Kiddle of Google SafeSearch) informatie opzoeken over een klasonderwerp. De leerkracht stelt de beveiligde omgeving in. Voorbeeld: plaatjes van dieren zoeken voor een spreekbeurt. Weten wat ‘digitaal’ en ‘het internet’ betekenen: het internet verbindt toestellen over de hele wereld en je gebruikt het om informatie op te zoeken."},
   {thema:"t_zoek",    lj:"L3",type:"bouw",label:"Zoekvraag formuleren",
    detail:"Een goede zoekvraag opstellen vóór je gaat zoeken. Meerdere zoekwoorden combineren (bijv. 'vlinders levensloop' in plaats van alleen 'vlinders'). Een zoektool kiezen: zoekmachine, digitale encyclopedie of schoolplatform. Voorbeeld: niet 'dingen over bijen' maar 'bijen koningin taak'."},
   {thema:"t_zoek",    lj:"L4",type:"bouw",label:"Gericht zoeken",
@@ -105,6 +114,8 @@ const SPIRAAL = [
   // Digitaal communiceren
   {thema:"t_mail",    lj:"L3",type:"aan", label:"Veilig digitaal communiceren",
    detail:"Via een aangereikte tool (bijv. Teams of Smartschool) berichten sturen naar de leerkracht of klasgenoten. Aandacht voor: nooit je adres, telefoonnummer of wachtwoord doorgeven. Respectvol schrijven: lees je bericht na voor je verstuurt. Geen foto's van anderen posten zonder toestemming."},
+  {thema:"t_mail",    lj:"L4",type:"bouw",label:"Online en offline", v:2,
+   detail:"Het verschil kennen tussen online en offline: wat lukt zonder internet en wat niet? Weten wat verzenden en ontvangen betekent: een bericht vertrekt bij jou en komt aan bij de ander. Voorbeeld: een bericht in Teams versturen kan enkel online, een foto bekijken die al op de tablet staat lukt ook offline."},
   {thema:"t_mail",    lj:"L6",type:"bouw",label:"Communicatiemogelijkheden kennen",
    detail:"Digitale tools bieden verschillende manieren om te communiceren. Leerlingen leren ze kennen én weten wanneer je welke gebruikt:\n• Berichten (via Teams of Smartschool): een bericht sturen aan een persoon of groep, vergelijkbaar met een sms maar via het schoolplatform.\n• E-mail: een formeel of langer bericht met onderwerpregel, aanhef ('Beste mevrouw...'), inhoud en groet. Je kan een bijlage toevoegen (bijv. een werkstuk). Je ontvangt e-mails in je inbox en kan ze beantwoorden of doorsturen.\n• Chat: korte berichtjes in real time, zoals een gesprekje. Handig voor snelle vragen. In Teams heet dit de chatfunctie.\n• Reacties: een reactie plaatsen op een post, foto of document — bijv. een duim omhoog, een hartje of een korte opmerking. Wordt gebruikt op schoolplatforms en sociale media.\nWanneer kies je wat? E-mail = formeel en langere boodschap (aan leerkracht, directie). Chat = snel en informeel (aan klasgenoot). Reactie = snelle feedback op iets dat iemand gepost heeft."},
   // Samenwerken & tools
@@ -114,6 +125,11 @@ const SPIRAAL = [
    detail:"Een Teams-videovergadering starten of eraan deelnemen: camera en microfoon in- of uitschakelen, chat gebruiken. De digitale agenda bijhouden: afspraken en deadlines invoeren. Digitale takenlijst gebruiken om je werk te plannen."},
   {thema:"t_samen",   lj:"L6",type:"bouw",label:"Online vergaderen en plannen",
    detail:"Een online vergadering leiden: spreektijd verdelen, scherm delen om iets te tonen. Een digitale planning bijhouden. Voorbeeld: een groepsproject plannen via een gedeeld document met taakverdeling en deadlines."},
+  // Netwerken & de cloud
+  {thema:"t_netwerk", lj:"L6",type:"aan", label:"Netwerk en verbinding", v:2, doelen:["DIG 1 B.34", "DIG 1 B.35", "DIG 1 B.36"],
+   detail:"Weten dat toestellen via een netwerk met elkaar verbonden zijn, zoals de computers op school. Zonder verbinding kun je geen informatie delen. Een verbinding loopt via een kabel, via wifi of via het mobiele netwerk. Voorbeeld: wifi uitzetten op een tablet en nagaan wat nog werkt en wat niet."},
+  {thema:"t_netwerk", lj:"L6",type:"aan", label:"Gegevens in de cloud", v:2, doelen:["DIG 1 B.37"],
+   detail:"Weten dat gegevens niet altijd op je eigen toestel staan: ze kunnen elders bewaard en verwerkt worden, zoals in OneDrive. Voorbeeld: bij online gamen spelen kinderen op verschillende plaatsen tegelijk samen, omdat hun gegevens via het internet uitgewisseld worden."},
   // Basis tekstverwerking
   {thema:"t_tekst1",  lj:"L2",type:"aan", label:"Eerste tekst typen",
    detail:"Voor het eerst een tekst typen in Word of Word Online. De cursor plaatsen door te klikken op de gewenste plek. Fouten verbeteren met Backspace. Het bestand opslaan via 'Opslaan als' en een duidelijke naam geven. Voorbeeld: een korte beschrijving van je favoriete dier typen."},
@@ -167,7 +183,7 @@ const SPIRAAL = [
   {thema:"t_best2",   lj:"L5",type:"aan", label:"Mappen aanmaken en cloud",
    detail:"Zelf een nieuwe map aanmaken: rechtermuisknop > Nieuwe map, dan een logische naam geven. Bestanden uploaden naar OneDrive via de browser of app. Bestanden terugvinden via de zoekfunctie (Verkenner of OneDrive). Voorbeeld: voor elk vak een eigen map aanmaken in OneDrive."},
   {thema:"t_best2",   lj:"L6",type:"bouw",label:"Bestanden beheren en delen",
-   detail:"Bestanden downloaden van het internet of vanuit OneDrive naar de eigen computer. Een bestand delen met een klasgenoot of leerkracht via een deellink (zonder het te e-mailen). Bestanden hernoemen, verplaatsen naar een andere map of verwijderen naar de prullenbak. Voorbeeld: het eindwerkstuk delen met de leerkracht via een OneDrive-link."},
+   detail:"Bestanden downloaden van het internet of vanuit OneDrive naar de eigen computer. Een bestand delen met een klasgenoot of leerkracht via een deellink (zonder het te e-mailen). Bestanden hernoemen, verplaatsen naar een andere map of verwijderen naar de prullenbak. Voorbeeld: het eindwerkstuk delen met de leerkracht via een OneDrive-link. Weten dat bestanden in OneDrive niet op je eigen toestel staan maar elders bewaard worden: in de cloud."},
   // Zelfstandig leren
   {thema:"t_zelf",    lj:"L4",type:"aan", label:"Zelfstandig digitaal leren",
    detail:"Met digitale oefenplatformen zelfstandig oefenen en leren: bijv. Bingel, Rekentuin, Khan Academy of een aangereikte leerapp. Feedback lezen en de oefening opnieuw proberen als er fouten zijn. Voorbeeld: 15 minuten per week zelfstandig rekenen via Bingel."},

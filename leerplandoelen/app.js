@@ -22,6 +22,14 @@ const WEERGAVEN = {leerjaar:'Per leerjaar', opbouw:'Opbouw', kettingen:'Kettinge
 const st = {view:'leerjaar', lj:lees(SLEUTEL_LJ,'L1'), lijn:'alle', ketting:'1-1', klas:null, bron:'stappen', jaren:new Set(), rijen:new Set(), stap:null, extra:false, ai:true, q:'', aiThema:null, toets:null, open:null, beheer:false};
 let aanpassingen = lees(SLEUTEL, {});
 let spiraal = lees(SLEUTEL_SPIRAAL, null) || kopie(SPIRAAL);
+/* staan de stappen al in deze browser, zet dan de nieuwe standaardstappen erbij */
+(() => {
+  const was = lees(SLEUTEL_SPIRAAL + '_versie', 1);
+  if(was >= SPIRAAL_VERSIE) return;
+  SPIRAAL.filter(s => (s.v || 1) > was && !spiraal.some(x => x.thema === s.thema && x.label === s.label)).forEach(s => spiraal.push(kopie(s)));
+  if(lees(SLEUTEL_SPIRAAL, null)) bewaar(SLEUTEL_SPIRAAL, spiraal);
+  bewaar(SLEUTEL_SPIRAAL + '_versie', SPIRAAL_VERSIE);
+})();
 let doelen = [];
 
 const ljIdx = id => LEERJAREN.findIndex(l => l.id === id);
@@ -207,7 +215,7 @@ const metUitbreiding = () => !st.jaren.size || kolommen().some(i => LEERJAREN[i]
 const inBeeld = x => x.van === UIT ? metUitbreiding() : kolommen().some(i => i >= x.van && i <= x.tot);
 /* een thema staat in het raster zodra het in de gekozen leerjaren gestart is */
 const gestart = r => !r.stappen.length || r.stappen[0].van <= kolommen().at(-1);
-const doelenBijStap = s => doelen.filter(d => d.lj === s.lj && (SPIRAAL_DOELEN[s.thema]||[]).includes(d.code));
+const doelenBijStap = s => s.doelen ? doelen.filter(d => s.doelen.includes(d.code)) : doelen.filter(d => d.lj === s.lj && (SPIRAAL_DOELEN[s.thema]||[]).includes(d.code));
 
 /* rijen: {id, lijn, label, info, groep, stappen:[{van, tot, soort, naam, en blok | doel | ai}]} */
 function rijenVan(l = st.lijn){
@@ -455,7 +463,7 @@ const opties = (lijst,gekozen) => lijst.map(x => `<option value="${x.id}" ${x.id
 function pDoel({code}){
   const d = doel(code), li = lijn(d.lijn), t = thema(d.lijn,d.thema), L = lj(d.lj);
   const basis = DOELEN.find(x => x.code === code);
-  const blokken = spiraal.map((s,i) => ({...s,i})).filter(s => s.lj === d.lj && (SPIRAAL_DOELEN[s.thema]||[]).includes(code));
+  const blokken = spiraal.map((s,i) => ({...s,i})).filter(s => doelenBijStap(s).some(x => x.code === code));
   return pKop(d.code) + `<p class="pn-tekst">${esc(d.text)}</p>
     ${d.lj !== basis.lj ? `<span class="tag">Door de school verplaatst, in LeerLokaal: ${lj(basis.lj).label}</span>` : ''}
     <dl class="pn-feiten"><dt>Leerlijn</dt><dd>${li.label}</dd><dt>Thema</dt><dd>${esc(t.label)}</dd><dt>Start in</dt><dd>${L.label} (${basis.leeftijd} jaar, fase ${L.fase})</dd>${d.samenhang ? `<dt>Samenhang</dt><dd>${esc(d.samenhang)}</dd>` : ''}${d.oud ? `<dt>Vervangt</dt><dd>${esc(d.oud.join(' en '))}</dd>` : ''}</dl>
@@ -583,6 +591,8 @@ const acties = {
   blokBewaar: () => {
     const n = {thema:$('#sbThema').value, lj:$('#sbLj').value, type:$('#sbType').value, label:$('#sbLabel').value.trim(), detail:$('#sbDetail').value.trim()};
     if(!n.label){ meld('Geef de stap een korte naam.'); $('#sbLabel').focus(); return; }
+    const oud = st.open.nieuw ? null : spiraal[st.open.i];
+    if(oud?.doelen && oud.thema === n.thema && oud.lj === n.lj) n.doelen = oud.doelen; // eigen koppeling van de stap behouden
     const i = st.open.nieuw ? spiraal.push(n) - 1 : (spiraal[st.open.i] = n, st.open.i);
     bewaarSpiraal(); toon(); open({soort:'blok', i}); meld('Bewaard in deze browser.');
   },
@@ -600,7 +610,7 @@ const acties = {
   herstel: () => {
     if(!confirm('Alle aanpassingen aan doelen én stappen in deze browser wissen?')) return;
     aanpassingen = {}; spiraal = kopie(SPIRAAL);
-    try{ localStorage.removeItem(SLEUTEL); localStorage.removeItem(SLEUTEL_SPIRAAL); }catch(e){}
+    try{ localStorage.removeItem(SLEUTEL); localStorage.removeItem(SLEUTEL_SPIRAAL); localStorage.removeItem(SLEUTEL_SPIRAAL + '_versie'); }catch(e){}
     sluit(); herbouw(); toon(); meld('Standaardversie hersteld.');
   },
 };

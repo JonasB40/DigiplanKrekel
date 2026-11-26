@@ -85,7 +85,7 @@
 }
 .page-header-inner > .kop-acties { grid-column: 3; grid-row: 1 / span 6; align-self: center; justify-content: flex-end; padding-left: 24px; }
 .page-header-label { font: 700 16px/1.3 'DM Sans', system-ui, sans-serif; color: #ffc869; }
-.page-header h1 { font: 700 clamp(26px, 2.6vw, 34px)/1.2 'Poppins', 'DM Sans', sans-serif; color: #fff; margin: 0 0 2px; text-wrap: balance; overflow-wrap: anywhere; hyphens: auto; }
+.page-header h1 { font: 700 clamp(26px, 2.6vw, 34px)/1.2 'Poppins', 'DM Sans', sans-serif; color: #fff; margin: 0 0 2px; text-wrap: balance; overflow-wrap: break-word; hyphens: auto; }
 .page-header p { font: 400 16px/1.45 'DM Sans', system-ui, sans-serif; color: rgba(255,255,255,.9); max-width: 76ch; margin: 0; }
 .kop-logo { grid-column: 3 !important; grid-row: 1 / span 6; align-self: center; }
 .kop-logo img { display: block; height: 108px; }
@@ -150,6 +150,9 @@ body:not(.beheer-aan) .alleen-beheer { display: none !important; }
 }
 #dpMelding.toon { opacity: 1; }
 
+@media (max-width: 1000px) {
+  .page-header-inner > .kop-acties { grid-column: 2 / -1; grid-row: auto; justify-content: flex-start; padding-left: 0; margin-top: 12px; }
+}
 @media (max-width: 1120px) {
   .menubalk .mb-hier { display: none; }
   .menubalk .mb-groep:nth-last-child(-n+2) .mb-paneel { left: auto; right: 0; }
