@@ -1,10 +1,11 @@
 /* Stappen van de school voor ICT: eigen invulling per thema en leerjaar.
    type aan = nieuw aanbrengen, bouw = verder bouwen. tl verwijst naar een thema in doelen-data.js.
    doelen = de leerplandoelen van één stap, als die preciezer zijn dan die van het thema.
-   SPIRAAL_VERSIE: verhoog dit bij een nieuwe opbouw; app.js toont die dan ook in een browser
-   die eerder eigen stappen bewaarde (met een reservekopie van die stappen). Een stap met v:n
-   wordt bij versie n enkel toegevoegd aan de bewaarde stappen. */
-const SPIRAAL_VERSIE = 3; // 3: opbouw herschikt, november 2026
+   SPIRAAL_VERSIE: verhoog dit bij elke wijziging van de stappen. Is de opbouw herschikt, zet dan ook
+   SPIRAAL_HERSCHIKT op die versie: een browser die eerder eigen stappen bewaarde, toont dan de nieuwe
+   opbouw en houdt de oude stappen als reservekopie. Een stap met v:n wordt anders enkel toegevoegd. */
+const SPIRAAL_VERSIE = 4; // 3: opbouw herschikt, 4: afgestemd op de praktijk (november 2026)
+const SPIRAAL_HERSCHIKT = 4; // laatste versie waarin de opbouw herschikt is
 const SPIRAAL_THEMAS = [
   {id:"t_apparaat",tl:"basis",       label:"Apparaatbediening"},
   {id:"t_toets",   tl:"basis",       label:"Toetsenbord"},
@@ -69,11 +70,13 @@ const SPIRAAL = [
   {thema:"t_toets",   lj:"K3",type:"aan", label:"Toetsen aantikken",
    detail:"Letters en cijfers herkennen op het toetsenbord. Met één vinger gericht een toets aantikken. Backspace gebruiken om een fout te verwijderen. Voorbeeld: de eigen naam intypen."},
   {thema:"t_toets",   lj:"L1",type:"bouw",label:"Letters en cijfers typen",
-   detail:"Letters en cijfers correct intypen. Enter gebruiken om een nieuwe regel te beginnen. Backspace om fouten te verwijderen. Spatiebalk voor een spatie. Voorbeeld: een korte zin typen over de dag."},
-  {thema:"t_toets",   lj:"L2",type:"bouw",label:"Symbolen en leestekens",
-   detail:"Punt, komma, vraagteken en uitroepteken intypen. Hoofdletter maken met de Shift-toets (ingedrukt houden + letter). Cijfers en symbolen gebruiken, zoals @ voor e-mailadressen. Voorbeeld: een volledig correcte zin typen met leestekens."},
-  {thema:"t_toets",   lj:"L3",type:"bouw",label:"Sneltoetsen gebruiken",
-   detail:"Veelgebruikte sneltoetsen: Ctrl+C (kopiëren), Ctrl+V (plakken), Ctrl+Z (ongedaan maken), Ctrl+S (opslaan), Ctrl+A (alles selecteren). Voorbeeld: een stuk tekst kopiëren en plakken zonder de muis te gebruiken."},
+   detail:"Letters vinden en correct intypen, zodat je woorden en korte zinnetjes kunt typen. Voorbeeld: de woordjes van de week typen."},
+  {thema:"t_toets",   lj:"L2",type:"bouw",label:"Belangrijke toetsen",
+   detail:"Deze toetsen ken je en gebruik je zelf:\n• Spatiebalk: een spatie tussen twee woorden.\n• Backspace (←): de letter links van de cursor wissen.\n• Delete: de letter rechts van de cursor wissen.\n• Enter (↵): een nieuwe regel beginnen of een zoekopdracht starten.\n• Shift (⇧): ingedrukt houden voor een hoofdletter of voor het bovenste teken op een toets.\n• Caps Lock: alles in hoofdletters typen, en weer uitzetten.\n• Pijltjestoetsen: de cursor verplaatsen.\n• Cijfers: op een Belgisch AZERTY-toetsenbord typ je de cijfers in de bovenste rij met Shift.\n• Punt, komma, vraagteken en uitroepteken: de komma en het uitroepteken zonder Shift, de punt (Shift + ;) en het vraagteken (Shift + ,) met Shift.\nVoorbeeld: een zin met een hoofdletter en een punt typen, zoals ‘Ik heb 2 katten.’"},
+  {thema:"t_toets",   lj:"L3",type:"bouw",label:"Je e-mailadres typen",
+   detail:"Je e-mailadres en je wachtwoord typen om in te loggen in Office 365:\n• @: AltGr ingedrukt houden en op é (de toets met 2) drukken.\n• Punt: Shift + ; (de toets naast de N).\n• Tab: naar het volgende vak springen, van het e-mailadres naar het wachtwoord.\n• Hoofdletters in het wachtwoord met Shift; let op dat Caps Lock uit staat, want je ziet het wachtwoord niet.\nVoorbeeld: zelf je e-mailadres typen, zoals voornaam.naam@…, zonder spiekbriefje."},
+  {thema:"t_toets",   lj:"L4",type:"bouw",label:"Sneltoetsen gebruiken",
+   detail:"Veelgebruikte sneltoetsen in Word en Outlook: Ctrl+C (kopiëren), Ctrl+X (knippen), Ctrl+V (plakken), Ctrl+Z (ongedaan maken) en Ctrl+A (alles selecteren). Voorbeeld: een zin uit je Word-tekst kopiëren en in een e-mail plakken."},
   {thema:"t_toets",   lj:"L5",type:"bouw",label:"Sneller typen met beide handen",
    detail:"Typen met beide handen en de juiste vingers, zonder steeds naar de toetsen te kijken. Regelmatig oefenen met een typprogramma om sneller en met minder fouten te typen. Voorbeeld: elke week tien minuten oefenen en je snelheid bijhouden."},
   {thema:"t_toets",   lj:"L6",type:"bouw",label:"Vlot toetsenbordgebruik",
@@ -85,15 +88,17 @@ const SPIRAAL = [
    detail:"Een eenvoudig wachtwoord intypen op het toetsenbord. Vertrouwde apps (bijv. een rekenspel of een tekenapp) zelfstandig openen via het startmenu of bureaublad en daarna correct sluiten."},
   {thema:"t_login",   lj:"L1",type:"bouw",label:"Inloggen met eigen code",
    detail:"Zelfstandig inloggen op het toestel of in een leerplatform met een eigen code, zoals een QR-code of een visuele code. Programma's en apps openen, van programma wisselen via de taakbalk en afsluiten via het kruisje."},
-  {thema:"t_login",   lj:"L2",type:"bouw",label:"Inloggen op het schoolplatform",
-   detail:"Met de eigen gebruikersnaam en het wachtwoord inloggen op het schoolplatform (Office 365 of Smartschool) en Word, Teams, OneDrive en OneNote openen. Veilig omgaan met je wachtwoord: niet doorgeven aan anderen en afmelden als je klaar bent. Meerdere browsertabbladen of programma's naast elkaar openen."},
+  {thema:"t_login",   lj:"L2",type:"bouw",label:"Inloggen in een leerplatform",
+   detail:"Met een eigen gebruikersnaam en wachtwoord inloggen in een leerplatform (bijv. Smartschool of een oefenplatform). Veilig omgaan met je wachtwoord: niet doorgeven aan anderen en afmelden als je klaar bent."},
+  {thema:"t_login",   lj:"L3",type:"bouw",label:"Inloggen in Office 365 met je e-mailadres",
+   detail:"Via office.com inloggen met je e-mailadres als gebruikersnaam en je wachtwoord. Vanuit Office 365 Word, Outlook, Teams en OneDrive openen. Meerdere browsertabbladen naast elkaar gebruiken. Afmelden als je klaar bent, zeker op een gedeelde laptop."},
   {thema:"t_login",   lj:"L5",type:"bouw",label:"Wachtwoord & systeeminstellingen",
    detail:"Het eigen wachtwoord wijzigen via de accountinstellingen en begrijpen waarom een sterk wachtwoord belangrijk is. Eenvoudige systeeminstellingen aanpassen: de weergave (lettergrootte, nachtmodus, schermresolutie), de taalinstelling en wifi aan- of uitzetten."},
   // Informatie opzoeken
   {thema:"t_zoek",    lj:"K3",type:"aan", label:"Bronnen herkennen",
    detail:"Ontdekken dat je op verschillende digitale plaatsen informatie vindt: een website, een filmpje, een digitaal prentenboek of een leerapp, en benoemen waar de informatie vandaan komt. Voorbeeld: bij een klasthema samen een filmpje en een website over egels bekijken en zeggen wat wat is."},
   {thema:"t_zoek",    lj:"L2",type:"bouw",label:"Opzoeken in een veilige omgeving",
-   detail:"Met zoekwoorden die de leerkracht aanreikt een zoekopdracht ingeven in een aangereikte zoektool (bijv. Kiddle) en de gevonden informatie raadplegen binnen een veilige digitale omgeving. Weten wat ‘digitaal’ en ‘het internet’ betekenen: het internet verbindt toestellen over de hele wereld en je gebruikt het om informatie op te zoeken. Voorbeeld: afbeeldingen van dieren zoeken voor een spreekbeurt."},
+   detail:"Met zoekwoorden die de leerkracht aanreikt een zoekopdracht ingeven in een aangereikte zoektool (bijv. Kiddle) en de gevonden informatie raadplegen binnen een veilige digitale omgeving. Weten wat ‘digitaal’ en ‘het internet’ betekenen: het internet verbindt toestellen over de hele wereld en je gebruikt het om informatie op te zoeken. De browser gebruiken: een zoekwoord in de zoekbalk typen en op Enter drukken, op een zoekresultaat klikken en met de terugknop terugkeren naar de resultaten. Voorbeeld: afbeeldingen van dieren zoeken voor een spreekbeurt."},
   {thema:"t_zoek",    lj:"L3",type:"bouw",label:"Zoekstrategie: zoekvraag, zoektool en zoekopdracht",
    detail:"Onder begeleiding een zoekstrategie gebruiken in drie stappen. De zoekvraag: wat wil ik weten? (bijv. ‘Wat doet de bijenkoningin?’). De zoektool: waar zoek ik? (een zoekmachine, een digitale encyclopedie of de zoekbalk van het schoolplatform). De zoekopdracht: welke trefwoorden typ ik? (bijv. ‘bijenkoningin taak’ in plaats van ‘dingen over bijen’)."},
   {thema:"t_zoek",    lj:"L4",type:"bouw",label:"Gericht zoeken",
@@ -111,36 +116,26 @@ const SPIRAAL = [
    detail:"Alle gebruikte digitale bronnen vermelden: de naam van de website, de titel en de datum waarop je ze raadpleegde, onderaan je werk of in een bronnenlijst. Kennismaking met artificiële intelligentie (AI): wat is het? Voorbeelden die leerlingen kennen: spraakassistenten, vertaaltools, aanbevelingen op YouTube. Ook een AI-tool vermeld je als bron. Voorbeeld: ‘Bron: www.wikipedia.org, geraadpleegd op 10 mei 2025.’"},
   {thema:"t_kritisch",lj:"L6",type:"bouw",label:"Betrouwbaar en correct, ook bij AI",
    detail:"Met aangereikte criteria digitale bronnen beoordelen op betrouwbaarheid (van wie komt de informatie? is het een betrouwbare bron?) en op correctheid (is de informatie verouderd? klopt ze met andere bronnen?). Het begrip artificiële intelligentie kennen, AI als hulpmiddel inzetten en het antwoord altijd controleren: AI maakt fouten. Een bronnenlijst maken met alle geraadpleegde bronnen."},
-  // Digitaal communiceren
-  {thema:"t_mail",    lj:"L3",type:"aan", label:"Veilig digitaal communiceren",
-   detail:"Via een aangereikte tool (bijv. Teams of Smartschool) berichten sturen naar de leerkracht of klasgenoten. Aandacht voor: nooit je adres, telefoonnummer of wachtwoord doorgeven. Respectvol schrijven: lees je bericht na voor je verstuurt. Geen foto's van anderen posten zonder toestemming."},
-  {thema:"t_mail",    lj:"L4",type:"bouw",label:"Online en offline",
-   detail:"Het verschil kennen tussen online en offline: wat lukt zonder internet en wat niet? Weten wat verzenden en ontvangen betekent: een bericht vertrekt bij jou en komt aan bij de ander. Voorbeeld: een bericht in Teams versturen kan enkel online, een foto bekijken die al op de tablet staat lukt ook offline."},
-  {thema:"t_mail",    lj:"L6",type:"bouw",label:"Communicatiemogelijkheden kennen",
-   detail:"Digitale tools bieden verschillende manieren om te communiceren. Leerlingen leren ze kennen én weten wanneer je welke gebruikt:\n• Berichten (via Teams of Smartschool): een bericht sturen aan een persoon of groep, vergelijkbaar met een sms maar via het schoolplatform.\n• E-mail: een formeel of langer bericht met onderwerpregel, aanhef ('Beste mevrouw...'), inhoud en groet. Je kan een bijlage toevoegen (bijv. een werkstuk). Je ontvangt e-mails in je inbox en kan ze beantwoorden of doorsturen.\n• Chat: korte berichtjes in real time, zoals een gesprekje. Handig voor snelle vragen. In Teams heet dit de chatfunctie.\n• Videogesprek (via Teams): elkaar zien en horen op afstand, bijv. voor een groepsoverleg.\n• Reacties: een reactie plaatsen op een post, foto of document — bijv. een duim omhoog, een hartje of een korte opmerking. Wordt gebruikt op schoolplatforms en sociale media.\nWanneer kies je wat? E-mail = formeel en langere boodschap (aan leerkracht, directie). Chat = snel en informeel (aan klasgenoot). Reactie = snelle feedback op iets dat iemand gepost heeft."},
-  // Samenwerken & tools
-  {thema:"t_samen",   lj:"L4",type:"aan", label:"Samenwerken in gedeeld document",
-   detail:"Via Office 365 tegelijk met klasgenoten in hetzelfde Word- of OneNote-document werken. Ieders wijzigingen verschijnen in real time. Voorbeeld: de klas schrijft samen een verhaal — elk kind vult een alinea in vanuit zijn eigen toestel."},
-  {thema:"t_samen",   lj:"L5",type:"bouw",label:"Teams & digitale agenda",
-   detail:"Een Teams-videovergadering starten of eraan deelnemen: camera en microfoon in- of uitschakelen, chat gebruiken. De digitale agenda bijhouden: afspraken en deadlines invoeren. Digitale takenlijst gebruiken om je werk te plannen."},
-  {thema:"t_samen",   lj:"L6",type:"bouw",label:"Online vergaderen en plannen",
-   detail:"Een online vergadering leiden: spreektijd verdelen, scherm delen om iets te tonen. Een digitale planning bijhouden. Voorbeeld: een groepsproject plannen via een gedeeld document met taakverdeling en deadlines."},
-  // Netwerken & de cloud
-  {thema:"t_netwerk", lj:"L6",type:"aan", label:"Netwerk en verbinding", doelen:["DIG 1 B.34", "DIG 1 B.35", "DIG 1 B.36"],
-   detail:"Weten dat toestellen via een netwerk met elkaar verbonden zijn, zoals de computers op school. Zonder verbinding kun je geen informatie delen. Een verbinding loopt via een kabel, via wifi of via het mobiele netwerk. Voorbeeld: wifi uitzetten op een tablet en nagaan wat nog werkt en wat niet."},
-  {thema:"t_netwerk", lj:"L6",type:"aan", label:"Gegevens in de cloud", doelen:["DIG 1 B.37"],
-   detail:"Weten dat gegevens niet altijd op je eigen toestel staan: ze kunnen elders bewaard en verwerkt worden, zoals in OneDrive. Voorbeeld: bij online gamen spelen kinderen op verschillende plaatsen tegelijk samen, omdat hun gegevens via het internet uitgewisseld worden."},
   // Tekstverwerking
-  {thema:"t_tekst1",  lj:"L2",type:"aan", label:"Eerste tekst typen",
-   detail:"Voor het eerst een tekst typen in Word of Word Online. De cursor plaatsen door te klikken op de gewenste plek. Fouten verbeteren met Backspace. Het bestand opslaan via 'Opslaan als' en een duidelijke naam geven. Voorbeeld: een korte beschrijving van je favoriete dier typen."},
-  {thema:"t_tekst1",  lj:"L3",type:"bouw",label:"Basisopmaak",
-   detail:"Tekst selecteren door te klikken en te slepen. Geselecteerde tekst vet, cursief of onderstreept zetten met de knoppen Vet, Cursief en Onderstrepen (of Ctrl+B, Ctrl+I en Ctrl+U). De lettergrootte aanpassen. Een nieuwe alinea beginnen met Enter. Voorbeeld: in een gedicht de belangrijkste woorden vet zetten."},
-  {thema:"t_tekst1",  lj:"L4",type:"bouw",label:"Alinea's, uitlijnen en lijsten",
-   detail:"Tekst ordenen in duidelijke alinea's met witruimte ertussen en de regelafstand aanpassen voor betere leesbaarheid. Een titel centreren en lopende tekst links uitlijnen. Opsommingstekens (bolletjes) en nummering gebruiken voor lijsten. Voorbeeld: een verslag van een uitstap ordenen met inleiding, kern en besluit."},
-  {thema:"t_tekst1",  lj:"L5",type:"bouw",label:"Afbeeldingen, koppen en tabellen",
-   detail:"Een afbeelding invoegen via ‘Invoegen > Afbeelding’ en verplaatsen door te slepen. Koppen gebruiken (Kop 1 voor de titel, Kop 2 voor tussentitels) om de tekst te ordenen. Een tabel invoegen via ‘Invoegen > Tabel’: rijen en kolommen bepalen en tekst in cellen typen. Samenwerken in een gedeeld document: een opmerking toevoegen bij de tekst van een klasgenoot via ‘Invoegen > Opmerking’. Voorbeeld: een vergelijkingstabel maken van twee dieren."},
-  {thema:"t_tekst1",  lj:"L6",type:"bouw",label:"Paginaopmaak & inhoudsopgave",
-   detail:"Paginanummers toevoegen via de voettekst. Een automatische inhoudsopgave maken op basis van de koppen. Koptekst invoegen met de naam van het document. Professionele lay-out: consistente lettertypes, kleuren en witruimte. Voorbeeld: een werkstuk opmaken als een echt boekje."},
+  {thema:"t_tekst1",  lj:"L3",type:"aan", label:"Eerste tekst in Word",
+   detail:"Na het inloggen in Office 365 een nieuw document maken in Word. Een korte tekst typen, de cursor plaatsen door te klikken en fouten verbeteren. Het document een duidelijke naam geven; Word bewaart het vanzelf in OneDrive. Voorbeeld: een korte beschrijving van je favoriete dier typen."},
+  {thema:"t_tekst1",  lj:"L4",type:"bouw",label:"Opmaak en alinea's",
+   detail:"Tekst selecteren door te klikken en te slepen. Tekst vet, cursief of onderstreept zetten met de knoppen Vet, Cursief en Onderstrepen (of Ctrl+B, Ctrl+I en Ctrl+U) en de lettergrootte aanpassen. Tekst ordenen in alinea's met witruimte ertussen, een titel centreren en lopende tekst links uitlijnen. Voorbeeld: een verslag van een uitstap met een titel, inleiding, kern en besluit."},
+  {thema:"t_tekst1",  lj:"L5",type:"bouw",label:"Lijsten, afbeeldingen en tabellen",
+   detail:"Opsommingstekens (bolletjes) en nummering gebruiken voor lijsten. Een afbeelding invoegen via ‘Invoegen > Afbeelding’ en verplaatsen door te slepen. Een tabel invoegen via ‘Invoegen > Tabel’: rijen en kolommen bepalen en tekst in cellen typen. Samenwerken in een gedeeld document: een opmerking toevoegen bij de tekst van een klasgenoot via ‘Invoegen > Opmerking’. Voorbeeld: een vergelijkingstabel maken van twee dieren."},
+  {thema:"t_tekst1",  lj:"L6",type:"bouw",label:"Koppen, paginaopmaak & inhoudsopgave",
+   detail:"Koppen gebruiken (Kop 1 voor de titel, Kop 2 voor tussentitels) om de tekst te ordenen. Paginanummers toevoegen via de voettekst en een koptekst met de naam van het document. Een automatische inhoudsopgave maken op basis van de koppen. Een verzorgde lay-out: hetzelfde lettertype, dezelfde kleuren en voldoende witruimte. Voorbeeld: een werkstuk opmaken als een echt boekje."},
+  // Bestanden
+  {thema:"t_best1",   lj:"L2",type:"aan", label:"Wat is een bestand?",
+   detail:"Een bestand is een stuk informatie dat je kunt bewaren op een computer: een tekst, een foto, een geluidsopname, een video of een programma. Een bestand opslaan, een duidelijke naam geven volgens de klasafspraak (bijv. ‘tekening_bijen_Jonas’) en kiezen in welke map het terechtkomt. Voorbeeld: een tekening uit de tekenapp of een geluidsopname bewaren in de klasmap."},
+  {thema:"t_best1",   lj:"L3",type:"bouw",label:"Openen en opslaan",
+   detail:"Een bestaand bestand terugvinden in de map en openen door erop te dubbelklikken. Wijzigingen opslaan met Ctrl+S (zonder de naam te veranderen). Bestand sluiten via het kruisje. Voorbeeld: het werkstuk van gisteren terugvinden in de klasmap en verder aanvullen."},
+  {thema:"t_best1",   lj:"L4",type:"bouw",label:"Mappenstructuur gebruiken",
+   detail:"De bestaande mappenstructuur op het schoolnetwerk of OneDrive gebruiken: eigen map, klasmap, gedeelde projectmap. Bestanden op de juiste plek opslaan zodat iedereen ze kan terugvinden. Voorbeeld: het verslag van het groepswerk opslaan in de gedeelde klasmap, niet op het bureaublad."},
+  {thema:"t_best1",   lj:"L5",type:"bouw",label:"Mappen aanmaken en uploaden",
+   detail:"Zelf een nieuwe map aanmaken: rechtermuisknop > Nieuwe map, dan een logische naam geven. Bestanden uploaden naar OneDrive via de browser of app. Bestanden terugvinden via de zoekfunctie (Verkenner of OneDrive). Voorbeeld: voor elk vak een eigen map aanmaken in OneDrive."},
+  {thema:"t_best1",   lj:"L6",type:"bouw",label:"Bestanden beheren en delen",
+   detail:"Bestanden downloaden van het internet of vanuit OneDrive naar de eigen computer. Een bestand delen met een klasgenoot of leerkracht via een deellink (zonder het te e-mailen). Bestanden hernoemen, verplaatsen naar een andere map of verwijderen naar de prullenbak. Voorbeeld: het eindwerkstuk delen met de leerkracht via een OneDrive-link. Weten dat bestanden in OneDrive niet op je eigen toestel staan maar elders bewaard worden: in de cloud."},
   // Foto & video
   {thema:"t_foto",    lj:"L1",type:"aan", label:"Foto's en video's maken",
    detail:"Met een tablet of digitale camera foto's en video's maken. Opnames bekijken in de galerij en de beste kiezen. Voorbeeld: foto's maken van de schooltuin voor een project over de seizoenen."},
@@ -166,17 +161,25 @@ const SPIRAAL = [
    detail:"De presentatie logisch opbouwen: inleiding (onderwerp en doel), middenstuk (inhoud in blokken), slot (conclusie of vraag aan publiek). Steekwoorden op de dia zetten — niet de volledige tekst — en de uitleg er zelf bij vertellen. De notities bij de dia gebruiken als geheugensteun."},
   {thema:"t_pres1",   lj:"L6",type:"bouw",label:"Multimedia en professioneel presenteren",
    detail:"Animaties en overgangen spaarzaam gebruiken zodat de inhoud stap voor stap verschijnt, en een filmpje invoegen. Een verzorgde lay-out: hetzelfde lettertype en kleurenschema doorheen de hele presentatie, voldoende witruimte, goede afbeeldingen. Presenteren voor de klas met oogcontact, een duidelijke stem en de presentatietools (aanwijzer, volgende dia). Vragen van het publiek beantwoorden."},
-  // Bestanden
-  {thema:"t_best1",   lj:"L2",type:"aan", label:"Wat is een bestand?",
-   detail:"Een bestand is een stuk informatie dat je kunt bewaren op een computer: een tekst (.docx), een foto (.jpg), een video (.mp4) of een programma (.exe). Een bestand opslaan via 'Bestand > Opslaan als', een duidelijke naam geven (bijv. 'werkstuk_bijen_Jonas') en kiezen in welke map het terechtkomt."},
-  {thema:"t_best1",   lj:"L3",type:"bouw",label:"Openen en opslaan",
-   detail:"Een bestaand bestand terugvinden in de map en openen door erop te dubbelklikken. Wijzigingen opslaan met Ctrl+S (zonder de naam te veranderen). Bestand sluiten via het kruisje. Voorbeeld: het werkstuk van gisteren terugvinden in de klasmap en verder aanvullen."},
-  {thema:"t_best1",   lj:"L4",type:"bouw",label:"Mappenstructuur gebruiken",
-   detail:"De bestaande mappenstructuur op het schoolnetwerk of OneDrive gebruiken: eigen map, klasmap, gedeelde projectmap. Bestanden op de juiste plek opslaan zodat iedereen ze kan terugvinden. Voorbeeld: het verslag van het groepswerk opslaan in de gedeelde klasmap, niet op het bureaublad."},
-  {thema:"t_best1",   lj:"L5",type:"bouw",label:"Mappen aanmaken en uploaden",
-   detail:"Zelf een nieuwe map aanmaken: rechtermuisknop > Nieuwe map, dan een logische naam geven. Bestanden uploaden naar OneDrive via de browser of app. Bestanden terugvinden via de zoekfunctie (Verkenner of OneDrive). Voorbeeld: voor elk vak een eigen map aanmaken in OneDrive."},
-  {thema:"t_best1",   lj:"L6",type:"bouw",label:"Bestanden beheren en delen",
-   detail:"Bestanden downloaden van het internet of vanuit OneDrive naar de eigen computer. Een bestand delen met een klasgenoot of leerkracht via een deellink (zonder het te e-mailen). Bestanden hernoemen, verplaatsen naar een andere map of verwijderen naar de prullenbak. Voorbeeld: het eindwerkstuk delen met de leerkracht via een OneDrive-link. Weten dat bestanden in OneDrive niet op je eigen toestel staan maar elders bewaard worden: in de cloud."},
+  // Digitaal communiceren
+  {thema:"t_mail",    lj:"L3",type:"aan", label:"Een e-mail sturen",
+   detail:"In Outlook een eerste e-mail sturen naar de leerkracht of een klasgenoot: de ontvanger kiezen, een onderwerp invullen, een korte boodschap typen en verzenden. Veilig en verantwoord: nooit je adres, telefoonnummer of wachtwoord doorgeven, respectvol schrijven en je bericht nalezen voor je het verstuurt, geen foto's van anderen sturen zonder toestemming. Voorbeeld: de leerkracht mailen wat je in het weekend gedaan hebt."},
+  {thema:"t_mail",    lj:"L4",type:"bouw",label:"Verder mailen in Outlook",
+   detail:"Een ontvangen e-mail lezen, beantwoorden en doorsturen. Een bijlage toevoegen, bijv. je tekst uit Word. Een duidelijk onderwerp, een aanhef en een groet gebruiken. Weten wat verzenden en ontvangen betekent, en wat online en offline is: een e-mail versturen kan enkel online, een foto bekijken die al op je laptop staat lukt ook offline. Voorbeeld: je werkstuk als bijlage mailen naar de leerkracht."},
+  {thema:"t_mail",    lj:"L6",type:"bouw",label:"Communicatiemogelijkheden kennen",
+   detail:"Digitale tools bieden verschillende manieren om te communiceren. Leerlingen leren ze kennen én weten wanneer je welke gebruikt:\n• Berichten (via Teams of Smartschool): een bericht sturen aan een persoon of groep, vergelijkbaar met een sms maar via het schoolplatform.\n• E-mail (in Outlook, al gebruikt sinds het 3de leerjaar): een formeel of langer bericht met onderwerp, aanhef, inhoud en groet, eventueel met een bijlage.\n• Chat: korte berichtjes in real time, zoals een gesprekje. Handig voor snelle vragen. In Teams heet dit de chatfunctie.\n• Videogesprek (via Teams): elkaar zien en horen op afstand, bijv. voor een groepsoverleg.\n• Reacties: een reactie plaatsen op een post, foto of document — bijv. een duim omhoog, een hartje of een korte opmerking. Wordt gebruikt op schoolplatforms en sociale media.\nWanneer kies je wat? E-mail = formeel en langere boodschap (aan leerkracht, directie). Chat = snel en informeel (aan klasgenoot). Reactie = snelle feedback op iets dat iemand gepost heeft."},
+  // Samenwerken & tools
+  {thema:"t_samen",   lj:"L4",type:"aan", label:"Samenwerken in gedeeld document",
+   detail:"Via Office 365 tegelijk met klasgenoten in hetzelfde Word- of OneNote-document werken. Ieders wijzigingen verschijnen in real time. Voorbeeld: de klas schrijft samen een verhaal — elk kind vult een alinea in vanuit zijn eigen toestel."},
+  {thema:"t_samen",   lj:"L5",type:"bouw",label:"Teams & digitale agenda",
+   detail:"Een Teams-videovergadering starten of eraan deelnemen: camera en microfoon in- of uitschakelen, chat gebruiken. De digitale agenda bijhouden: afspraken en deadlines invoeren. Digitale takenlijst gebruiken om je werk te plannen."},
+  {thema:"t_samen",   lj:"L6",type:"bouw",label:"Online vergaderen en plannen",
+   detail:"Een online vergadering leiden: spreektijd verdelen, scherm delen om iets te tonen. Een digitale planning bijhouden. Voorbeeld: een groepsproject plannen via een gedeeld document met taakverdeling en deadlines."},
+  // Netwerken & de cloud
+  {thema:"t_netwerk", lj:"L6",type:"aan", label:"Netwerk en verbinding", doelen:["DIG 1 B.34", "DIG 1 B.35", "DIG 1 B.36"],
+   detail:"Weten dat toestellen via een netwerk met elkaar verbonden zijn, zoals de computers op school. Zonder verbinding kun je geen informatie delen. Een verbinding loopt via een kabel, via wifi of via het mobiele netwerk. Voorbeeld: wifi uitzetten op een tablet en nagaan wat nog werkt en wat niet."},
+  {thema:"t_netwerk", lj:"L6",type:"aan", label:"Gegevens in de cloud", doelen:["DIG 1 B.37"],
+   detail:"Weten dat gegevens niet altijd op je eigen toestel staan: ze kunnen elders bewaard en verwerkt worden, zoals in OneDrive. Voorbeeld: bij online gamen spelen kinderen op verschillende plaatsen tegelijk samen, omdat hun gegevens via het internet uitgewisseld worden."},
   // Zelfstandig leren
   {thema:"t_zelf",    lj:"L4",type:"aan", label:"Zelfstandig digitaal leren",
    detail:"Met digitale oefenplatformen zelfstandig oefenen en leren: bijv. Bingel, Rekentuin, Khan Academy of een aangereikte leerapp. Feedback lezen en de oefening opnieuw proberen als er fouten zijn. Voorbeeld: 15 minuten per week zelfstandig rekenen via Bingel."},

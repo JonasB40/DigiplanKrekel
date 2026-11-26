@@ -26,9 +26,9 @@ let spiraal = lees(SLEUTEL_SPIRAAL, null) || kopie(SPIRAAL);
 (() => {
   const was = lees(SLEUTEL_SPIRAAL + '_versie', 1), eigen = lees(SLEUTEL_SPIRAAL, null);
   if(was >= SPIRAAL_VERSIE) return;
-  if(eigen && was < 3){
-    // versie 3 herschikte de opbouw: de eigen stappen apart bewaren en de nieuwe opbouw tonen
-    bewaar(SLEUTEL_SPIRAAL + '_reserve', eigen);
+  if(eigen && was < SPIRAAL_HERSCHIKT){
+    // de opbouw is herschikt: de eigen stappen apart bewaren en de nieuwe opbouw tonen
+    bewaar(SLEUTEL_SPIRAAL + '_reserve_v' + was, eigen);
     try{ localStorage.removeItem(SLEUTEL_SPIRAAL); }catch(e){}
     spiraal = kopie(SPIRAAL);
     setTimeout(() => meld('De stappen van de school zijn vernieuwd. Je eigen aanpassingen staan in een reservekopie (Beheer, Aanpassingen downloaden).'), 900);
@@ -545,6 +545,8 @@ function pBlok({i, nieuw}){
 let meldT;
 function meld(t){ const m = $('#melding'); m.textContent = t; m.classList.add('toon'); clearTimeout(meldT); meldT = setTimeout(() => m.classList.remove('toon'), 2800); }
 function bewaarSpiraal(){ bewaar(SLEUTEL_SPIRAAL, spiraal); }
+/* reservekopieën van eigen stappen uit vorige versies van de opbouw */
+function reserves(){ try{ return Object.fromEntries(Object.keys(localStorage).filter(k => k.startsWith(SLEUTEL_SPIRAAL + '_reserve')).map(k => [k.slice(SLEUTEL_SPIRAAL.length + 1), lees(k, null)])); }catch(e){ return {}; } }
 
 const acties = {
   view: b => ga({view:b.dataset.id}),
@@ -612,7 +614,7 @@ const acties = {
   },
   download: () => {
     const a = document.createElement('a');
-    a.href = URL.createObjectURL(new Blob([JSON.stringify({doelen:aanpassingen, spiraal, ...(lees(SLEUTEL_SPIRAAL + '_reserve', null) ? {reserve:lees(SLEUTEL_SPIRAAL + '_reserve', null)} : {})}, null, 2)], {type:'application/json'}));
+    a.href = URL.createObjectURL(new Blob([JSON.stringify({doelen:aanpassingen, spiraal, reserve:reserves()}, null, 2)], {type:'application/json'}));
     a.download = 'leerplandoelen-aanpassingen.json'; a.click();
     setTimeout(() => URL.revokeObjectURL(a.href), 1000);
     meld('Bestand gedownload. Stuur het door zodat het op GitHub komt.');
