@@ -4,8 +4,8 @@
    SPIRAAL_VERSIE: verhoog dit bij elke wijziging van de stappen. Is de opbouw herschikt, zet dan ook
    SPIRAAL_HERSCHIKT op die versie: een browser die eerder eigen stappen bewaarde, toont dan de nieuwe
    opbouw en houdt de oude stappen als reservekopie. Een stap met v:n wordt anders enkel toegevoegd. */
-const SPIRAAL_VERSIE = 4; // 3: opbouw herschikt, 4: afgestemd op de praktijk (november 2026)
-const SPIRAAL_HERSCHIKT = 4; // laatste versie waarin de opbouw herschikt is
+const SPIRAAL_VERSIE = 5; // 3: opbouw herschikt, 4: afgestemd op de praktijk, 5: platformen en wachtwoorden van de school
+const SPIRAAL_HERSCHIKT = 5; // laatste versie waarin de opbouw herschikt is
 const SPIRAAL_THEMAS = [
   {id:"t_apparaat",tl:"basis",       label:"Apparaatbediening"},
   {id:"t_toets",   tl:"basis",       label:"Toetsenbord"},
@@ -70,7 +70,7 @@ const SPIRAAL = [
   {thema:"t_toets",   lj:"K3",type:"aan", label:"Toetsen aantikken",
    detail:"Letters en cijfers herkennen op het toetsenbord. Met één vinger gericht een toets aantikken. Backspace gebruiken om een fout te verwijderen. Voorbeeld: de eigen naam intypen."},
   {thema:"t_toets",   lj:"L1",type:"bouw",label:"Letters en cijfers typen",
-   detail:"Letters vinden en correct intypen, zodat je woorden en korte zinnetjes kunt typen. Voorbeeld: de woordjes van de week typen."},
+   detail:"Letters vinden en correct intypen, zodat je woorden en korte zinnetjes kunt typen. Cijfers typ je in de bovenste rij met Shift, of op het cijferblok als je laptop dat heeft. Zo typ je ook je wachtwoord van 4 cijfers. Voorbeeld: de woordjes van de week typen."},
   {thema:"t_toets",   lj:"L2",type:"bouw",label:"Belangrijke toetsen",
    detail:"Deze toetsen ken je en gebruik je zelf:\n• Spatiebalk: een spatie tussen twee woorden.\n• Backspace (←): de letter links van de cursor wissen.\n• Delete: de letter rechts van de cursor wissen.\n• Enter (↵): een nieuwe regel beginnen of een zoekopdracht starten.\n• Shift (⇧): ingedrukt houden voor een hoofdletter of voor het bovenste teken op een toets.\n• Caps Lock: alles in hoofdletters typen, en weer uitzetten.\n• Pijltjestoetsen: de cursor verplaatsen.\n• Cijfers: op een Belgisch AZERTY-toetsenbord typ je de cijfers in de bovenste rij met Shift.\n• Punt, komma, vraagteken en uitroepteken: de komma en het uitroepteken zonder Shift, de punt (Shift + ;) en het vraagteken (Shift + ,) met Shift.\nVoorbeeld: een zin met een hoofdletter en een punt typen, zoals ‘Ik heb 2 katten.’"},
   {thema:"t_toets",   lj:"L3",type:"bouw",label:"Je e-mailadres typen",
@@ -84,14 +84,14 @@ const SPIRAAL = [
   // Inloggen & instellingen
   {thema:"t_login",   lj:"K2",type:"aan", label:"Inloggen met pictogram",
    detail:"Inloggen op het schooltoestel via een visuele code: een reeks pictogrammen of kleuren aanklikken als wachtwoord. Een vertrouwde app openen met hulp van de leerkracht. Voorbeeld: de tekenapp openen via het pictogram op het startscherm."},
-  {thema:"t_login",   lj:"K3",type:"bouw",label:"Wachtwoord intypen",
-   detail:"Een eenvoudig wachtwoord intypen op het toetsenbord. Vertrouwde apps (bijv. een rekenspel of een tekenapp) zelfstandig openen via het startmenu of bureaublad en daarna correct sluiten."},
-  {thema:"t_login",   lj:"L1",type:"bouw",label:"Inloggen met eigen code",
-   detail:"Zelfstandig inloggen op het toestel of in een leerplatform met een eigen code, zoals een QR-code of een visuele code. Programma's en apps openen, van programma wisselen via de taakbalk en afsluiten via het kruisje."},
-  {thema:"t_login",   lj:"L2",type:"bouw",label:"Inloggen in een leerplatform",
-   detail:"Met een eigen gebruikersnaam en wachtwoord inloggen in een leerplatform (bijv. Smartschool of een oefenplatform). Veilig omgaan met je wachtwoord: niet doorgeven aan anderen en afmelden als je klaar bent."},
+  {thema:"t_login",   lj:"K3",type:"bouw",label:"Vertrouwde apps openen",
+   detail:"Vertrouwde apps (bijv. een rekenspel of een tekenapp) zelfstandig openen via het startscherm of het bureaublad en daarna correct sluiten. Inloggen gebeurt nog met een pictogram of met hulp van de leerkracht."},
+  {thema:"t_login",   lj:"L1",type:"bouw",label:"Inloggen met 4 cijfers",
+   detail:"Zelfstandig inloggen in een leerplatform zoals Bingel, Kabas of Scoodle Play met je eigen login en een eenvoudig wachtwoord van 4 cijfers. Programma's en apps openen, van programma wisselen via de taakbalk en afsluiten via het kruisje."},
+  {thema:"t_login",   lj:"L2",type:"bouw",label:"Inloggen met woord en cijfer",
+   detail:"Inloggen in Bingel, Kabas of Scoodle Play met je gebruikersnaam en een eenvoudig wachtwoord van een kort woord en een cijfer (bijv. ‘boom7’). Veilig omgaan met je wachtwoord: niet doorgeven aan anderen en afmelden als je klaar bent."},
   {thema:"t_login",   lj:"L3",type:"bouw",label:"Inloggen in Office 365 met je e-mailadres",
-   detail:"Via office.com inloggen met je e-mailadres als gebruikersnaam en je wachtwoord. Vanuit Office 365 Word, Outlook, Teams en OneDrive openen. Meerdere browsertabbladen naast elkaar gebruiken. Afmelden als je klaar bent, zeker op een gedeelde laptop."},
+   detail:"Via office.com inloggen met je e-mailadres als gebruikersnaam en je wachtwoord. Je wachtwoord bestaat vanaf nu uit hoofdletters, kleine letters en cijfers. Vanuit Office 365 Word, Outlook, Teams en OneDrive openen. Meerdere browsertabbladen naast elkaar gebruiken. Afmelden als je klaar bent, zeker op een gedeelde laptop."},
   {thema:"t_login",   lj:"L5",type:"bouw",label:"Wachtwoord & systeeminstellingen",
    detail:"Het eigen wachtwoord wijzigen via de accountinstellingen en begrijpen waarom een sterk wachtwoord belangrijk is. Eenvoudige systeeminstellingen aanpassen: de weergave (lettergrootte, nachtmodus, schermresolutie), de taalinstelling en wifi aan- of uitzetten."},
   // Informatie opzoeken
@@ -167,7 +167,7 @@ const SPIRAAL = [
   {thema:"t_mail",    lj:"L4",type:"bouw",label:"Verder mailen in Outlook",
    detail:"Een ontvangen e-mail lezen, beantwoorden en doorsturen. Een bijlage toevoegen, bijv. je tekst uit Word. Een duidelijk onderwerp, een aanhef en een groet gebruiken. Weten wat verzenden en ontvangen betekent, en wat online en offline is: een e-mail versturen kan enkel online, een foto bekijken die al op je laptop staat lukt ook offline. Voorbeeld: je werkstuk als bijlage mailen naar de leerkracht."},
   {thema:"t_mail",    lj:"L6",type:"bouw",label:"Communicatiemogelijkheden kennen",
-   detail:"Digitale tools bieden verschillende manieren om te communiceren. Leerlingen leren ze kennen én weten wanneer je welke gebruikt:\n• Berichten (via Teams of Smartschool): een bericht sturen aan een persoon of groep, vergelijkbaar met een sms maar via het schoolplatform.\n• E-mail (in Outlook, al gebruikt sinds het 3de leerjaar): een formeel of langer bericht met onderwerp, aanhef, inhoud en groet, eventueel met een bijlage.\n• Chat: korte berichtjes in real time, zoals een gesprekje. Handig voor snelle vragen. In Teams heet dit de chatfunctie.\n• Videogesprek (via Teams): elkaar zien en horen op afstand, bijv. voor een groepsoverleg.\n• Reacties: een reactie plaatsen op een post, foto of document — bijv. een duim omhoog, een hartje of een korte opmerking. Wordt gebruikt op schoolplatforms en sociale media.\nWanneer kies je wat? E-mail = formeel en langere boodschap (aan leerkracht, directie). Chat = snel en informeel (aan klasgenoot). Reactie = snelle feedback op iets dat iemand gepost heeft."},
+   detail:"Digitale tools bieden verschillende manieren om te communiceren. Leerlingen leren ze kennen én weten wanneer je welke gebruikt:\n• Berichten (via Teams): een bericht sturen aan een persoon of groep, vergelijkbaar met een sms maar binnen Teams.\n• E-mail (in Outlook, al gebruikt sinds het 3de leerjaar): een formeel of langer bericht met onderwerp, aanhef, inhoud en groet, eventueel met een bijlage.\n• Chat: korte berichtjes in real time, zoals een gesprekje. Handig voor snelle vragen. In Teams heet dit de chatfunctie.\n• Videogesprek (via Teams): elkaar zien en horen op afstand, bijv. voor een groepsoverleg.\n• Reacties: een reactie plaatsen op een post, foto of document — bijv. een duim omhoog, een hartje of een korte opmerking. Wordt gebruikt op schoolplatforms en sociale media.\nWanneer kies je wat? E-mail = formeel en langere boodschap (aan leerkracht, directie). Chat = snel en informeel (aan klasgenoot). Reactie = snelle feedback op iets dat iemand gepost heeft."},
   // Samenwerken & tools
   {thema:"t_samen",   lj:"L4",type:"aan", label:"Samenwerken in gedeeld document",
    detail:"Via Office 365 tegelijk met klasgenoten in hetzelfde Word- of OneNote-document werken. Ieders wijzigingen verschijnen in real time. Voorbeeld: de klas schrijft samen een verhaal — elk kind vult een alinea in vanuit zijn eigen toestel."},
@@ -182,7 +182,7 @@ const SPIRAAL = [
    detail:"Weten dat gegevens niet altijd op je eigen toestel staan: ze kunnen elders bewaard en verwerkt worden, zoals in OneDrive. Voorbeeld: bij online gamen spelen kinderen op verschillende plaatsen tegelijk samen, omdat hun gegevens via het internet uitgewisseld worden."},
   // Zelfstandig leren
   {thema:"t_zelf",    lj:"L4",type:"aan", label:"Zelfstandig digitaal leren",
-   detail:"Met digitale oefenplatformen zelfstandig oefenen en leren: bijv. Bingel, Rekentuin, Khan Academy of een aangereikte leerapp. Feedback lezen en de oefening opnieuw proberen als er fouten zijn. Voorbeeld: 15 minuten per week zelfstandig rekenen via Bingel."},
+   detail:"Met digitale oefenplatformen zelfstandig oefenen en leren: bijv. Bingel, Kabas of Scoodle Play. Feedback lezen en de oefening opnieuw proberen als er fouten zijn. Voorbeeld: 15 minuten per week zelfstandig rekenen via Bingel."},
   {thema:"t_zelf",    lj:"L5",type:"bouw",label:"Technische problemen oplossen",
    detail:"Wanneer iets niet werkt: eerst zelf proberen op te lossen (herstarten, de helpfunctie raadplegen via F1 of het vraagteken, iets opzoeken op internet). Daarna een klasgenoot om hulp vragen. Pas als laatste stap de leerkracht. Voorbeeld: de printer doet het niet — controleer of hij aanstaat en verbonden is."},
   {thema:"t_zelf",    lj:"L6",type:"bouw",label:"Portfolio en reflectie",
